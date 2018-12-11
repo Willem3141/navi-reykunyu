@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css?family=Enriqueta:400,700|Julius+Sans+One&subset=latin,latin-ext');
+
+body {
+	font-family: 'Enriqueta';
+	font-size: 16px;
+	color: #222;
+	padding: 0 15px;
+}
+
+.container {
+	margin: 20px auto;
+	max-width: 800px;
+}
+
+h1 {
+	padding-bottom: 5px;
+	border-bottom: 1px solid #ddd;
+}
+
+#search-box {
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	padding: 8px;
+	width: 100%;
+	font-family: 'Enriqueta';
+}
+
+#search-box:focus {
+	border-color: #17e;
+}
+
+.result {
+	margin-top: 50px;
+}
+
+.result .result-word {
+	display: flex;
+	position: sticky;
+	top: -1px;
+	background-color: white;
+	padding: 10px 0;
+	box-shadow: 0 0 7px 7px white;
+}
+
+.result .result-word .id {
+	color: #aaa;
+	width: 28px;
+	display: inline-block;
+}
+
+.result .result-word .id,
+.result .result-word .lemma {
+	font-size: 30px;
+	font-weight: 700;
+}
+
+.result .result-word .type {
+	margin-left: 26px;
+	text-transform: uppercase;
+}
+
+.result .result-word .stress {
+	margin-left: 18px;
+}
+
+.result .result-word .stress .stressed {
+	text-decoration: underline;
+}
+
+.result .result-item {
+	margin-left: 28px;
+	margin-top: 20px;
+}
+
+.result .result-item.definition {
+	font-size: 25px;
+	margin-top: 10px;
+}
+
+.result .result-item .header {
+	font-weight: 700;
+}
+
+.result .result-item .body {
+	margin-left: 20px;
+}
+
+.sentence-category {
+	font-style: italic;
+	margin-top: 10px;
+}
+
+.sentence {
+	margin-left: 20px;
+	margin-bottom: 10px;
+}
+
+.sentence .translation {
+	color: #888;
+}
+
+/* tables */
+
+table {
+	margin-top: 8px;
+	width: 100%;
+}
+
+table tr {
+	border-top: 1px solid #ddd;
+}
+
+table tr td {
+	padding: 5px 10px;
+}
+
+.prefix {
+	color: #dd2255;
+	font-weight: bold;
+}
+
+.lenition {
+	color: #229955;
+	font-weight: bold;
+}
+
+.suffix {
+	color: #2255dd;
+	font-weight: bold;
+}
+
+.muted {
+	color: #888;
+}
+
+.highlight {
+	color: #17e;
+}
+
+.word-link {
+	color: black;
+	font-weight: 700;
+}
+
+.word-link:before {
+	content: '→ ';
+}
