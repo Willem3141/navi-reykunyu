@@ -7,15 +7,25 @@ class Reykunyu(object):
     aylìu = [
         {
             "na'vi": "kaltxì",
-            "fnel": "n",
-            "lì'upam": "kal-TXÌ",
-            "sìralpeng": {
-                "en": "hello",
-                "de": "hallo",
-                "nl": "hallo",
-                "fr": "bonjour"
-            },
-            "aysätare": ["kxì/n"]
+            "fnel": "intj",
+            "aylì'kong": "kal-txì",
+            "lì'upam": 2,
+            "tìralpeng": "hello",
+            "aylìukìng": [
+                {
+                    "na'vi": "Kaltxì ma frapo!",
+                    "aylì'u": "kaltxì/intj ma/part frapo/pn",
+                    "tìralpeng": "Hello everyone!",
+                    "sätare": [[1], [2], [2]]
+                }
+            ],
+            "aysätare": [
+                {
+                    "na'vi": "kxì",
+                    "fnel": "n",
+                    "tìralpeng": "hi"
+                }
+            ]
         }
     ]
 
