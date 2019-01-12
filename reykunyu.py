@@ -1,38 +1,21 @@
 import cherrypy
+import json
 import os
 
 class Reykunyu(object):
     """Weptseng fte ralpiveng aylì'ut leNa'vi."""
 
-    aylìu = [
-        {
-            "na'vi": "kaltxì",
-            "fnel": "intj",
-            "aylì'kong": "kal-txì",
-            "lì'upam": 2,
-            "tìralpeng": "hello",
-            "aylìukìng": [
-                {
-                    "na'vi": "Kaltxì ma frapo!",
-                    "aylì'u": "kaltxì/intj ma/part frapo/pn",
-                    "tìralpeng": "Hello everyone!",
-                    "sätare": [[1], [2], [2]]
-                }
-            ],
-            "aysätare": [
-                {
-                    "na'vi": "kxì",
-                    "fnel": "n",
-                    "tìralpeng": "hi"
-                }
-            ]
-        }
-    ]
+    aylìu = []
+    
+    def __init__(self):
+        for name in os.listdir("aylì'u"):
+            with open(os.path.join("aylì'u", name)) as f:
+                self.aylìu.append(json.load(f))
 
     def kanom_sìeyngit(self, tìpawm):
         sìeyngit = []
         for lìu in self.aylìu:
-            if lìu["na'vi"] == tìpawm:
+            if tìpawm == lìu["na'vi"]:
                 sìeyngit.append(lìu)
         return sìeyngit
 

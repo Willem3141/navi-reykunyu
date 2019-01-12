@@ -59,12 +59,8 @@ h1 {
 	text-transform: uppercase;
 }
 
-.result .result-word .stress {
-	margin-left: 18px;
-}
-
-.result .result-word .stress .stressed {
-	text-decoration: underline;
+.result .result-word .type > .detail {
+    opacity: 0.6;
 }
 
 .result .result-item {
@@ -83,6 +79,10 @@ h1 {
 
 .result .result-item .body {
 	margin-left: 20px;
+}
+
+.result .result-item.pronunciation .stress .stressed {
+	text-decoration: underline;
 }
 
 .sentence-category {
@@ -112,6 +112,16 @@ table tr {
 
 table tr td {
 	padding: 5px 10px;
+}
+
+table tr td.column-title {
+	text-align: center;
+	font-style: italic;
+}
+
+table tr td.row-title {
+	text-align: right;
+	font-style: italic;
 }
 
 .prefix {
