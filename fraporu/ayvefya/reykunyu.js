@@ -141,6 +141,17 @@ function adjectiveConjugationSection(word, type) {
 	return $section;
 }
 
+// ngop hapxìt a wìntxu hemlì'uvit
+function infixesSection(infixes) {
+	let $section = $('<div/>').addClass('result-item conjugation');
+	let $header = $('<div/>').addClass('header').text('Infix positions').appendTo($section);
+	let $body = $('<div/>').addClass('body').appendTo($section);
+	infixes = infixes.replace(".", "<span class='infix'>&#x2039;1&#x203a;</span>");
+	infixes = infixes.replace(".", "<span class='infix'>&#x2039;2&#x203a;</span>");
+	$body.html(infixes);
+	return $section;
+}
+
 // fìvefyat sar fkol mawfwa saryu pamrel soli tìpawmur
 function sngäiTìfwusew() {
 	let tìpawm = $('#search-box').val();
@@ -180,10 +191,14 @@ function sngäiTìfwusew() {
 					$result.append(adjectiveConjugationSection(r["na'vi"], r["type"]));
 				}
 
+				if (r["infixes"]) {
+					$result.append(infixesSection(r["infixes"]));
+				}
+
 				if (r["seeAlso"]) {
 					$result.append(seeAlsoSection(r["seeAlso"]));
 				}
-				
+
 				$result.appendTo($results);
 			}
 		})

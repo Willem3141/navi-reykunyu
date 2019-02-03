@@ -134,6 +134,12 @@ table tr td.row-title {
 	font-weight: bold;
 }
 
+.infix {
+	font-weight: bold;
+	padding-left: 1px;
+	padding-right: 1px;
+}
+
 .suffix {
 	color: #2255dd;
 	font-weight: bold;
