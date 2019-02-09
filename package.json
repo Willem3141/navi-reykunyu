@@ -1,0 +1,8 @@
+{
+  "name": "reykunyu",
+  "version": "0.0.1",
+  "description": "Na'vi dictionary website",
+  "dependencies": {
+    "express": "^4.10.2"
+  }
+}
