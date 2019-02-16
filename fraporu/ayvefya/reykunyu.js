@@ -44,6 +44,29 @@ function ngopFneläPätsìt(fnel) {
 	return $pätsì;
 }
 
+function nounConjugationExplanation(conjugation) {
+	let $conjugation = $('<div/>').addClass('conjugation-explanation');
+	
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+	
+	if (conjugation[2]) {
+		$('<span/>').addClass('prefix').text(conjugation[2]).appendTo($conjugation);
+		$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+	}
+	
+	$('<span/>').text(conjugation[1]).appendTo($conjugation);
+	
+	if (conjugation[3]) {
+		$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+		$('<span/>').addClass('suffix').text(conjugation[3]).appendTo($conjugation);
+	}
+	
+	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation[0]).appendTo($conjugation);
+	
+	return $conjugation;
+}
+
 // ngop tìoeyktìngit lì'upamä lì'uä
 // aylìkong - aylì'kong lì'uä, fa pamrel a'aw (natkenong "lì-u-pam")
 // lìupam - holpxay lì'kongä a takuk lì'upam tsatseng ('awvea lì'kong: 1, muvea lì'kong: 2, saylahe)
@@ -176,6 +199,11 @@ function sngäiTìfwusew() {
 					$lemma.append(" si");
 				}
 				$resultWord.append(ngopFneläPätsìt(r["type"]));
+				
+				if (r["type"] === "n" && r["na'vi"] !== tìeyng["tìpawm"]) {
+					$resultWord.append(nounConjugationExplanation(r["conjugation"]));
+				}
+				
 				$resultWord.appendTo($result);
 
 				let $resultDefinition = $('<div/>').addClass('result-item definition').text(r['translations']['en']);

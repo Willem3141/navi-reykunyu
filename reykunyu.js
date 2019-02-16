@@ -13,9 +13,10 @@ var config = JSON.parse(fs.readFileSync('config.json'));
 var convert = require('./convert');
 var nouns = require('./nouns');
 
-var dictionary = [];
+var dictionary = {};
 fs.readdirSync("aylì'u").forEach(file => {
-	dictionary.push(JSON.parse(fs.readFileSync("aylì'u/" + file, 'utf8')));
+	let wordData = (JSON.parse(fs.readFileSync("aylì'u/" + file, 'utf8')));
+	dictionary[wordData["na'vi"] + ":" + wordData["type"]] = wordData;
 });
 
 app.use(express.static('fraporu'))
@@ -50,9 +51,22 @@ http.listen(config["port"], function() {
 function getResponsesFor(query) {
 	let results = [];
 	
-	for (let i = 0; i < dictionary.length; i++) {
-		if (dictionary[i]["na'vi"] === query) {
-			results.push(dictionary[i]);
+	// first handle conjugated nouns
+	let nounResults = nouns.parse(query);
+	nounResults.forEach(function(result) {
+		if (dictionary.hasOwnProperty(result[1] + ":n")) {
+			let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":n"]));
+			word["conjugation"] = result;
+			results.push(word);
+		}
+	});
+	
+	// then other word types
+	for (word in dictionary) {
+		if (dictionary.hasOwnProperty(word)) {
+			if (dictionary[word]["na'vi"] === query && dictionary[word]["type"] !== "n") {
+				results.push(dictionary[word]);
+			}
 		}
 	}
 	

@@ -52,38 +52,37 @@ function endsInConsonant(noun) {
 }
 
 let caseFunctions = {
-	"subjective": subjectiveSuffix,
-	"agentive": agentiveSuffix,
-	"patientive": patientiveSuffix,
-	"dative": dativeSuffix,
-	"genitive": genitiveSuffix,
-	"topical": topicalSuffix
+	"": subjectiveSuffix,
+	"-l": agentiveSuffix,
+	"-t": patientiveSuffix,
+	"-r": dativeSuffix,
+	"-ä": genitiveSuffix,
+	"-ri": topicalSuffix
 };
 
 let pluralFunctions = {
-	"dual": dualPrefix,
-	"trial": trialPrefix,
-	"plural": pluralPrefix
+	"me-": dualPrefix,
+	"pxe-": trialPrefix,
+	"ay-": pluralPrefix
 };
 
 /**
  * Conjugates a noun. Returns an array with four strings as detailed above.
  * 
- * plural - "singular", "dual", "trial" or "plural"
- * nounCase - "subjective", "agentive", "patientive", "dative", "genitive" or
- * "topical"
+ * plural - "", "me-", "pxe-" or "ay-"
+ * caseSuffix - "", "-l", "-t", "-r", "-ä" or "-ri"
  */
-function conjugate(noun, plural, nounCase) {
+function conjugate(noun, plural, caseSuffix) {
 	
 	// first find the case suffix
-	let caseEnding = caseFunctions[nounCase](noun);
+	let caseEnding = caseFunctions[caseSuffix](noun);
 	
 	// special case for genitive -ia -> -iä - see genitiveSuffix()
-	if (noun.slice(-2) === "ia") {
+	if (noun.slice(-2) === "ia" && caseSuffix === "-ä") {
 		noun = noun.slice(0, -1);
 	}
 	
-	if (plural === "singular") {
+	if (plural === "") {
 		return [[""], "", noun, caseEnding];
 	}
 	
@@ -249,27 +248,27 @@ function parse(word) {
 function getCandidates(word) {
 	candidates = [];
 	
-	candidates.push([word, word, "singular", "subjective"]);
+	candidates.push([word, word, "", ""]);
 	// endings first
-	let tryEnding = function (ending, nounCase) {
+	let tryEnding = function (ending, caseSuffix) {
 		if (word.endsWith(ending)) {
-			candidates.push([word, word.slice(0, -ending.length), "singular", nounCase]);
+			candidates.push([word, word.slice(0, -ending.length), "", caseSuffix]);
 		}
 	};
-	tryEnding("l", "agentive");
-	tryEnding("ìl", "agentive");
-	tryEnding("t", "patientive");
-	tryEnding("it", "patientive");
-	tryEnding("ti", "patientive");
-	tryEnding("r", "dative");
-	tryEnding("ur", "dative");
-	tryEnding("ru", "dative");
-	tryEnding("ä", "genitive");
-	tryEnding("yä", "genitive");
-	tryEnding("ri", "topical");
-	tryEnding("ìri", "topical");
+	tryEnding("l", "-l");
+	tryEnding("ìl", "-l");
+	tryEnding("t", "-t");
+	tryEnding("it", "-t");
+	tryEnding("ti", "-t");
+	tryEnding("r", "-r");
+	tryEnding("ur", "-r");
+	tryEnding("ru", "-r");
+	tryEnding("ä", "-ä");
+	tryEnding("yä", "-ä");
+	tryEnding("ri", "-ri");
+	tryEnding("ìri", "-ri");
 	if (word.endsWith("iä")) {
-		candidates.push([word, word.slice(0, -1) + "a", "singular", "genitive"]);
+		candidates.push([word, word.slice(0, -1) + "a", "", "-ä"]);
 	}
 	
 	// now try non-singular forms
@@ -281,9 +280,9 @@ function getCandidates(word) {
 /**
  * Tests if a given word is a correct conjugation for the given form.
  */
-function checkCandidate(word, noun, plural, nounCase) {
-	let conjugation = conjugate(noun, plural, nounCase);
-	console.log(word, noun, plural, nounCase, conjugation);
+function checkCandidate(word, noun, plural, caseSuffix) {
+	let conjugation = conjugate(noun, plural, caseSuffix);
+	console.log(word, noun, plural, caseSuffix, conjugation);
 	
 	for (let i = 0; i < conjugation[0].length; i++) {
 		for (let j = 0; j < conjugation[3].length; j++) {
