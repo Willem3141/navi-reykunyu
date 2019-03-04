@@ -19,7 +19,7 @@ fs.readdirSync("aylì'u").forEach(file => {
 	dictionary[wordData["na'vi"] + ":" + wordData["type"]] = wordData;
 });
 
-app.use(express.static('fraporu'))
+app.use(express.static('fraporu'));
 
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/fraporu/txin.html');
@@ -52,11 +52,8 @@ function getResponsesFor(query) {
 	let results = [];
 	
 	// handle conjugated nouns
-	let compressed = convert.compress(query);
-	let nounResults = nouns.parse(compressed);
+	let nounResults = nouns.parse(query);
 	nounResults.forEach(function(result) {
-		result[0] = convert.decompress(result[0]);
-		result[1] = convert.decompress(result[1]);
 		if (dictionary.hasOwnProperty(result[1] + ":n")) {
 			let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":n"]));
 			word["conjugation"] = result;

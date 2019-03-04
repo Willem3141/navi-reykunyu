@@ -74,6 +74,8 @@ let pluralFunctions = {
  */
 function conjugate(noun, plural, caseSuffix) {
 
+	noun = convert.compress(noun);
+
 	// first find the case suffix
 	let caseEnding = caseFunctions[caseSuffix](noun);
 	
@@ -83,7 +85,7 @@ function conjugate(noun, plural, caseSuffix) {
 	}
 	
 	if (plural === "") {
-		return [[""], "", noun, caseEnding];
+		return convert.decompressAll([[""], "", noun, caseEnding]);
 	}
 	
 	// if we are looking at a plural, do lenition
@@ -92,7 +94,7 @@ function conjugate(noun, plural, caseSuffix) {
 	let stem = lenited[1];
 	let pluralPrefix = pluralFunctions[plural](noun);
 	
-	return [pluralPrefix, consonant, stem, caseEnding];
+	return convert.decompressAll([pluralPrefix, consonant, stem, caseEnding]);
 }
 
 function subjectiveSuffix(noun) {
@@ -230,6 +232,8 @@ function lenite(word) {
  */
 function parse(word) {
 
+	console.log("parsing", word);
+
 	// step 1: generate a set of candidates
 	let candidates = getCandidates(word);
 	
@@ -245,12 +249,12 @@ function parse(word) {
 }
 
 let unlenitions = {
-	"s": ["c", "t"],
+	"s": ["ts", "t"],
 	"f": ["p"],
 	"h": ["k"],
-	"t": ["T"],
-	"p": ["P"],
-	"k": ["K"]
+	"t": ["tx"],
+	"p": ["px"],
+	"k": ["kx"]
 };
 
 /**
@@ -291,9 +295,9 @@ function tryPluralPrefixes(candidate) {
 	};
 	tryPrefix("me", "me-");
 	tryPrefix("m", "me-");
-	tryPrefix("Pe", "pxe-");
-	tryPrefix("P", "pxe-");
-	tryPrefix("2", "ay-");
+	tryPrefix("pxe", "pxe-");
+	tryPrefix("px", "pxe-");
+	tryPrefix("ay", "ay-");
 	tryPrefix("", "ay-");
 
 	return candidates;
@@ -349,19 +353,21 @@ function getCandidates(word) {
  * Tests if a given word is a correct conjugation for the given form.
  */
 function checkCandidate(word, noun, plural, caseSuffix) {
-	console.log(word, noun, plural, caseSuffix);
 	let conjugation = conjugate(noun, plural, caseSuffix);
-	console.log(" -> ", conjugation);
 	
 	for (let i = 0; i < conjugation[0].length; i++) {
 		for (let j = 0; j < conjugation[3].length; j++) {
 			let possibility = conjugation[0][i] + conjugation[1] +
 			                  conjugation[2] + conjugation[3][j];
 			if (word === possibility) {
+				console.log("candidate:", [word, noun, plural, caseSuffix],
+				            " -> ", conjugation, " ->  ✔");
 				return true;
 			}
 		}
 	}
 	
+	console.log("candidate:", [word, noun, plural, caseSuffix],
+	            " -> ", conjugation, " ->  ✘");
 	return false;
 }

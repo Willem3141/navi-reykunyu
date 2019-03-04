@@ -24,7 +24,8 @@
 
 module.exports = {
 	compress: compress,
-	decompress: decompress
+	decompress: decompress,
+	decompressAll: decompressAll
 }
 
 function compress(word) {
@@ -55,4 +56,16 @@ function decompress(word) {
 	                 .replace(/c/g, 'ts')
 	                 .replace(/g/g, 'ng');
 	return result;
+}
+
+function decompressAll(input) {
+	if (Array.isArray(input)) {
+		let result = []
+		for (let i = 0; i < input.length; i++) {
+			result.push(decompressAll(input[i]));
+		}
+		return result;
+	} else {
+		return decompress(input);
+	}
 }
