@@ -214,7 +214,7 @@ let lenitions = {
 function lenite(word) {
 	// 'rr and 'll are not lenited, since rr and ll cannot start a syllable
 	if (word.substring(0, 2) === "'L" || word.substring(0, 2) === "'R") {
-		return word;
+		return ["", word];
 	}
 	
 	if (!(word[0] in lenitions)) {
