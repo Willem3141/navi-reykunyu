@@ -5,6 +5,7 @@ body {
 	font-size: 16px;
 	color: #222;
 	padding: 0 15px;
+	width: 100%;
 }
 
 .container {
@@ -34,7 +35,6 @@ h1 {
 }
 
 .result .result-word {
-	display: flex;
 	position: sticky;
 	top: -1px;
 	background-color: white;
@@ -57,6 +57,8 @@ h1 {
 .result .result-word .type {
 	margin-left: 26px;
 	text-transform: uppercase;
+	position: relative;
+	top: -5px;
 }
 
 .result .result-word .type > .detail {
