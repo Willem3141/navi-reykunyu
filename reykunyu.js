@@ -19,6 +19,50 @@ fs.readdirSync("aylì'u").forEach(file => {
 	dictionary[wordData["na'vi"] + ":" + wordData["type"]] = wordData;
 });
 
+function simplifiedTranslation(translation) {
+	let result = "";
+	
+	for (let i = 0; i < translation.length; i++) {
+		if (i > 0) {
+			result += "; ";
+		}
+		result += translation[i]["en"].split(",")[0];
+	}
+	
+	return result;
+}
+
+for (word in dictionary) {
+	if (dictionary.hasOwnProperty(word)) {
+		
+		let etymologyList = dictionary[word]["etymology"];
+		if (etymologyList) {
+			for (let i = 0; i < etymologyList.length; i++) {
+				let word = dictionary[etymologyList[i]];
+				if (word) {
+					etymologyList[i] = {
+						"na'vi": word["na'vi"],
+						"translations": simplifiedTranslation(word["translations"])
+					}
+				}
+			}
+		}
+		
+		let seeAlsoList = dictionary[word]["seeAlso"];
+		if (seeAlsoList) {
+			for (let i = 0; i < seeAlsoList.length; i++) {
+				let word = dictionary[seeAlsoList[i]];
+				if (word) {
+					seeAlsoList[i] = {
+						"na'vi": word["na'vi"],
+						"translations": simplifiedTranslation(word["translations"])
+					}
+				}
+			}
+		}
+	}
+}
+
 app.use(express.static('fraporu'));
 
 app.get('/', function(req, res) {

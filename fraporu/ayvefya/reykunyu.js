@@ -44,21 +44,36 @@ function ngopFneläPätsìt(fnel) {
 	return $pätsì;
 }
 
+function statusBadge(wordStatus) {
+	let $pätsì = $('<span/>').addClass('status-badge');
+	if (wordStatus === "unconfirmed") {
+		$pätsì.text("unconfirmed word");
+		$pätsì.addClass("unconfirmed");
+	}
+	return $pätsì;
+}
+
 function nounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 	
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+
+	console.log(conjugation);
 	
-	if (conjugation[2]) {
-		$('<span/>').addClass('prefix').text(conjugation[2]).appendTo($conjugation);
-		$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+	for (let i = 0; i <= 2; i++) {
+		if (conjugation[2][i]) {
+			$('<span/>').addClass('prefix').text(conjugation[2][i]).appendTo($conjugation);
+			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+		}
 	}
 	
 	$('<span/>').text(conjugation[1]).appendTo($conjugation);
 	
-	if (conjugation[3]) {
-		$('<span/>').addClass('operator').text('+').appendTo($conjugation);
-		$('<span/>').addClass('suffix').text(conjugation[3]).appendTo($conjugation);
+	for (let i = 3; i <= 6; i++) {
+		if (conjugation[2][i]) {
+			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+			$('<span/>').addClass('suffix').text(conjugation[2][i]).appendTo($conjugation);
+		}
 	}
 	
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
@@ -67,24 +82,31 @@ function nounConjugationExplanation(conjugation) {
 	return $conjugation;
 }
 
-// ngop tìoeyktìngit lì'upamä lì'uä
-// aylìkong - aylì'kong lì'uä, fa pamrel a'aw (natkenong "lì-u-pam")
-// lìupam - holpxay lì'kongä a takuk lì'upam tsatseng ('awvea lì'kong: 1, muvea lì'kong: 2, saylahe)
-// fnel - fnel lì'uä (kin taluna txo fnel livu "n:si", tsakrr zene sivung lì'ut alu " si")
-function pronunciationSection(aylìkong, lìupam, fnel) {
-	let $section = $('<div/>').addClass('result-item pronunciation');
-	let $header = $('<div/>').addClass('header').text('Pronunciation').appendTo($section);
-	let $body = $('<div/>').addClass('body').appendTo($section);
+function translationSection(sìralpeng) {
+	let $section = $('<div/>').addClass('result-item definition');
+	$section.text(sìralpeng[0]["en"]);
+	return $section;
+}
 
-	let $tìlam = $('<span/>').addClass('stress').appendTo($body);
+// ngop tìoeyktìngit lì'upamä lì'uä
+// lìupam[0] - aylì'kong lì'uä, fa pamrel a'aw (natkenong "lì-u-pam")
+// lìupam[1] - holpxay lì'kongä a takuk lì'upam tsatseng ('awvea lì'kong: 1, muvea lì'kong: 2, saylahe)
+// fnel - fnel lì'uä (kin taluna txo fnel livu "n:si", tsakrr zene sivung lì'ut alu " si")
+function pronunciationSection(lìupam, fnel) {
+	let $tìlam = $('<span/>').addClass('stress');
+	if (!lìupam) {
+		$tìlam.append("(stress pattern unknown)");
+		return $tìlam;
+	}
 	
-	aylìkong = aylìkong.split("-");
+	$tìlam.append("(");
+	aylìkong = lìupam[0].split("-");
 	for (let i = 0; i < aylìkong.length; i++) {
 		if (i > 0) {
 			$tìlam.append("-");
 		}
 		let $lìkong = $('<span/>').text(aylìkong[i]);
-		if (i + 1 === lìupam) {
+		if (aylìkong.length > 1 && i + 1 === lìupam[1]) {
 			$lìkong.addClass("stressed");
 		} else {
 			$lìkong.addClass("unstressed");
@@ -94,8 +116,70 @@ function pronunciationSection(aylìkong, lìupam, fnel) {
 	if (fnel === "n:si") {
 		$tìlam.append(" si");
 	}
+	$tìlam.append(")");
 	
-	return $section;
+	return $tìlam;
+}
+
+function statusNoteSection(wordStatus, statusNote) {
+	let $noteSection = $('<div/>').addClass('result-item status-note');
+	if (wordStatus === "unconfirmed") {
+		$noteSection.append("<b>Unconfirmed:</b> ");
+		$noteSection.addClass("unconfirmed");
+	}
+	$noteSection.append(statusNote);
+	return $noteSection;
+}
+
+function noteSection(note) {
+	let $noteSection = $('<div/>').addClass('result-item note');
+	$noteSection.html(note);
+	return $noteSection;
+}
+
+function sourceSection(source) {
+	let $sourceSection = $('<div/>').addClass('result-item see-also');
+	$sourceSection.append($('<div/>').addClass('header').text('Source'));
+	let $source = $('<div/>').addClass('body');
+	if (typeof source === "string") {
+		$source.html(source);
+	} else {
+		let $sourceLink = $('<a/>');
+		$sourceLink.attr('href', source[1]);
+		$sourceLink.html(source[0]);
+		$source.append($sourceLink);
+	}
+	$sourceSection.append($source);
+	return $sourceSection;
+}
+
+function createWordLink(link) {
+	if (typeof link === "string") {
+		return $('<b/>').text(link);
+	} else {
+		let $link = $('<span/>');
+		$link.append($('<a/>').addClass('word-link').text(link["na'vi"]));
+		$link.append(' (' + link["translations"] + ')');
+		return $link;
+	}
+}
+
+function etymologySection(etymology) {
+	let $etymologySection = $('<div/>').addClass('result-item etymology');
+	$etymologySection.append($('<div/>').addClass('header').text('Etymology'));
+	let $etymology = $('<div/>').addClass('body');
+
+	$etymology.append('from ');
+	for (let i = 0; i < etymology.length; i++) {
+		if (i > 0) {
+			$etymology.append(' + ');
+		}
+		let link = etymology[i];
+		$etymology.append(createWordLink(link));
+	}
+
+	$etymologySection.append($etymology);
+	return $etymologySection;
 }
 
 // ngop sästarsìmit aysätareyä
@@ -110,8 +194,7 @@ function seeAlsoSection(seeAlso) {
 			$aysätareTxin.append(', ');
 		}
 		let link = seeAlso[i];
-		$aysätareTxin.append($('<a/>').addClass('word-link').text(link["na'vi"]));
-		$aysätareTxin.append(' (' + link.tìralpeng + ')');
+		$aysätareTxin.append(createWordLink(link));
 	}
 
 	$aysätare.append($aysätareTxin);
@@ -153,7 +236,7 @@ function nounConjugationSection(word, type, uncountable) {
 // ngop hapxìt a wìntxu fya'ot a leykatem syonlì'uti
 function adjectiveConjugationSection(word, type) {
 	let $section = $('<div/>').addClass('result-item conjugation');
-	let $header = $('<div/>').addClass('header').text('Forms').appendTo($section);
+	let $header = $('<div/>').addClass('header').text('Attributive forms').appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 
 	let html = "&lt;noun&gt; " + prefixed(word);
@@ -199,6 +282,12 @@ function sngäiTìfwusew() {
 					$lemma.append(" si");
 				}
 				$resultWord.append(ngopFneläPätsìt(r["type"]));
+
+				if (r["status"]) {
+					$resultWord.append(statusBadge(r["status"]));
+				}
+
+				$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 				
 				if (r["type"] === "n" && r["na'vi"] !== tìeyng["tìpawm"]) {
 					$resultWord.append(nounConjugationExplanation(r["conjugation"]));
@@ -206,21 +295,34 @@ function sngäiTìfwusew() {
 				
 				$resultWord.appendTo($result);
 
-				let $resultDefinition = $('<div/>').addClass('result-item definition').text(r['translations']['en']);
-				$resultDefinition.appendTo($result);
+				$result.append(translationSection(r["translations"]));
 
-				$result.append(pronunciationSection(r["pronunciation"], r["stressed"], r["type"]));
+				if (r["meaning_note"]) {
+					$result.append(noteSection(r["meaning_note"]));
+				}
+
+				if (r["status_note"]) {
+					$result.append(statusNoteSection(r["status"], r["status_note"]));
+				}
+
+				if (r["etymology"]) {
+					$result.append(etymologySection(r["etymology"]));
+				}
 
 				if (r["type"] === "n") {
-					$result.append(nounConjugationSection(r["na'vi"], r["type"], false));
+					$result.append(nounConjugationSection(r["na'vi"], r["type"], false, r["conjugation_note"]));
 				} else if (r["type"] === "n:unc" || r["type"] === "n:pr") {
-					$result.append(nounConjugationSection(r["na'vi"], r["type"], true));
+					$result.append(nounConjugationSection(r["na'vi"], r["type"], true, r["conjugation_note"]));
 				} else if (r["type"] === "adj") {
-					$result.append(adjectiveConjugationSection(r["na'vi"], r["type"]));
+					$result.append(adjectiveConjugationSection(r["na'vi"], r["type"], r["conjugation_note"]));
 				}
 
 				if (r["infixes"]) {
-					$result.append(infixesSection(r["infixes"]));
+					$result.append(infixesSection(r["infixes"], r["conjugation_note"]));
+				}
+
+				if (r["source"]) {
+					$result.append(sourceSection(r["source"]));
 				}
 
 				if (r["seeAlso"]) {

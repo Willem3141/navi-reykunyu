@@ -4,5 +4,12 @@
   "description": "Na'vi dictionary website",
   "dependencies": {
     "express": "^4.10.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2"
+  },
+  "scripts": {
+    "test": "mocha sìfmetok"
   }
 }
