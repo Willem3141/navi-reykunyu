@@ -15,8 +15,45 @@ var nouns = require('./nouns');
 
 var dictionary = {};
 fs.readdirSync("aylì'u").forEach(file => {
-	let wordData = (JSON.parse(fs.readFileSync("aylì'u/" + file, 'utf8')));
+	let wordData;
+	try {
+		wordData = (JSON.parse(fs.readFileSync("aylì'u/" + file, 'utf8')));
+	} catch (e) {
+		console.log("error when reading " + file + "; ignoring");
+		return;
+	}
+	wordData["sentences"] = [];
 	dictionary[wordData["na'vi"] + ":" + wordData["type"]] = wordData;
+});
+
+var lines = fs.readFileSync("aysìkenong/corpus.tsv", 'utf8').split("\n");
+var sentences = [];
+lines.forEach(line => {
+	let fields = line.split("\t");
+	let id = fields[0];
+	let navi = fields[1];
+	let naviWords = fields[2];
+	let mapping = fields[3];
+	let english = fields[4];
+	let ownTranslation = fields[5];
+	let source = fields[6];
+	let sourceUrl = fields[7];
+	let sentence = {
+		"id": id,
+		"navi": navi.split(/[ —]/),
+		"naviWords": naviWords.split(/[ —]/),
+		"mapping": mapping.split(/[ —]/),
+		"english": english.split(/[ —]/),
+		"ownTranslation": !(ownTranslation === ""),
+		"source": source,
+		"sourceUrl": sourceUrl
+	};
+	sentences.push(sentence);
+	sentence["naviWords"].forEach(naviWord => {
+		if (dictionary.hasOwnProperty(naviWord)) {
+			dictionary[naviWord]["sentences"].push(sentence);
+		}
+	});
 });
 
 function simplifiedTranslation(translation) {

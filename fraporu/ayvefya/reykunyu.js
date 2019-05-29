@@ -24,7 +24,7 @@ function tstxoFnelä(fnel) {
 		"v:tr": "verb/transitive",
 		"v:m": "verb/modal",
 		"v:si": "verb/si",
-		"v:c": "verb/copula",
+		"v:cp": "verb/copula",
 		"phr": "phrase",
 	}
 	if (ngimaAyfnel[fnel]) {
@@ -49,6 +49,9 @@ function statusBadge(wordStatus) {
 	if (wordStatus === "unconfirmed") {
 		$pätsì.text("unconfirmed word");
 		$pätsì.addClass("unconfirmed");
+	} else if (wordStatus === "loan") {
+		$pätsì.text("loanword");
+		$pätsì.addClass("loan");
 	}
 	return $pätsì;
 }
@@ -169,13 +172,18 @@ function etymologySection(etymology) {
 	$etymologySection.append($('<div/>').addClass('header').text('Etymology'));
 	let $etymology = $('<div/>').addClass('body');
 
-	$etymology.append('from ');
-	for (let i = 0; i < etymology.length; i++) {
-		if (i > 0) {
-			$etymology.append(' + ');
+	if (typeof etymology === "string") {
+		$etymology.append(etymology);
+	} else {
+		$etymology.append('From ');
+		for (let i = 0; i < etymology.length; i++) {
+			if (i > 0) {
+				$etymology.append(' + ');
+			}
+			let link = etymology[i];
+			$etymology.append(createWordLink(link));
 		}
-		let link = etymology[i];
-		$etymology.append(createWordLink(link));
+		$etymology.append('.');
 	}
 
 	$etymologySection.append($etymology);
@@ -202,7 +210,7 @@ function seeAlsoSection(seeAlso) {
 }
 
 // ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
-function nounConjugationSection(word, type, uncountable) {
+function nounConjugationSection(word, type, uncountable, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text('Conjugated forms').appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
@@ -230,11 +238,15 @@ function nounConjugationSection(word, type, uncountable) {
 		}
 	}
 
+	if (note) {
+		$body.append($('<div/>').html(note));
+	}
+
 	return $section;
 }
 
 // ngop hapxìt a wìntxu fya'ot a leykatem syonlì'uti
-function adjectiveConjugationSection(word, type) {
+function adjectiveConjugationSection(word, type, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text('Attributive forms').appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
@@ -244,96 +256,174 @@ function adjectiveConjugationSection(word, type) {
 	html += suffixed(word) + " &lt;noun&gt;";
 	$body.html(html);
 
+	if (note) {
+		$body.append($('<div/>').html(note));
+	}
+
 	return $section;
 }
 
 // ngop hapxìt a wìntxu hemlì'uvit
-function infixesSection(infixes) {
+function infixesSection(infixes, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text('Infix positions').appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 	infixes = infixes.replace(".", "<span class='infix'>&#x2039;1&#x203a;</span>");
 	infixes = infixes.replace(".", "<span class='infix'>&#x2039;2&#x203a;</span>");
 	$body.html(infixes);
+	if (note) {
+		$body.append($('<div/>').addClass("conjugation-note").html(note));
+	}
 	return $section;
+}
+
+function createSentence(sentence, lemma) {
+	let $sentence = $('<div/>').addClass("sentence");
+	let $original = $('<div/>').addClass("original").appendTo($sentence);
+	let $translation = $('<div/>').addClass("translation").appendTo($sentence);
+
+	let englishHighlights = [];
+
+	for (let i = 0; i < sentence["navi"].length; i++) {
+		if (i > 0) {
+			$original.append(" ");
+		}
+		if (sentence["naviWords"][i] === lemma) {
+			englishHighlights = sentence["mapping"][i].split(",");
+			console.log(lemma, sentence["naviWords"][i], englishHighlights);
+			$original.append($("<span/>").addClass("highlight").text(sentence["navi"][i]));
+		} else {
+			$original.append(sentence["navi"][i]);
+		}
+	}
+
+	for (let i = 0; i < sentence["english"].length; i++) {
+		if (i > 0) {
+			$translation.append(" ");
+		}
+		if (englishHighlights.includes("" + (i + 1))) {
+			$translation.append($("<span/>").addClass("highlight").text(sentence["english"][i]));
+		} else {
+			$translation.append(sentence["english"][i]);
+		}
+	}
+
+	return $sentence;
+}
+
+function sentencesSection(sentences, lemma) {
+	let $section = $('<div/>').addClass('result-item examples');
+	let $header = $('<div/>').addClass('header').text('Usage examples').appendTo($section);
+	let $body = $('<div/>').addClass('body').appendTo($section);
+
+	for (let i = 0; i < sentences.length; i++) {
+		$body.append(createSentence(sentences[i], lemma));
+	}
+
+	return $section;
+}
+
+// creates a block showing a result
+// i -- id of the result, 0-based (to be shown as the number in front of the
+//      result)
+// r -- the result itself
+// query -- the query that the user searched for
+function createResultBlock(i, r, query) {
+	let $result = $('<div/>').addClass('result');
+
+	let $resultWord = $('<div/>').addClass('result-word');
+	$resultWord.append($('<span/>').addClass('id').text((i + 1) + '.'));
+
+	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
+	$lemma.text(r["na'vi"]);
+	if (r["type"] === "n:si") {
+		$lemma.append(" si");
+	}
+	$resultWord.append(ngopFneläPätsìt(r["type"]));
+
+	if (r["status"]) {
+		$resultWord.append(statusBadge(r["status"]));
+	}
+
+	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
+
+	if (r["type"] === "n" && r["na'vi"] !== query) {
+		$resultWord.append(nounConjugationExplanation(r["conjugation"]));
+	}
+
+	$resultWord.appendTo($result);
+
+	$result.append(translationSection(r["translations"]));
+
+	if (r["meaning_note"]) {
+		$result.append(noteSection(r["meaning_note"]));
+	}
+
+	if (r["status_note"]) {
+		$result.append(statusNoteSection(r["status"], r["status_note"]));
+	}
+
+	if (r["etymology"]) {
+		$result.append(etymologySection(r["etymology"]));
+	}
+
+	if (r["type"] === "n") {
+		$result.append(nounConjugationSection(r["na'vi"], r["type"], false, r["conjugation_note"]));
+	} else if (r["type"] === "n:unc" || r["type"] === "n:pr") {
+		$result.append(nounConjugationSection(r["na'vi"], r["type"], true, r["conjugation_note"]));
+	} else if (r["type"] === "adj") {
+		$result.append(adjectiveConjugationSection(r["na'vi"], r["type"], r["conjugation_note"]));
+	}
+
+	if (r["infixes"]) {
+		$result.append(infixesSection(r["infixes"], r["conjugation_note"]));
+	}
+
+	if (r["sentences"].length > 0) {
+		$result.append(sentencesSection(r["sentences"], r["na'vi"] + ":" + r["type"]));
+	}
+
+	if (r["source"]) {
+		$result.append(sourceSection(r["source"]));
+	}
+
+	if (r["seeAlso"]) {
+		$result.append(seeAlsoSection(r["seeAlso"]));
+	}
+
+	return $result;
+}
+
+function createErrorBlock(text, subText) {
+	let $error = $('<div/>').addClass('error');
+	$('<p/>').addClass('error-text').html(text).appendTo($error);
+	$('<img/>').addClass('error-icon').attr("src", "/ayrel/ke'u.svg").appendTo($error);
+	$('<p/>').addClass('error-subText').html(subText).appendTo($error);
+	return $error;
 }
 
 // fìvefyat sar fkol mawfwa saryu pamrel soli tìpawmur
 function sngäiTìfwusew() {
+	$results = $('#results');
+	$results.empty();
 	let tìpawm = $('#search-box').val();
 	$.getJSON('fwew', {'tìpawm': tìpawm})
 		.done(function(tìeyng) {
 			console.log(tìeyng);
 
-			$results = $('#results');
 			$results.empty();
 
-			for (let i = 0; i < tìeyng["sì'eyng"].length; i++) {
-				let r = tìeyng["sì'eyng"][i];
-				let $result = $('<div/>').addClass('result');
-
-				let $resultWord = $('<div/>').addClass('result-word');
-
-				$resultWord.append($('<span/>').addClass('id').text((i + 1) + '.'));
-
-				$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
-				$lemma.text(r["na'vi"]);
-				if (r["type"] === "n:si") {
-					$lemma.append(" si");
+			if (tìeyng["sì'eyng"].length) {
+				for (let i = 0; i < tìeyng["sì'eyng"].length; i++) {
+					$results.append(createResultBlock(i, tìeyng["sì'eyng"][i], tìpawm));
 				}
-				$resultWord.append(ngopFneläPätsìt(r["type"]));
-
-				if (r["status"]) {
-					$resultWord.append(statusBadge(r["status"]));
-				}
-
-				$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
-				
-				if (r["type"] === "n" && r["na'vi"] !== tìeyng["tìpawm"]) {
-					$resultWord.append(nounConjugationExplanation(r["conjugation"]));
-				}
-				
-				$resultWord.appendTo($result);
-
-				$result.append(translationSection(r["translations"]));
-
-				if (r["meaning_note"]) {
-					$result.append(noteSection(r["meaning_note"]));
-				}
-
-				if (r["status_note"]) {
-					$result.append(statusNoteSection(r["status"], r["status_note"]));
-				}
-
-				if (r["etymology"]) {
-					$result.append(etymologySection(r["etymology"]));
-				}
-
-				if (r["type"] === "n") {
-					$result.append(nounConjugationSection(r["na'vi"], r["type"], false, r["conjugation_note"]));
-				} else if (r["type"] === "n:unc" || r["type"] === "n:pr") {
-					$result.append(nounConjugationSection(r["na'vi"], r["type"], true, r["conjugation_note"]));
-				} else if (r["type"] === "adj") {
-					$result.append(adjectiveConjugationSection(r["na'vi"], r["type"], r["conjugation_note"]));
-				}
-
-				if (r["infixes"]) {
-					$result.append(infixesSection(r["infixes"], r["conjugation_note"]));
-				}
-
-				if (r["source"]) {
-					$result.append(sourceSection(r["source"]));
-				}
-
-				if (r["seeAlso"]) {
-					$result.append(seeAlsoSection(r["seeAlso"]));
-				}
-
-				$result.appendTo($results);
+			} else {
+				$results.append(createErrorBlock("No results found", "Please make sure you are searching for a Na'vi word. At the moment, Reykunyu is Na'vi-to-English only."));
 			}
 		})
 		.fail(function() {
-			$('#results').html('Uh-oh');
+			$results.empty();
+			$results.append(createErrorBlock("Something went wrong while searching", "Please try again later. If the problem persists, please <a href='//wimiso.nl/contact'>contact</a> me."));
 		});
 	return false;
 }

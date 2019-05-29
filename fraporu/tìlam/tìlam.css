@@ -77,6 +77,15 @@ h1 {
 	top: -5px;
 }
 
+.result .result-word .status-badge.loan {
+	background-image: url('/ayrel/tsahey.svg');
+	background-repeat: no-repeat;
+	background-size: 1em;
+	background-position: 0 5px;
+	font-weight: 700;
+	padding-left: 22px;
+}
+
 .result .result-word .status-badge.unconfirmed {
 	background-image: url('/ayrel/tsahey.svg');
 	background-repeat: no-repeat;
@@ -136,6 +145,14 @@ h1 {
 	text-indent: -2em;
 }
 
+.result .result-item .conjugation-note {
+	background-image: url('/ayrel/srungtsyìp.svg');
+	background-repeat: no-repeat;
+	background-size: 1em;
+	background-position: 0 5px;
+	padding-left: 22px;
+}
+
 .sentence-category {
 	font-style: italic;
 	margin-top: 10px;
@@ -149,6 +166,30 @@ h1 {
 .sentence .translation {
 	color: #888;
 }
+
+/* errors */
+
+.error {
+	color: #999;
+	text-align: center;
+}
+
+.error p {
+	width: 80%;
+	min-width: 400px;
+	margin: 20px auto;
+}
+
+.error .error-text {
+	font-size: 30px;
+	color: #aaa;
+}
+
+.error .error-subtext {
+	font-style: italic;
+}
+
+
 
 /* tables */
 
