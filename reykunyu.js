@@ -137,7 +137,7 @@ function getResponsesFor(query) {
 	nounResults.forEach(function(result) {
 		if (dictionary.hasOwnProperty(result[1] + ":n")) {
 			let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":n"]));
-			word["conjugation"] = result;
+			word["conjugated"] = result;
 			results.push(word);
 		}
 	});

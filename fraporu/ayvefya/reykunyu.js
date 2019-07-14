@@ -210,7 +210,7 @@ function seeAlsoSection(seeAlso) {
 }
 
 // ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
-function nounConjugationSection(word, type, uncountable, note) {
+function nounConjugationSection(conjugation, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text('Conjugated forms').appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
@@ -224,25 +224,66 @@ function nounConjugationSection(word, type, uncountable, note) {
 	}
 
 	let cases = ["subjective", "agentive", "patientive", "dative", "genitive", "topical"]
-	let caseFunctions = [subjective, agentive, patientive, dative, genitive, topical]
-	let plurals = [word, dual(word), trial(word), plural(word)]
 	for (let i = 0; i < 6; i++) {
 		let $row = $('<tr/>').appendTo($table);
 		$('<td/>').addClass('row-title').html(cases[i]).appendTo($row);
 		for (let j = 0; j < 4; j++) {
-			if (uncountable && j > 0) {
+			if (conjugation[j].length === 0) {
 				$('<td/>').html("&ndash;").appendTo($row);
-			} else {
-				$('<td/>').html(caseFunctions[i](plurals[j])).appendTo($row);
+				continue;
 			}
+
+			let c = conjugation[j][i];
+			let formatted = "";
+			c = c.split("/");
+			for (let k = 0; k < c.length; k++) {
+				if (k > 0) {
+					formatted += " <span class='muted'>or</span> ";
+				}
+
+				let m = c[k].match(/(.*-\)?)(.*)(-.*)/);
+
+				if (m) {
+					if (m[1] !== "-") {
+						formatted += "<span class='prefix'>" + m[1] + "</span>";
+					}
+					formatted += m[2].replace(/\{(.*)\}/, "<span class='lenition'>$1</span>");
+					if (m[3] !== "-") {
+						formatted += "<span class='suffix'>" + m[3] + "</span>";
+					}
+				} else {
+					formatted += k;
+				}
+			}
+
+			$('<td/>').html(formatted).appendTo($row);
 		}
 	}
 
 	if (note) {
-		$body.append($('<div/>').html(note));
+		$body.append($('<div/>').addClass("conjugation-note").html(note));
 	}
 
 	return $section;
+}
+
+function createNounConjugation(word, type, uncountable) {
+
+	let conjugation = [];
+	let caseFunctions = [subjective, agentive, patientive, dative, genitive, topical]
+	let plurals = [singular(word), dual(word), trial(word), plural(word)]
+
+	for (let j = 0; j < 4; j++) {
+		let row = [];
+		if (!uncountable || j === 0) {
+			for (let i = 0; i < 6; i++) {
+				row.push(caseFunctions[i](plurals[j]));
+			}
+		}
+		conjugation.push(row);
+	}
+
+	return conjugation;
 }
 
 // ngop hapxìt a wìntxu fya'ot a leykatem syonlì'uti
@@ -257,7 +298,7 @@ function adjectiveConjugationSection(word, type, note) {
 	$body.html(html);
 
 	if (note) {
-		$body.append($('<div/>').html(note));
+		$body.append($('<div/>').addClass("conjugation-note").html(note));
 	}
 
 	return $section;
@@ -348,7 +389,7 @@ function createResultBlock(i, r, query) {
 	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 
 	if (r["type"] === "n" && r["na'vi"] !== query) {
-		$resultWord.append(nounConjugationExplanation(r["conjugation"]));
+		$resultWord.append(nounConjugationExplanation(r["conjugated"]));
 	}
 
 	$resultWord.appendTo($result);
@@ -367,10 +408,10 @@ function createResultBlock(i, r, query) {
 		$result.append(etymologySection(r["etymology"]));
 	}
 
-	if (r["type"] === "n") {
-		$result.append(nounConjugationSection(r["na'vi"], r["type"], false, r["conjugation_note"]));
-	} else if (r["type"] === "n:unc" || r["type"] === "n:pr") {
-		$result.append(nounConjugationSection(r["na'vi"], r["type"], true, r["conjugation_note"]));
+	if (r["conjugation"]) {
+		$result.append(nounConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
+	} else if (r["type"] === "n") {
+		$result.append(nounConjugationSection(createNounConjugation(r["na'vi"], r["type"], false), r["conjugation_note"]));
 	} else if (r["type"] === "adj") {
 		$result.append(adjectiveConjugationSection(r["na'vi"], r["type"], r["conjugation_note"]));
 	}

@@ -13,32 +13,32 @@ function endsInConsonant(noun) {
 }
 
 function subjective(noun) {
-    return noun
+    return noun + "-"
 }
 
 function agentive(noun) {
     if (endsInVowel(noun)) {
-        return noun + "<span class='suffix'>-l</span>"
+        return noun + "-l"
     } else {
-        return noun + "<span class='suffix'>-ìl</span>"
+        return noun + "-ìl"
     }
 }
 
 function patientive(noun) {
     if (endsInVowel(noun)) {
-        return noun + "<span class='suffix'>-t(i)</span>"
+        return noun + "-t(i)"
     } else {
         if (endsInConsonant(noun)) {
-            return noun + "<span class='suffix'>-it/-ti</span>"
+            return noun + "-it/ti"
         } else {
             if (noun.slice(-1) === "y") {
                 if (noun.slice(-2) === "ey") {
-                    return noun + "<span class='suffix'>-t(i)</span>"
+                    return noun + "-t(i)"
                 } else {
-                    return noun + "<span class='suffix'>-it/-t(i)</span>"
+                    return noun + "-it/t(i)"
                 }
             } else {
-                return noun + "<span class='suffix'>-it/-ti</span>"
+                return noun + "-it/ti"
             }
         }
     }
@@ -46,19 +46,19 @@ function patientive(noun) {
 
 function dative(noun) {
     if (endsInVowel(noun)) {
-        return noun + "<span class='suffix'>-r(u)</span>"
+        return noun + "-r(u)"
     } else {
         if (endsInConsonant(noun)) {
-            return noun + "<span class='suffix'>-ur</span>"
+            return noun + "-ur"
         } else {
             if (noun.slice(-1) === "w") {
                 if (noun.slice(-2) === "ew") {
-                    return noun + "<span class='suffix'>-r(u)</span>"
+                    return noun + "-r(u)"
                 } else {
-                    return noun + "<span class='suffix'>-ur/-r(u)</span>"
+                    return noun + "-ur/r(u)"
                 }
             } else {
-                return noun + "<span class='suffix'>-ru/-ur</span>"
+                return noun + "-ru/ur"
             }
         }
     }
@@ -67,61 +67,65 @@ function dative(noun) {
 function genitive(noun) {
     if (endsInVowel(noun)) {
         if (noun.slice(-1) === "o" || noun.slice(-1) === "u") {
-            return noun + "<span class='suffix'>-ä</span>"
+            return noun + "-ä"
         } else {
             if (noun.slice(-2) === "ia") {
-                return noun.slice(0, -1) + "<span class='suffix'>-ä</span>"
+                return noun.slice(0, -1) + "-ä"
             } else {
                 if (noun.toLowerCase().slice(-9) === "omatikaya") {
-                    return noun + "<span class='suffix'>-ä</span>"
+                    return noun + "-ä"
                 } else {
-                    return noun + "<span class='suffix'>-yä</span>"
+                    return noun + "-yä"
                 }
             }
         }
     } else {
-        return noun + "<span class='suffix'>-ä</span>"
+        return noun + "-ä"
     }
 }
 
 function topical(noun) {
     if (endsInVowel(noun)) {
-        return noun + "<span class='suffix'>-ri</span>"
+        return noun + "-ri"
     } else {
         if (endsInConsonant(noun)) {
-            return noun + "<span class='suffix'>-ìri</span>"
+            return noun + "-ìri"
         } else {
-            return noun + "<span class='suffix'>-ri</span>"
+            return noun + "-ri"
         }
     }
 }
 
 // Numbers
 
+function singular(noun) {
+    return "-" + noun
+}
+
 function dual(noun) {
     var stem = lenite(noun)
     if (stem.charAt(0).toLowerCase() === "e") {
-        return "<span class='prefix'>m-</span>" + stem
+        return "m-" + stem
     } else {
-        return "<span class='prefix'>me-</span>" + stem
+        return "me-" + stem
     }
 }
 
 function trial(noun) {
     var stem = lenite(noun)
     if (stem.charAt(0).toLowerCase() === "e") {
-        return "<span class='prefix'>px-</span>" + stem
+        return "px-" + stem
     } else {
-        return "<span class='prefix'>pxe-</span>" + stem
+        return "pxe-" + stem
     }
 }
 
 function plural(noun) {
     // is short plural allowed?
     if (lenitable(noun) && noun !== "'u") { // 'u doesn't have short plural
-        return "<span class='prefix'>(ay-)</span>" + lenite(noun)
+        return "(ay-)" + lenite(noun)
     } else {
-        return "<span class='prefix'>ay-</span>" + lenite(noun)
+        return "ay-" + lenite(noun)
     }
 }
 
@@ -132,14 +136,14 @@ function lenite(word) {
         return word
     }
     
-    word = lreplace(word, "ts", "<span class='lenition'>s</span>")
-    word = lreplace(word, "kx", "<span class='lenition'>k</span>")
-    word = lreplace(word, "px", "<span class='lenition'>p</span>")
-    word = lreplace(word, "tx", "<span class='lenition'>t</span>")
+    word = lreplace(word, "ts", "{s}")
+    word = lreplace(word, "kx", "{k}")
+    word = lreplace(word, "px", "{p}")
+    word = lreplace(word, "tx", "{t}")
     word = lreplace(word, "'", "")
-    word = lreplace(word, "k", "<span class='lenition'>h</span>")
-    word = lreplace(word, "p", "<span class='lenition'>f</span>")
-    word = lreplace(word, "t", "<span class='lenition'>s</span>")
+    word = lreplace(word, "k", "{h}")
+    word = lreplace(word, "p", "{f}")
+    word = lreplace(word, "t", "{s}")
     
     return word
 }
