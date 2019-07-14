@@ -23,13 +23,13 @@ function conjugate(verb, infixes) {
 	let second = infixes[2];
 
 	// find the two dots
-	let firstPos = root.indexOf(".");
-	let secondPos = root.indexOf(".", firstPos + 1);
+	let firstPos = verb.indexOf(".");
+	let secondPos = verb.indexOf(".", firstPos + 1);
 
 	// find the text between the dots
-	let beforeFirst = root.substring(0, firstPos);
-	let between = root.substring(firstPos + 1, secondPos);
-	let afterSecond = root.substring(secondPos + 1);
+	let beforeFirst = verb.substring(0, firstPos);
+	let between = verb.substring(firstPos + 1, secondPos);
+	let afterSecond = verb.substring(secondPos + 1);
 
 	// a special case for "zenke"
 	if (afterSecond.substring(0, 3) === "(e)") {
