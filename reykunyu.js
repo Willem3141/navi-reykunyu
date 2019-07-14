@@ -12,6 +12,7 @@ var config = JSON.parse(fs.readFileSync('config.json'));
 
 var convert = require('./convert');
 var nouns = require('./nouns');
+var verbs = require('./verbs');
 
 var dictionary = {};
 fs.readdirSync("aylì'u").forEach(file => {
@@ -141,6 +142,10 @@ function getResponsesFor(query) {
 			results.push(word);
 		}
 	});
+
+	// handle conjugated verbs
+	// TODO
+	//let verbResults = verbs.parse(query);
 	
 	// then other word types
 	for (word in dictionary) {
