@@ -114,9 +114,15 @@ app.get('/fwew', function(req, res) {
 	});
 });
 
-app.get('/conjugate', function(req, res) {
+app.get('/conjugate/noun', function(req, res) {
 	res.json(
 		nouns.conjugate(req.query["noun"], req.query["plural"], req.query["case"])
+	);
+});
+
+app.get('/conjugate/verb', function(req, res) {
+	res.json(
+		verbs.conjugate(req.query["verb"], [req.query["prefirst"], req.query["first"], req.query["second"]])
 	);
 });
 
