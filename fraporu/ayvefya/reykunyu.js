@@ -235,7 +235,7 @@ function nounConjugationSection(conjugation, note) {
 
 			let c = conjugation[j][i];
 			let formatted = "";
-			c = c.split("/");
+			c = c.split(";");
 			for (let k = 0; k < c.length; k++) {
 				if (k > 0) {
 					formatted += " <span class='muted'>or</span> ";
