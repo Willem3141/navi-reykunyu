@@ -2,6 +2,8 @@ $(function() {
 	$('#search-form').submit(sngäiTìfwusew);
 });
 
+$('.ui.dropdown').dropdown();
+
 // tìng fnelä tstxoti angim
 // fnel - fnelä tstxo apup (natkenong "n", "vtr")
 function tstxoFnelä(fnel) {

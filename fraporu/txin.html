@@ -11,7 +11,14 @@
 		<div class="container">
 			<h1>Reykunyu</h1>
 			<form id="search-form">
-				<input id="search-box" type="search" placeholder="Search">
+				<div class="ui right action left icon input fluid">
+					<i class="search icon"></i>
+					<input id="search-box" type="search" placeholder="Search...">
+					<select class="ui compact selection dropdown">
+						<option selected value="navi">Na'vi &rarr; English</option>
+						<option value="english">English &rarr; Na'vi</option>
+					</select>
+				</div>
 			</form>
 
 			<div id="results">
@@ -19,6 +26,7 @@
 		</div>
 
 		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
 		<script src="ayvefya/adjectives.js"></script>
 		<script src="ayvefya/nouns.js"></script>
 		<script src="ayvefya/reykunyu.js"></script>
