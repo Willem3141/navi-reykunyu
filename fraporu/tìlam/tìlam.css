@@ -22,6 +22,26 @@ h1 {
 	font-family: 'Enriqueta';
 }
 
+#sentence-bar .item {
+	align-items: normal;
+}
+
+#sentence-bar .item .navi {
+	font-weight: bold;
+	text-align: center;
+}
+
+#sentence-bar .item .definition {
+	padding-top: 5px;
+	text-align: center;
+}
+
+#sentence-bar .item .more {
+	padding-top: 5px;
+	text-align: center;
+	font-style: italic;
+}
+
 .result {
 	margin-top: 50px;
 }

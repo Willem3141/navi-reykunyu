@@ -2,7 +2,14 @@ $(function() {
 	$('#search-form').submit(sngäiTìfwusew);
 });
 
+$('.ui.checkbox').checkbox();
 $('.ui.dropdown').dropdown();
+$('#settings-button').on("click", function() {
+	$('#settings-modal').modal("show");
+});
+$('#credits-button').on("click", function() {
+	$('#credits-modal').modal("show");
+});
 
 // tìng fnelä tstxoti angim
 // fnel - fnelä tstxo apup (natkenong "n", "vtr")
@@ -445,10 +452,74 @@ function createErrorBlock(text, subText) {
 	return $error;
 }
 
+function createResults(results) {
+	console.log(results);
+	if (results["sì'eyng"].length) {
+		for (let i = 0; i < results["sì'eyng"].length; i++) {
+			$results.append(createResultBlock(i, results["sì'eyng"][i], results["tìpawm"]));
+		}
+	} else {
+		$results.append(createErrorBlock("No results found", "Please make sure you are searching for a Na'vi word. At the moment, Reykunyu is Na'vi-to-English only."));
+	}
+}
+
+function getShortTranslation(result) {
+	if (result["short_translation"]) {
+		return result["short_translation"];
+	}
+
+	let translation = result["translations"][0]["en"];
+	translation = translation.split(',')[0];
+	translation = translation.split(';')[0];
+	translation = translation.split(' (')[0];
+
+	if (result["type"][0] === "v"
+		&& translation.indexOf("to ") === 0) {
+		translation = translation.substr(3);
+	}
+
+	return translation;
+}
+
+function createSentenceBarItem(result) {
+	let $item = $('<a/>').addClass('item');
+	let $itemContainer = $('<div/>').appendTo($item);
+	$('<div/>').addClass('navi')
+		.text(result["tìpawm"])
+		.appendTo($itemContainer);
+
+	let definitionCount = result["sì'eyng"].length;
+	if (definitionCount === 0) {
+		$('<div/>').addClass('more')
+			.text("(not found)")
+			.appendTo($itemContainer);
+		return $item;
+	}
+
+	for (let i = 0; i < Math.min(2, definitionCount); i++) {
+		let $definitionLabel = $('<div/>').addClass('definition')
+			.appendTo($itemContainer);
+		$('<div/>').addClass("ui horizontal label")
+			.text(result["sì'eyng"][i]["type"])
+			.appendTo($definitionLabel);
+		$definitionLabel.append(getShortTranslation(result["sì'eyng"][i]));
+	}
+
+	if (definitionCount > 2) {
+		$('<div/>').addClass('more')
+			.text("(" + (definitionCount - 2) + " more)")
+			.appendTo($itemContainer);
+	}
+
+	return $item;
+}
+
 // fìvefyat sar fkol mawfwa saryu pamrel soli tìpawmur
 function sngäiTìfwusew() {
 	$results = $('#results');
 	$results.empty();
+	$sentenceBar = $('#sentence-bar');
+	$sentenceBar.empty();
 	let tìpawm = $('#search-box').val();
 	$.getJSON('fwew', {'tìpawm': tìpawm})
 		.done(function(tìeyng) {
@@ -456,15 +527,27 @@ function sngäiTìfwusew() {
 
 			$results.empty();
 
-			if (tìeyng["sì'eyng"].length) {
-				for (let i = 0; i < tìeyng["sì'eyng"].length; i++) {
-					$results.append(createResultBlock(i, tìeyng["sì'eyng"][i], tìpawm));
-				}
+			// more than one word was found
+			if (tìeyng.length > 1) {
+				$sentenceBar.show();
 			} else {
-				$results.append(createErrorBlock("No results found", "Please make sure you are searching for a Na'vi word. At the moment, Reykunyu is Na'vi-to-English only."));
+				$sentenceBar.hide();
+			}
+
+			for (let i = 0; i < tìeyng.length; i++) {
+				let $item = createSentenceBarItem(tìeyng[i]);
+				$sentenceBar.append($item);
+				let result = tìeyng[i];
+				$item.on("click", function() {
+					$("#sentence-bar .item").removeClass("active");
+					$item.addClass("active");
+					$results.empty();
+					$results.append(createResults(result));
+				});
 			}
 		})
 		.fail(function() {
+			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock("Something went wrong while searching", "Please try again later. If the problem persists, please <a href='//wimiso.nl/contact'>contact</a> me."));
 		});

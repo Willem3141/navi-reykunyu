@@ -9,7 +9,16 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>Reykunyu</h1>
+			<h1>
+				Reykunyu
+					<div class="ui icon right floated top right pointing dropdown basic button">
+						<i class="cogs icon"></i>
+						<div class="menu">
+							<!--<div id="settings-button" class="item">Settings</div>-->
+							<div id="credits-button" class="item">Credits</div>
+						</div>
+				</div>
+			</h1>
 			<form id="search-form">
 				<div class="ui right action left icon input fluid">
 					<i class="search icon"></i>
@@ -21,7 +30,64 @@
 				</div>
 			</form>
 
+			<div id="sentence-bar" style="display: none;" class="ui pointing menu">
+			</div>
+
 			<div id="results">
+			</div>
+		</div>
+
+		<!-- modals -->
+		<div id="settings-modal" class="ui modal">
+			<div class="header">Settings</div>
+			<div class="scrolling content">
+				<div class="ui small header">
+					Pronunciation
+				</div>
+				<p>By default, Reykunyu shows the pronunciation of words in Na'vi spelling, with the stressed syllable underlined (<b>nay-<u>weng</u></b>). This checkbox allows you to use IPA (International Phonetic Alphabet) notation instead (<b>naj.ˈwɛŋ</b>).</p>
+				<div class="ui checkbox">
+					<input type="checkbox" name="ipa">
+					<label for="ipa">
+						Use IPA for pronunciation
+					</label>
+				</div>
+			</div>
+			<div class="actions">
+				<div class="ui basic button">
+					<i class="close icon"></i> Cancel
+				</div>
+				<div class="ui primary approve button">
+					<i class="checkmark icon"></i> Save
+				</div>
+			</div>
+		</div>
+
+		<div id="credits-modal" class="ui modal basic">
+			<div class="ui icon header">
+				<i class="star icon"></i>
+				Credits
+			</div>
+			<div class="content">
+				<p>Reykunyu was created by Wllìm, but would not have been possible without the help of the following projects and people.</p>
+				<p><i>Irayo nìtxan ma frapo!</i></p>
+				<div class="ui small inverted header">
+					Dictionary data
+				</div>
+				<p>Base dictionary data was taken from Eana Eltu.</p>
+				<p>Example sentences originate from the Annotated Dictionary project by Plumps.</p>
+				<div class="ui small inverted header">
+					Libraries
+				</div>
+				<p>Reykunyu uses <a href="https://jquery.com">jQuery</a> and <a href="https://semantic-ui.com">Semantic UI</a> for the frontend, and <a href="https://nodejs.org">Node.js</a> for the backend.</p>
+				<div class="ui small inverted header">
+					Sources
+				</div>
+				<p>Reykunyu is licensed under the GPLv3, and the source code can be found on <a href="https://github.com/Willem3141/navi-reykunyu">GitHub</a>.</p>
+			</div>
+			<div class="actions">
+				<div class="ui green ok inverted button">
+					<i class="close icon"></i> Done
+				</div>
 			</div>
 		</div>
 

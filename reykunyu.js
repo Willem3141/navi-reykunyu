@@ -24,7 +24,7 @@ fs.readdirSync("aylì'u").forEach(file => {
 		return;
 	}
 	wordData["sentences"] = [];
-	dictionary[wordData["na'vi"] + ":" + wordData["type"]] = wordData;
+	dictionary[wordData["na'vi"].toLowerCase() + ":" + wordData["type"]] = wordData;
 });
 
 var lines = fs.readFileSync("aysìkenong/corpus.tsv", 'utf8').split("\n");
@@ -108,10 +108,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/fwew', function(req, res) {
-	res.json({
-		"tìpawm": req.query["tìpawm"],
-		"sì'eyng": getResponsesFor(req.query["tìpawm"])
-	});
+	res.json(getResponsesFor(req.query["tìpawm"]));
 });
 
 app.get('/conjugate/noun', function(req, res) {
@@ -139,27 +136,43 @@ http.listen(config["port"], function() {
 function getResponsesFor(query) {
 	let results = [];
 	
-	// handle conjugated nouns
-	let nounResults = nouns.parse(query);
-	nounResults.forEach(function(result) {
-		if (dictionary.hasOwnProperty(result[1] + ":n")) {
-			let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":n"]));
-			word["conjugated"] = result;
-			results.push(word);
-		}
-	});
-
-	// handle conjugated verbs
-	// TODO
-	//let verbResults = verbs.parse(query);
+	// first split query on spaces to get individual words
+	const spacesRegex = /\s+/g;
+	let queryWords = query.split(spacesRegex);
 	
-	// then other word types
-	for (word in dictionary) {
-		if (dictionary.hasOwnProperty(word)) {
-			if (dictionary[word]["na'vi"] === query && dictionary[word]["type"] !== "n") {
-				results.push(dictionary[word]);
+	for (let i = 0; i < queryWords.length; i++) {
+		let wordResults = [];
+		let queryWord = queryWords[i];
+		queryWord = queryWord.replace(/[ .,!?]+/g, "");
+		queryWord = queryWord.toLowerCase();
+
+		// handle conjugated nouns
+		let nounResults = nouns.parse(queryWord);
+		nounResults.forEach(function(result) {
+			if (dictionary.hasOwnProperty(result[1] + ":n")) {
+				let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":n"]));
+				word["conjugated"] = result;
+				wordResults.push(word);
+			}
+		});
+
+		// handle conjugated verbs
+		// TODO
+		//let verbResults = verbs.parse(queryWord);
+		
+		// then other word types
+		for (word in dictionary) {
+			if (dictionary.hasOwnProperty(word)) {
+				if (dictionary[word]["na'vi"] === queryWord && dictionary[word]["type"] !== "n") {
+					wordResults.push(dictionary[word]);
+				}
 			}
 		}
+
+		results.push({
+			"tìpawm": queryWord,
+			"sì'eyng": wordResults
+		});
 	}
 	
 	return results;
