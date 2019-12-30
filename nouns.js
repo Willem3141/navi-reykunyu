@@ -312,7 +312,7 @@ function lenite(word) {
  */
 function parse(word) {
 
-	console.log("parsing", word);
+	//console.log("parsing", word);
 
 	// step 1: generate a set of candidates
 	let candidates = getCandidates(word);
@@ -561,7 +561,7 @@ function getCandidates(word) {
  * Tests if a given word is a correct conjugation for the given form.
  */
 function checkCandidate(word, noun, affixes) {
-	console.log([word, noun, affixes]);
+	//console.log([word, noun, affixes]);
 	let conjugation = conjugate(noun, affixes);
 	
 	for (let i = 0; i < conjugation[1].length; i++) {
@@ -572,14 +572,14 @@ function checkCandidate(word, noun, affixes) {
 			                  conjugation[6] + conjugation[7][j] +
 			                  conjugation[8];
 			if (word === possibility) {
-				console.log("candidate:", word, "=", noun, "+", affixes,
-				            " -> ", conjugation, " ->  ✔");
+				//console.log("candidate:", word, "=", noun, "+", affixes,
+				//            " -> ", conjugation, " ->  ✔");
 				return true;
 			}
 		}
 	}
 	
-	console.log("candidate:", word, "=", noun, "+", affixes,
-	            " -> ", conjugation, " ->  ✘");
+	//console.log("candidate:", word, "=", noun, "+", affixes,
+	//            " -> ", conjugation, " ->  ✘");
 	return false;
 }
