@@ -527,6 +527,8 @@ function sngäiTìfwusew() {
 
 			$results.empty();
 
+			$results.append(createResults(tìeyng[0]));
+
 			// more than one word was found
 			if (tìeyng.length > 1) {
 				$sentenceBar.show();
@@ -536,6 +538,9 @@ function sngäiTìfwusew() {
 
 			for (let i = 0; i < tìeyng.length; i++) {
 				let $item = createSentenceBarItem(tìeyng[i]);
+				if (i === 0) {
+					$item.addClass("active");
+				}
 				$sentenceBar.append($item);
 				let result = tìeyng[i];
 				$item.on("click", function() {
