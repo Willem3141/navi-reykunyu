@@ -24,6 +24,7 @@ function tstxoFnelä(fnel) {
 		"num": "numeral",
 		"adv": "adverb",
 		"adp": "adposition",
+		"adp:len": "adposition/leniting",
 		"intj": "interjection",
 		"part": "particle",
 		"conj": "conjunction",
@@ -414,7 +415,7 @@ function createResultBlock(i, r, query) {
 
 	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 
-	if (r["type"] === "n" && r["na'vi"] !== query) {
+	if ((r["type"] === "n" || r["type"] === "n:pr") && r["na'vi"] !== query) {
 		$resultWord.append(nounConjugationExplanation(r["conjugated"]));
 	}
 	if (r["type"].substring(0, 2) === "v:" && r["na'vi"] !== query) {
