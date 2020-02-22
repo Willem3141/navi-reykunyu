@@ -34,6 +34,21 @@ function conjugate(verb, infixes) {
 	let between = verb.substring(firstPos + 1, secondPos);
 	let afterSecond = verb.substring(secondPos + 1);
 
+	// special cases for second infix
+	// Horen 2.3.3
+	if (second === "ei") {
+		if (afterSecond.charAt(0) === "i" || afterSecond.charAt(0) === "ì" ||
+				afterSecond.substring(0, 2) === "ll" || afterSecond.substring(0, 2) === "rr") {
+			second = "eiy";
+		}
+	}
+	// Horen 2.3.5.2
+	if (second === "äng") {
+		if (afterSecond.charAt(0) === "i") {
+			second = "eng";  // TODO or just äng
+		}
+	}
+
 	// a special case for "zenke"
 	if (afterSecond.substring(0, 3) === "(e)") {
 		if (second === "uy" || second === "ats") {
