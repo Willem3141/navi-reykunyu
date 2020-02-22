@@ -70,8 +70,6 @@ function nounConjugationExplanation(conjugation) {
 	
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
-	console.log(conjugation);
-	
 	for (let i = 0; i <= 2; i++) {
 		if (conjugation[2][i]) {
 			$('<span/>').addClass('prefix').text(conjugation[2][i]).appendTo($conjugation);
@@ -91,6 +89,26 @@ function nounConjugationExplanation(conjugation) {
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation[0]).appendTo($conjugation);
 	
+	return $conjugation;
+}
+
+function verbConjugationExplanation(conjugation) {
+	let $conjugation = $('<div/>').addClass('conjugation-explanation');
+
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+
+	$('<span/>').text(conjugation[1]).appendTo($conjugation);
+
+	for (let i = 0; i < 3; i++) {
+		if (conjugation[2][i]) {
+			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+			$('<span/>').addClass('infix').html("&#x2039;" + conjugation[2][i] + "&#x203a;").appendTo($conjugation);
+		}
+	}
+	
+	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation[0]).appendTo($conjugation);
+
 	return $conjugation;
 }
 
@@ -318,8 +336,8 @@ function infixesSection(infixes, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text('Infix positions').appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
-	infixes = infixes.replace(".", "<span class='infix'>&#x2039;1&#x203a;</span>");
-	infixes = infixes.replace(".", "<span class='infix'>&#x2039;2&#x203a;</span>");
+	infixes = infixes.replace(".", "<span class='root-infix'>&#x2039;1&#x203a;</span>");
+	infixes = infixes.replace(".", "<span class='root-infix'>&#x2039;2&#x203a;</span>");
 	$body.html(infixes);
 	if (note) {
 		$body.append($('<div/>').addClass("conjugation-note").html(note));
@@ -340,7 +358,6 @@ function createSentence(sentence, lemma) {
 		}
 		if (sentence["naviWords"][i] === lemma) {
 			englishHighlights = sentence["mapping"][i].split(",");
-			console.log(lemma, sentence["naviWords"][i], englishHighlights);
 			$original.append($("<span/>").addClass("highlight").text(sentence["navi"][i]));
 		} else {
 			$original.append(sentence["navi"][i]);
@@ -399,6 +416,9 @@ function createResultBlock(i, r, query) {
 
 	if (r["type"] === "n" && r["na'vi"] !== query) {
 		$resultWord.append(nounConjugationExplanation(r["conjugated"]));
+	}
+	if (r["type"].substring(0, 2) === "v:" && r["na'vi"] !== query) {
+		$resultWord.append(verbConjugationExplanation(r["conjugated"]));
 	}
 
 	$resultWord.appendTo($result);

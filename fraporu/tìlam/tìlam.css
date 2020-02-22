@@ -239,14 +239,19 @@ table tr td.row-title {
 }
 
 .infix {
+	color: #8623dd;
 	font-weight: bold;
-	padding-left: 1px;
-	padding-right: 1px;
 }
 
 .suffix {
 	color: #2255dd;
 	font-weight: bold;
+}
+
+.root-infix {
+	font-weight: bold;
+	padding-left: 1px;
+	padding-right: 1px;
 }
 
 .muted {

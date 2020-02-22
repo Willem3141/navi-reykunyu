@@ -57,6 +57,29 @@ function parse(word) {
 	return candidates;
 }
 
+function tryPrefirstInfixes(candidate) {
+	let word = candidate[1];
+	let affixes = candidate[2];
+	let candidates = [];
+
+	candidates.push([candidate[0], word, affixes]);
+	let tryInfix = function (infix, name) {
+		let matches = word.matchAll(new RegExp(infix, 'g'));
+		for (let match of matches) {
+			let index = match.index;
+			let newAffixes = [...affixes];
+			newAffixes[0] = name;
+			candidates.push([candidate[0], word.slice(0, index) + word.slice(index + infix.length), newAffixes]);
+		}
+	};
+
+	tryInfix("äp", "äp");
+	tryInfix("eyk", "eyk");
+	tryInfix("äpeyk", "äpeyk");
+
+	return candidates;
+}
+
 function tryFirstInfixes(candidate) {
 	let word = candidate[1];
 	let affixes = candidate[2];
@@ -94,8 +117,8 @@ function tryFirstInfixes(candidate) {
 
 	tryInfix("iv", "iv");
 	tryInfix("imv", "imv");
-	tryInfix("ìyev", "iyev");
-	tryInfix("iyev", "iyev");
+	tryInfix("ìyev", "ìyev");
+	tryInfix("iyev", "ìyev");
 
 	tryInfix("ilv", "ilv");
 	tryInfix("irv", "irv");
@@ -103,11 +126,37 @@ function tryFirstInfixes(candidate) {
 	return candidates;
 }
 
+function trySecondInfixes(candidate) {
+	let word = candidate[1];
+	let affixes = candidate[2];
+	let candidates = [];
+
+	candidates.push([candidate[0], word, affixes]);
+	let tryInfix = function (infix, name) {
+		let matches = word.matchAll(new RegExp(infix, 'g'));
+		for (let match of matches) {
+			let index = match.index;
+			let newAffixes = [...affixes];
+			newAffixes[2] = name;
+			candidates.push([candidate[0], word.slice(0, index) + word.slice(index + infix.length), newAffixes]);
+		}
+	};
+
+	tryInfix("ei", "ei");
+	tryInfix("eiy", "ei");
+	tryInfix("äng", "äng");
+	tryInfix("eng", "äng");
+	tryInfix("uy", "uy");
+	tryInfix("ats", "ats");
+
+	return candidates;
+}
+
 function getCandidates(word) {
 	let functions = [
-		//tryPrefirstInfixes,
+		tryPrefirstInfixes,
 		tryFirstInfixes,
-		//trySecondInfixes,
+		trySecondInfixes,
 	];
 
 	let candidates = [];
