@@ -24,7 +24,11 @@ fs.readdirSync("aylì'u").forEach(file => {
 		return;
 	}
 	wordData["sentences"] = [];
-	dictionary[wordData["na'vi"].toLowerCase() + ":" + wordData["type"]] = wordData;
+	let type = '?';
+	if (wordData['type']) {
+		type = wordData['type'].split(':')[0];
+	}
+	dictionary[wordData["na'vi"].toLowerCase() + ":" + type] = wordData;
 });
 
 var lines = fs.readFileSync("aysìkenong/corpus.tsv", 'utf8').split("\n");
@@ -157,13 +161,22 @@ function getResponsesFor(query) {
 		});
 
 		// handle conjugated verbs
-		// TODO
-		//let verbResults = verbs.parse(queryWord);
+		let verbResults = verbs.parse(queryWord);
+		verbResults.forEach(function(result) {
+			if (dictionary.hasOwnProperty(result[1] + ":v")) {
+				let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":v"]));
+				word["conjugated"] = result;
+				if (verbs.conjugate(word['infixes'], result[2]).indexOf(queryWord) !== -1) {
+					wordResults.push(word);
+				}
+			}
+		});
 		
 		// then other word types
 		for (word in dictionary) {
 			if (dictionary.hasOwnProperty(word)) {
-				if (dictionary[word]["na'vi"] === queryWord && dictionary[word]["type"] !== "n") {
+				let type = dictionary[word]['type'];
+				if (dictionary[word]["na'vi"] === queryWord && type !== "n" && type.indexOf("v:") === -1) {
 					wordResults.push(dictionary[word]);
 				}
 			}

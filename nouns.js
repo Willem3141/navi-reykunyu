@@ -312,8 +312,6 @@ function lenite(word) {
  */
 function parse(word) {
 
-	//console.log("parsing", word);
-
 	// step 1: generate a set of candidates
 	let candidates = getCandidates(word);
 	

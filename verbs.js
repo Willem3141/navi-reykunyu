@@ -2,11 +2,14 @@
  * Functions to conjugate and parse Na'vi verbs.
  * 
  * Na'vi verbs have three infix locations.
+ *
+ * tolängul
+ * = t..ul + ["", "ol", "äng"]
  */
 
 module.exports = {
-	conjugate: conjugate//,
-	//parse: parse
+	conjugate: conjugate,
+	parse: parse
 }
 
 /**
@@ -42,6 +45,99 @@ function conjugate(verb, infixes) {
 
 	// TODO: handle verbs like plltxe -> poltxe
 
-	return [beforeFirst, prefirst, first, between, second, afterSecond];
+	return [beforeFirst, prefirst, first, between, second, afterSecond].join('');
 }
 
+/**
+ * Returns all possible conjugations that could have resulted in the given
+ * word.
+ */
+function parse(word) {
+	let candidates = getCandidates(word);
+	return candidates;
+}
+
+function tryFirstInfixes(candidate) {
+	let word = candidate[1];
+	let affixes = candidate[2];
+	let candidates = [];
+
+	candidates.push([candidate[0], word, affixes]);
+	let tryInfix = function (infix, name) {
+		let matches = word.matchAll(new RegExp(infix, 'g'));
+		for (let match of matches) {
+			let index = match.index;
+			let newAffixes = [...affixes];
+			newAffixes[1] = name;
+			candidates.push([candidate[0], word.slice(0, index) + word.slice(index + infix.length), newAffixes]);
+		}
+	};
+
+	tryInfix("am", "am");
+	tryInfix("ìm", "ìm");
+	tryInfix("ìy", "ìy");
+	tryInfix("ìsy", "ìsy");
+	tryInfix("ay", "ay");
+	tryInfix("asy", "asy");
+
+	tryInfix("ol", "ol");
+	tryInfix("alm", "alm");
+	tryInfix("ìlm", "ìlm");
+	tryInfix("ìly", "ìly");
+	tryInfix("aly", "aly");
+
+	tryInfix("er", "er");
+	tryInfix("arm", "arm");
+	tryInfix("ìrm", "ìrm");
+	tryInfix("ìry", "ìry");
+	tryInfix("ary", "ary");
+
+	tryInfix("iv", "iv");
+	tryInfix("imv", "imv");
+	tryInfix("ìyev", "iyev");
+	tryInfix("iyev", "iyev");
+
+	tryInfix("ilv", "ilv");
+	tryInfix("irv", "irv");
+
+	return candidates;
+}
+
+function getCandidates(word) {
+	let functions = [
+		//tryPrefirstInfixes,
+		tryFirstInfixes,
+		//trySecondInfixes,
+	];
+
+	let candidates = [];
+	candidates.push([word, word, ["", "", ""]]);
+
+	for (let i = 0; i < functions.length; i++) {
+		let newCandidates = [];
+		for (let j = 0; j < candidates.length; j++) {
+			newCandidates = newCandidates.concat(functions[i](candidates[j]));
+		}
+		candidates = newCandidates;
+	}
+	
+	return candidates;
+}
+
+/**
+ * Tests if a given word is a correct conjugation for the given form.
+ */
+function checkCandidate(word, verb, infixes) {
+	let conjugation = conjugate(verb, infixes);
+	
+	let possibility = conjugation.join('');
+	if (word === possibility) {
+		//console.log("candidate:", word, "=", noun, "+", affixes,
+		//            " -> ", conjugation, " ->  ✔");
+		return true;
+	}
+	
+	//console.log("candidate:", word, "=", noun, "+", affixes,
+	//            " -> ", conjugation, " ->  ✘");
+	return false;
+}
