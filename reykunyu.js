@@ -115,6 +115,10 @@ app.get('/fwew', function(req, res) {
 	res.json(getResponsesFor(req.query["tìpawm"]));
 });
 
+app.get('/mok', function(req, res) {
+	res.json(getSuggestionsFor(req.query["tìpawm"]));
+});
+
 app.get('/conjugate/noun', function(req, res) {
 	res.json(
 		nouns.conjugate(req.query["noun"], req.query["plural"], req.query["case"])
@@ -190,3 +194,22 @@ function getResponsesFor(query) {
 	
 	return results;
 }
+
+function getSuggestionsFor(query) {
+	let results = [];
+	for (let w in dictionary) {
+		if (dictionary.hasOwnProperty(w)) {
+			let word = dictionary[w];
+			if (word["na'vi"].startsWith(query)) {
+				results.push({
+					"title": word["na'vi"],
+					"description": '<div class="ui horizontal label">' + word['type'] + '</div> ' + simplifiedTranslation(word["translations"])
+				});
+			}
+		}
+	}
+	return {
+		'results': results
+	};
+}
+

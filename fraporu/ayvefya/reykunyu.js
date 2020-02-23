@@ -1,5 +1,22 @@
 $(function() {
 	$('#search-form').submit(sngäiTìfwusew);
+
+	$('.ui.search').search({
+		apiSettings: {
+			url: 'mok?tìpawm={query}'
+		},
+		maxResults: 0,
+		searchDelay: 0,
+		selector: {
+			'prompt': '#search-box'
+		},
+		showNoResults: false,
+		onSelect: function(result) {
+			$('#search-box').val(result['title']);
+			sngäiTìfwusew();
+			return false;
+		}
+	});
 });
 
 $('.ui.checkbox').checkbox();
@@ -537,6 +554,7 @@ function createSentenceBarItem(result) {
 
 // fìvefyat sar fkol mawfwa saryu pamrel soli tìpawmur
 function sngäiTìfwusew() {
+	$('.ui.search').search('hide results');
 	$results = $('#results');
 	$results.empty();
 	$sentenceBar = $('#sentence-bar');
