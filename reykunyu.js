@@ -196,11 +196,12 @@ function getResponsesFor(query) {
 }
 
 function getSuggestionsFor(query) {
+	query = query.toLowerCase();
 	let results = [];
 	for (let w in dictionary) {
 		if (dictionary.hasOwnProperty(w)) {
 			let word = dictionary[w];
-			if (word["na'vi"].startsWith(query)) {
+			if (word["na'vi"].toLowerCase().startsWith(query)) {
 				results.push({
 					"title": word["na'vi"],
 					"description": '<div class="ui horizontal label">' + word['type'] + '</div> ' + simplifiedTranslation(word["translations"])

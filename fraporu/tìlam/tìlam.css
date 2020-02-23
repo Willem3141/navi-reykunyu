@@ -22,6 +22,24 @@ h1 {
 	font-family: 'Enriqueta';
 }
 
+.ui.search > .results {
+	max-height: 500px;
+	overflow-y: auto;
+}
+
+.ui.search > .results .result .title {
+	display: inline-block;
+	width: 30%;
+}
+
+.ui.search > .results .result .description {
+	display: inline-block;
+	width: 70%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 #sentence-bar .item {
 	align-items: normal;
 }
@@ -42,7 +60,7 @@ h1 {
 	font-style: italic;
 }
 
-.result {
+#results .result {
 	margin-top: 50px;
 }
 
