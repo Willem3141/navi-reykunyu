@@ -165,7 +165,7 @@ h1 {
 
 .result .result-item .body {
 	margin-left: 20px;
-	overflow-x: scroll;
+	overflow-x: auto;
 }
 
 .result .result-item.status-note {
