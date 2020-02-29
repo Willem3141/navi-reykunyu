@@ -14,6 +14,9 @@ var convert = require('./convert');
 var nouns = require('./nouns');
 var verbs = require('./verbs');
 
+var matchAll = require('string.prototype.matchall');
+matchAll.shim();
+
 var dictionary = {};
 fs.readdirSync("aylì'u").forEach(file => {
 	let wordData;

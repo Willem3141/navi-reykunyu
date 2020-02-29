@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Na'vi dictionary website",
   "dependencies": {
-    "express": "^4.10.2"
+    "express": "^4.10.2",
+    "string.prototype.matchall": "^4.0.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
