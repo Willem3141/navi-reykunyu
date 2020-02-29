@@ -10,7 +10,7 @@ body {
 
 .container {
 	margin: 20px auto;
-	max-width: 800px;
+	max-width: 1000px;
 }
 
 h1 {
@@ -165,6 +165,7 @@ h1 {
 
 .result .result-item .body {
 	margin-left: 20px;
+	overflow-x: scroll;
 }
 
 .result .result-item.status-note {
@@ -246,6 +247,10 @@ table tr td.row-title {
 	font-style: italic;
 }
 
+table.conjugation-table {
+	min-width: 800px;
+}
+
 .prefix {
 	color: #dd2255;
 	font-weight: bold;
@@ -288,4 +293,21 @@ table tr td.row-title {
 
 .word-link:before {
 	content: '→ ';
+}
+
+/* word list */
+#word-list > div {
+	padding-bottom: 5px;
+}
+
+#word-list > div > span {
+	padding-right: 5px;
+}
+
+#word-list .word {
+	font-weight: 700;
+}
+
+#word-list .stressed {
+	text-decoration: underline;
 }

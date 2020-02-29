@@ -114,27 +114,35 @@ app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/fraporu/txin.html');
 });
 
-app.get('/fwew', function(req, res) {
+app.get('/all', function(req, res) {
+	res.sendFile(__dirname + '/fraporu/fralì\'u.html');
+});
+
+app.get('/api/fwew', function(req, res) {
 	res.json(getResponsesFor(req.query["tìpawm"]));
 });
 
-app.get('/mok', function(req, res) {
+app.get('/api/mok', function(req, res) {
 	res.json(getSuggestionsFor(req.query["tìpawm"]));
 });
 
-app.get('/conjugate/noun', function(req, res) {
+app.get('/api/frau', function(req, res) {
+	res.json(dictionary);
+});
+
+app.get('/api/conjugate/noun', function(req, res) {
 	res.json(
 		nouns.conjugate(req.query["noun"], req.query["plural"], req.query["case"])
 	);
 });
 
-app.get('/conjugate/verb', function(req, res) {
+app.get('/api/conjugate/verb', function(req, res) {
 	res.json(
 		verbs.conjugate(req.query["verb"], [req.query["prefirst"], req.query["first"], req.query["second"]])
 	);
 });
 
-app.get('/parse', function(req, res) {
+app.get('/api/parse', function(req, res) {
 	res.json(
 		nouns.parse(req.query["word"])
 	);

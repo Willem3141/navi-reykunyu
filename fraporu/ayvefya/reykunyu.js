@@ -3,7 +3,7 @@ $(function() {
 
 	$('.ui.search').search({
 		apiSettings: {
-			url: 'mok?tìpawm={query}'
+			url: 'api/mok?tìpawm={query}'
 		},
 		maxResults: 0,
 		searchDelay: 0,
@@ -432,10 +432,10 @@ function createResultBlock(i, r, query) {
 
 	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 
-	if ((r["type"] === "n" || r["type"] === "n:pr") && r["na'vi"] !== query) {
+	if ((r["type"] === "n" || r["type"] === "n:pr") && r["na'vi"].toLowerCase() !== query.toLowerCase()) {
 		$resultWord.append(nounConjugationExplanation(r["conjugated"]));
 	}
-	if (r["type"].substring(0, 2) === "v:" && r["na'vi"] !== query) {
+	if (r["type"].substring(0, 2) === "v:" && r["na'vi"].toLowerCase() !== query.toLowerCase()) {
 		$resultWord.append(verbConjugationExplanation(r["conjugated"]));
 	}
 
@@ -560,7 +560,7 @@ function sngäiTìfwusew() {
 	$sentenceBar = $('#sentence-bar');
 	$sentenceBar.empty();
 	let tìpawm = $('#search-box').val();
-	$.getJSON('fwew', {'tìpawm': tìpawm})
+	$.getJSON('/api/fwew', {'tìpawm': tìpawm})
 		.done(function(tìeyng) {
 			console.log(tìeyng);
 
