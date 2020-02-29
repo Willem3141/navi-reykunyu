@@ -40,6 +40,10 @@ h1 {
 	text-overflow: ellipsis;
 }
 
+#sentence-bar {
+	flex-wrap: wrap;
+}
+
 #sentence-bar .item {
 	align-items: normal;
 }
