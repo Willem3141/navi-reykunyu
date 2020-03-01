@@ -118,6 +118,10 @@ app.get('/all', function(req, res) {
 	res.sendFile(__dirname + '/fraporu/fralì\'u.html');
 });
 
+app.get('/edit', function(req, res) {
+	res.sendFile(__dirname + '/fraporu/leykatem.html');
+});
+
 app.get('/api/fwew', function(req, res) {
 	res.json(getResponsesFor(req.query["tìpawm"]));
 });
