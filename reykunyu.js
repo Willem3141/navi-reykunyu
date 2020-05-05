@@ -170,7 +170,7 @@ function getResponsesFor(query) {
 	for (let i = 0; i < queryWords.length; i++) {
 		let wordResults = [];
 		let queryWord = queryWords[i];
-		queryWord = queryWord.replace(/[ .,!?]+/g, "");
+		queryWord = queryWord.replace(/[ .,!?:;]+/g, "");
 		queryWord = queryWord.toLowerCase();
 
 		// handle conjugated nouns and pronouns
