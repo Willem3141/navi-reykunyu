@@ -111,16 +111,9 @@ h1 {
 	top: -5px;
 }
 
-.result .result-word .status-badge.loan {
-	background-image: url('/ayrel/tsahey.svg');
-	background-repeat: no-repeat;
-	background-size: 1em;
-	background-position: 0 5px;
-	font-weight: 700;
-	padding-left: 22px;
-}
-
-.result .result-word .status-badge.unconfirmed {
+.result .result-word .status-badge.loan,
+.result .result-word .status-badge.unconfirmed,
+.result .result-word .status-badge.unofficial {
 	background-image: url('/ayrel/tsahey.svg');
 	background-repeat: no-repeat;
 	background-size: 1em;

@@ -76,6 +76,9 @@ function statusBadge(wordStatus) {
 	if (wordStatus === "unconfirmed") {
 		$pätsì.text("unconfirmed word");
 		$pätsì.addClass("unconfirmed");
+	} else if (wordStatus === "unofficial") {
+		$pätsì.text("unofficial word");
+		$pätsì.addClass("unofficial");
 	} else if (wordStatus === "loan") {
 		$pätsì.text("loanword");
 		$pätsì.addClass("loan");
@@ -144,6 +147,9 @@ function pronunciationSection(lìupam, fnel) {
 	let $tìlam = $('<span/>').addClass('stress');
 	if (!lìupam) {
 		$tìlam.append("(stress pattern unknown)");
+		return $tìlam;
+	}
+	if (lìupam.length === 0) {
 		return $tìlam;
 	}
 	
@@ -256,6 +262,7 @@ function seeAlsoSection(seeAlso) {
 
 // ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
 function nounConjugationSection(conjugation, note) {
+	console.log(conjugation);
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text('Conjugated forms').appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
@@ -432,7 +439,7 @@ function createResultBlock(i, r, query) {
 
 	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 
-	if ((r["type"] === "n" || r["type"] === "n:pr") && r["na'vi"].toLowerCase() !== query.toLowerCase()) {
+	if ((r["type"] === "n" || r["type"] === "n:pr" || r["type"] === "pn") && r["na'vi"].toLowerCase() !== query.toLowerCase()) {
 		$resultWord.append(nounConjugationExplanation(r["conjugated"]));
 	}
 	if (r["type"].substring(0, 2) === "v:" && r["na'vi"].toLowerCase() !== query.toLowerCase()) {

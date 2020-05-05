@@ -12,6 +12,7 @@ var config = JSON.parse(fs.readFileSync('config.json'));
 
 var convert = require('./convert');
 var nouns = require('./nouns');
+var pronouns = require('./pronouns');
 var verbs = require('./verbs');
 
 var matchAll = require('string.prototype.matchall');
@@ -33,6 +34,8 @@ fs.readdirSync("aylì'u").forEach(file => {
 	}
 	dictionary[wordData["na'vi"].toLowerCase() + ":" + type] = wordData;
 });
+
+var pronounForms = pronouns.getConjugatedForms(dictionary);
 
 var lines = fs.readFileSync("aysìkenong/corpus.tsv", 'utf8').split("\n");
 var sentences = [];
@@ -157,6 +160,7 @@ http.listen(config["port"], function() {
 });
 
 function getResponsesFor(query) {
+	query = preprocessQuery(query);
 	let results = [];
 	
 	// first split query on spaces to get individual words
@@ -169,13 +173,29 @@ function getResponsesFor(query) {
 		queryWord = queryWord.replace(/[ .,!?]+/g, "");
 		queryWord = queryWord.toLowerCase();
 
-		// handle conjugated nouns
+		// handle conjugated nouns and pronouns
 		let nounResults = nouns.parse(queryWord);
 		nounResults.forEach(function(result) {
 			if (dictionary.hasOwnProperty(result[1] + ":n")) {
 				let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":n"]));
 				word["conjugated"] = result;
 				wordResults.push(word);
+			}
+
+			// pronouns use the same parser as nouns, however we only
+			// consider the possibilities where the plural and case affixes
+			// are empty (because in pronounForms, all plural- and
+			// case-affixed forms are already included)
+			if (result[2][1] === "" && result[2][5] === "") {
+				if (pronounForms.hasOwnProperty(result[1])) {
+					let foundForm = pronounForms[result[1]];
+					let word = JSON.parse(JSON.stringify(foundForm["word"]));
+					result[1] = word["na'vi"];
+					result[2][1] = foundForm["plural"];
+					result[2][5] = foundForm["case"];
+					word["conjugated"] = result;
+					wordResults.push(word);
+				}
 			}
 		});
 
@@ -195,7 +215,7 @@ function getResponsesFor(query) {
 		for (word in dictionary) {
 			if (dictionary.hasOwnProperty(word)) {
 				let type = dictionary[word]['type'];
-				if (dictionary[word]["na'vi"] === queryWord && type !== "n" && type.indexOf("v:") === -1) {
+				if (dictionary[word]["na'vi"].toLowerCase() === queryWord && type !== "n" && type !== "n:pr" && type !== "pn" && type.indexOf("v:") === -1) {
 					wordResults.push(dictionary[word]);
 				}
 			}
@@ -211,6 +231,7 @@ function getResponsesFor(query) {
 }
 
 function getSuggestionsFor(query) {
+	query = preprocessQuery(query);
 	query = query.toLowerCase();
 	let results = [];
 	for (let w in dictionary) {
@@ -227,5 +248,12 @@ function getSuggestionsFor(query) {
 	return {
 		'results': results
 	};
+}
+
+// normalizes a query by replacing weird Unicode tìftang variations by
+// normal ASCII '
+function preprocessQuery(query) {
+	query = query.replace(/’/g, "'");
+	return query;
 }
 
