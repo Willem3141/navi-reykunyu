@@ -26,7 +26,11 @@
 					<div class="ui right action left icon input fluid">
 						<i class="search icon"></i>
 						<input id="search-box" type="search" placeholder="Search...">
-						<select class="ui compact selection dropdown">
+						<select id="mode-dropdown" class="ui compact selection dropdown">
+							<option selected value="navi">Single word</option>
+							<option value="english">Sentence search</option>
+						</select>
+						<select id="mode-direction" class="ui compact selection dropdown">
 							<option selected value="navi">Na'vi &rarr; English</option>
 							<option value="english">English &rarr; Na'vi</option>
 						</select>

@@ -30,9 +30,10 @@ fs.readdirSync("aylì'u").forEach(file => {
 	wordData["sentences"] = [];
 	let type = '?';
 	if (wordData['type']) {
-		type = wordData['type'].split(':')[0];
+		type = wordData['type'];
 	}
-	dictionary[wordData["na'vi"].toLowerCase() + ":" + type] = wordData;
+	let key = wordData["na'vi"].toLowerCase() + ":" + type
+	dictionary[key] = wordData;
 });
 
 var pronounForms = pronouns.getConjugatedForms(dictionary);
@@ -176,10 +177,10 @@ function getResponsesFor(query) {
 		// handle conjugated nouns and pronouns
 		let nounResults = nouns.parse(queryWord);
 		nounResults.forEach(function(result) {
-			if (dictionary.hasOwnProperty(result[1] + ":n")) {
-				let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":n"]));
-				word["conjugated"] = result;
-				wordResults.push(word);
+			let noun = findNoun(result[1]);
+			if (noun) {
+				noun["conjugated"] = result;
+				wordResults.push(noun);
 			}
 
 			// pronouns use the same parser as nouns, however we only
@@ -202,11 +203,11 @@ function getResponsesFor(query) {
 		// handle conjugated verbs
 		let verbResults = verbs.parse(queryWord);
 		verbResults.forEach(function(result) {
-			if (dictionary.hasOwnProperty(result[1] + ":v")) {
-				let word = JSON.parse(JSON.stringify(dictionary[result[1] + ":v"]));
-				word["conjugated"] = result;
-				if (verbs.conjugate(word['infixes'], result[2]).indexOf(queryWord) !== -1) {
-					wordResults.push(word);
+			let verb = findVerb(result[1]);
+			if (verb) {
+				verb["conjugated"] = result;
+				if (verbs.conjugate(verb['infixes'], result[2]).indexOf(queryWord) !== -1) {
+					wordResults.push(verb);
 				}
 			}
 		});
@@ -228,6 +229,40 @@ function getResponsesFor(query) {
 	}
 	
 	return results;
+}
+
+// fwew frafnetstxolì'ut lì'upukmì
+function findNoun(word) {
+	if (dictionary.hasOwnProperty(word + ":n")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":n"]));
+	}
+	if (dictionary.hasOwnProperty(word + ":n:pr")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":n:pr"]));
+	}
+	if (dictionary.hasOwnProperty(word + ":n:si")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":n:si"]));
+	}
+	return null;
+}
+
+// fwew frafnekemlì'ut lì'upukmì
+function findVerb(word) {
+	if (dictionary.hasOwnProperty(word + ":v:in")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":v:in"]));
+	}
+	if (dictionary.hasOwnProperty(word + ":v:tr")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":v:tr"]));
+	}
+	if (dictionary.hasOwnProperty(word + ":v:cp")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":v:cp"]));
+	}
+	if (dictionary.hasOwnProperty(word + ":v:si")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":v:si"]));
+	}
+	if (dictionary.hasOwnProperty(word + ":v:?")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":v:?"]));
+	}
+	return null;
 }
 
 function getSuggestionsFor(query) {
