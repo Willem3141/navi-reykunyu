@@ -3,6 +3,7 @@
 body {
 	font-family: 'Enriqueta';
 	font-size: 16px;
+	background-color: #fff;
 	color: #222;
 	padding: 0 15px;
 	width: 100%;
@@ -56,6 +57,11 @@ h1 {
 #sentence-bar .item .definition {
 	padding-top: 5px;
 	text-align: center;
+}
+
+#sentence-bar .item .label {
+	font-size: 75%;
+	text-transform: uppercase;
 }
 
 #sentence-bar .item .more {
@@ -308,3 +314,84 @@ table.conjugation-table {
 #word-list .stressed {
 	text-decoration: underline;
 }
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #000;
+		color: #eee;
+	}
+
+	h1 {
+		border-bottom-color: #555;
+	}
+
+	.result .result-word {
+		background-color: black;
+		box-shadow: 0 0 7px 7px black;
+	}
+
+	.result .result-word .id {
+		color: #666;
+	}
+
+	table tr {
+		border-top: 1px solid #555;
+	}
+
+	.ui.input, .ui.input input,
+	.ui.selection.dropdown {
+		background-color: #000;
+		border-color: #555;
+		color: #eee;
+	}
+
+	.ui.input input:focus {
+		background-color: #000;
+		color: #eee;
+	}
+
+	.ui.search .action:hover {
+		background-color: #000;
+	}
+
+	.ui.tag.labels .label::after, .ui.tag.label::after {
+		background-color: #000 !important;
+	}
+
+	.ui.basic.button {
+		color: #eee !important;
+	}
+
+	.ui.pointing.menu {
+		background-color: #222;
+		border: 1px solid #666;
+	}
+
+	.ui.pointing.menu .item {
+		color: #eee;
+	}
+
+	.ui.pointing.menu .item:hover {
+		background-color: #333;
+		color: #eee;
+	}
+
+	.ui.menu .item::before {
+		background-color: #666;
+	}
+
+	.ui.pointing.menu .active.item {
+		background: #444;
+	}
+
+	.ui.pointing.menu .active.item::after {
+		background: #444;
+		border-bottom: 1px solid #666;
+		border-right: 1px solid #666;
+	}
+
+	.ui.pointing.menu .active.item:hover::after {
+		background: #444;
+	}
+}
+
