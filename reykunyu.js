@@ -167,60 +167,28 @@ function getResponsesFor(query) {
 	// first split query on spaces to get individual words
 	const spacesRegex = /\s+/g;
 	let queryWords = query.split(spacesRegex);
+
+	// maintains if the previous word was a leniting adposition
+	let externalLenition = false;
 	
 	for (let i = 0; i < queryWords.length; i++) {
-		let wordResults = [];
 		let queryWord = queryWords[i];
 		queryWord = queryWord.replace(/[ .,!?:;]+/g, "");
 		queryWord = queryWord.toLowerCase();
 
-		// handle conjugated nouns and pronouns
-		let nounResults = nouns.parse(queryWord);
-		nounResults.forEach(function(result) {
-			let noun = findNoun(result[1]);
-			if (noun) {
-				noun["conjugated"] = result;
-				wordResults.push(noun);
-			}
-
-			// pronouns use the same parser as nouns, however we only
-			// consider the possibilities where the plural and case affixes
-			// are empty (because in pronounForms, all plural- and
-			// case-affixed forms are already included)
-			if (result[2][1] === "" && result[2][5] === "") {
-				if (pronounForms.hasOwnProperty(result[1])) {
-					let foundForm = pronounForms[result[1]];
-					let word = JSON.parse(JSON.stringify(foundForm["word"]));
-					result[1] = word["na'vi"];
-					result[2][1] = foundForm["plural"];
-					result[2][5] = foundForm["case"];
-					word["conjugated"] = result;
-					wordResults.push(word);
-				}
-			}
-		});
-
-		// handle conjugated verbs
-		let verbResults = verbs.parse(queryWord);
-		verbResults.forEach(function(result) {
-			let verb = findVerb(result[1]);
-			if (verb) {
-				verb["conjugated"] = result;
-				if (verbs.conjugate(verb['infixes'], result[2]).indexOf(queryWord) !== -1) {
-					wordResults.push(verb);
-				}
-			}
-		});
-		
-		// then other word types
-		for (word in dictionary) {
-			if (dictionary.hasOwnProperty(word)) {
-				let type = dictionary[word]['type'];
-				if (dictionary[word]["na'vi"].toLowerCase() === queryWord && type !== "n" && type !== "n:pr" && type !== "pn" && type.indexOf("v:") === -1) {
-					wordResults.push(dictionary[word]);
-				}
-			}
+		let unlenitedWords;
+		if (externalLenition) {
+			unlenitedWords = nouns.unlenite(queryWord);
+		} else {
+			unlenitedWords = [queryWord];
 		}
+
+		let wordResults = [];
+		for (let j = 0; j < unlenitedWords.length; j++) {
+			wordResults = wordResults.concat(lookUpWord(unlenitedWords[j]));
+		}
+
+		externalLenition = wordResults.length > 0 && wordResults[0]['type'] === 'adp:len';
 
 		results.push({
 			"tìpawm": queryWord,
@@ -229,6 +197,60 @@ function getResponsesFor(query) {
 	}
 	
 	return results;
+}
+
+function lookUpWord(queryWord) {
+	let wordResults = [];
+
+	// handle conjugated nouns and pronouns
+	let nounResults = nouns.parse(queryWord);
+	nounResults.forEach(function(result) {
+		let noun = findNoun(result[1]);
+		if (noun) {
+			noun["conjugated"] = result;
+			wordResults.push(noun);
+		}
+
+		// pronouns use the same parser as nouns, however we only
+		// consider the possibilities where the plural and case affixes
+		// are empty (because in pronounForms, all plural- and
+		// case-affixed forms are already included)
+		if (result[2][1] === "" && result[2][5] === "") {
+			if (pronounForms.hasOwnProperty(result[1])) {
+				let foundForm = pronounForms[result[1]];
+				let word = JSON.parse(JSON.stringify(foundForm["word"]));
+				result[1] = word["na'vi"];
+				result[2][1] = foundForm["plural"];
+				result[2][5] = foundForm["case"];
+				word["conjugated"] = result;
+				wordResults.push(word);
+			}
+		}
+	});
+
+	// handle conjugated verbs
+	let verbResults = verbs.parse(queryWord);
+	verbResults.forEach(function(result) {
+		let verb = findVerb(result[1]);
+		if (verb) {
+			verb["conjugated"] = result;
+			if (verbs.conjugate(verb['infixes'], result[2]).indexOf(queryWord) !== -1) {
+				wordResults.push(verb);
+			}
+		}
+	});
+
+	// then other word types
+	for (word in dictionary) {
+		if (dictionary.hasOwnProperty(word)) {
+			let type = dictionary[word]['type'];
+			if (dictionary[word]["na'vi"].toLowerCase() === queryWord && type !== "n" && type !== "n:pr" && type !== "pn" && type.indexOf("v:") === -1) {
+				wordResults.push(dictionary[word]);
+			}
+		}
+	}
+
+	return wordResults;
 }
 
 // fwew frafnetstxolì'ut lì'upukmì
@@ -255,6 +277,9 @@ function findVerb(word) {
 	}
 	if (dictionary.hasOwnProperty(word + ":v:cp")) {
 		return JSON.parse(JSON.stringify(dictionary[word + ":v:cp"]));
+	}
+	if (dictionary.hasOwnProperty(word + ":v:m")) {
+		return JSON.parse(JSON.stringify(dictionary[word + ":v:m"]));
 	}
 	if (dictionary.hasOwnProperty(word + ":v:si")) {
 		return JSON.parse(JSON.stringify(dictionary[word + ":v:si"]));

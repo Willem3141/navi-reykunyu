@@ -338,6 +338,10 @@ table.conjugation-table {
 		border-top: 1px solid #555;
 	}
 
+	.result .result-item.status-note {
+		background-color: #493c00;
+	}
+
 	.ui.input, .ui.input input,
 	.ui.selection.dropdown {
 		background-color: #000;
