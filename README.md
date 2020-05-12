@@ -1,6 +1,6 @@
 _(English below)_
 
-**Reykunyu** lu lì'upuk fa fwa fko tsun fwivew aylì'ut leNa'vi, ulte rivun ralpengit le'Ìnglìsì ulte lahea aysäomumit a tsalì'uteri. Aylì'upukto alahe, fmi Reykunyu tivìng aysä'omumit leno nì'ul.
+**Reykunyu** lu lì'upuk fa fwa fko tsun fwivew aylì'ut leNa'vi, ulte rivun tìralpengit le'Ìnglìsì ulte lahea aysäomumit a tsalì'uteri. Aylì'upukto alahe, fmi Reykunyu tivìng aysäomumit leno nì'ul.
 
 Fko tsun mivay' Reykunyut fìtsenge: https://reykunyu.wimiso.nl
 
