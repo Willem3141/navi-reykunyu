@@ -185,7 +185,17 @@ function getResponsesFor(query) {
 
 		let wordResults = [];
 		for (let j = 0; j < unlenitedWords.length; j++) {
-			wordResults = wordResults.concat(lookUpWord(unlenitedWords[j]));
+			let wordResult = lookUpWord(unlenitedWords[j]);
+			if (externalLenition) {
+				for (let k = 0; k < wordResult.length; k++) {
+					wordResult[k]["externalLenition"] = {
+						"from": unlenitedWords[j],
+						"to": queryWord,
+						"by": queryWords[i - 1]
+					};
+				}
+			}
+			wordResults = wordResults.concat(wordResult);
 		}
 
 		externalLenition = wordResults.length > 0 && wordResults[0]['type'] === 'adp:len';

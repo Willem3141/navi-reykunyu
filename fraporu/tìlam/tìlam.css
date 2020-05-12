@@ -132,19 +132,22 @@ h1 {
 	opacity: 0.6;
 }
 
-.result .result-word .conjugation-explanation {
+.result .result-word .conjugation-explanation,
+.result .result-word .lenition-explanation {
 	margin-top: 3px;
 	margin-left: 20px;
 	font-size: 18px;
 }
 
-.result .result-word .conjugation-explanation .operator {
+.result .result-word .conjugation-explanation .operator,
+.result .result-word .lenition-explanation .operator {
 	margin-left: 10px;
 	margin-right: 10px;
 	color: #888;
 }
 
-.result .result-word .conjugation-explanation .word {
+.result .result-word .conjugation-explanation .word,
+.result .result-word .lenition-explanation .word {
 	font-weight: 700;
 }
 

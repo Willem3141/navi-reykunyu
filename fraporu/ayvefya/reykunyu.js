@@ -133,6 +133,22 @@ function verbConjugationExplanation(conjugation) {
 	return $conjugation;
 }
 
+function externalLenitionExplanation(lenition) {
+	let $lenition = $('<div/>').addClass('lenition-explanation');
+	
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($lenition);
+
+	$('<span/>').text(lenition["by"]).appendTo($lenition);
+	$('<span/>').addClass('operator').text('+').appendTo($lenition);
+	$('<span/>').text(lenition["from"]).appendTo($lenition);
+	
+	$('<span/>').addClass('operator').text('=').appendTo($lenition);
+
+	$('<span/>').addClass('word').text(lenition["by"] + " " + lenition["to"]).appendTo($lenition);
+	
+	return $lenition;
+}
+
 function translationSection(sìralpeng) {
 	let $section = $('<div/>').addClass('result-item definition');
 	$section.text(sìralpeng[0]["en"]);
@@ -444,6 +460,10 @@ function createResultBlock(i, r, query) {
 	}
 	if (r["type"].substring(0, 2) === "v:" && r["na'vi"].toLowerCase() !== query.toLowerCase()) {
 		$resultWord.append(verbConjugationExplanation(r["conjugated"]));
+	}
+
+	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
+		$resultWord.append(externalLenitionExplanation(r["externalLenition"]));
 	}
 
 	$resultWord.appendTo($result);
