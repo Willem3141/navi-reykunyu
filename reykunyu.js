@@ -185,7 +185,7 @@ function getResponsesFor(query) {
 		} else {
 			// the complicated case: figure out which words this query word
 			// could possibly be lenited from, and look all of these up
-			let unlenitedWords = nouns.unlenite(queryWord);
+			let unlenitedWords = unlenite(queryWord);
 			for (let j = 0; j < unlenitedWords.length; j++) {
 				let wordResult = lookUpWord(unlenitedWords[j]);
 				for (let k = 0; k < wordResult.length; k++) {
@@ -215,11 +215,46 @@ function getResponsesFor(query) {
 	return results;
 }
 
+let unlenitions = {
+	"s": ["ts", "t", "s"],
+	"f": ["p", "f"],
+	"h": ["k", "h"],
+	"t": ["tx"],
+	"p": ["px"],
+	"k": ["kx"]
+};
+
+function unlenite(word) {
+
+	// word starts with vowel
+	if (["a", "ä", "e", "i", "ì", "o", "u"].includes(word[0])) {
+		return [word, "'" + word];
+	}
+
+	// word starts with ejective or ts
+	if (word[1] === "x" || (word.substring(0, 2) === "ts")) {
+		return [];
+	}
+
+	// word starts with constant that could not have been lenited
+	if (!(word[0] in unlenitions)) {
+		return [word];
+	}
+
+	// word starts with constant that could have been lenited
+	let initials = unlenitions[word[0]];
+	let result = [];
+	for (let i = 0; i < initials.length; i++) {
+		result.push(initials[i] + word.slice(1));
+	}
+	return result;
+}
+
 // figures out if a result cannot be valid if the query word was externally
 // lenited; this is the case for nouns in the short plural
 // (i.e., "mì hilvan" cannot be parsed as "mì + (ay)hilvan")
 function forbiddenByExternalLenition(result) {
-	let isNoun = result["type"] === "n" || result["type"] === "n:pr" || result["type"] === "n:si";
+	let isNoun = result["type"] === "n";
 	if (!isNoun) {
 		return false;
 	}

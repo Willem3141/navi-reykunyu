@@ -52,8 +52,7 @@ var convert = require("./convert");
 
 module.exports = {
 	conjugate: conjugate,
-	parse: parse,
-	unlenite: unlenite
+	parse: parse
 }
 
 let vowels = ["a", "ä", "e", "i", "ì", "o", "u"];
