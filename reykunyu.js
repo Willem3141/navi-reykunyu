@@ -175,29 +175,35 @@ function getResponsesFor(query) {
 		let queryWord = queryWords[i];
 		queryWord = queryWord.replace(/[ .,!?:;]+/g, "");
 		queryWord = queryWord.toLowerCase();
-
-		let unlenitedWords;
-		if (externalLenition) {
-			unlenitedWords = nouns.unlenite(queryWord);
-		} else {
-			unlenitedWords = [queryWord];
-		}
-
 		let wordResults = [];
-		for (let j = 0; j < unlenitedWords.length; j++) {
-			let wordResult = lookUpWord(unlenitedWords[j]);
-			if (externalLenition) {
+
+		if (!externalLenition) {
+			// the simple case: no external lenition, so just look up the
+			// query word
+			wordResults = lookUpWord(queryWord);
+
+		} else {
+			// the complicated case: figure out which words this query word
+			// could possibly be lenited from, and look all of these up
+			let unlenitedWords = nouns.unlenite(queryWord);
+			for (let j = 0; j < unlenitedWords.length; j++) {
+				let wordResult = lookUpWord(unlenitedWords[j]);
 				for (let k = 0; k < wordResult.length; k++) {
-					wordResult[k]["externalLenition"] = {
-						"from": unlenitedWords[j],
-						"to": queryWord,
-						"by": queryWords[i - 1]
-					};
+					if (!forbiddenByExternalLenition(wordResult[k])) {
+						wordResult[k]["externalLenition"] = {
+							"from": unlenitedWords[j],
+							"to": queryWord,
+							"by": queryWords[i - 1]
+						};
+						wordResults.push(wordResult[k]);
+					}
 				}
 			}
-			wordResults = wordResults.concat(wordResult);
 		}
 
+		// the next word will be externally lenited if this word is an adp:len
+		// note that there are no adp:lens with several meanings, so we just
+		// check the first element of the results array
 		externalLenition = wordResults.length > 0 && wordResults[0]['type'] === 'adp:len';
 
 		results.push({
@@ -207,6 +213,22 @@ function getResponsesFor(query) {
 	}
 	
 	return results;
+}
+
+// figures out if a result cannot be valid if the query word was externally
+// lenited; this is the case for nouns in the short plural
+// (i.e., "mì hilvan" cannot be parsed as "mì + (ay)hilvan")
+function forbiddenByExternalLenition(result) {
+	let isNoun = result["type"] === "n" || result["type"] === "n:pr" || result["type"] === "n:si";
+	if (!isNoun) {
+		return false;
+	}
+	let isShortPlural = result["conjugated"][2][1] === "(ay)";
+	if (!isShortPlural) {
+		return false;
+	}
+	let hasNoDeterminer = result["conjugated"][2][0] === "";
+	return hasNoDeterminer;
 }
 
 function lookUpWord(queryWord) {

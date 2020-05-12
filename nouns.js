@@ -96,7 +96,8 @@ let caseFunctions = {
 let pluralFunctions = {
 	"me": dualPrefix,
 	"Pe": trialPrefix,
-	"2": pluralPrefix
+	"2": pluralPrefix,
+	"(2)": pluralPrefix
 };
 
 /**
@@ -412,7 +413,7 @@ function tryPluralPrefixes(candidate) {
 	tryPrefix("pe", "pxe");  // lenited pxe- (as in pepesute)
 	tryPrefix("p", "pxe");  // lenited pxe- (as in pepeylan)
 	tryPrefix("ay", "ay");
-	tryPrefix("", "ay");
+	tryPrefix("", "(ay)");
 
 	return candidates;
 }
