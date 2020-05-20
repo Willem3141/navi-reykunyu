@@ -381,6 +381,7 @@ function getSuggestionsFor(query) {
 // normal ASCII '
 function preprocessQuery(query) {
 	query = query.replace(/’/g, "'");
+	query = query.replace(/‘/g, "'");
 	return query;
 }
 
