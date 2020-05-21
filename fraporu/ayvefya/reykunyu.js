@@ -460,7 +460,7 @@ function createResultBlock(i, r, query) {
 
 	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 
-	if ((r["type"] === "n" || r["type"] === "n:pr" || r["type"] === "pn") && r["conjugated"][0].toLowerCase() !== r["conjugated"][1].toLowerCase()) {
+	if ((r["type"] === "n" || r["type"] === "n:pr" || r.hasOwnProperty("conjugation")) && r["conjugated"][0].toLowerCase() !== r["conjugated"][1].toLowerCase()) {
 		$resultWord.append(nounConjugationExplanation(r["conjugated"]));
 	}
 	if (r["type"].substring(0, 2) === "v:" && r["conjugated"][0].toLowerCase() !== r["conjugated"][1].toLowerCase()) {

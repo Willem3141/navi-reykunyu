@@ -11,7 +11,7 @@ function getConjugatedForms(dictionary) {
 	for (let w in dictionary) {
 		if (dictionary.hasOwnProperty(w)) {
 			let word = dictionary[w];
-			if (word["type"] === "pn" && word["conjugation"]) {
+			if (word["conjugation"]) {
 				for (let i = 0; i < 4; i++) {
 					for (let j = 0; j < 6; j++) {
 						let form = word["conjugation"]["forms"][i][j];

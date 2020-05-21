@@ -311,7 +311,7 @@ function lookUpWord(queryWord) {
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
 			let type = dictionary[word]['type'];
-			if (dictionary[word]["na'vi"].toLowerCase() === queryWord && type !== "n" && type !== "n:pr" && type !== "pn" && type.indexOf("v:") === -1) {
+			if (dictionary[word]["na'vi"].toLowerCase() === queryWord && type !== "n" && type !== "n:pr" && !dictionary[word].hasOwnProperty('conjugation') && type.indexOf("v:") === -1) {
 				wordResults.push(dictionary[word]);
 			}
 		}
