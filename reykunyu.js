@@ -175,6 +175,11 @@ function getResponsesFor(query) {
 		let queryWord = queryWords[i];
 		queryWord = queryWord.replace(/[ .,!?:;]+/g, "");
 		queryWord = queryWord.toLowerCase();
+
+		if (queryWord === "") {
+			continue;
+		}
+
 		let wordResults = [];
 
 		if (!externalLenition) {
