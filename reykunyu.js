@@ -278,19 +278,34 @@ function lookUpWord(queryWord) {
 			wordResults.push(noun);
 		}
 
-		// pronouns use the same parser as nouns, however we only
-		// consider the possibilities where the plural and case affixes
-		// are empty (because in pronounForms, all plural- and
-		// case-affixed forms are already included)
-		if (result[2][1] === "" && result[2][5] === "") {
-			if (pronounForms.hasOwnProperty(result[1])) {
-				let foundForm = pronounForms[result[1]];
-				let word = JSON.parse(JSON.stringify(foundForm["word"]));
-				result[1] = word["na'vi"];
-				result[2][1] = foundForm["plural"];
-				result[2][5] = foundForm["case"];
-				word["conjugated"] = result;
-				wordResults.push(word);
+		if (pronounForms.hasOwnProperty(result[1])) {
+			let foundForm = pronounForms[result[1]];
+			let word = JSON.parse(JSON.stringify(foundForm["word"]));
+
+			if (word["type"] === "pn") {
+				// pronouns use the same parser as nouns, however we only
+				// consider the possibilities where the plural and case affixes
+				// are empty (because in pronounForms, all plural- and
+				// case-affixed forms are already included)
+				if (result[2][1] === "" && result[2][2] === "" && (result[2][3] === "" || foundForm["case"] === "") && result[2][4] === "" && (result[2][5] === "" || foundForm["case"] === "")) {
+					result[1] = word["na'vi"];
+					result[2][1] = foundForm["plural"];
+					if (foundForm["case"] !== "") {
+						result[2][5] = foundForm["case"];
+					}
+					word["conjugated"] = result;
+					wordResults.push(word);
+				}
+
+			} else {
+				// for non-pronouns, we allow no pre- and suffixes whatsoever
+				if (result[0] === result[1]) {
+					result[1] = word["na'vi"];
+					result[2][1] = foundForm["plural"];
+					result[2][5] = foundForm["case"];
+					word["conjugated"] = result;
+					wordResults.push(word);
+				}
 			}
 		}
 	});
