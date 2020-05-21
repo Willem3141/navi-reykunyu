@@ -32,7 +32,7 @@ fs.readdirSync("aylì'u").forEach(file => {
 	if (wordData['type']) {
 		type = wordData['type'];
 	}
-	let key = wordData["na'vi"].toLowerCase() + ":" + type
+	let key = wordData["na'vi"].toLowerCase() + ":" + type;
 	dictionary[key] = wordData;
 });
 
@@ -311,8 +311,16 @@ function lookUpWord(queryWord) {
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
 			let type = dictionary[word]['type'];
-			if (dictionary[word]["na'vi"].toLowerCase() === queryWord && type !== "n" && type !== "n:pr" && type !== "pn" && type.indexOf("v:") === -1) {
-				wordResults.push(dictionary[word]);
+			let forms = [];
+			if (dictionary[word].hasOwnProperty('forms')) {
+				forms = dictionary[word]['forms'];
+			}
+			forms.push(dictionary[word]["na'vi"]);
+			for (let i = 0; i < forms.length; i++) {
+				let form = forms[i];
+				if (form.toLowerCase() === queryWord && type !== "n" && type !== "n:pr" && type !== "pn" && type.indexOf("v:") === -1) {
+					wordResults.push(dictionary[word]);
+				}
 			}
 		}
 	}
