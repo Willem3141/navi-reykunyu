@@ -287,7 +287,11 @@ function lookUpWord(queryWord) {
 				// consider the possibilities where the plural and case affixes
 				// are empty (because in pronounForms, all plural- and
 				// case-affixed forms are already included)
-				if (result[2][1] === "" && result[2][2] === "" && (result[2][3] === "" || foundForm["case"] === "") && result[2][4] === "" && (result[2][5] === "" || foundForm["case"] === "")) {
+				if (result[2][1] === "" &&
+						result[2][2] === "" &&
+						(result[2][3] === "" || foundForm["case"] === "") &&
+						result[2][4] === "" &&
+						(result[2][5] === "" || (result[2][3] !== "" && foundForm["case"] === ""))) {
 					result[1] = word["na'vi"];
 					result[2][1] = foundForm["plural"];
 					if (foundForm["case"] !== "") {
