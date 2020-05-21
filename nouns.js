@@ -134,9 +134,11 @@ function conjugate(noun, affixes) {
 	}
 
 	// suffixes
-	let caseSuffix = affixes[5];
-	if (caseFunctions.hasOwnProperty(caseSuffix)) {
+	let caseSuffix;
+	if (caseFunctions.hasOwnProperty(affixes[5])) {
 		caseSuffix = caseFunctions[affixes[5]](noun + stemSuffix + determinerSuffix);
+	} else {
+		caseSuffix = [affixes[5]];
 	}
 	
 	// special case for genitive -ia -> -iä - see genitiveSuffix()
@@ -478,6 +480,14 @@ function tryDeterminerSuffixes(candidate) {
 	return candidates;
 }
 
+let adpositions = [
+	"äo", "eo", "fa", "few", "fkip", "fpi", "ftu", "ftumfa", "ftuopa", "hu",
+	"ìlä", "io", "ka", "kam", "kay", "kip", "krrka", "kxamlä", "lisre", "lok",
+	"luke", "maw", "mì", "mìkam", "mungwrr", "na", "ne", "nemfa", "nuä",
+	"pxaw", "pxel", "pximaw", "pxisre", "raw", "ro", "rofa", "sìn", "sko",
+	"sre", "ta", "tafkip", "takip", "talun", "teri", "uo", "vay", "wä", "yoa"
+];
+
 function tryCaseSuffixes(candidate) {
 	let word = candidate[1];
 	let affixes = candidate[2];
@@ -507,6 +517,10 @@ function tryCaseSuffixes(candidate) {
 		let newAffixes = [...affixes];
 		newAffixes[5] = "ä";
 		candidates.push([candidate[0], word.slice(0, -1) + "a", newAffixes]);
+	}
+
+	for (let i = 0; i < adpositions.length; i++) {
+		tryEnding(adpositions[i], adpositions[i]);
 	}
 
 	return candidates;
