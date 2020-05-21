@@ -302,6 +302,11 @@ function nounConjugationSection(conjugation, note) {
 			}
 
 			let c = conjugation[j][i];
+			if (!c) {
+				$('<td/>').html("&ndash;").appendTo($row);
+				continue;
+			}
+
 			let formatted = "";
 			c = c.split(";");
 			for (let k = 0; k < c.length; k++) {
@@ -320,7 +325,7 @@ function nounConjugationSection(conjugation, note) {
 						formatted += "<span class='suffix'>" + m[3] + "</span>";
 					}
 				} else {
-					formatted += k;
+					formatted += c[k];
 				}
 			}
 
