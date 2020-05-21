@@ -12,7 +12,7 @@ function createErrorBlock(text, subText) {
 
 function pronunciationSection(lìupam, fnel) {
 	let $tìlam = $('<span/>').addClass('stress');
-	if (!lìupam) {
+	if (!lìupam || lìupam.length === 0) {
 		$tìlam.append("(stress pattern unknown)");
 		return $tìlam;
 	}
