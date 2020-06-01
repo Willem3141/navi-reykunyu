@@ -53,6 +53,7 @@ function tstxoFnelä(fnel) {
 		"v:si": "verb/si",
 		"v:cp": "verb/copula",
 		"phr": "phrase",
+		"inter": "interrogative",
 	}
 	if (ngimaAyfnel[fnel]) {
 		return ngimaAyfnel[fnel];
