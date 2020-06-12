@@ -423,6 +423,8 @@ function getReverseResponsesFor(query, language) {
 		language = "en";
 	}
 
+	query = query.toLowerCase();
+
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
 			let translation = dictionary[word]['translations'][0][language];
