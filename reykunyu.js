@@ -134,6 +134,10 @@ app.get('/api/mok', function(req, res) {
 	res.json(getSuggestionsFor(req.query["tìpawm"]));
 });
 
+app.get('/api/search', function(req, res) {
+	res.json(getReverseResponsesFor(req.query["query"], req.query["language"]));
+});
+
 app.get('/api/frau', function(req, res) {
 	res.json(dictionary);
 });
@@ -410,5 +414,25 @@ function preprocessQuery(query) {
 	query = query.replace(/’/g, "'");
 	query = query.replace(/‘/g, "'");
 	return query;
+}
+
+function getReverseResponsesFor(query, language) {
+	let results = [];
+
+	if (!language) {
+		language = "en";
+	}
+
+	for (word in dictionary) {
+		if (dictionary.hasOwnProperty(word)) {
+			let translation = dictionary[word]['translations'][0][language];
+			translation = translation.match(/\b(\w+)\b/g).map((v) => v.toLowerCase());
+			if (translation.includes(query)) {
+				results.push(dictionary[word]);
+			}
+		}
+	}
+
+	return results;
 }
 
