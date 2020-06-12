@@ -426,9 +426,11 @@ function getReverseResponsesFor(query, language) {
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
 			let translation = dictionary[word]['translations'][0][language];
-			translation = translation.match(/\b(\w+)\b/g).map((v) => v.toLowerCase());
-			if (translation.includes(query)) {
-				results.push(dictionary[word]);
+			if (translation) {
+				translation = translation.match(/\b(\w+)\b/g).map((v) => v.toLowerCase());
+				if (translation.includes(query)) {
+					results.push(dictionary[word]);
+				}
 			}
 		}
 	}
