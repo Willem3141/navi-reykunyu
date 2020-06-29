@@ -417,6 +417,10 @@ function preprocessQuery(query) {
 }
 
 function getReverseResponsesFor(query, language) {
+	if (query === "") {
+		return [];
+	}
+
 	let results = [];
 
 	if (!language) {
@@ -430,7 +434,8 @@ function getReverseResponsesFor(query, language) {
 			let translation = dictionary[word]['translations'][0][language];
 			if (translation) {
 				// split translation into words
-				translation = translation.match(/\b([^ .,:;\(\)\[\]\<\>/\\-]+)\b/g).map((v) => v.toLowerCase());
+				translation = translation.replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
+				translation = translation.split(' ').map((v) => v.toLowerCase());
 				if (translation.includes(query)) {
 					results.push(dictionary[word]);
 				}
