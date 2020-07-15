@@ -10,6 +10,7 @@ var http = require('http').Server(app);
 
 var config = JSON.parse(fs.readFileSync('config.json'));
 
+var adjectives = require('./adjectives');
 var convert = require('./convert');
 var nouns = require('./nouns');
 var pronouns = require('./pronouns');
@@ -140,6 +141,12 @@ app.get('/api/search', function(req, res) {
 
 app.get('/api/frau', function(req, res) {
 	res.json(dictionary);
+});
+
+app.get('/api/conjugate/adjective', function(req, res) {
+	res.json(
+		adjectives.conjugate(req.query["adjective"], req.query["form"])
+	);
 });
 
 app.get('/api/conjugate/noun', function(req, res) {
@@ -335,12 +342,27 @@ function lookUpWord(queryWord) {
 		}
 	});
 
+	// handle conjugated adjectives
+	let adjectiveResults = adjectives.parse(queryWord);
+	adjectiveResults.forEach(function(result) {
+		if (dictionary.hasOwnProperty(result[1] + ":adj")) {
+			adjective = JSON.parse(JSON.stringify(dictionary[result[1] + ":adj"]));
+			adjective["conjugated"] = result;
+			let conjugation = pronouns.formsFromString(
+					adjectives.conjugate(adjective["na'vi"], result[2]));
+			if (conjugation.indexOf(queryWord) !== -1) {
+				wordResults.push(adjective);
+			}
+		}
+	});
+
 	// then other word types
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
 			let type = dictionary[word]['type'];
 			if (dictionary[word]["na'vi"].toLowerCase() === queryWord &&
 					type !== "n" && type !== "n:pr" &&
+					type !== "adj" &&
 					!dictionary[word].hasOwnProperty('conjugation') &&
 					type.indexOf("v:") === -1) {
 				wordResults.push(dictionary[word]);

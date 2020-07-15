@@ -1,5 +1,6 @@
 module.exports = {
-	getConjugatedForms: getConjugatedForms
+	getConjugatedForms: getConjugatedForms,
+	formsFromString: formsFromString
 }
 
 function getConjugatedForms(dictionary) {
