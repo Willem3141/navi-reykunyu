@@ -16,6 +16,13 @@ var nouns = require('./nouns');
 var pronouns = require('./pronouns');
 var verbs = require('./verbs');
 
+var tslamyu;
+try {
+	tslamyu = require('../navi-tslamyu/tslamyu');
+} catch (e) {
+	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
+}
+
 var matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
@@ -162,9 +169,15 @@ app.get('/api/conjugate/verb', function(req, res) {
 });
 
 app.get('/api/parse', function(req, res) {
-	res.json(
-		nouns.parse(req.query["word"])
-	);
+	let parseOutput = tslamyu.doParse(getResponsesFor(req.query["tìpawm"]))
+	let result = [];
+	for (let i = 0; i < parseOutput.length; i++) {
+		result.push({
+			'parseTree': parseOutput[i],
+			'translation': parseOutput[i].translate()
+		});
+	}
+	res.json(result);
 });
 
 http.listen(config["port"], function() {
