@@ -1,27 +1,17 @@
-/**
- * Reykunyu - Weptseng fte ralpiveng aylì'ut leNa'vi
- */
+module.exports = {
+	'getResponsesFor': getResponsesFor,
+	'getSuggestionsFor': getSuggestionsFor,
+	'getReverseResponsesFor': getReverseResponsesFor,
+	'dictionary': dictionary
+}
 
 var fs = require('fs');
-
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-
-var config = JSON.parse(fs.readFileSync('config.json'));
 
 var adjectives = require('./adjectives');
 var convert = require('./convert');
 var nouns = require('./nouns');
 var pronouns = require('./pronouns');
 var verbs = require('./verbs');
-
-var tslamyu;
-try {
-	tslamyu = require('../navi-tslamyu/tslamyu');
-} catch (e) {
-	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
-}
 
 var matchAll = require('string.prototype.matchall');
 matchAll.shim();
@@ -119,72 +109,6 @@ for (word in dictionary) {
 		}
 	}
 }
-
-app.use(express.static('fraporu'));
-
-app.get('/', function(req, res) {
-	res.sendFile(__dirname + '/fraporu/txin.html');
-});
-
-app.get('/all', function(req, res) {
-	res.sendFile(__dirname + '/fraporu/fralì\'u.html');
-});
-
-app.get('/edit', function(req, res) {
-	res.sendFile(__dirname + '/fraporu/leykatem.html');
-});
-
-app.get('/api/fwew', function(req, res) {
-	res.json(getResponsesFor(req.query["tìpawm"]));
-});
-
-app.get('/api/mok', function(req, res) {
-	res.json(getSuggestionsFor(req.query["tìpawm"]));
-});
-
-app.get('/api/search', function(req, res) {
-	res.json(getReverseResponsesFor(req.query["query"], req.query["language"]));
-});
-
-app.get('/api/frau', function(req, res) {
-	res.json(dictionary);
-});
-
-app.get('/api/conjugate/adjective', function(req, res) {
-	res.json(
-		adjectives.conjugate(req.query["adjective"], req.query["form"])
-	);
-});
-
-app.get('/api/conjugate/noun', function(req, res) {
-	res.json(
-		nouns.conjugate(req.query["noun"], req.query["plural"], req.query["case"])
-	);
-});
-
-app.get('/api/conjugate/verb', function(req, res) {
-	res.json(
-		verbs.conjugate(req.query["verb"], [req.query["prefirst"], req.query["first"], req.query["second"]])
-	);
-});
-
-app.get('/api/parse', function(req, res) {
-	let parseOutput = tslamyu.doParse(getResponsesFor(req.query["tìpawm"]))
-	let result = [];
-	for (let i = 0; i < parseOutput.length; i++) {
-		result.push({
-			'parseTree': parseOutput[i],
-			'translation': parseOutput[i].translate(),
-			'errors': parseOutput[i].getErrors(),
-			'penalty': parseOutput[i].getPenalty()
-		});
-	}
-	res.json(result);
-});
-
-http.listen(config["port"], function() {
-	console.log('listening on *:' + config["port"]);
-});
 
 function getResponsesFor(query) {
 	query = preprocessQuery(query);

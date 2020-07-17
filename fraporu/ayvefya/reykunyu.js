@@ -490,7 +490,7 @@ function createResultBlock(i, r, query) {
 	if (r["type"].substring(0, 2) === "v:" && r["conjugated"][0].toLowerCase() !== r["conjugated"][1].toLowerCase()) {
 		$resultWord.append(verbConjugationExplanation(r["conjugated"]));
 	}
-	if (r["type"] === "adj" && r["conjugated"][2] !== 'predicative') {
+	if (r["type"] === "adj" && r["conjugated"][2] !== "predicative") {
 		$resultWord.append(adjectiveConjugationExplanation(r["conjugated"]));
 	}
 
