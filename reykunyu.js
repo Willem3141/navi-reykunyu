@@ -17,10 +17,10 @@ var matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
 var dictionary = {};
-fs.readdirSync("aylì'u").forEach(file => {
+fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 	let wordData;
 	try {
-		wordData = (JSON.parse(fs.readFileSync("aylì'u/" + file, 'utf8')));
+		wordData = (JSON.parse(fs.readFileSync(__dirname + "/aylì'u/" + file, 'utf8')));
 	} catch (e) {
 		console.log("error when reading " + file + "; ignoring");
 		return;
@@ -36,7 +36,7 @@ fs.readdirSync("aylì'u").forEach(file => {
 
 var pronounForms = pronouns.getConjugatedForms(dictionary);
 
-var lines = fs.readFileSync("aysìkenong/corpus.tsv", 'utf8').split("\n");
+var lines = fs.readFileSync(__dirname + "/aysìkenong/corpus.tsv", 'utf8').split("\n");
 var sentences = [];
 lines.forEach(line => {
 	let fields = line.split("\t");
