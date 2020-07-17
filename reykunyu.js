@@ -174,7 +174,9 @@ app.get('/api/parse', function(req, res) {
 	for (let i = 0; i < parseOutput.length; i++) {
 		result.push({
 			'parseTree': parseOutput[i],
-			'translation': parseOutput[i].translate()
+			'translation': parseOutput[i].translate(),
+			'errors': parseOutput[i].getErrors(),
+			'penalty': parseOutput[i].getPenalty()
 		});
 	}
 	res.json(result);
