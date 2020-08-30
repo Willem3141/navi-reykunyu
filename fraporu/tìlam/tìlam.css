@@ -54,6 +54,7 @@ h1 {
 }
 
 .ui.search > .results .result .title {
+	font-family: 'Calluna Sans';
 	display: inline-block;
 	width: 30%;
 }
