@@ -8,6 +8,7 @@ module.exports = {
 var fs = require('fs');
 
 var adjectives = require('./adjectives');
+var conjugationString = require('./conjugationString');
 var convert = require('./convert');
 var nouns = require('./nouns');
 var pronouns = require('./pronouns');
@@ -287,7 +288,7 @@ function lookUpWord(queryWord) {
 		if (dictionary.hasOwnProperty(result[1] + ":adj")) {
 			adjective = JSON.parse(JSON.stringify(dictionary[result[1] + ":adj"]));
 			adjective["conjugated"] = result;
-			let conjugation = pronouns.formsFromString(
+			let conjugation = conjugationString.formsFromString(
 					adjectives.conjugate(adjective["na'vi"], result[2]));
 			if (conjugation.indexOf(queryWord) !== -1) {
 				wordResults.push(adjective);
