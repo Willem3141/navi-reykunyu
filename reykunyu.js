@@ -172,11 +172,11 @@ function getResponsesFor(query) {
 					const distance = levenshtein(dictionary[word]["na'vi"], queryWord);
 					minDistance = Math.min(minDistance, distance);
 					if (distance <= minDistance) {
-						suggestions.push([dictionary[word], distance]);
+						suggestions.push([dictionary[word]["na'vi"] + (dictionary[word]["type"] === "n:si" ? " si" : ""), distance]);
 					}
 				}
 			}
-			suggestions = suggestions.filter(a => a[1] === minDistance).map(a => a[0]["na'vi"]);
+			suggestions = suggestions.filter(a => a[1] === minDistance).map(a => a[0]);
 		}
 
 		results.push({
