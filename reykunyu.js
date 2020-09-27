@@ -5,15 +5,17 @@ module.exports = {
 	'dictionary': dictionary
 }
 
-var fs = require('fs');
+const fs = require('fs');
 
-var adjectives = require('./adjectives');
-var convert = require('./convert');
-var nouns = require('./nouns');
-var pronouns = require('./pronouns');
-var verbs = require('./verbs');
+const levenshtein = require('js-levenshtein');
 
-var matchAll = require('string.prototype.matchall');
+const adjectives = require('./adjectives');
+const convert = require('./convert');
+const nouns = require('./nouns');
+const pronouns = require('./pronouns');
+const verbs = require('./verbs');
+
+const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
 var dictionary = {};
@@ -161,9 +163,26 @@ function getResponsesFor(query) {
 		// check the first element of the results array
 		externalLenition = wordResults.length > 0 && wordResults[0]['type'] === 'adp:len';
 
+		let suggestions = [];
+
+		if (wordResults.length === 0) {
+			let minDistance = 4;
+			for (word in dictionary) {
+				if (dictionary.hasOwnProperty(word)) {
+					const distance = levenshtein(dictionary[word]["na'vi"], queryWord);
+					minDistance = Math.min(minDistance, distance);
+					if (distance <= minDistance) {
+						suggestions.push([dictionary[word], distance]);
+					}
+				}
+			}
+			suggestions = suggestions.filter(a => a[1] === minDistance).map(a => a[0]["na'vi"]);
+		}
+
 		results.push({
 			"tìpawm": queryWord,
-			"sì'eyng": wordResults
+			"sì'eyng": wordResults,
+			"aysämok": suggestions
 		});
 	}
 	
