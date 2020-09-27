@@ -166,7 +166,7 @@ function getResponsesFor(query) {
 		let suggestions = [];
 
 		if (wordResults.length === 0) {
-			let minDistance = 4;
+			let minDistance = queryWord.length / 3 + 1;  // allow more leeway with longer queries
 			for (word in dictionary) {
 				if (dictionary.hasOwnProperty(word)) {
 					const distance = levenshtein(dictionary[word]["na'vi"], queryWord);
