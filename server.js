@@ -67,6 +67,10 @@ app.get('/api/parse', function(req, res) {
 	res.json(output);
 });
 
+app.get('/api/random', function(req, res) {
+	res.json(reykunyu.getRandomWord());
+});
+
 http.listen(config["port"], function() {
 	console.log('listening on *:' + config["port"]);
 });
