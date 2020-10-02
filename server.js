@@ -50,17 +50,21 @@ app.get('/api/frau', function(req, res) {
 });
 
 app.get('/api/parse', function(req, res) {
-	let parseOutput = tslamyu.doParse(reykunyu.getResponsesFor(req.query["tìpawm"]))
-	let result = [];
-	for (let i = 0; i < parseOutput.length; i++) {
-		result.push({
-			'parseTree': parseOutput[i],
-			'translation': parseOutput[i].translate(),
-			'errors': parseOutput[i].getErrors(),
-			'penalty': parseOutput[i].getPenalty()
-		});
+	let parseOutput = tslamyu.doParse(reykunyu.getResponsesFor(req.query["tìpawm"]));
+	let output = {};
+	output['lexingErrors'] = parseOutput['lexingErrors'];
+	if (parseOutput['results']) {
+		output['results'] = [];
+		for (let i = 0; i < parseOutput['results'].length; i++) {
+			output['results'].push({
+				'parseTree': parseOutput['results'][i],
+				'translation': parseOutput['results'][i].translate(),
+				'errors': parseOutput['results'][i].getErrors(),
+				'penalty': parseOutput['results'][i].getPenalty()
+			});
+		}
 	}
-	res.json(result);
+	res.json(output);
 });
 
 http.listen(config["port"], function() {
