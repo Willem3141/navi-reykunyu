@@ -2,6 +2,7 @@ module.exports = {
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
+	'getRandomWord': getRandomWord,
 	'dictionary': dictionary
 }
 
@@ -19,6 +20,7 @@ const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
 var dictionary = {};
+var allWords = [];
 fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 	let wordData;
 	try {
@@ -34,6 +36,7 @@ fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 	}
 	let key = wordData["na'vi"].toLowerCase() + ":" + type
 	dictionary[key] = wordData;
+	allWords.push(wordData);
 });
 
 var pronounForms = pronouns.getConjugatedForms(dictionary);
@@ -424,5 +427,9 @@ function getReverseResponsesFor(query, language) {
 	}
 
 	return results;
+}
+
+function getRandomWord() {
+	return allWords[Math.floor(allWords.length * Math.random())];
 }
 
