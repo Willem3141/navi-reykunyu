@@ -2,7 +2,7 @@ module.exports = {
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
-	'getRandomWord': getRandomWord,
+	'getRandomWords': getRandomWords,
 	'dictionary': dictionary
 }
 
@@ -429,7 +429,25 @@ function getReverseResponsesFor(query, language) {
 	return results;
 }
 
-function getRandomWord() {
-	return allWords[Math.floor(allWords.length * Math.random())];
+function getRandomWords(number) {
+	let results = [];
+	const n = allWords.length;
+
+	for (let i = n - 1; i >= n - number; i--) {
+
+		// draw random word in [0, i]
+		let random = Math.floor(Math.random() * (i + 1));
+		let randomWord = allWords[random];
+		results.push(randomWord);
+
+		// swap drawn word to the end so we won't draw it again
+		// (note: we don't care that allWords gets shuffled in the process because we use it only for
+		// random draws anyway)
+		const h = allWords[i];
+		allWords[i] = allWords[random];
+		allWords[random] = h;
+	}
+
+	return results;
 }
 

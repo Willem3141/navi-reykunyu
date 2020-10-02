@@ -68,7 +68,7 @@ app.get('/api/parse', function(req, res) {
 });
 
 app.get('/api/random', function(req, res) {
-	res.json(reykunyu.getRandomWord());
+	res.json(reykunyu.getRandomWords(req.query["holpxay"]));
 });
 
 http.listen(config["port"], function() {
