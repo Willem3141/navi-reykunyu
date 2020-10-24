@@ -4,6 +4,7 @@ module.exports = {
 	'getReverseResponsesFor': getReverseResponsesFor,
 	'getRandomWords': getRandomWords,
 	'getVerbs': getVerbs,
+	'getTransitivityList': getTransitivityList,
 	'dictionary': dictionary
 }
 
@@ -468,5 +469,31 @@ function getVerbs() {
 	}
 
 	return verbs;
+}
+
+function getTransitivityList() {
+	let list = [];
+
+	let verbs = getVerbs();
+	for (let i = 0; i < verbs.length; i++) {
+		const verb = verbs[i];
+		let word = verb["na'vi"];
+		const translation = verb["translations"][0]["en"];
+		let type = verb["type"];
+		if (type === "n:si") {
+			word += " si";
+			type = "v:in";
+		}
+		if (type === "v:in") {
+			type = "intransitive";
+		} else if (type === "v:tr") {
+			type = "transitive";
+		} else {
+			continue;
+		}
+		list.push([word, translation, type]);
+	}
+
+	return list;
 }
 

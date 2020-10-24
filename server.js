@@ -57,6 +57,10 @@ app.get('/api/list/verbs', function(req, res) {
 	res.json(reykunyu.getVerbs());
 });
 
+app.get('/api/list/transitivity', function(req, res) {
+	res.json(reykunyu.getTransitivityList());
+});
+
 app.get('/api/parse', function(req, res) {
 	let parseOutput = tslamyu.doParse(reykunyu.getResponsesFor(req.query["tìpawm"]));
 	let output = {};
