@@ -49,6 +49,14 @@ app.get('/api/frau', function(req, res) {
 	res.json(reykunyu.dictionary);
 });
 
+app.get('/api/list/all', function(req, res) {
+	res.json(reykunyu.dictionary);
+});
+
+app.get('/api/list/verbs', function(req, res) {
+	res.json(reykunyu.getVerbs());
+});
+
 app.get('/api/parse', function(req, res) {
 	let parseOutput = tslamyu.doParse(reykunyu.getResponsesFor(req.query["tìpawm"]));
 	let output = {};

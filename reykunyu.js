@@ -3,6 +3,7 @@ module.exports = {
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
 	'getRandomWords': getRandomWords,
+	'getVerbs': getVerbs,
 	'dictionary': dictionary
 }
 
@@ -449,5 +450,23 @@ function getRandomWords(number) {
 	}
 
 	return results;
+}
+
+function getVerbs() {
+	let verbs = [];
+
+	for (word in dictionary) {
+		if (dictionary.hasOwnProperty(word)) {
+			let type = "";
+			if ('type' in dictionary[word]) {
+				type = dictionary[word]['type'];
+			}
+			if (type.startsWith('v') || type === 'n:si') {
+				verbs.push(dictionary[word]);
+			}
+		}
+	}
+
+	return verbs;
 }
 
