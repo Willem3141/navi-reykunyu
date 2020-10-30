@@ -46,11 +46,11 @@ app.get('/api/search', function(req, res) {
 });
 
 app.get('/api/frau', function(req, res) {
-	res.json(reykunyu.dictionary);
+	res.json(reykunyu.getAll());
 });
 
 app.get('/api/list/all', function(req, res) {
-	res.json(reykunyu.dictionary);
+	res.json(reykunyu.getAll());
 });
 
 app.get('/api/list/verbs', function(req, res) {

@@ -3,9 +3,9 @@ module.exports = {
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
 	'getRandomWords': getRandomWords,
+	'getAll': getAll,
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
-	'dictionary': dictionary
 }
 
 const fs = require('fs');
@@ -451,6 +451,10 @@ function getRandomWords(number) {
 	}
 
 	return results;
+}
+
+function getAll() {
+	return dictionary;
 }
 
 function getVerbs() {
