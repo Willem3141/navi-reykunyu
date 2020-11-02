@@ -556,7 +556,7 @@ function createResults(results) {
 			$results.append(createResultBlock(i, results["sì'eyng"][i], results["tìpawm"]));
 		}
 	} else if (results["aysämok"].length) {
-		const suggestions = results["aysämok"].map(a => "<b>" + a + "</b>")
+		const suggestions = results["aysämok"].map(a => "<b>" + a + "</b>");
 		$results.append(createErrorBlock("No results found", "Did you mean " + suggestions.join(', ').replace(/, ([^,]*)$/, " or $1") + "?"));
 	} else {
 		$results.append(createErrorBlock("No results found", "Please make sure you are searching for a Na'vi word. At the moment, Reykunyu is Na'vi-to-English only."));

@@ -270,7 +270,7 @@ function lookUpWord(queryWord) {
 						result[2][2] === "" &&
 						(result[2][3] === "" || foundForm["case"] === "") &&
 						result[2][4] === "" &&
-						(result[2][5] === "" || (result[2][3] !== "" && foundForm["case"] === ""))) {
+						(result[2][5] === "" || (result[2][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(result[2][5]) === -1))) {
 					result[1] = word["na'vi"];
 					result[2][1] = foundForm["plural"];
 					if (foundForm["case"] !== "") {
