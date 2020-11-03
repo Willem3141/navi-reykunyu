@@ -187,12 +187,34 @@ h1 {
 	margin-top: 10px;
 }
 
+.result .result-item.definition ol {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
 .result .result-item.note {
 	font-style: italic;
 }
 
 .result .result-item .header {
 	font-weight: 700;
+}
+
+.result .result-item summary.header {
+	display: list-item;
+}
+
+.result .result-item summary.header .header-hide {
+	font-weight: 400;
+}
+
+.result .result-item summary.header .header-hide::before {
+	content: ":";
+	margin-right: 10px;
+}
+
+.result .result-item[open] summary.header .header-hide {
+	display: none;
 }
 
 .result .result-item .body {
@@ -222,12 +244,18 @@ h1 {
 }
 
 .sentence {
+	margin-top: 10px;
 	margin-left: 20px;
 	margin-bottom: 10px;
 }
 
 .sentence .translation {
 	color: #888;
+}
+
+.sentence .source {
+	color: #888;
+	font-style: italic;
 }
 
 /* errors */

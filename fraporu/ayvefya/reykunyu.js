@@ -175,7 +175,14 @@ function externalLenitionExplanation(lenition) {
 
 function translationSection(sìralpeng) {
 	let $section = $('<div/>').addClass('result-item definition');
-	$section.text(sìralpeng[0]["en"]);
+	if (sìralpeng.length === 1) {
+		$section.text(sìralpeng[0]["en"]);
+	} else {
+		let $list = $('<ol/>').addClass('meaning-list').appendTo($section);
+		for (let i = 0; i < sìralpeng.length; i++) {
+			$('<li/>').text(sìralpeng[i]["en"]).appendTo($list);
+		}
+	}
 	return $section;
 }
 
@@ -302,9 +309,10 @@ function seeAlsoSection(seeAlso) {
 
 // ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
 function nounConjugationSection(conjugation, note) {
-	console.log(conjugation);
-	let $section = $('<div/>').addClass('result-item conjugation');
-	let $header = $('<div/>').addClass('header').text('Conjugated forms').appendTo($section);
+	let $section = $('<details/>').addClass('result-item conjugation');
+	let $header = $('<summary/>').addClass('header').text('Conjugated forms').appendTo($section);
+	let $headerHide = $('<span/>').addClass('header-hide').appendTo($header);
+
 	let $body = $('<div/>').addClass('body').appendTo($section);
 
 	let $table = $('<table/>').addClass('conjugation-table').appendTo($body);
@@ -315,7 +323,8 @@ function nounConjugationSection(conjugation, note) {
 		$('<td/>').addClass('column-title').html(headers[i]).appendTo($headerRow);
 	}
 
-	let cases = ["subjective", "agentive", "patientive", "dative", "genitive", "topical"]
+	let cases = ["subjective", "agentive", "patientive", "dative", "genitive", "topical"];
+
 	for (let i = 0; i < 6; i++) {
 		let $row = $('<tr/>').appendTo($table);
 		$('<td/>').addClass('row-title').html(cases[i]).appendTo($row);
@@ -331,30 +340,37 @@ function nounConjugationSection(conjugation, note) {
 				continue;
 			}
 
-			let formatted = "";
-			c = c.split(";");
-			for (let k = 0; k < c.length; k++) {
-				if (k > 0) {
-					formatted += " <span class='muted'>or</span> ";
-				}
-
-				let m = c[k].match(/(.*-\)?)(.*)(-.*)/);
-
-				if (m) {
-					if (m[1] !== "-") {
-						formatted += "<span class='prefix'>" + m[1] + "</span>";
-					}
-					formatted += m[2].replace(/\{(.*)\}/, "<span class='lenition'>$1</span>");
-					if (m[3] !== "-") {
-						formatted += "<span class='suffix'>" + m[3] + "</span>";
-					}
-				} else {
-					formatted += c[k];
-				}
-			}
-
+			let formatted = nounConjugationString(c);
 			$('<td/>').html(formatted).appendTo($row);
 		}
+	}
+
+	for (let j = 1; j < 4; j++) {
+		if (conjugation[j].length === 0) {
+			continue;
+		}
+		let c = conjugation[j][0];
+		let formatted = nounConjugationString(c);
+		if (j > 1) {
+			$headerHide.append(", ");
+		}
+		$headerHide.append(formatted);
+	}
+
+	$headerHide.append("&nbsp;&nbsp;/&nbsp;&nbsp;");
+
+	for (let i = 1; i < 6; i++) {
+		let c;
+		if (conjugation[0].length === 0) {
+			c = conjugation[1][i];
+		} else {
+			c = conjugation[0][i];
+		}
+		let formatted = nounConjugationString(c);
+		if (i > 1) {
+			$headerHide.append(", ");
+		}
+		$headerHide.append(formatted);
 	}
 
 	if (note) {
@@ -363,6 +379,32 @@ function nounConjugationSection(conjugation, note) {
 
 	return $section;
 }
+
+function nounConjugationString(c) {
+	let formatted = "";
+	c = c.split(";");
+	for (let k = 0; k < c.length; k++) {
+		if (k > 0) {
+			formatted += " <span class='muted'>or</span> ";
+		}
+
+		let m = c[k].match(/(.*-\)?)(.*)(-.*)/);
+
+		if (m) {
+			if (m[1] !== "-") {
+				formatted += "<span class='prefix'>" + m[1] + "</span>";
+			}
+			formatted += m[2].replace(/\{(.*)\}/, "<span class='lenition'>$1</span>");
+			if (m[3] !== "-") {
+				formatted += "<span class='suffix'>" + m[3] + "</span>";
+			}
+		} else {
+			formatted += c[k];
+		}
+	}
+	return formatted;
+}
+
 
 function createNounConjugation(word, type, uncountable) {
 
@@ -445,12 +487,17 @@ function createSentence(sentence, lemma) {
 		}
 	}
 
+	if (sentence["source"]) {
+		let $source = $('<div/>').addClass("source").appendTo($sentence);
+		$source.append(sentence["source"]);
+	}
+
 	return $sentence;
 }
 
 function sentencesSection(sentences, lemma) {
-	let $section = $('<div/>').addClass('result-item examples');
-	let $header = $('<div/>').addClass('header').text('Usage examples').appendTo($section);
+	let $section = $('<details/>').addClass('result-item examples');
+	let $header = $('<summary/>').addClass('header').text(`Sentence search (${sentences.length} usage${sentences.length > 1 ? 's' : ''} found)`).appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 
 	for (let i = 0; i < sentences.length; i++) {
