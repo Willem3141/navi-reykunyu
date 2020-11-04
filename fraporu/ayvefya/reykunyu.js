@@ -345,6 +345,7 @@ function nounConjugationSection(conjugation, note) {
 		}
 	}
 
+	let hideString = ""
 	for (let j = 1; j < 4; j++) {
 		if (conjugation[j].length === 0) {
 			continue;
@@ -352,12 +353,14 @@ function nounConjugationSection(conjugation, note) {
 		let c = conjugation[j][0];
 		let formatted = nounConjugationString(c);
 		if (j > 1) {
-			$headerHide.append(", ");
+			hideString += ", ";
 		}
-		$headerHide.append(formatted);
+		hideString += formatted;
 	}
 
-	$headerHide.append("&nbsp;&nbsp;/&nbsp;&nbsp;");
+	if (hideString !== "") {
+		hideString += "&nbsp;&nbsp;/&nbsp;&nbsp;";
+	}
 
 	for (let i = 1; i < 6; i++) {
 		let c;
@@ -368,10 +371,11 @@ function nounConjugationSection(conjugation, note) {
 		}
 		let formatted = nounConjugationString(c);
 		if (i > 1) {
-			$headerHide.append(", ");
+			hideString += ", ";
 		}
-		$headerHide.append(formatted);
+		hideString += formatted;
 	}
+	$headerHide.append(hideString);
 
 	if (note) {
 		$body.append($('<div/>').addClass("conjugation-note").html(note));
@@ -565,6 +569,8 @@ function createResultBlock(i, r, query) {
 		$result.append(nounConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
 	} else if (r["type"] === "n") {
 		$result.append(nounConjugationSection(createNounConjugation(r["na'vi"], r["type"], false), r["conjugation_note"]));
+	} else if (r["type"] === "n:pr") {
+		$result.append(nounConjugationSection(createNounConjugation(r["na'vi"], r["type"], true), r["conjugation_note"]));
 	} else if (r["type"] === "adj") {
 		$result.append(adjectiveConjugationSection(r["na'vi"], r["type"], r["conjugation_note"]));
 	}
