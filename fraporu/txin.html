@@ -16,6 +16,7 @@
 						<i class="cogs icon"></i>
 						<div class="menu">
 							<a href="/all" class="item">Complete word list</a>
+							<div id="api-button" class="item">API</div>
 							<div id="settings-button" class="item">Settings</div>
 							<div id="credits-button" class="item">Credits</div>
 						</div>
@@ -47,6 +48,88 @@
 		</div>
 
 		<!-- modals -->
+		<div id="api-modal" class="ui modal basic">
+			<div class="ui icon header">
+				<i class="code icon"></i>
+				Reykunyu API description
+			</div>
+			<div class="content">
+				<p>Reykunyu offers an API that you can use to look up words programmatically. Feel free to build your own application on top of this!</p>
+				<h2>/api/fwew <span class="muted">GET</span></h2>
+				<p>The main API endpoint, that looks up one or more words. Automatically splits up input string (which can be an entire sentence) into words, and returns results for each word separately. This will perform parsing, so even if the words in the sentence can be conjugated, Reykunyu should be able to find them.</p>
+				<h3>GET parameters</h3>
+				<table>
+					<tr>
+						<td><b>tìpawm</b>
+						<td>The query string.
+				</table>
+				<h3>Response</h3>
+				<p>A JSON array with one element per word in the input. Each element is an object with two fields: <b>tìpawm</b>, containing the word from the input, and <b>sì'eyng</b>, containing the results for that word, as an array of result objects (because one input word can have more than one possible conjugation). These result objects, in turn, contain the following fields:</p>
+				<table>
+					<tr>
+						<td><b>na'vi <span class="muted">(string)</span></b>
+						<td>The root word.
+					<tr>
+						<td><b>type <span class="muted">(string)</span></b>
+						<td>The type of the word. Possibilities:
+							<table>
+								<tr><td>n<td>noun
+								<tr><td>n:si<td>si verb (i.e., noun that can be combined with <b>si</b> to make a si-verb)
+								<tr><td>n:pr<td>proper noun
+								<tr><td>pn<td>pronoun
+								<tr><td>adj<td>adjective
+								<tr><td>adv<td>adverb
+								<tr><td>adp<td>non-leniting adposition
+								<tr><td>adp:len<td>leniting adposition
+								<tr><td>num<td>numeral
+								<tr><td>intj<td>interjection
+								<tr><td>conj<td>conjunction
+								<tr><td>v:in<td>verb, intransitive
+								<tr><td>v:tr<td>verb, transitive
+								<tr><td>v:cp<td>verb, copula
+								<tr><td>v:m<td>verb, modal
+								<tr><td>v:?<td>verb, unknown type
+								<tr><td>phr<td>phrase
+							</table>
+					<tr>
+						<td><b>pronunciation <span class="muted">(array)</span></b>
+						<td>Pronunciation and stress, as an array:
+							<table>
+								<tr>
+									<td>[0] <span class="muted">(string)</span>
+									<td>Pronunciation string, with syllables separated by dashes.
+								<tr>
+									<td>[1] <span class="muted">(integer)</span>
+									<td>Index (1-based) of the stressed syllable.
+							</table>
+					<tr>
+						<td><b>translations <span class="muted">(array)</span></b>
+						<td>List of translations. Each translation is an object with fields for each language, such as <b>en</b>, <b>de</b>, <b>nl</b>, etc.
+					<tr>
+						<td><b>source <span class="muted">(string/array)</span></b>
+						<td>The source information for this word. Either a string containing a description, or an array of two strings (description + URL to link to).
+					<tr>
+						<td><b>conjugated <span class="muted">(array)</span></b>
+						<td>Explanation of how the root word was conjugated to end up with your input word.
+							<table>
+								<tr>
+									<td>[0] <span class="muted">(string)</span>
+									<td>The conjugated form.
+								<tr>
+									<td>[1] <span class="muted">(string)</span>
+									<td>The root form.
+								<tr>
+									<td>[2] <span class="muted">(array/string)</span>
+									<td>List of affixes that was applied to the root form; the format depends on the type.
+							</table>
+				</table>
+			</div>
+			<div class="actions">
+				<div class="ui green ok inverted button">
+					<i class="close icon"></i> Close
+				</div>
+			</div>
+		</div>
 		<div id="settings-modal" class="ui modal">
 			<div class="header">Settings</div>
 			<div class="scrolling content">

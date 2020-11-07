@@ -21,6 +21,9 @@ $(function() {
 
 $('.ui.checkbox').checkbox();
 $('.ui.dropdown').dropdown();
+$('#api-button').on("click", function() {
+	$('#api-modal').modal("show");
+});
 $('#settings-button').on("click", function() {
 	$('#settings-modal').modal("show");
 });
