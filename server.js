@@ -46,21 +46,41 @@ app.get('/api/search', function(req, res) {
 });
 
 app.get('/api/frau', function(req, res) {
-	res.json(reykunyu.dictionary);
+	res.json(reykunyu.getAll());
+});
+
+app.get('/api/list/all', function(req, res) {
+	res.json(reykunyu.getAll());
+});
+
+app.get('/api/list/verbs', function(req, res) {
+	res.json(reykunyu.getVerbs());
+});
+
+app.get('/api/list/transitivity', function(req, res) {
+	res.json(reykunyu.getTransitivityList());
 });
 
 app.get('/api/parse', function(req, res) {
-	let parseOutput = tslamyu.doParse(reykunyu.getResponsesFor(req.query["tìpawm"]))
-	let result = [];
-	for (let i = 0; i < parseOutput.length; i++) {
-		result.push({
-			'parseTree': parseOutput[i],
-			'translation': parseOutput[i].translate(),
-			'errors': parseOutput[i].getErrors(),
-			'penalty': parseOutput[i].getPenalty()
-		});
+	let parseOutput = tslamyu.doParse(reykunyu.getResponsesFor(req.query["tìpawm"]));
+	let output = {};
+	output['lexingErrors'] = parseOutput['lexingErrors'];
+	if (parseOutput['results']) {
+		output['results'] = [];
+		for (let i = 0; i < parseOutput['results'].length; i++) {
+			output['results'].push({
+				'parseTree': parseOutput['results'][i],
+				'translation': parseOutput['results'][i].translate(),
+				'errors': parseOutput['results'][i].getErrors(),
+				'penalty': parseOutput['results'][i].getPenalty()
+			});
+		}
 	}
-	res.json(result);
+	res.json(output);
+});
+
+app.get('/api/random', function(req, res) {
+	res.json(reykunyu.getRandomWords(req.query["holpxay"]));
 });
 
 http.listen(config["port"], function() {

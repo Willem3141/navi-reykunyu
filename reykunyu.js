@@ -2,22 +2,28 @@ module.exports = {
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
-	'dictionary': dictionary
+	'getRandomWords': getRandomWords,
+	'getAll': getAll,
+	'getVerbs': getVerbs,
+	'getTransitivityList': getTransitivityList,
 }
 
-var fs = require('fs');
+const fs = require('fs');
 
-var adjectives = require('./adjectives');
-var conjugationString = require('./conjugationString');
-var convert = require('./convert');
-var nouns = require('./nouns');
-var pronouns = require('./pronouns');
-var verbs = require('./verbs');
+const levenshtein = require('js-levenshtein');
 
-var matchAll = require('string.prototype.matchall');
+const adjectives = require('./adjectives');
+const conjugationString = require('./conjugationString');
+const convert = require('./convert');
+const nouns = require('./nouns');
+const pronouns = require('./pronouns');
+const verbs = require('./verbs');
+
+const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
 var dictionary = {};
+var allWords = [];
 fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 	let wordData;
 	try {
@@ -33,6 +39,7 @@ fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 	}
 	let key = wordData["na'vi"].toLowerCase() + ":" + type
 	dictionary[key] = wordData;
+	allWords.push(wordData);
 });
 
 var pronounForms = pronouns.getConjugatedForms(dictionary);
@@ -162,9 +169,26 @@ function getResponsesFor(query) {
 		// check the first element of the results array
 		externalLenition = wordResults.length > 0 && wordResults[0]['type'] === 'adp:len';
 
+		let suggestions = [];
+
+		if (wordResults.length === 0) {
+			let minDistance = queryWord.length / 3 + 1;  // allow more leeway with longer queries
+			for (word in dictionary) {
+				if (dictionary.hasOwnProperty(word)) {
+					const distance = levenshtein(dictionary[word]["na'vi"], queryWord);
+					minDistance = Math.min(minDistance, distance);
+					if (distance <= minDistance) {
+						suggestions.push([dictionary[word]["na'vi"] + (dictionary[word]["type"] === "n:si" ? " si" : ""), distance]);
+					}
+				}
+			}
+			suggestions = suggestions.filter(a => a[1] === minDistance).map(a => a[0]);
+		}
+
 		results.push({
 			"tìpawm": queryWord,
-			"sì'eyng": wordResults
+			"sì'eyng": wordResults,
+			"aysämok": suggestions
 		});
 	}
 	
@@ -247,7 +271,7 @@ function lookUpWord(queryWord) {
 						result[2][2] === "" &&
 						(result[2][3] === "" || foundForm["case"] === "") &&
 						result[2][4] === "" &&
-						(result[2][5] === "" || (result[2][3] !== "" && foundForm["case"] === ""))) {
+						(result[2][5] === "" || (result[2][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(result[2][5]) === -1))) {
 					result[1] = word["na'vi"];
 					result[2][1] = foundForm["plural"];
 					if (foundForm["case"] !== "") {
@@ -406,5 +430,75 @@ function getReverseResponsesFor(query, language) {
 	}
 
 	return results;
+}
+
+function getRandomWords(number) {
+	let results = [];
+	const n = allWords.length;
+
+	for (let i = n - 1; i >= n - number; i--) {
+
+		// draw random word in [0, i]
+		let random = Math.floor(Math.random() * (i + 1));
+		let randomWord = allWords[random];
+		results.push(randomWord);
+
+		// swap drawn word to the end so we won't draw it again
+		// (note: we don't care that allWords gets shuffled in the process because we use it only for
+		// random draws anyway)
+		const h = allWords[i];
+		allWords[i] = allWords[random];
+		allWords[random] = h;
+	}
+
+	return results;
+}
+
+function getAll() {
+	return dictionary;
+}
+
+function getVerbs() {
+	let verbs = [];
+
+	for (word in dictionary) {
+		if (dictionary.hasOwnProperty(word)) {
+			let type = "";
+			if ('type' in dictionary[word]) {
+				type = dictionary[word]['type'];
+			}
+			if (type.startsWith('v') || type === 'n:si') {
+				verbs.push(dictionary[word]);
+			}
+		}
+	}
+
+	return verbs;
+}
+
+function getTransitivityList() {
+	let list = [];
+
+	let verbs = getVerbs();
+	for (let i = 0; i < verbs.length; i++) {
+		const verb = verbs[i];
+		let word = verb["na'vi"];
+		const translation = verb["translations"][0]["en"];
+		let type = verb["type"];
+		if (type === "n:si") {
+			word += " si";
+			type = "v:in";
+		}
+		if (type === "v:in") {
+			type = "intransitive";
+		} else if (type === "v:tr") {
+			type = "transitive";
+		} else {
+			continue;
+		}
+		list.push([word, translation, type]);
+	}
+
+	return list;
 }
 

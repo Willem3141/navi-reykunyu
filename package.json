@@ -4,6 +4,7 @@
   "description": "Na'vi dictionary website",
   "dependencies": {
     "express": "^4.10.2",
+    "js-levenshtein": "^1.1.6",
     "string.prototype.matchall": "^4.0.2"
   },
   "devDependencies": {
