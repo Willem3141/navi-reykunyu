@@ -297,8 +297,8 @@ function lookUpWord(queryWord) {
 	// handle conjugated verbs
 	let verbResults = verbs.parse(queryWord);
 	verbResults.forEach(function(result) {
-		let verb = findVerb(result["root"]);
-		if (verb) {
+		let results = findVerb(result["root"]);
+		for (let verb of results) {
 			verb["conjugated"] = result;
 			let conjugation = conjugationString.formsFromString(
 					verbs.conjugate(verb["infixes"], result["infixes"]));
@@ -352,25 +352,26 @@ function findNoun(word) {
 
 // fwew frafnekemlì'ut lì'upukmì
 function findVerb(word) {
+	let results = [];
 	if (dictionary.hasOwnProperty(word + ":v:in")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":v:in"]));
+		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:in"])));
 	}
 	if (dictionary.hasOwnProperty(word + ":v:tr")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":v:tr"]));
+		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:tr"])));
 	}
 	if (dictionary.hasOwnProperty(word + ":v:cp")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":v:cp"]));
+		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:cp"])));
 	}
 	if (dictionary.hasOwnProperty(word + ":v:m")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":v:m"]));
+		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:m"])));
 	}
 	if (dictionary.hasOwnProperty(word + ":v:si")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":v:si"]));
+		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:si"])));
 	}
 	if (dictionary.hasOwnProperty(word + ":v:?")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":v:?"]));
+		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:?"])));
 	}
-	return null;
+	return results;
 }
 
 function getSuggestionsFor(query) {
