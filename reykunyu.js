@@ -323,7 +323,7 @@ function lookUpWord(queryWord) {
 						(nounResult["affixes"][3] === "" || foundForm["case"] === "") &&
 						nounResult["affixes"][4] === "" &&
 						(nounResult["affixes"][5] === "" || (nounResult["affixes"][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(nounResult["affixes"][5]) === -1))) {
-					nounResult[1] = word["na'vi"];
+					nounResult["root"] = word["na'vi"];
 					nounResult["affixes"][1] = foundForm["plural"];
 					if (foundForm["case"] !== "") {
 						nounResult["affixes"][5] = foundForm["case"];
