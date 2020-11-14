@@ -164,6 +164,24 @@ function getResponsesFor(query) {
 			}
 		}
 
+		// sort on result relevancy
+		// higher scores result in being sorted lower
+		let resultScore = function (result) {
+			if (result["na'vi"].toLowerCase() !== queryWord) {
+				// the longer the root word, the higher it should be sorted
+				// because it likely has a more specialized meaning
+				// (e.g. utraltsyìp vs. utral)
+				return 100 - result["na'vi"].length;
+			}
+			return 0;
+		}
+
+		wordResults.sort((a, b) => {
+			scoreA = resultScore(a);
+			scoreB = resultScore(b);
+			return scoreA - scoreB;
+		});
+
 		// the next word will be externally lenited if this word is an adp:len
 		// note that there are no adp:lens with several meanings, so we just
 		// check the first element of the results array
