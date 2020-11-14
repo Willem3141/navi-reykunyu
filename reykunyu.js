@@ -275,6 +275,21 @@ function lookUpWord(queryWord) {
 			noun["conjugated"] = result;
 			wordResults.push(noun);
 		}
+		if (result["root"].endsWith("yu")) {
+			let possibleVerb = result["root"].slice(0, -2);
+			let verbResults = verbs.parse(possibleVerb);
+			verbResults.forEach(function(result) {
+				for (let verb of findVerb(result["root"])) {
+					verb["conjugated"] = result;
+					console.log(verb);
+					let conjugation = conjugationString.formsFromString(
+						verbs.conjugate(verb["infixes"], result["infixes"]));
+					if (conjugation.indexOf(possibleVerb) !== -1) {
+						wordResults.push(verb);
+					}
+				}
+			});
+		}
 
 		if (pronounForms.hasOwnProperty(result["root"])) {
 			let foundForm = pronounForms[result["root"]];
