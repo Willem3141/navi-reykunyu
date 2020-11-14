@@ -347,9 +347,6 @@ function findNoun(word) {
 	if (dictionary.hasOwnProperty(word + ":n:pr")) {
 		return JSON.parse(JSON.stringify(dictionary[word + ":n:pr"]));
 	}
-	if (dictionary.hasOwnProperty(word + ":n:si")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":n:si"]));
-	}
 	return null;
 }
 
