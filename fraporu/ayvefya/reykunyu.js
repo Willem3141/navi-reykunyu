@@ -90,6 +90,45 @@ function statusBadge(wordStatus) {
 	return $pätsì;
 }
 
+function conjugationExplanation(conjugation) {
+	let $explanation = $('<div/>');
+	for (let i = 0; i < conjugation.length; i++) {
+		let type = conjugation[i]["type"];
+		let c = conjugation[i]["conjugation"];
+		if (c["result"].toLowerCase() == c["root"].toLowerCase()) {
+			continue;
+		}
+
+		switch (type) {
+			case "n":
+				$explanation.append(nounConjugationExplanation(c));
+				break;
+			case "v":
+				$explanation.append(verbConjugationExplanation(c));
+				break;
+			case "adj":
+				$explanation.append(adjectiveConjugationExplanation(c));
+				break;
+			case "v_to_n":
+				$explanation.append(verbToNounConjugationExplanation(c));
+				break;
+		}
+
+				/*
+		if ((r["type"] === "n" || r["type"] === "n:pr" || r.hasOwnProperty("conjugation")) && r["conjugated"]["result"].toLowerCase() !== r["conjugated"]["root"].toLowerCase()) {
+			$resultWord.append(nounConjugationExplanation(r["conjugated"]));
+		}
+		if (r["type"].substring(0, 2) === "v:" && r["conjugated"]["result"].toLowerCase() !== r["conjugated"]["root"].toLowerCase()) {
+			$resultWord.append(verbConjugationExplanation(r["conjugated"]));
+		}
+		if (r["type"] === "adj" && r["conjugated"]["form"] !== "predicative") {
+			$resultWord.append(adjectiveConjugationExplanation(r["conjugated"]));
+		}*/
+	}
+
+	return $explanation;
+}
+
 function nounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 	
@@ -157,6 +196,22 @@ function adjectiveConjugationExplanation(conjugation) {
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
+	return $conjugation;
+}
+
+function verbToNounConjugationExplanation(conjugation) {
+	let $conjugation = $('<div/>').addClass('conjugation-explanation');
+	
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
+
+	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+	$('<span/>').addClass('suffix').text(conjugation["affixes"][0]).appendTo($conjugation);
+	
+	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
+	
 	return $conjugation;
 }
 
@@ -538,14 +593,11 @@ function createResultBlock(i, r, query) {
 
 	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 
-	if ((r["type"] === "n" || r["type"] === "n:pr" || r.hasOwnProperty("conjugation")) && r["conjugated"]["result"].toLowerCase() !== r["conjugated"]["root"].toLowerCase()) {
-		$resultWord.append(nounConjugationExplanation(r["conjugated"]));
-	}
-	if (r["type"].substring(0, 2) === "v:" && r["conjugated"]["result"].toLowerCase() !== r["conjugated"]["root"].toLowerCase()) {
-		$resultWord.append(verbConjugationExplanation(r["conjugated"]));
-	}
-	if (r["type"] === "adj" && r["conjugated"]["form"] !== "predicative") {
-		$resultWord.append(adjectiveConjugationExplanation(r["conjugated"]));
+	if (r.hasOwnProperty("conjugated")) {
+		$explanation = conjugationExplanation(r["conjugated"]);
+		if ($explanation) {
+			$resultWord.append($explanation);
+		}
 	}
 
 	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {

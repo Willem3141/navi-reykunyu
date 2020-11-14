@@ -252,15 +252,18 @@ function unlenite(word) {
 // lenited; this is the case for nouns in the short plural
 // (i.e., "mì hilvan" cannot be parsed as "mì + (ay)hilvan")
 function forbiddenByExternalLenition(result) {
-	let isNoun = result["type"] === "n";
-	if (!isNoun) {
+	if (result.hasOwnProperty(["conjugated"])) {
 		return false;
 	}
-	let isShortPlural = result["conjugated"]["affixes"][1] === "(ay)";
+	let outerConjugated = result["conjugated"][result["conjugated"].length - 1];
+	if (!outerConjugated["type"] === "n") {
+		return false;
+	}
+	let isShortPlural = outerConjugated["conjugation"]["affixes"][1] === "(ay)";
 	if (!isShortPlural) {
 		return false;
 	}
-	let hasNoDeterminer = result["conjugated"]["affixes"][0] === "";
+	let hasNoDeterminer = outerConjugated["conjugation"]["affixes"][0] === "";
 	return hasNoDeterminer;
 }
 
@@ -269,21 +272,36 @@ function lookUpWord(queryWord) {
 
 	// handle conjugated nouns and pronouns
 	let nounResults = nouns.parse(queryWord);
-	nounResults.forEach(function(result) {
-		let noun = findNoun(result["root"]);
+	nounResults.forEach(function(nounResult) {
+		let noun = findNoun(nounResult["root"]);
 		if (noun) {
-			noun["conjugated"] = result;
+			noun["conjugated"] = [{
+				"type": "n",
+				"conjugation": nounResult
+			}];
 			wordResults.push(noun);
 		}
-		if (result["root"].endsWith("yu")) {
-			let possibleVerb = result["root"].slice(0, -2);
+		if (nounResult["root"].endsWith("yu")) {
+			let possibleVerb = nounResult["root"].slice(0, -2);
 			let verbResults = verbs.parse(possibleVerb);
-			verbResults.forEach(function(result) {
-				for (let verb of findVerb(result["root"])) {
-					verb["conjugated"] = result;
-					console.log(verb);
+			verbResults.forEach(function(verbResult) {
+				for (let verb of findVerb(verbResult["root"])) {
+					verb["conjugated"] = [{
+						"type": "v",
+						"conjugation": verbResult
+					}, {
+						"type": "v_to_n",
+						"conjugation": {
+							"result": nounResult["root"],
+							"root": possibleVerb,
+							"affixes": ["yu"]
+						}
+					}, {
+						"type": "n",
+						"conjugation": nounResult
+					}];
 					let conjugation = conjugationString.formsFromString(
-						verbs.conjugate(verb["infixes"], result["infixes"]));
+						verbs.conjugate(verb["infixes"], verbResult["infixes"]));
 					if (conjugation.indexOf(possibleVerb) !== -1) {
 						wordResults.push(verb);
 					}
@@ -291,8 +309,8 @@ function lookUpWord(queryWord) {
 			});
 		}
 
-		if (pronounForms.hasOwnProperty(result["root"])) {
-			let foundForm = pronounForms[result["root"]];
+		if (pronounForms.hasOwnProperty(nounResult["root"])) {
+			let foundForm = pronounForms[nounResult["root"]];
 			let word = JSON.parse(JSON.stringify(foundForm["word"]));
 
 			if (word["type"] === "pn") {
@@ -300,27 +318,33 @@ function lookUpWord(queryWord) {
 				// consider the possibilities where the plural and case affixes
 				// are empty (because in pronounForms, all plural- and
 				// case-affixed forms are already included)
-				if (result["affixes"][1] === "" &&
-						result["affixes"][2] === "" &&
-						(result["affixes"][3] === "" || foundForm["case"] === "") &&
-						result["affixes"][4] === "" &&
-						(result["affixes"][5] === "" || (result["affixes"][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(result["affixes"][5]) === -1))) {
-					result[1] = word["na'vi"];
-					result["affixes"][1] = foundForm["plural"];
+				if (nounResult["affixes"][1] === "" &&
+						nounResult["affixes"][2] === "" &&
+						(nounResult["affixes"][3] === "" || foundForm["case"] === "") &&
+						nounResult["affixes"][4] === "" &&
+						(nounResult["affixes"][5] === "" || (nounResult["affixes"][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(nounResult["affixes"][5]) === -1))) {
+					nounResult[1] = word["na'vi"];
+					nounResult["affixes"][1] = foundForm["plural"];
 					if (foundForm["case"] !== "") {
-						result["affixes"][5] = foundForm["case"];
+						nounResult["affixes"][5] = foundForm["case"];
 					}
-					word["conjugated"] = result;
+					word["conjugated"] = [{
+						"type": "n",
+						"conjugation": nounResult
+					}];
 					wordResults.push(word);
 				}
 
 			} else {
 				// for non-pronouns, we allow no pre- and suffixes whatsoever
-				if (result[0] === result[1]) {
-					result[1] = word["na'vi"];
-					result["affixes"][1] = foundForm["plural"];
-					result["affixes"][5] = foundForm["case"];
-					word["conjugated"] = result;
+				if (nounResult[0] === nounResult[1]) {
+					nounResult[1] = word["na'vi"];
+					nounResult["affixes"][1] = foundForm["plural"];
+					nounResult["affixes"][5] = foundForm["case"];
+					word["conjugated"] = [{
+						"type": "n",
+						"conjugation": nounResult
+					}];
 					wordResults.push(word);
 				}
 			}
@@ -332,7 +356,10 @@ function lookUpWord(queryWord) {
 	verbResults.forEach(function(result) {
 		let results = findVerb(result["root"]);
 		for (let verb of results) {
-			verb["conjugated"] = result;
+			verb["conjugated"] = [{
+				"type": "v",
+				"conjugation": result
+			}];
 			let conjugation = conjugationString.formsFromString(
 					verbs.conjugate(verb["infixes"], result["infixes"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
@@ -346,7 +373,10 @@ function lookUpWord(queryWord) {
 	adjectiveResults.forEach(function(result) {
 		if (dictionary.hasOwnProperty(result["root"] + ":adj")) {
 			adjective = JSON.parse(JSON.stringify(dictionary[result["root"] + ":adj"]));
-			adjective["conjugated"] = result;
+			adjective["conjugated"] = [{
+				"type": "adj",
+				"conjugation": result
+			}];
 			let conjugation = conjugationString.formsFromString(
 					adjectives.conjugate(adjective["na'vi"].toLowerCase(), result["form"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
