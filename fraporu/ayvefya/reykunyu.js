@@ -113,17 +113,6 @@ function conjugationExplanation(conjugation) {
 				$explanation.append(verbToNounConjugationExplanation(c));
 				break;
 		}
-
-				/*
-		if ((r["type"] === "n" || r["type"] === "n:pr" || r.hasOwnProperty("conjugation")) && r["conjugated"]["result"].toLowerCase() !== r["conjugated"]["root"].toLowerCase()) {
-			$resultWord.append(nounConjugationExplanation(r["conjugated"]));
-		}
-		if (r["type"].substring(0, 2) === "v:" && r["conjugated"]["result"].toLowerCase() !== r["conjugated"]["root"].toLowerCase()) {
-			$resultWord.append(verbConjugationExplanation(r["conjugated"]));
-		}
-		if (r["type"] === "adj" && r["conjugated"]["form"] !== "predicative") {
-			$resultWord.append(adjectiveConjugationExplanation(r["conjugated"]));
-		}*/
 	}
 
 	return $explanation;
@@ -595,9 +584,7 @@ function createResultBlock(i, r, query) {
 
 	if (r.hasOwnProperty("conjugated")) {
 		$explanation = conjugationExplanation(r["conjugated"]);
-		if ($explanation) {
-			$resultWord.append($explanation);
-		}
+		$resultWord.append($explanation);
 	}
 
 	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
