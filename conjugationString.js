@@ -27,15 +27,33 @@ function formsFromString(formString) {
 }
 
 function formsRecursive(formString) {
-	let forms = [];
-	let regex = /([^(]*)\(([^)]*)\)(.*)/;
-	let result = regex.exec(formString);
-	if (result === null) {
-		forms.push(formString.split("-").join(""));
-	} else {
-		forms = forms.concat(formsRecursive(result[1] + result[2] + result[3]));
-		forms = forms.concat(formsRecursive(result[1] + result[3]));
+
+	// parse parentheses
+	let parenRegex = /([^(]*)\(([^)]*)\)(.*)/;
+	let result = parenRegex.exec(formString);
+	if (result) {
+		return [
+			formsRecursive(result[1] + result[2] + result[3]),
+			formsRecursive(result[1] + result[3])
+		];
 	}
-	return forms;
+
+	// parse slashes
+	let parts = formString.split("-");
+	for (let i = 0; i < parts.length; i++) {
+		let options = parts[i].split("/");
+		if (options.length > 1) {
+			let forms = [];
+			for (let j = 0; j < options.length; j++) {
+				optionChosenString = [...parts];
+				optionChosenString[i] = options[j];
+				optionChosenString = optionChosenString.join("-");
+				forms = forms.concat(formsRecursive(optionChosenString));
+			}
+			return forms;
+		}
+	}
+
+	return [formString.split("-").join("")];
 }
 
