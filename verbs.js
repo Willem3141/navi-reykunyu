@@ -157,7 +157,7 @@ function trySecondInfixes(candidate) {
 		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
 			let index = match.index;
-			let newInfixes = [...affixes];
+			let newInfixes = [...candidate["infixes"]];
 			newInfixes[2] = name;
 			candidates.push({
 				"result": candidate["result"],
@@ -172,7 +172,9 @@ function trySecondInfixes(candidate) {
 	tryInfix("äng", "äng");
 	tryInfix("eng", "äng");
 	tryInfix("uy", "uy");
+	tryInfix("uye", "uy");  // for z.en.(e)ke
 	tryInfix("ats", "ats");
+	tryInfix("atse", "ats");  // for z.en.(e)ke
 
 	return candidates;
 }
