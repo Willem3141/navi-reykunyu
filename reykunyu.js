@@ -315,7 +315,7 @@ function lookUpWord(queryWord) {
 			adjective = JSON.parse(JSON.stringify(dictionary[result["root"] + ":adj"]));
 			adjective["conjugated"] = result;
 			let conjugation = conjugationString.formsFromString(
-					adjectives.conjugate(adjective["na'vi"], result["form"]));
+					adjectives.conjugate(adjective["na'vi"].toLowerCase(), result["form"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
 				wordResults.push(adjective);
 			}
