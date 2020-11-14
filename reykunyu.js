@@ -238,11 +238,11 @@ function forbiddenByExternalLenition(result) {
 	if (!isNoun) {
 		return false;
 	}
-	let isShortPlural = result["conjugated"][2][1] === "(ay)";
+	let isShortPlural = result["conjugated"]["affixes"][1] === "(ay)";
 	if (!isShortPlural) {
 		return false;
 	}
-	let hasNoDeterminer = result["conjugated"][2][0] === "";
+	let hasNoDeterminer = result["conjugated"]["affixes"][0] === "";
 	return hasNoDeterminer;
 }
 
@@ -252,14 +252,14 @@ function lookUpWord(queryWord) {
 	// handle conjugated nouns and pronouns
 	let nounResults = nouns.parse(queryWord);
 	nounResults.forEach(function(result) {
-		let noun = findNoun(result[1]);
+		let noun = findNoun(result["root"]);
 		if (noun) {
 			noun["conjugated"] = result;
 			wordResults.push(noun);
 		}
 
-		if (pronounForms.hasOwnProperty(result[1])) {
-			let foundForm = pronounForms[result[1]];
+		if (pronounForms.hasOwnProperty(result["root"])) {
+			let foundForm = pronounForms[result["root"]];
 			let word = JSON.parse(JSON.stringify(foundForm["word"]));
 
 			if (word["type"] === "pn") {
@@ -267,15 +267,15 @@ function lookUpWord(queryWord) {
 				// consider the possibilities where the plural and case affixes
 				// are empty (because in pronounForms, all plural- and
 				// case-affixed forms are already included)
-				if (result[2][1] === "" &&
-						result[2][2] === "" &&
-						(result[2][3] === "" || foundForm["case"] === "") &&
-						result[2][4] === "" &&
-						(result[2][5] === "" || (result[2][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(result[2][5]) === -1))) {
+				if (result["affixes"][1] === "" &&
+						result["affixes"][2] === "" &&
+						(result["affixes"][3] === "" || foundForm["case"] === "") &&
+						result["affixes"][4] === "" &&
+						(result["affixes"][5] === "" || (result["affixes"][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(result["affixes"][5]) === -1))) {
 					result[1] = word["na'vi"];
-					result[2][1] = foundForm["plural"];
+					result["affixes"][1] = foundForm["plural"];
 					if (foundForm["case"] !== "") {
-						result[2][5] = foundForm["case"];
+						result["affixes"][5] = foundForm["case"];
 					}
 					word["conjugated"] = result;
 					wordResults.push(word);
@@ -285,8 +285,8 @@ function lookUpWord(queryWord) {
 				// for non-pronouns, we allow no pre- and suffixes whatsoever
 				if (result[0] === result[1]) {
 					result[1] = word["na'vi"];
-					result[2][1] = foundForm["plural"];
-					result[2][5] = foundForm["case"];
+					result["affixes"][1] = foundForm["plural"];
+					result["affixes"][5] = foundForm["case"];
 					word["conjugated"] = result;
 					wordResults.push(word);
 				}
@@ -297,10 +297,12 @@ function lookUpWord(queryWord) {
 	// handle conjugated verbs
 	let verbResults = verbs.parse(queryWord);
 	verbResults.forEach(function(result) {
-		let verb = findVerb(result[1]);
+		let verb = findVerb(result["root"]);
 		if (verb) {
 			verb["conjugated"] = result;
-			if (verbs.conjugate(verb['infixes'], result[2]).indexOf(queryWord) !== -1) {
+			let conjugation = conjugationString.formsFromString(
+					verbs.conjugate(verb["infixes"], result["infixes"]));
+			if (conjugation.indexOf(queryWord) !== -1) {
 				wordResults.push(verb);
 			}
 		}
@@ -309,11 +311,11 @@ function lookUpWord(queryWord) {
 	// handle conjugated adjectives
 	let adjectiveResults = adjectives.parse(queryWord);
 	adjectiveResults.forEach(function(result) {
-		if (dictionary.hasOwnProperty(result[1] + ":adj")) {
-			adjective = JSON.parse(JSON.stringify(dictionary[result[1] + ":adj"]));
+		if (dictionary.hasOwnProperty(result["root"] + ":adj")) {
+			adjective = JSON.parse(JSON.stringify(dictionary[result["root"] + ":adj"]));
 			adjective["conjugated"] = result;
 			let conjugation = conjugationString.formsFromString(
-					adjectives.conjugate(adjective["na'vi"], result[2]));
+					adjectives.conjugate(adjective["na'vi"], result["form"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
 				wordResults.push(adjective);
 			}

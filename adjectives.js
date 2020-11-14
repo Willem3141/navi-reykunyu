@@ -43,18 +43,42 @@ function conjugate(adjective, form) {
  */
 function parse(word) {
 
-	let result = [[word, word, 'predicative']];
+	let result = [{
+		"result": word,
+		"root": word,
+		"form": 'predicative'
+	}];
 
 	if (word.charAt(0) === "a") {
-		result.push([word, word.substring(1), 'postnoun']);
-		result.push([word, word, 'postnoun']);
+		result.push({
+			"result": word,
+			"root": word.substring(1),
+			"form": 'postnoun'
+		});
+		result.push({
+			"result": word,
+			"root": word,
+			"form": 'postnoun'
+		});
 	} else if (word.substring(0, 2) === "le") {
-		result.push([word, word, 'postnoun']);
+		result.push({
+			"result": word,
+			"root": word,
+			"form": 'postnoun'
+		});
 	}
 
 	if (word.charAt(word.length - 1) === "a") {
-		result.push([word, word.slice(0, -1), 'prenoun']);
-		result.push([word, word, 'prenoun']);
+		result.push({
+			"result": word,
+			"root": word.slice(0, -1),
+			"form": 'prenoun'
+		});
+		result.push({
+			"result": word,
+			"root": word,
+			"form": 'prenoun'
+		});
 	}
 
 	return result;

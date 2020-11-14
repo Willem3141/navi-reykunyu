@@ -321,7 +321,7 @@ function parse(word) {
 	// step 2: for each candidate, check if it is indeed correct
 	let result = [];
 	for (let i = 0; i < candidates.length; i++) {
-		if (checkCandidate(...candidates[i])) {
+		if (checkCandidate(candidates[i])) {
 			result.push(candidates[i]);
 		}
 	}
@@ -358,20 +358,20 @@ function unlenite(word) {
 }
 
 function tryDeterminerPrefixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	// singular
-	candidates.push([candidate[0], word, affixes]);
-
+	candidates.push({...candidate});
 	let tryPrefix = function (prefix, name) {
-		if (word.startsWith(prefix)) {
-			let stems = unlenite(word.slice(prefix.length));
+		if (candidate["root"].startsWith(prefix)) {
+			let stems = unlenite(candidate["root"].slice(prefix.length));
 			for (let i = 0; i < stems.length; i++) {
-				let newAffixes = [...affixes];
+				let newAffixes = [...candidate["affixes"]];
 				newAffixes[0] = name;
-				candidates.push([candidate[0], stems[i], newAffixes]);
+				candidates.push({
+					"result": candidate["result"],
+					"root": stems[i],
+					"affixes": newAffixes
+				});
 			}
 		}
 	};
@@ -388,22 +388,24 @@ function tryDeterminerPrefixes(candidate) {
 }
 
 function tryPluralPrefixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
 	// singular
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 
 	// plural forms
 	// need to try all possible initial consonants that could have lenited to our form
 	let tryPrefix = function (prefix, name) {
-		if (word.startsWith(prefix)) {
-			let stems = unlenite(word.slice(prefix.length));
+		if (candidate["root"].startsWith(prefix)) {
+			let stems = unlenite(candidate["root"].slice(prefix.length));
 			for (let i = 0; i < stems.length; i++) {
-				let newAffixes = [...affixes];
+				let newAffixes = [...candidate["affixes"]];
 				newAffixes[1] = name;
-				candidates.push([candidate[0], stems[i], newAffixes]);
+				candidates.push({
+					"result": candidate["result"],
+					"root": stems[i],
+					"affixes": newAffixes
+				});
 			}
 		}
 	};
@@ -420,20 +422,21 @@ function tryPluralPrefixes(candidate) {
 }
 
 function tryStemPrefixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	// singular
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 
 	let tryPrefix = function (prefix, name) {
-		if (word.startsWith(prefix)) {
-			let stems = unlenite(word.slice(prefix.length));
+		if (candidate["root"].startsWith(prefix)) {
+			let stems = unlenite(candidate["root"].slice(prefix.length));
 			for (let i = 0; i < stems.length; i++) {
-				let newAffixes = [...affixes];
+				let newAffixes = [...candidate["affixes"]];
 				newAffixes[2] = name;
-				candidates.push([candidate[0], stems[i], newAffixes]);
+				candidates.push({
+					"result": candidate["result"],
+					"root": stems[i],
+					"affixes": newAffixes
+				});
 			}
 		}
 	};
@@ -443,16 +446,18 @@ function tryStemPrefixes(candidate) {
 }
 
 function tryStemSuffixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 	let tryEnding = function (suffix, name) {
-		if (word.endsWith(suffix)) {
-			let newAffixes = [...affixes];
+		if (candidate["root"].endsWith(suffix)) {
+			let newAffixes = [...candidate["affixes"]];
 			newAffixes[3] = name;
-			candidates.push([candidate[0], word.slice(0, -suffix.length), newAffixes]);
+			candidates.push({
+				"result": candidate["result"],
+				"root": candidate["root"].slice(0, -suffix.length),
+				"affixes": newAffixes
+			});
 		}
 	};
 	tryEnding("tsyìp", "tsyìp");
@@ -462,16 +467,18 @@ function tryStemSuffixes(candidate) {
 }
 
 function tryDeterminerSuffixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 	let tryEnding = function (suffix, name) {
-		if (word.endsWith(suffix)) {
-			let newAffixes = [...affixes];
+		if (candidate["root"].endsWith(suffix)) {
+			let newAffixes = [...candidate["affixes"]];
 			newAffixes[4] = name;
-			candidates.push([candidate[0], word.slice(0, -suffix.length), newAffixes]);
+			candidates.push({
+				"result": candidate["result"],
+				"root": candidate["root"].slice(0, -suffix.length),
+				"affixes": newAffixes
+			});
 		}
 	};
 	tryEnding("pe", "pe");
@@ -489,16 +496,18 @@ let adpositions = [
 ];
 
 function tryCaseSuffixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 	let tryEnding = function (suffix, name) {
-		if (word.endsWith(suffix)) {
-			let newAffixes = [...affixes];
+		if (candidate["root"].endsWith(suffix)) {
+			let newAffixes = [...candidate["affixes"]];
 			newAffixes[5] = name;
-			candidates.push([candidate[0], word.slice(0, -suffix.length), newAffixes]);
+			candidates.push({
+				"result": candidate["result"],
+				"root": candidate["root"].slice(0, -suffix.length),
+				"affixes": newAffixes
+			});
 		}
 	};
 	tryEnding("l", "l");
@@ -513,10 +522,14 @@ function tryCaseSuffixes(candidate) {
 	tryEnding("yä", "ä");
 	tryEnding("ri", "ri");
 	tryEnding("ìri", "ri");
-	if (word.endsWith("iä")) {
-		let newAffixes = [...affixes];
+	if (candidate["root"].endsWith("iä")) {
+		let newAffixes = [...candidate["affixes"]];
 		newAffixes[5] = "ä";
-		candidates.push([candidate[0], word.slice(0, -1) + "a", newAffixes]);
+		candidates.push({
+			"result": candidate["result"],
+			"root": candidate["root"].slice(0, -1) + "a",
+			"affixes": newAffixes
+		});
 	}
 
 	for (let i = 0; i < adpositions.length; i++) {
@@ -527,16 +540,18 @@ function tryCaseSuffixes(candidate) {
 }
 
 function tryFinalSuffixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 	let tryEnding = function (suffix, name) {
-		if (word.endsWith(suffix)) {
-			let newAffixes = [...affixes];
+		if (candidate["root"].endsWith(suffix)) {
+			let newAffixes = [...candidate["affixes"]];
 			newAffixes[6] = name;
-			candidates.push([candidate[0], word.slice(0, -suffix.length), newAffixes]);
+			candidates.push({
+				"result": candidate["result"],
+				"root": candidate["root"].slice(0, -suffix.length),
+				"affixes": newAffixes
+			});
 		}
 	};
 	tryEnding("sì", "sì");
@@ -557,7 +572,11 @@ function getCandidates(word) {
 	];
 
 	let candidates = [];
-	candidates.push([word, word, ["", "", "", "", "", "", ""]]);
+	candidates.push({
+		"result": word,
+		"root": word,
+		"affixes": ["", "", "", "", "", "", ""]
+	});
 
 	for (let i = 0; i < functions.length; i++) {
 		let newCandidates = [];
@@ -573,9 +592,8 @@ function getCandidates(word) {
 /**
  * Tests if a given word is a correct conjugation for the given form.
  */
-function checkCandidate(word, noun, affixes) {
-	//console.log([word, noun, affixes]);
-	let conjugation = conjugate(noun, affixes);
+function checkCandidate(candidate) {
+	let conjugation = conjugate(candidate["root"], candidate["affixes"]);
 	
 	for (let i = 0; i < conjugation[1].length; i++) {
 		for (let j = 0; j < conjugation[7].length; j++) {
@@ -584,15 +602,12 @@ function checkCandidate(word, noun, affixes) {
 			                  conjugation[4] + conjugation[5] +
 			                  conjugation[6] + conjugation[7][j] +
 			                  conjugation[8];
-			if (word === possibility) {
-				//console.log("candidate:", word, "=", noun, "+", affixes,
-				//            " -> ", conjugation, " ->  ✔");
+			if (candidate["result"] === possibility) {
 				return true;
 			}
 		}
 	}
-	
-	//console.log("candidate:", word, "=", noun, "+", affixes,
-	//            " -> ", conjugation, " ->  ✘");
+
 	return false;
 }
+

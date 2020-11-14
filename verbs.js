@@ -34,6 +34,10 @@ function conjugate(verb, infixes) {
 	let between = verb.substring(firstPos + 1, secondPos);
 	let afterSecond = verb.substring(secondPos + 1);
 
+	if (first === "ìyev") {
+		first = "ìyev/iyev";
+	}
+
 	// special cases for second infix
 	// Horen 2.3.3
 	if (second === "ei") {
@@ -45,7 +49,7 @@ function conjugate(verb, infixes) {
 	// Horen 2.3.5.2
 	if (second === "äng") {
 		if (afterSecond.charAt(0) === "i") {
-			second = "eng";  // TODO or just äng
+			second = "äng/eng";
 		}
 	}
 
@@ -60,7 +64,7 @@ function conjugate(verb, infixes) {
 
 	// TODO: handle verbs like plltxe -> poltxe
 
-	return [beforeFirst, prefirst, first, between, second, afterSecond].join('');
+	return [beforeFirst, prefirst, first, between, second, afterSecond].join('-');
 }
 
 /**
@@ -73,18 +77,20 @@ function parse(word) {
 }
 
 function tryPrefirstInfixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 	let tryInfix = function (infix, name) {
-		let matches = word.matchAll(new RegExp(infix, 'g'));
+		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
 			let index = match.index;
-			let newAffixes = [...affixes];
-			newAffixes[0] = name;
-			candidates.push([candidate[0], word.slice(0, index) + word.slice(index + infix.length), newAffixes]);
+			let newInfixes = [...candidate["infixes"]];
+			newInfixes[0] = name;
+			candidates.push({
+				"result": candidate["result"],
+				"root": candidate["root"].slice(0, index) + candidate["root"].slice(index + infix.length),
+				"infixes": newInfixes
+			});
 		}
 	};
 
@@ -96,18 +102,20 @@ function tryPrefirstInfixes(candidate) {
 }
 
 function tryFirstInfixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 	let tryInfix = function (infix, name) {
-		let matches = word.matchAll(new RegExp(infix, 'g'));
+		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
 			let index = match.index;
-			let newAffixes = [...affixes];
-			newAffixes[1] = name;
-			candidates.push([candidate[0], word.slice(0, index) + word.slice(index + infix.length), newAffixes]);
+			let newInfixes = [...candidate["infixes"]];
+			newInfixes[1] = name;
+			candidates.push({
+				"result": candidate["result"],
+				"root": candidate["root"].slice(0, index) + candidate["root"].slice(index + infix.length),
+				"infixes": newInfixes
+			});
 		}
 	};
 
@@ -142,18 +150,20 @@ function tryFirstInfixes(candidate) {
 }
 
 function trySecondInfixes(candidate) {
-	let word = candidate[1];
-	let affixes = candidate[2];
 	let candidates = [];
 
-	candidates.push([candidate[0], word, affixes]);
+	candidates.push({...candidate});
 	let tryInfix = function (infix, name) {
-		let matches = word.matchAll(new RegExp(infix, 'g'));
+		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
 			let index = match.index;
-			let newAffixes = [...affixes];
-			newAffixes[2] = name;
-			candidates.push([candidate[0], word.slice(0, index) + word.slice(index + infix.length), newAffixes]);
+			let newInfixes = [...affixes];
+			newInfixes[2] = name;
+			candidates.push({
+				"result": candidate["result"],
+				"root": candidate["root"].slice(0, index) + candidate["root"].slice(index + infix.length),
+				"infixes": newInfixes
+			});
 		}
 	};
 
@@ -175,7 +185,11 @@ function getCandidates(word) {
 	];
 
 	let candidates = [];
-	candidates.push([word, word, ["", "", ""]]);
+	candidates.push({
+		"result": word,
+		"root": word,
+		"infixes": ["", "", ""]
+	});
 
 	for (let i = 0; i < functions.length; i++) {
 		let newCandidates = [];
@@ -196,12 +210,8 @@ function checkCandidate(word, verb, infixes) {
 	
 	let possibility = conjugation.join('');
 	if (word === possibility) {
-		//console.log("candidate:", word, "=", noun, "+", affixes,
-		//            " -> ", conjugation, " ->  ✔");
 		return true;
 	}
 	
-	//console.log("candidate:", word, "=", noun, "+", affixes,
-	//            " -> ", conjugation, " ->  ✘");
 	return false;
 }

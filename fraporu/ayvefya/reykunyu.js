@@ -96,23 +96,23 @@ function nounConjugationExplanation(conjugation) {
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	for (let i = 0; i <= 2; i++) {
-		if (conjugation[2][i]) {
-			$('<span/>').addClass('prefix').text(conjugation[2][i]).appendTo($conjugation);
+		if (conjugation["affixes"][i]) {
+			$('<span/>').addClass('prefix').text(conjugation["affixes"][i]).appendTo($conjugation);
 			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 		}
 	}
 	
-	$('<span/>').text(conjugation[1]).appendTo($conjugation);
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 	
 	for (let i = 3; i <= 6; i++) {
-		if (conjugation[2][i]) {
+		if (conjugation["affixes"][i]) {
 			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
-			$('<span/>').addClass('suffix').text(conjugation[2][i]).appendTo($conjugation);
+			$('<span/>').addClass('suffix').text(conjugation["affixes"][i]).appendTo($conjugation);
 		}
 	}
 	
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation[0]).appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 	
 	return $conjugation;
 }
@@ -122,17 +122,17 @@ function verbConjugationExplanation(conjugation) {
 
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
-	$('<span/>').text(conjugation[1]).appendTo($conjugation);
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	for (let i = 0; i < 3; i++) {
-		if (conjugation[2][i]) {
+		if (conjugation["infixes"][i]) {
 			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
-			$('<span/>').addClass('infix').html("&#x2039;" + conjugation[2][i] + "&#x203a;").appendTo($conjugation);
+			$('<span/>').addClass('infix').html("&#x2039;" + conjugation["infixes"][i] + "&#x203a;").appendTo($conjugation);
 		}
 	}
 	
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation[0]).appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -142,20 +142,20 @@ function adjectiveConjugationExplanation(conjugation) {
 
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
-	if (conjugation[2] === "postnoun") {
+	if (conjugation["form"] === "postnoun") {
 		$('<span/>').addClass('suffix').html("a").appendTo($conjugation);
 		$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 	}
 
-	$('<span/>').text(conjugation[1]).appendTo($conjugation);
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
-	if (conjugation[2] === "prenoun") {
+	if (conjugation["form"] === "prenoun") {
 		$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 		$('<span/>').addClass('suffix').html("a").appendTo($conjugation);
 	}
 	
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation[0]).appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -538,13 +538,13 @@ function createResultBlock(i, r, query) {
 
 	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 
-	if ((r["type"] === "n" || r["type"] === "n:pr" || r.hasOwnProperty("conjugation")) && r["conjugated"][0].toLowerCase() !== r["conjugated"][1].toLowerCase()) {
+	if ((r["type"] === "n" || r["type"] === "n:pr" || r.hasOwnProperty("conjugation")) && r["conjugated"]["result"].toLowerCase() !== r["conjugated"]["root"].toLowerCase()) {
 		$resultWord.append(nounConjugationExplanation(r["conjugated"]));
 	}
-	if (r["type"].substring(0, 2) === "v:" && r["conjugated"][0].toLowerCase() !== r["conjugated"][1].toLowerCase()) {
+	if (r["type"].substring(0, 2) === "v:" && r["conjugated"]["result"].toLowerCase() !== r["conjugated"]["root"].toLowerCase()) {
 		$resultWord.append(verbConjugationExplanation(r["conjugated"]));
 	}
-	if (r["type"] === "adj" && r["conjugated"][2] !== "predicative") {
+	if (r["type"] === "adj" && r["conjugated"]["form"] !== "predicative") {
 		$resultWord.append(adjectiveConjugationExplanation(r["conjugated"]));
 	}
 
