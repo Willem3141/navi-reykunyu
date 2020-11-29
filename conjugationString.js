@@ -1,12 +1,17 @@
 /**
  * Provides a method for parsing a conjugation string.
  *
- * An example of a conjugation string is "ay-oenge-y(ä);-awnge-y(ä)".
  * Distinct forms are separated by a semicolon. Within a form, dashes separate
- * parts. Parentheses indicate optional letters.
- * So for the example above, the possible forms are ayoengeyä, ayoengey,
- * awngeyä, and awngey.
+ * parts. Slashes separate options for a part, while parentheses indicate
+ * optional letters within a part.
+ *
  * The exact meaning of the parts depends on the word type.
+ *
+ * Examples:
+ * "ay-oenge-y(ä);-awnge-y(ä)"
+ * (parses to ayoengeyä, ayoengey, awngeyä, and awngey)
+ * "k-ìyev/iyev-am--e"
+ * (parses to kìyevame and kiyevame)
  */
 
 module.exports = {

@@ -13,8 +13,14 @@ module.exports = {
 }
 
 /**
- * Conjugates a verb. Returns an array with six elements as detailed
- * above.
+ * Conjugates a verb and returns a conjugation string with five parts:
+ *
+ * * the part before the prefirst-position infix;
+ * * the prefirst-position infix;
+ * * the first-position infix;
+ * * the part between the first- and second-position infixes;
+ * * the second-position infix;
+ * * the part after the second-position infix.
  *
  * verb - the verb stem in which infix positions are marked by two dots
  * infixes - an array with three infixes
