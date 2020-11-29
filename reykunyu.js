@@ -458,10 +458,14 @@ function getSuggestionsFor(query) {
 }
 
 // normalizes a query by replacing weird Unicode tìftang variations by
-// normal ASCII '
+// normal ASCII ', and c -> ts / g -> ng
 function preprocessQuery(query) {
 	query = query.replace(/’/g, "'");
 	query = query.replace(/‘/g, "'");
+	query = query.replace(/c/g, "ts");
+	query = query.replace(/C/g, "Ts");
+	query = query.replace(/(?<![Nn])g/g, "ng");
+	query = query.replace(/(?<![Nn])G/g, "Ng");
 	return query;
 }
 
