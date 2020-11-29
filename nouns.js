@@ -234,7 +234,7 @@ function genitiveSuffix(noun) {
 			if (noun.slice(-2) === "ia") {
 				return ["ä"];  // note: in this case, drop the a from the stem
 			} else {
-				if (noun === "omatikaya") {
+				if (noun === "omatik2a") {
 					return ["ä"];
 				} else {
 					return ["yä"];
