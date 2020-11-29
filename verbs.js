@@ -53,6 +53,13 @@ function conjugate(verb, infixes) {
 		}
 	}
 
+	// http://naviteri.org/2016/07/interviews-questions-comments/
+	if (second === "uy") {
+		if (between.length && between.charAt(between.length - 1) === "u") {
+			second = "y";
+		}
+	}
+
 	// a special case for "zenke"
 	if (afterSecond.substring(0, 3) === "(e)") {
 		if (second === "uy" || second === "ats") {
@@ -173,6 +180,7 @@ function trySecondInfixes(candidate) {
 	tryInfix("eng", "äng");
 	tryInfix("uy", "uy");
 	tryInfix("uye", "uy");  // for z.en.(e)ke
+	tryInfix("y", "uy");  // for verbs like nui
 	tryInfix("ats", "ats");
 	tryInfix("atse", "ats");  // for z.en.(e)ke
 
