@@ -274,8 +274,22 @@ function statusNoteSection(wordStatus, statusNote) {
 	if (wordStatus === "unconfirmed") {
 		$noteSection.append("<b>Unconfirmed:</b> ");
 		$noteSection.addClass("unconfirmed");
+	} else if (wordStatus === "loan") {
+		$noteSection.append("<b>Loanword:</b> ");
+		$noteSection.addClass("loan");
 	}
-	$noteSection.append(statusNote);
+	if (statusNote) {
+		$noteSection.append(statusNote);
+	} else {
+		if (wordStatus === "unconfirmed") {
+			$noteSection.append("This word has never been officially confirmed by Paul Frommer. Be careful when using it.");
+		} else if (wordStatus === "loan") {
+			$noteSection.append("This word was loaned from English or another Earth language. " +
+				"For completeness, we include loanwords in this dictionary if and only if Paul Frommer has used them in one of his writings. " +
+				"However, since any word could be loaned into Na'vi if the need arises to talk about Earth concepts, " +
+				"this distinction is by definition arbitrary.");
+		}
+	}
 	return $noteSection;
 }
 
@@ -599,7 +613,7 @@ function createResultBlock(i, r, query) {
 		$result.append(noteSection(r["meaning_note"]));
 	}
 
-	if (r["status_note"]) {
+	if (r["status"]) {
 		$result.append(statusNoteSection(r["status"], r["status_note"]));
 	}
 
