@@ -177,6 +177,20 @@ h1 {
 	font-weight: 700;
 }
 
+.result .definition-image {
+	float: right;
+	margin-left: 40px;
+}
+
+.result .definition-image img {
+	width: 250px;
+}
+
+.result .definition-image .credit {
+	text-align: center;
+	font-style: italic;
+}
+
 .result .result-item {
 	margin-left: 28px;
 	margin-top: 20px;

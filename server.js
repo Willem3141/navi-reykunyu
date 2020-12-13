@@ -83,6 +83,8 @@ app.get('/api/random', function(req, res) {
 	res.json(reykunyu.getRandomWords(req.query["holpxay"]));
 });
 
+app.use('/ayrel', express.static('ayrel'));
+
 http.listen(config["port"], function() {
 	console.log('listening on *:' + config["port"]);
 });

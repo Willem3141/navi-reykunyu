@@ -220,6 +220,16 @@ function externalLenitionExplanation(lenition) {
 	return $lenition;
 }
 
+function imageSection(name, image) {
+	let $section = $('<div/>').addClass('definition-image');
+	$('<img/>').attr('src', '/ayrel/' + image)
+			.appendTo($section);
+	$('<div/>').addClass('credit')
+			.text(name + ' drawn by Eana Unil')
+			.appendTo($section);
+	return $section;
+}
+
 function translationSection(sìralpeng) {
 	let $section = $('<div/>').addClass('result-item definition');
 	if (sìralpeng.length === 1) {
@@ -606,6 +616,10 @@ function createResultBlock(i, r, query) {
 	}
 
 	$resultWord.appendTo($result);
+
+	if (r["image"]) {
+		$result.append(imageSection(r["na'vi"], r["image"]));
+	}
 
 	$result.append(translationSection(r["translations"]));
 
