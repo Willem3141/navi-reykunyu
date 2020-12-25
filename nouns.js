@@ -213,7 +213,9 @@ function dativeSuffix(noun) {
 		return ["r", "ru"];
 	} else {
 		if (endsInConsonant(noun)) {
-			return ["ur"];
+			if (noun.slice(-1) === "'") {
+				return ["ur", "ru"];
+			}
 		} else {
 			if (noun.slice(-1) === "1") {  // aw
 				return ["ur", "r", "ru"];

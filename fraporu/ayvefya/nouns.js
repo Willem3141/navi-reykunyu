@@ -49,6 +49,9 @@ function dative(noun) {
         return noun + "-r(u)"
     } else {
         if (endsInConsonant(noun)) {
+            if (noun.slice(-1) === "'") {
+                return noun + "-ur/ru";
+            }
             return noun + "-ur"
         } else {
             if (noun.slice(-1) === "w") {
