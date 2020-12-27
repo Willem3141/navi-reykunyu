@@ -163,12 +163,12 @@ function conjugate(noun, affixes) {
 		stemPrefix === "";
 	
 	if (needsLenition) {
-		
 		let lenited = lenite(noun);
 		return convert.decompressAll([
 				determinerPrefix, pluralPrefix,
 				stemPrefix, lenited[0], lenited[1], stemSuffix,
 				determinerSuffix, caseSuffix, finalSuffix]);
+
 	} else {
 		// else, no lenition
 		return convert.decompressAll([
@@ -215,6 +215,8 @@ function dativeSuffix(noun) {
 		if (endsInConsonant(noun)) {
 			if (noun.slice(-1) === "'") {
 				return ["ur", "ru"];
+			} else {
+				return ["ur"];
 			}
 		} else {
 			if (noun.slice(-1) === "1") {  // aw
