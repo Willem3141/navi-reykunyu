@@ -422,6 +422,9 @@ function nounConjugationSection(conjugation, note) {
 			continue;
 		}
 		let c = conjugation[j][0];
+		if (!c) {
+			continue;
+		}
 		let formatted = nounConjugationString(c);
 		if (j > 1) {
 			hideString += ", ";
@@ -439,6 +442,9 @@ function nounConjugationSection(conjugation, note) {
 			c = conjugation[1][i];
 		} else {
 			c = conjugation[0][i];
+		}
+		if (!c) {
+			continue;
 		}
 		let formatted = nounConjugationString(c);
 		if (i > 1) {
