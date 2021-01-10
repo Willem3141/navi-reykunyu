@@ -24,8 +24,16 @@
   font-style: italic;
 }
 
+body,
+.ui.button,
+.ui.modal > .header,
+h2, h3, h4, h5,
+.ui.menu,
+.ui.form input {
+	font-family: 'Calluna Sans' !important;
+}
+
 body {
-	font-family: 'Calluna Sans';
 	font-size: 16px;
 	background-color: #fff;
 	color: #222;
@@ -42,6 +50,11 @@ h1 {
 	font-family: 'Julius Sans One';
 	padding-bottom: 5px;
 	border-bottom: 1px solid #ddd;
+}
+
+h1 #user-label {
+	position: relative;
+	top: -5px;
 }
 
 #search-box {
@@ -156,6 +169,12 @@ h1 {
 
 .result .result-word .type > .detail {
 	opacity: 0.6;
+}
+
+.result .result-word .edit-button {
+	margin-left: 26px;
+	position: relative;
+	top: -5px;
 }
 
 .result .result-word .conjugation-explanation,
@@ -384,6 +403,15 @@ table.conjugation-table {
 
 #word-list .stressed {
 	text-decoration: underline;
+}
+
+.warning {
+	background-image: url('/ayrel/tsahey.svg');
+	background-repeat: no-repeat;
+	background-size: 1em;
+	background-position: 0 5px;
+	font-weight: 700;
+	padding-left: 22px;
 }
 
 @media (prefers-color-scheme: dark) {

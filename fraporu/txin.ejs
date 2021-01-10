@@ -3,30 +3,49 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Reykunyu &bull; Online Na'vi-English dictionary</title>
+		<title>Reykunyu</title>
 		<link rel="stylesheet" type="text/css" href="aysrungsiyu/semantic/dist/semantic.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="tìlam/tìlam.css" rel="stylesheet">
 	</head>
-	<body>
+	<body<%- user ? ' class="editable"' : '' %>>
 		<div class="container">
 			<h1>
 				Reykunyu
 					<div class="ui icon right floated top right pointing dropdown basic button">
 						<i class="cogs icon"></i>
 						<div class="menu">
+							<% if (user) { %>
+							<div class="ui dropdown item">
+								Administration
+								<i class="dropdown icon"></i>
+								<div class="menu">
+									<a href="/add" class="item disabled">Add new word</a>
+									<a href="/history" class="item">Recent edits</a>
+									<a href="/logout" class="item">Logout</a>
+								</div>
+							</div>
+							<!--<a href="/add" class="item">Add word</a>-->
+							<% } else { %>
+							<a href="/login" class="item">Login</a>
+							<% } %>
 							<a href="/all" class="item">Complete word list</a>
 							<div id="api-button" class="item">API</div>
 							<div id="settings-button" class="item">Settings</div>
 							<div id="credits-button" class="item">Credits</div>
 						</div>
-				</div>
+					</div>
+					<% if (user) { %>
+					<div id="user-label" class="ui left pointing basic label">
+						Kaltxì ma <%= user.username %>!
+					</div>
+					<% } %>
 			</h1>
 			<form id="search-form">
 				<div class="ui search fluid">
 					<div class="ui left icon input fluid">
 						<i class="search icon"></i>
-						<input id="search-box" type="search" placeholder="Search..." autofocus>
+						<input id="search-box" type="search" placeholder="Search..." autofocus value="<%= query %>">
 						<!--<select id="mode-dropdown" class="ui compact selection dropdown">
 							<option selected value="navi">Single word</option>
 							<option value="english">Sentence search</option>

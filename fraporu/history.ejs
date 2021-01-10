@@ -1,0 +1,53 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Recent edits &bull; Reykunyu</title>
+		<link rel="stylesheet" type="text/css" href="aysrungsiyu/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="tìlam/tìlam.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<h1>
+				Recent edits
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
+				<a href="/" class="ui icon right floated top right basic button">
+					<i class="arrow left icon"></i> Back to Reykunyu
+				</a>
+			</h1>
+
+			<table class="ui table">
+				<thead>
+					<tr>
+						<th>User</th>
+						<th>Date / time (UTC)</th>
+						<th>Word edited</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% for (let h in history) {
+						let item = history[h];
+					%>
+					<tr>
+						<td><%= item['user'] %></td>
+						<% let date = new Date(item['date']);
+						let parts = date.toISOString().split('T') %>
+						<td><%= parts[0] %> <span class="muted"><%= parts[1].split('.')[0] %></span></td>
+						<td><%= item['word'] %> <span class="muted">(<%= item['type'] %>)</span></td>
+					</tr>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
+
+		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
+	</body>
+</html>
+

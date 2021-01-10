@@ -1,4 +1,8 @@
 $(function() {
+	if ($('#search-box').val().length) {
+		sngäiTìfwusew();
+	}
+
 	$('#search-form').submit(sngäiTìfwusew);
 
 	$('.ui.search').search({
@@ -277,6 +281,14 @@ function pronunciationSection(lìupam, fnel) {
 	$tìlam.append(")");
 	
 	return $tìlam;
+}
+
+function editButton(word, type) {
+	let $button = $('<a/>').addClass('ui icon basic button edit-button');
+	const url = "/edit?word=" + word + "&type=" + type;
+	$button.attr('href', url);
+	$('<i/>').addClass('pencil icon').appendTo($button);
+	return $button;
 }
 
 function statusNoteSection(wordStatus, statusNote) {
@@ -612,6 +624,11 @@ function createResultBlock(i, r, query) {
 
 	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
 
+	const showEditButton = $('body').hasClass('editable');
+	if (showEditButton) {
+		$resultWord.append(editButton(r["na'vi"], r["type"]));
+	}
+
 	if (r.hasOwnProperty("conjugated")) {
 		$explanation = conjugationExplanation(r["conjugated"]);
 		$resultWord.append($explanation);
@@ -655,7 +672,7 @@ function createResultBlock(i, r, query) {
 		$result.append(infixesSection(r["infixes"], r["conjugation_note"]));
 	}
 
-	if (r["sentences"].length > 0) {
+	if (r["sentences"] && r["sentences"].length) {
 		$result.append(sentencesSection(r["sentences"], r["na'vi"] + ":" + r["type"]));
 	}
 
