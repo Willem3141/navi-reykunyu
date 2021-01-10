@@ -5,6 +5,23 @@
 var fs = require('fs');
 
 var express = require('express');
+var session = require('express-session');
+var sqliteSession = require('connect-sqlite3')(session);
+
+var user = require('./user');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+passport.use(new LocalStrategy(
+	function (username, password, done) {
+		const foundUser = user.findUser(username, password);
+		if (foundUser) {
+			return done(null, foundUser);
+		} else {
+			return done(null, false);
+		}
+	}
+));
+
 var app = express();
 var http = require('http').Server(app);
 
@@ -19,18 +36,121 @@ try {
 	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
 }
 
+const ejs = require('ejs');
+
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(session({
+	store: new sqliteSession(),
+	secret: config["secret"],
+	resave: true,
+	saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function (user, cb) {
+	cb(null, user.id);
+});
+
+passport.deserializeUser(function (id, cb) {
+	if (user.users.hasOwnProperty(id)) {
+		cb(null, user.users[id]);
+	} else {
+		cb('User not found');
+	}
+});
+
 app.use(express.static('fraporu'));
 
+app.set('views', __dirname + '/fraporu');
+app.set('view engine', 'ejs');
+
 app.get('/', function(req, res) {
-	res.sendFile(__dirname + '/fraporu/txin.html');
+	res.render('txin', { user: req.user, query: req.query['q'] });
 });
 
 app.get('/all', function(req, res) {
 	res.sendFile(__dirname + '/fraporu/fralì\'u.html');
 });
 
+app.get('/login', function(req, res) {
+	res.sendFile(__dirname + '/fraporu/login.html');
+});
+
+app.post('/login', passport.authenticate('local', {
+	'successRedirect': '/',
+	'failureRedirect': '/login'
+}/*, function(err, user, info) {
+	console.log(err, user, info);
+}*/));
+
+app.get('/logout', function(req, res) {
+	req.logout();
+	res.redirect('/');
+});
+
 app.get('/edit', function(req, res) {
-	res.sendFile(__dirname + '/fraporu/leykatem.html');
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	const word = req.query["word"];
+	const type = req.query["type"];
+	if (!word || !type) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const wordData = reykunyu.getWord(word, type);
+	res.render('leykatem', { user: req.user, word: wordData });
+});
+
+app.post('/edit', function(req, res) {
+
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	let word, type, data;
+	try {
+		word = req.body["word"];
+		type = req.body["type"];
+		data = JSON.parse(req.body["data"]);
+	} catch (e) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+
+	let old = reykunyu.getWord(word, type);
+	reykunyu.removeWord(word, type);
+	reykunyu.insertWord(data);
+	let history = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	history.push({
+		'user': req.user['username'],
+		'date': new Date(),
+		'word': word,
+		'type': type,
+		'old': old,
+		'data': data
+	});
+	fs.writeFileSync(__dirname + "/history.json", JSON.stringify(history));
+	reykunyu.saveDictionary();
+	res.send();
+});
+
+app.get('/history', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	let historyData = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	historyData.slice(Math.max(1, historyData.length - 20));  // 20 last elements
+	historyData.reverse();
+	res.render('history', { user: req.user, history: historyData });
 });
 
 app.get('/api/fwew', function(req, res) {

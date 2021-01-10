@@ -1,4 +1,5 @@
 module.exports = {
+	'getWord': getWord,
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
@@ -6,6 +7,9 @@ module.exports = {
 	'getAll': getAll,
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
+	'removeWord': removeWord,
+	'insertWord': insertWord,
+	'saveDictionary': saveDictionary
 }
 
 const fs = require('fs');
@@ -22,8 +26,8 @@ const verbs = require('./verbs');
 const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
-var dictionary = {};
-var allWords = [];
+var dictionary = JSON.parse(fs.readFileSync(__dirname + "/words.json"));
+/*var dictionary = {};
 fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 	let wordData;
 	try {
@@ -32,19 +36,23 @@ fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 		console.log("error when reading " + file + "; ignoring");
 		return;
 	}
-	wordData["sentences"] = [];
-	let type = '?';
-	if (wordData['type']) {
-		type = wordData['type'];
-	}
-	let key = wordData["na'vi"].toLowerCase() + ":" + type
+	let key = wordData["na'vi"].toLowerCase() + ":" + wordData["type"];
 	dictionary[key] = wordData;
-	allWords.push(wordData);
-});
+});*/
 
-var pronounForms = pronouns.getConjugatedForms(dictionary);
+var pronounForms = {};
+reloadData();
 
-var lines = fs.readFileSync(__dirname + "/aysìkenong/corpus.tsv", 'utf8').split("\n");
+function reloadData() {
+	pronounForms = pronouns.getConjugatedForms(dictionary);
+
+	var allWords = [];
+	for (let word of Object.keys(dictionary)) {
+		allWords.push(dictionary[word]);
+	}
+}
+
+/*var lines = fs.readFileSync(__dirname + "/aysìkenong/corpus.tsv", 'utf8').split("\n");
 var sentences = [];
 lines.forEach(line => {
 	let fields = line.split("\t");
@@ -72,7 +80,7 @@ lines.forEach(line => {
 			dictionary[naviWord]["sentences"].push(sentence);
 		}
 	});
-});
+});*/
 
 function simplifiedTranslation(translation) {
 	let result = "";
@@ -87,7 +95,7 @@ function simplifiedTranslation(translation) {
 	return result;
 }
 
-for (word in dictionary) {
+/*for (word in dictionary) {
 	if (dictionary.hasOwnProperty(word)) {
 		
 		let etymologyList = dictionary[word]["etymology"];
@@ -116,6 +124,10 @@ for (word in dictionary) {
 			}
 		}
 	}
+}*/
+
+function getWord(word, type) {
+	return dictionary[word.toLowerCase() + ':' + type];
 }
 
 function getResponsesFor(query) {
@@ -567,5 +579,19 @@ function getTransitivityList() {
 	}
 
 	return list;
+}
+
+function removeWord(word, type) {
+	delete dictionary[word + ':' + type];
+	reloadData();
+}
+
+function insertWord(data) {
+	dictionary[data["na'vi"] + ':' + data["type"]] = data;
+	reloadData();
+}
+
+function saveDictionary() {
+	fs.writeFileSync(__dirname + "/words.json", JSON.stringify(dictionary));
 }
 
