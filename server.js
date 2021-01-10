@@ -19,6 +19,10 @@ try {
 	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
 }
 
+const di = require('discord-interactions');
+
+const discord = require('./discord');
+
 app.use(express.static('fraporu'));
 
 app.get('/', function(req, res) {
@@ -61,6 +65,15 @@ app.get('/api/list/transitivity', function(req, res) {
 	res.json(reykunyu.getTransitivityList());
 });
 
+app.get('/api/sound', function(req, res) {
+	const file = __dirname + '/fam/' + req.query["word"] + "-" + req.query["type"] + '.mp3';
+	if (fs.existsSync(file)) {
+		res.sendFile(file);
+	} else {
+		res.sendStatus(404);
+	}
+});
+
 app.get('/api/parse', function(req, res) {
 	let parseOutput = tslamyu.doParse(reykunyu.getResponsesFor(req.query["tìpawm"]));
 	let output = {};
@@ -84,6 +97,22 @@ app.get('/api/random', function(req, res) {
 });
 
 app.use('/ayrel', express.static('ayrel'));
+
+app.post('/api/discord/interactions', di.verifyKeyMiddleware('7cf7cb6385a26d7257e359bbf47d56b6824fda941dffa0bc629347c34c56d1d5'), function(req, res) {
+	const message = req.body;
+
+	if (message.type === di.InteractionType.COMMAND) {
+		// message['data']['name'] should be 'run' (TODO check that)
+		const query = message['data']['options'][0]['value'];
+		console.log(query);
+		res.json({
+			"type": di.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+			"data": {
+				"content": discord.makeMessage(reykunyu.getResponsesFor(query), reykunyu.getSuggestionsFor(query))
+			}
+		});
+	}
+});
 
 http.listen(config["port"], function() {
 	console.log('listening on *:' + config["port"]);
