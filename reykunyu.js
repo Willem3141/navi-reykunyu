@@ -252,18 +252,22 @@ function unlenite(word) {
 // lenited; this is the case for nouns in the short plural
 // (i.e., "mì hilvan" cannot be parsed as "mì + (ay)hilvan")
 function forbiddenByExternalLenition(result) {
-	if (result.hasOwnProperty(["conjugated"])) {
+	if (!result.hasOwnProperty("conjugated")) {
 		return false;
 	}
 	let outerConjugated = result["conjugated"][result["conjugated"].length - 1];
-	if (!outerConjugated["type"] === "n") {
+	if (outerConjugated["type"] !== "n") {
 		return false;
 	}
-	let isShortPlural = outerConjugated["conjugation"]["affixes"][1] === "(ay)";
+	const determinerPrefix = outerConjugated["conjugation"]["affixes"][0];
+	const pluralPrefix = outerConjugated["conjugation"]["affixes"][1];
+	console.log(outerConjugated);
+	let isShortPlural = pluralPrefix === "(ay)" ||
+			(pluralPrefix === "ay" && !outerConjugated["conjugation"]["result"].startsWith("ay"));
 	if (!isShortPlural) {
 		return false;
 	}
-	let hasNoDeterminer = outerConjugated["conjugation"]["affixes"][0] === "";
+	let hasNoDeterminer = determinerPrefix === "";
 	return hasNoDeterminer;
 }
 
