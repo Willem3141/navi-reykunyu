@@ -42,9 +42,14 @@ $(function() {
 	$('#translations-modal-ok-button').on('click', function () {
 		const $field = $('#translations-modal').data('editing');
 		const languages = $field.data();
-		for (let lang of Object.keys(languages)) {
-			$field.data()[lang] = $('#translation-' + lang + '-field').val();
-		}
+		$('#translations-modal input').each(function() {
+			let id = $(this).attr('id');
+			let lang = id.split('-')[1];
+			let value = $(this).val();
+			if (value.length) {
+				$field.data()[lang] = value;
+			}
+		});
 		$('#translations-modal').modal('hide');
 	});
 });
