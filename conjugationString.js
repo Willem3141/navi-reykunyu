@@ -37,10 +37,7 @@ function formsRecursive(formString) {
 	let parenRegex = /([^(]*)\(([^)]*)\)(.*)/;
 	let result = parenRegex.exec(formString);
 	if (result) {
-		return [
-			formsRecursive(result[1] + result[2] + result[3]),
-			formsRecursive(result[1] + result[3])
-		];
+		return formsRecursive(result[1] + result[2] + result[3]).concat(formsRecursive(result[1] + result[3]));
 	}
 
 	// parse slashes
