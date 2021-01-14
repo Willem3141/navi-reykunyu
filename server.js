@@ -219,7 +219,7 @@ app.get('/api/fwew', function(req, res) {
 });
 
 app.get('/api/mok', function(req, res) {
-	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"]));
+	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"], req.query["language"]));
 });
 
 app.get('/api/search', function(req, res) {

@@ -83,14 +83,18 @@ lines.forEach(line => {
 	});
 });*/
 
-function simplifiedTranslation(translation) {
+function simplifiedTranslation(translation, language) {
 	let result = "";
 	
 	for (let i = 0; i < translation.length; i++) {
 		if (i > 0) {
 			result += "; ";
 		}
-		result += translation[i]["en"].split(",")[0];
+		if (translation[i].hasOwnProperty(language)) {
+			result += translation[i][language].split(",")[0];
+		} else {
+			result += translation[i]["en"].split(",")[0];
+		}
 	}
 	
 	return result;
@@ -458,7 +462,7 @@ function findVerb(word) {
 	return results;
 }
 
-function getSuggestionsFor(query) {
+function getSuggestionsFor(query, language) {
 	query = preprocessQuery(query);
 	query = query.toLowerCase();
 	let results = [];
@@ -468,7 +472,7 @@ function getSuggestionsFor(query) {
 			if (word["na'vi"].toLowerCase().startsWith(query)) {
 				results.push({
 					"title": word["na'vi"],
-					"description": '<div class="ui horizontal label">' + word['type'] + '</div> ' + simplifiedTranslation(word["translations"])
+					"description": '<div class="ui horizontal label">' + word['type'] + '</div> ' + simplifiedTranslation(word["translations"], language)
 				});
 			}
 		}

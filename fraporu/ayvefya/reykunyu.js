@@ -5,9 +5,28 @@ $(function() {
 
 	$('#search-form').submit(sngäiTìfwusew);
 
+	if (!localStorage.getItem('reykunyu-language')) {
+		localStorage.setItem('reykunyu-language', 'en');
+	}
+	$('#language-dropdown').dropdown('set selected',
+			localStorage.getItem('reykunyu-language'));
+	$('#language-dropdown').dropdown({
+		onChange: function(value) {
+			localStorage.setItem('reykunyu-language', value);
+			sngäiTìfwusew();
+			$('.ui.search').search('clear cache');
+			setUpAutocomplete();
+			return false;
+		}
+	});
+
+	setUpAutocomplete();
+});
+
+function setUpAutocomplete() {
 	$('.ui.search').search({
 		apiSettings: {
-			url: 'api/mok?tìpawm={query}'
+			url: 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}'
 		},
 		maxResults: 0,
 		searchDelay: 0,
@@ -21,7 +40,7 @@ $(function() {
 			return false;
 		}
 	});
-});
+}
 
 $('.ui.checkbox').checkbox();
 $('.ui.dropdown').dropdown();
@@ -234,14 +253,23 @@ function imageSection(name, image) {
 	return $section;
 }
 
+function getTranslation(tìralpeng) {
+	let lang = localStorage.getItem('reykunyu-language');
+	if (tìralpeng.hasOwnProperty(lang)) {
+		return tìralpeng[lang];
+	} else {
+		return tìralpeng['en'];
+	}
+}
+
 function translationSection(sìralpeng) {
 	let $section = $('<div/>').addClass('result-item definition');
 	if (sìralpeng.length === 1) {
-		$section.text(sìralpeng[0]["en"]);
+		$section.text(getTranslation(sìralpeng[0]));
 	} else {
 		let $list = $('<ol/>').addClass('meaning-list').appendTo($section);
 		for (let i = 0; i < sìralpeng.length; i++) {
-			$('<li/>').text(sìralpeng[i]["en"]).appendTo($list);
+			$('<li/>').text(getTranslation(sìralpeng[i])).appendTo($list);
 		}
 	}
 	return $section;
