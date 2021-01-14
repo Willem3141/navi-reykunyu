@@ -39,6 +39,15 @@ function pronunciationSection(lìupam, fnel) {
 	return $tìlam;
 }
 
+function getTranslation(tìralpeng) {
+	let lang = localStorage.getItem('reykunyu-language');
+	if (tìralpeng.hasOwnProperty(lang)) {
+		return tìralpeng[lang];
+	} else {
+		return tìralpeng['en'];
+	}
+}
+
 function createWordBlock(word) {
 	let $block = $("<div/>");
 	$block.append($('<span/>').addClass('word').text(word["na'vi"]));
@@ -47,7 +56,7 @@ function createWordBlock(word) {
 	$block.append(' ');
 	$block.append($('<div/>').addClass("ui horizontal label").text(word["type"]));
 	$block.append(' ');
-	$block.append($('<span/>').addClass('translation').text(word["translations"][0]["en"]));
+	$block.append($('<span/>').addClass('translation').text(getTranslation(word["translations"][0])));
 	return $block;
 }
 
