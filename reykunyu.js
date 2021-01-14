@@ -1,5 +1,6 @@
 module.exports = {
 	'getWord': getWord,
+	'hasWord': hasWord,
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
@@ -128,6 +129,10 @@ function simplifiedTranslation(translation) {
 
 function getWord(word, type) {
 	return dictionary[word.toLowerCase() + ':' + type];
+}
+
+function hasWord(word, type) {
+	return dictionary.hasOwnProperty(word.toLowerCase() + ':' + type);
 }
 
 function getResponsesFor(query) {

@@ -27,7 +27,8 @@
 					<tr>
 						<th>User</th>
 						<th>Date / time (UTC)</th>
-						<th>Word edited</th>
+						<th>Word</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -40,6 +41,7 @@
 						let parts = date.toISOString().split('T') %>
 						<td><%= parts[0] %> <span class="muted"><%= parts[1].split('.')[0] %></span></td>
 						<td><%= item['word'] %> <span class="muted">(<%= item['type'] %>)</span></td>
+						<td><span class="muted"><%= item['old'] ? 'edited' : 'added' %></span></td>
 					</tr>
 					<% } %>
 				</tbody>

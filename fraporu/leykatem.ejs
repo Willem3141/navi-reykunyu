@@ -36,7 +36,7 @@ const types = [
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="tìlam/tìlam.css" rel="stylesheet">
 	</head>
-	<body>
+	<body data-url="<%= post_url %>">
 		<div class="container">
 			<h1>
 				Word editor
@@ -187,7 +187,10 @@ const types = [
 					<label>Etymology</label>
 					<textarea id="etymology-field" rows="2"><%= word['etymology'] %></textarea>
 				</div>
-				<% if (typeof word['source'] === 'string') {
+				<% if (!word.hasOwnProperty('source')) {
+					word['source'] = '';
+				}
+				if (typeof word['source'] === 'string') {
 					word['source'] = [word['source']];
 				} %>
 				<div class="fields">

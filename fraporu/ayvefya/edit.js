@@ -26,7 +26,8 @@ $(function() {
 
 	$('#save-button').on('click', function () {
 		const wordData = generateWordData();
-		$.post('/edit', {
+		const url = $('body').data('url');
+		$.post(url, {
 			'word': word,
 			'type': type,
 			'data': JSON.stringify(wordData)

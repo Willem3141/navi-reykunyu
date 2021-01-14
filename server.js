@@ -92,6 +92,60 @@ app.get('/logout', function(req, res) {
 	res.redirect('/');
 });
 
+app.get('/add', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	res.render('leykatem', {
+		'user': req.user,
+		'post_url': '/add',
+		'word': {
+			"na'vi": '',
+			"translations": [{'en': ''}]
+		}
+	});
+});
+
+app.post('/add', function(req, res) {
+
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+
+	let data;
+	try {
+		data = JSON.parse(req.body["data"]);
+	} catch (e) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	let word = data["na'vi"];
+	let type = data["type"];
+	let existing = reykunyu.hasWord(word, type);
+	if (existing) {
+		res.status(400);
+		res.json({'message': 'Word / type combination already exists'});
+		return;
+	}
+	reykunyu.insertWord(data);
+	let history = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	history.push({
+		'user': req.user['username'],
+		'date': new Date(),
+		'word': word,
+		'type': type,
+		'data': data
+	});
+	fs.writeFileSync(__dirname + "/history.json", JSON.stringify(history));
+	reykunyu.saveDictionary();
+	res.send();
+});
+
 app.get('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
@@ -106,7 +160,11 @@ app.get('/edit', function(req, res) {
 		return;
 	}
 	const wordData = reykunyu.getWord(word, type);
-	res.render('leykatem', { user: req.user, word: wordData });
+	res.render('leykatem', {
+		'user': req.user,
+		'post_url': '/edit',
+		'word': wordData
+	});
 });
 
 app.post('/edit', function(req, res) {
