@@ -72,10 +72,10 @@ const types = [
 							<tbody>
 								<tr>
 									<td>
-										<input class="syllables-cell" type="text" placeholder="ta-ron" value="<%= word['pronunciation'][0] %>">
+										<input class="syllables-cell" type="text" placeholder="ta-ron" value="<%= word['pronunciation'] ? word['pronunciation'][0] : '' %>">
 									</td>
 									<td class="five wide">
-										<input class="stress-cell" type="number" placeholder="1" value="<%= word['pronunciation'][1] %>">
+										<input class="stress-cell" type="number" placeholder="1" value="<%= word['pronunciation'] ? word['pronunciation'][1] : '' %>">
 									</td>
 									<td class="one wide">
 										<div class="ui disabled floated small icon button">

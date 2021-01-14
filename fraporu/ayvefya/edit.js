@@ -76,10 +76,12 @@ function generateWordData() {
 	if ($('#conjugation-note-field').val()) {
 		word["conjugation_note"] = $('#conjugation-note-field').val();
 	}
-	word["pronunciation"] = [
-		$('#pronunciation-field .syllables-cell').val(),
-		parseInt($('#pronunciation-field .stress-cell').val(), 10)
-	];
+	if ($('#pronunciation-field .syllables-cell').val()) {
+		word["pronunciation"] = [
+			$('#pronunciation-field .syllables-cell').val(),
+			parseInt($('#pronunciation-field .stress-cell').val(), 10)
+		];
+	}
 
 	let translations = [];
 	const $rows = $('#definition-field').find('tr');
