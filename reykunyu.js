@@ -42,12 +42,13 @@ fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 });*/
 
 var pronounForms = {};
+var allWords = [];
 reloadData();
 
 function reloadData() {
 	pronounForms = pronouns.getConjugatedForms(dictionary);
 
-	var allWords = [];
+	allWords = [];
 	for (let word of Object.keys(dictionary)) {
 		allWords.push(dictionary[word]);
 	}
