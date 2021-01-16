@@ -255,6 +255,10 @@ h1 #user-label {
 	overflow-x: auto;
 }
 
+.result .result-item.affixes table tr td:first-child {
+	font-weight: 700;
+}
+
 .result .result-item.status-note {
 	background-color: #fff3bf;
 	padding: 10px 14px;

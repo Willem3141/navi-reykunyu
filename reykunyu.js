@@ -305,6 +305,7 @@ function lookUpWord(queryWord) {
 				"type": "n",
 				"conjugation": nounResult
 			}];
+			noun["affixes"] = makeAffixList(noun["conjugated"]);
 			wordResults.push(noun);
 		}
 		if (nounResult["root"].endsWith("yu")) {
@@ -326,6 +327,7 @@ function lookUpWord(queryWord) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
+					verb["affixes"] = makeAffixList(verb["conjugated"]);
 					let conjugation = conjugationString.formsFromString(
 						verbs.conjugate(verb["infixes"], verbResult["infixes"]));
 					if (conjugation.indexOf(possibleVerb) !== -1) {
@@ -358,6 +360,7 @@ function lookUpWord(queryWord) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
+					word["affixes"] = makeAffixList(word["conjugated"]);
 					wordResults.push(word);
 				}
 
@@ -371,6 +374,7 @@ function lookUpWord(queryWord) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
+					word["affixes"] = makeAffixList(word["conjugated"]);
 					wordResults.push(word);
 				}
 			}
@@ -386,6 +390,7 @@ function lookUpWord(queryWord) {
 				"type": "v",
 				"conjugation": result
 			}];
+			verb["affixes"] = makeAffixList(verb["conjugated"]);
 			let conjugation = conjugationString.formsFromString(
 					verbs.conjugate(verb["infixes"], result["infixes"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
@@ -461,6 +466,47 @@ function findVerb(word) {
 		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:?"])));
 	}
 	return results;
+}
+
+function makeAffixList(conjugated) {
+	list = [];
+
+	for (let conjugation of conjugated) {
+		if (conjugation['type'] === 'n') {
+			let affixes = conjugation['conjugation']['affixes'];
+			addAffix(list, affixes[0], ['aff:pre']);
+			addAffix(list, affixes[1], ['aff:pre']);
+			addAffix(list, affixes[2], ['aff:pre']);
+			addAffix(list, affixes[3], ['aff:suf']);
+			addAffix(list, affixes[4], ['aff:suf']);
+			addAffix(list, affixes[5], ['aff:suf', 'adp', 'adp:len']);
+			addAffix(list, affixes[6], ['aff:suf']);
+		}
+		if (conjugation['type'] === 'v_to_n') {
+			let affixes = conjugation['conjugation']['affixes'];
+			addAffix(list, affixes[0], ['aff:suf']);
+		}
+	}
+
+	return list;
+}
+
+function addAffix(list, affixString, types) {
+	if (!affixString.length) {
+		return;
+	}
+	let affix;
+	for (let t of types) {
+		if (hasWord(affixString, t)) {
+			affix = getWord(affixString, t);
+			break;
+		}
+	}
+	if (affix) {
+		list.push({
+			'affix': affix
+		});
+	}
 }
 
 function getSuggestionsFor(query, language) {

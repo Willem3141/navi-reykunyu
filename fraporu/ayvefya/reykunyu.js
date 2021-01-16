@@ -352,6 +352,28 @@ function noteSection(note) {
 	return $noteSection;
 }
 
+function affixesSection(affixes) {
+	let $affixesSection = $('<div/>').addClass('result-item affixes');
+	$affixesSection.append($('<div/>').addClass('header').text('Affixes'));
+	let $affixes = $('<div/>').addClass('body');
+
+	let $table = $('<table/>').appendTo($affixes);
+	for (let a of affixes) {
+		const affix = a['affix'];
+		console.log(affix["na'vi"]);
+		let $tr = $('<tr/>').appendTo($table);
+		let $affixLink = $('<a/>')
+				.html("&rarr; " + affix["na'vi"])
+				.attr('href', '/?q=' + affix["na'vi"]);
+		$('<td/>').append($affixLink).appendTo($tr);
+		$meaningCell = $('<td/>').appendTo($tr);
+		$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
+	}
+
+	$affixesSection.append($affixes);
+	return $affixesSection;
+}
+
 function sourceSection(source) {
 	let $sourceSection = $('<div/>').addClass('result-item see-also');
 	$sourceSection.append($('<div/>').addClass('header').text('Source'));
@@ -679,6 +701,10 @@ function createResultBlock(i, r, query) {
 
 	if (r["meaning_note"]) {
 		$result.append(noteSection(r["meaning_note"]));
+	}
+
+	if (r["affixes"] && r["affixes"].length) {
+		$result.append(affixesSection(r["affixes"]));
 	}
 
 	if (r["status"]) {
