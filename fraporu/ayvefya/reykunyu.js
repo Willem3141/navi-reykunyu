@@ -80,6 +80,9 @@ function tstxoFnelä(fnel) {
 		"v:cp": "verb/copula",
 		"phr": "phrase",
 		"inter": "interrogative",
+		"aff:pre": "prefix",
+		"aff:in": "infix",
+		"aff:suf": "suffix"
 	}
 	if (ngimaAyfnel[fnel]) {
 		return ngimaAyfnel[fnel];
