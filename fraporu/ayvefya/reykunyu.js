@@ -57,35 +57,9 @@ $('#credits-button').on("click", function() {
 // tìng fnelä tstxoti angim
 // fnel - fnelä tstxo apup (natkenong "n", "vtr")
 function tstxoFnelä(fnel) {
-	let ngimaAyfnel = {
-		"n": "noun",
-		"n:unc": "noun/uncountable",
-		"n:si": "verb/si",
-		"n:pr": "noun/proper name",
-		"pn": "pronoun",
-		"adj": "adjective",
-		"num": "numeral",
-		"adv": "adverb",
-		"adp": "adposition",
-		"adp:len": "adposition/leniting",
-		"intj": "interjection",
-		"part": "particle",
-		"conj": "conjunction",
-		"ctr": "F-word",
-		"v:?": "verb/unknown type",
-		"v:in": "verb/intransitive",
-		"v:tr": "verb/transitive",
-		"v:m": "verb/modal",
-		"v:si": "verb/si",
-		"v:cp": "verb/copula",
-		"phr": "phrase",
-		"inter": "interrogative",
-		"aff:pre": "prefix",
-		"aff:in": "infix",
-		"aff:suf": "suffix"
-	}
-	if (ngimaAyfnel[fnel]) {
-		return ngimaAyfnel[fnel];
+	const translation = _('type-' + fnel);
+	if (translation) {
+		return translation;
 	}
 	return "no idea.../ngaytxoa";
 }
@@ -104,13 +78,13 @@ function ngopFneläPätsìt(fnel) {
 function statusBadge(wordStatus) {
 	let $pätsì = $('<span/>').addClass('status-badge');
 	if (wordStatus === "unconfirmed") {
-		$pätsì.text("unconfirmed word");
+		$pätsì.text(_("status-unconfirmed"));
 		$pätsì.addClass("unconfirmed");
 	} else if (wordStatus === "unofficial") {
-		$pätsì.text("unofficial word");
+		$pätsì.text(_("status-unofficial"));
 		$pätsì.addClass("unofficial");
 	} else if (wordStatus === "loan") {
-		$pätsì.text("loanword");
+		$pätsì.text(_("status-loan"));
 		$pätsì.addClass("loan");
 	}
 	return $pätsì;
@@ -251,7 +225,7 @@ function imageSection(name, image) {
 	$('<img/>').attr('src', '/ayrel/' + image)
 			.appendTo($section);
 	$('<div/>').addClass('credit')
-			.text(name + ' drawn by Eana Unil')
+			.text(name + ' ' + _('image-drawn-by') + ' Eana Unil')
 			.appendTo($section);
 	return $section;
 }
@@ -285,7 +259,7 @@ function translationSection(sìralpeng) {
 function pronunciationSection(lìupam, fnel) {
 	let $tìlam = $('<span/>').addClass('stress');
 	if (!lìupam) {
-		$tìlam.append("(stress pattern unknown)");
+		$tìlam.append(_("stress-unknown"));
 		return $tìlam;
 	}
 	if (lìupam.length === 0) {
@@ -325,22 +299,19 @@ function editButton(word, type) {
 function statusNoteSection(wordStatus, statusNote) {
 	let $noteSection = $('<div/>').addClass('result-item status-note');
 	if (wordStatus === "unconfirmed") {
-		$noteSection.append("<b>Unconfirmed:</b> ");
+		$noteSection.append("<b>" + _('status-unconfirmed-header') + "</b> ");
 		$noteSection.addClass("unconfirmed");
 	} else if (wordStatus === "loan") {
-		$noteSection.append("<b>Loanword:</b> ");
+		$noteSection.append("<b>" + _('status-loan-header') + "</b> ");
 		$noteSection.addClass("loan");
 	}
 	if (statusNote) {
 		$noteSection.append(statusNote);
 	} else {
 		if (wordStatus === "unconfirmed") {
-			$noteSection.append("This word has never been officially confirmed by Paul Frommer. Be careful when using it.");
+			$noteSection.append(_('status-unconfirmed-explanation'));
 		} else if (wordStatus === "loan") {
-			$noteSection.append("This word was loaned from English or another Earth language. " +
-				"For completeness, we include loanwords in this dictionary if and only if Paul Frommer has used them in one of his writings. " +
-				"However, since any word could be loaned into Na'vi if the need arises to talk about Earth concepts, " +
-				"this distinction is by definition arbitrary.");
+			$noteSection.append(_('status-loan-explanation'));
 		}
 	}
 	return $noteSection;
@@ -376,7 +347,7 @@ function affixesSection(affixes) {
 
 function sourceSection(source) {
 	let $sourceSection = $('<div/>').addClass('result-item see-also');
-	$sourceSection.append($('<div/>').addClass('header').text('Source'));
+	$sourceSection.append($('<div/>').addClass('header').text(_('source')));
 	let $source = $('<div/>').addClass('body');
 	if (typeof source === "string") {
 		$source.html(source);
@@ -403,13 +374,13 @@ function createWordLink(link) {
 
 function etymologySection(etymology) {
 	let $etymologySection = $('<div/>').addClass('result-item etymology');
-	$etymologySection.append($('<div/>').addClass('header').text('Etymology'));
+	$etymologySection.append($('<div/>').addClass('header').text(_('etymology')));
 	let $etymology = $('<div/>').addClass('body');
 
 	if (typeof etymology === "string") {
 		$etymology.append(etymology);
 	} else {
-		$etymology.append('From ');
+		$etymology.append(_('etymology-from') + ' ');
 		for (let i = 0; i < etymology.length; i++) {
 			if (i > 0) {
 				$etymology.append(' + ');
@@ -428,7 +399,7 @@ function etymologySection(etymology) {
 // aysätare - sästarsìm aylì'uä a tare fìlì'ut
 function seeAlsoSection(seeAlso) {
 	let $aysätare = $('<div/>').addClass('result-item see-also');
-	$aysätare.append($('<div/>').addClass('header').text('See also'));
+	$aysätare.append($('<div/>').addClass('header').text(_('see-also')));
 	let $aysätareTxin = $('<div/>').addClass('body');
 
 	for (let i = 0; i < seeAlso.length; i++) {
@@ -446,7 +417,7 @@ function seeAlsoSection(seeAlso) {
 // ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
 function nounConjugationSection(conjugation, note) {
 	let $section = $('<details/>').addClass('result-item conjugation');
-	let $header = $('<summary/>').addClass('header').text('Conjugated forms').appendTo($section);
+	let $header = $('<summary/>').addClass('header').text(_('conjugated-forms')).appendTo($section);
 	let $headerHide = $('<span/>').addClass('header-hide').appendTo($header);
 
 	let $body = $('<div/>').addClass('body').appendTo($section);
@@ -454,12 +425,12 @@ function nounConjugationSection(conjugation, note) {
 	let $table = $('<table/>').addClass('conjugation-table').appendTo($body);
 
 	let $headerRow = $('<tr/>').appendTo($table);
-	let headers = ["", "singular", "dual", "trial", "plural <span class='muted'>(&gt; 3)</span>"];
+	let headers = ["", _("singular"), _("dual"), _("trial"), _("plural") + " <span class='muted'>(&gt; 3)</span>"];
 	for (let i = 0; i < 5; i++) {
 		$('<td/>').addClass('column-title').html(headers[i]).appendTo($headerRow);
 	}
 
-	let cases = ["subjective", "agentive", "patientive", "dative", "genitive", "topical"];
+	let cases = [_("subjective"), _("agentive"), _("patientive"), _("dative"), _("genitive"), _("topical")];
 
 	for (let i = 0; i < 6; i++) {
 		let $row = $('<tr/>').appendTo($table);
@@ -531,7 +502,7 @@ function nounConjugationString(c) {
 	c = c.split(";");
 	for (let k = 0; k < c.length; k++) {
 		if (k > 0) {
-			formatted += " <span class='muted'>or</span> ";
+			formatted += " <span class='muted'>" + _('or') + "</span> ";
 		}
 
 		let m = c[k].match(/(.*-\)?)(.*)(-.*)/);
@@ -574,12 +545,12 @@ function createNounConjugation(word, type, uncountable) {
 // ngop hapxìt a wìntxu fya'ot a leykatem syonlì'uti
 function adjectiveConjugationSection(word, type, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
-	let $header = $('<div/>').addClass('header').text('Attributive forms').appendTo($section);
+	let $header = $('<div/>').addClass('header').text(_('attributive-forms')).appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 
 	let html = "&lt;noun&gt; " + prefixed(word);
-	html += "&nbsp;&nbsp;<span class='muted'>or</span>&nbsp;&nbsp;";
-	html += suffixed(word) + " &lt;noun&gt;";
+	html += "&nbsp;&nbsp;<span class='muted'>" + _('or') + "</span>&nbsp;&nbsp;";
+	html += suffixed(word) + " &lt;" + _('type-n') + "&gt;";
 	$body.html(html);
 
 	if (note) {
@@ -592,7 +563,7 @@ function adjectiveConjugationSection(word, type, note) {
 // ngop hapxìt a wìntxu hemlì'uvit
 function infixesSection(infixes, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
-	let $header = $('<div/>').addClass('header').text('Infix positions').appendTo($section);
+	let $header = $('<div/>').addClass('header').text(_('infix-positions')).appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 	infixes = infixes.replace(".", "<span class='root-infix'>&#x2039;1&#x203a;</span>");
 	infixes = infixes.replace(".", "<span class='root-infix'>&#x2039;2&#x203a;</span>");
@@ -643,7 +614,11 @@ function createSentence(sentence, lemma) {
 
 function sentencesSection(sentences, lemma) {
 	let $section = $('<details/>').addClass('result-item examples');
-	let $header = $('<summary/>').addClass('header').text(`Sentence search (${sentences.length} usage${sentences.length > 1 ? 's' : ''} found)`).appendTo($section);
+	let $header = $('<summary/>').addClass('header')
+			.text(_('sentence-search') + ' (' + sentences.length + ' '
+				+ (sentences.length > 1 ? _('usages-found-singular') : _('usages-found-plural'))
+				+ ')')
+			.appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 
 	for (let i = 0; i < sentences.length; i++) {
@@ -760,9 +735,9 @@ function createResults(results) {
 		}
 	} else if (results["aysämok"].length) {
 		const suggestions = results["aysämok"].map(a => "<b>" + a + "</b>");
-		$results.append(createErrorBlock("No results found", "Did you mean " + suggestions.join(', ').replace(/, ([^,]*)$/, " or $1") + "?"));
+		$results.append(createErrorBlock(_("no-results"), _("did-you-mean") + " " + suggestions.join(', ').replace(/, ([^,]*)$/, " " + _("or") + " $1") + "?"));
 	} else {
-		$results.append(createErrorBlock("No results found", "Please make sure you are searching for a Na'vi word. At the moment, Reykunyu is Na'vi-to-English only."));
+		$results.append(createErrorBlock(_("no-results"), _("no-results-description")));
 	}
 }
 
@@ -771,9 +746,10 @@ function getShortTranslation(result) {
 		return result["short_translation"];
 	}
 
-	let translation = result["translations"][0]["en"];
+	let translation = getTranslation(result["translations"][0]);
 	translation = translation.split(',')[0];
 	translation = translation.split(';')[0];
+	translation = translation.split(' | ')[0];
 	translation = translation.split(' (')[0];
 
 	if (result["type"][0] === "v"
@@ -794,7 +770,7 @@ function createSentenceBarItem(result) {
 	let definitionCount = result["sì'eyng"].length;
 	if (definitionCount === 0) {
 		$('<div/>').addClass('more')
-			.text("(not found)")
+			.text(_("not-found)"))
 			.appendTo($itemContainer);
 		return $item;
 	}
@@ -810,7 +786,7 @@ function createSentenceBarItem(result) {
 
 	if (definitionCount > 2) {
 		$('<div/>').addClass('more')
-			.text("(" + (definitionCount - 2) + " more)")
+			.text("(" + (definitionCount - 2) + " " + _("omitted-more") + ")")
 			.appendTo($itemContainer);
 	}
 
@@ -858,7 +834,7 @@ function sngäiTìfwusew() {
 		.fail(function() {
 			$sentenceBar.empty();
 			$results.empty();
-			$results.append(createErrorBlock("Something went wrong while searching", "Please try again later. If the problem persists, please <a href='//wimiso.nl/contact'>contact</a> me."));
+			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
 		});
 	return false;
 }
