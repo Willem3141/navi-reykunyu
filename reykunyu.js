@@ -484,7 +484,7 @@ function makeAffixList(conjugated) {
 			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[4], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len']);
-			addAffix(list, 'suffix', affixes[6], ['aff:suf']);
+			addAffix(list, 'suffix', affixes[6], ['part']);
 		}
 		if (conjugation['type'] === 'v_to_n') {
 			let affixes = conjugation['conjugation']['affixes'];
