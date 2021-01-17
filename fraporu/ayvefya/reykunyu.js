@@ -334,6 +334,7 @@ function affixesSection(affixes) {
 		console.log(affix["na'vi"]);
 		let $tr = $('<tr/>').appendTo($table);
 		let $affixLink = $('<a/>')
+				.addClass(a['type'])
 				.html("&rarr; " + affix["na'vi"])
 				.attr('href', '/?q=' + affix["na'vi"]);
 		$('<td/>').append($affixLink).appendTo($tr);

@@ -474,34 +474,34 @@ function makeAffixList(conjugated) {
 	for (let conjugation of conjugated) {
 		if (conjugation['type'] === 'n') {
 			let affixes = conjugation['conjugation']['affixes'];
-			addAffix(list, affixes[0], ['aff:pre']);
+			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
 			if (affixes[1] === '(ay)') {
-				addAffix(list, 'ay', ['aff:pre']);
+				addAffix(list, 'prefix', 'ay', ['aff:pre']);
 			} else {
-				addAffix(list, affixes[1], ['aff:pre']);
+				addAffix(list, 'prefix', affixes[1], ['aff:pre']);
 			}
-			addAffix(list, affixes[2], ['aff:pre']);
-			addAffix(list, affixes[3], ['aff:suf']);
-			addAffix(list, affixes[4], ['aff:suf']);
-			addAffix(list, affixes[5], ['aff:suf', 'adp', 'adp:len']);
-			addAffix(list, affixes[6], ['aff:suf']);
+			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
+			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
+			addAffix(list, 'suffix', affixes[4], ['aff:suf']);
+			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len']);
+			addAffix(list, 'suffix', affixes[6], ['aff:suf']);
 		}
 		if (conjugation['type'] === 'v_to_n') {
 			let affixes = conjugation['conjugation']['affixes'];
-			addAffix(list, affixes[0], ['aff:suf']);
+			addAffix(list, 'suffix', affixes[0], ['aff:suf']);
 		}
 		if (conjugation['type'] === 'v') {
 			let infixes = conjugation['conjugation']['infixes'];
-			addAffix(list, infixes[0], ['aff:in']);
-			addAffix(list, infixes[1], ['aff:in']);
-			addAffix(list, infixes[2], ['aff:in']);
+			addAffix(list, 'infix', infixes[0], ['aff:in']);
+			addAffix(list, 'infix', infixes[1], ['aff:in']);
+			addAffix(list, 'infix', infixes[2], ['aff:in']);
 		}
 	}
 
 	return list;
 }
 
-function addAffix(list, affixString, types) {
+function addAffix(list, affixType, affixString, types) {
 	if (!affixString.length) {
 		return;
 	}
@@ -514,6 +514,7 @@ function addAffix(list, affixString, types) {
 	}
 	if (affix) {
 		list.push({
+			'type': affixType,
 			'affix': affix
 		});
 	}
