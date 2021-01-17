@@ -475,7 +475,11 @@ function makeAffixList(conjugated) {
 		if (conjugation['type'] === 'n') {
 			let affixes = conjugation['conjugation']['affixes'];
 			addAffix(list, affixes[0], ['aff:pre']);
-			addAffix(list, affixes[1], ['aff:pre']);
+			if (affixes[1] === '(ay)') {
+				addAffix(list, 'ay', ['aff:pre']);
+			} else {
+				addAffix(list, affixes[1], ['aff:pre']);
+			}
 			addAffix(list, affixes[2], ['aff:pre']);
 			addAffix(list, affixes[3], ['aff:suf']);
 			addAffix(list, affixes[4], ['aff:suf']);
