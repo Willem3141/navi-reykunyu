@@ -490,6 +490,12 @@ function makeAffixList(conjugated) {
 			let affixes = conjugation['conjugation']['affixes'];
 			addAffix(list, affixes[0], ['aff:suf']);
 		}
+		if (conjugation['type'] === 'v') {
+			let infixes = conjugation['conjugation']['infixes'];
+			addAffix(list, infixes[0], ['aff:in']);
+			addAffix(list, infixes[1], ['aff:in']);
+			addAffix(list, infixes[2], ['aff:in']);
+		}
 	}
 
 	return list;
