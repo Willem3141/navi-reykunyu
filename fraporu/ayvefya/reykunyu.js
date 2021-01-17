@@ -334,8 +334,10 @@ function affixesSection(affixes) {
 		console.log(affix["na'vi"]);
 		let $tr = $('<tr/>').appendTo($table);
 		let $affixLink = $('<a/>')
-				.addClass(a['type'])
-				.html("&rarr; " + affix["na'vi"])
+				.html("&rarr; ")
+				.append($('<span/>')
+					.html(lemmaForm(affix["na'vi"], affix['type']))
+					.addClass(a['type']))
 				.attr('href', '/?q=' + affix["na'vi"]);
 		$('<td/>').append($affixLink).appendTo($tr);
 		$meaningCell = $('<td/>').appendTo($tr);
@@ -629,6 +631,19 @@ function sentencesSection(sentences, lemma) {
 	return $section;
 }
 
+function lemmaForm(word, type) {
+	if (type === "n:si") {
+		return word + ' si';
+	} else if (type === 'aff:pre') {
+		return word + "-";
+	} else if (type === 'aff:in') {
+		return '&#x2039;' + word + '&#x203a;';
+	} else if (type === 'aff:suf') {
+		return '-' + word;
+	}
+	return word;
+}
+
 // creates a block showing a result
 // i -- id of the result, 0-based (to be shown as the number in front of the
 //      result)
@@ -641,10 +656,7 @@ function createResultBlock(i, r, query) {
 	$resultWord.append($('<span/>').addClass('id').text((i + 1) + '.'));
 
 	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
-	$lemma.text(r["na'vi"]);
-	if (r["type"] === "n:si") {
-		$lemma.append(" si");
-	}
+	$lemma.html(lemmaForm(r["na'vi"], r['type']));
 	$resultWord.append(ngopFneläPätsìt(r["type"]));
 
 	if (r["status"]) {
