@@ -334,11 +334,11 @@ function affixesSection(affixes) {
 		console.log(affix["na'vi"]);
 		let $tr = $('<tr/>').appendTo($table);
 		let $affixLink = $('<a/>')
-				.html("&rarr; ")
-				.append($('<span/>')
-					.html(lemmaForm(affix["na'vi"], affix['type']))
-					.addClass(a['type']))
+				.addClass('word-link')
+				.html(lemmaForm(affix["na'vi"], affix['type']))
+				//.addClass(a['type'])
 				.attr('href', '/?q=' + affix["na'vi"]);
+		addLemmaClass($affixLink, affix['type']);
 		$('<td/>').append($affixLink).appendTo($tr);
 		$meaningCell = $('<td/>').appendTo($tr);
 		$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
@@ -644,6 +644,16 @@ function lemmaForm(word, type) {
 	return word;
 }
 
+function addLemmaClass($element, type) {
+	if (type === 'aff:pre') {
+		$element.addClass('prefix');
+	} else if (type === 'aff:in') {
+		$element.addClass('infix');
+	} else if (type === 'aff:suf') {
+		$element.addClass('suffix');
+	}
+}
+
 // creates a block showing a result
 // i -- id of the result, 0-based (to be shown as the number in front of the
 //      result)
@@ -656,6 +666,7 @@ function createResultBlock(i, r, query) {
 	$resultWord.append($('<span/>').addClass('id').text((i + 1) + '.'));
 
 	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
+	addLemmaClass($lemma, r['type']);
 	$lemma.html(lemmaForm(r["na'vi"], r['type']));
 	$resultWord.append(ngopFneläPätsìt(r["type"]));
 

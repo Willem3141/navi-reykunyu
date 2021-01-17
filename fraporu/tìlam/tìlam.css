@@ -348,7 +348,8 @@ table.conjugation-table {
 	min-width: 800px;
 }
 
-.prefix {
+.prefix,
+.word-link .prefix {
 	color: #dd2255;
 	font-weight: bold;
 }
@@ -358,12 +359,14 @@ table.conjugation-table {
 	font-weight: bold;
 }
 
-.infix {
+.infix,
+.word-link .infix {
 	color: #8623dd;
 	font-weight: bold;
 }
 
-.suffix {
+.suffix,
+.word-link .suffix {
 	color: #2255dd;
 	font-weight: bold;
 }
@@ -382,7 +385,7 @@ table.conjugation-table {
 	color: #17e;
 }
 
-.word-link {
+a {
 	color: black;
 	font-weight: 700;
 	cursor: pointer;
@@ -390,6 +393,7 @@ table.conjugation-table {
 
 .word-link:before {
 	content: '→ ';
+	color: black;
 }
 
 /* word list */
@@ -499,6 +503,10 @@ table.conjugation-table {
 
 	.ui.pointing.menu .active.item:hover::after {
 		background: #444;
+	}
+
+	.word-link {
+		color: white;
 	}
 }
 
