@@ -66,12 +66,17 @@ function tstxoFnelä(fnel) {
 
 // ngop pätsìt a oeyktìng fnelit lì'uä
 // fnel - fnelä tstxo apup (natkenong "n", "v:tr")
-function ngopFneläPätsìt(fnel) {
+function typeBadge(fnel) {
 	fnel = tstxoFnelä(fnel).split('/');
 	let $pätsì = $('<span/>').addClass('type ui tag label').text(fnel[0]);
 	if (fnel.length > 1) {
 		$pätsì.append($('<div/>').addClass('detail').text(fnel[1]));
 	}
+	return $pätsì;
+}
+
+function smallTypeBadge(fnel) {
+	let $pätsì = $('<div/>').addClass('type ui horizontal label').text(fnel);
 	return $pätsì;
 }
 
@@ -341,6 +346,7 @@ function affixesSection(affixes) {
 		addLemmaClass($affixLink, affix['type']);
 		$('<td/>').append($affixLink).appendTo($tr);
 		$meaningCell = $('<td/>').appendTo($tr);
+		$meaningCell.append(smallTypeBadge(affix['type']));
 		$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
 	}
 
@@ -668,7 +674,7 @@ function createResultBlock(i, r, query) {
 	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
 	addLemmaClass($lemma, r['type']);
 	$lemma.html(lemmaForm(r["na'vi"], r['type']));
-	$resultWord.append(ngopFneläPätsìt(r["type"]));
+	$resultWord.append(typeBadge(r["type"]));
 
 	if (r["status"]) {
 		$resultWord.append(statusBadge(r["status"]));

@@ -387,12 +387,16 @@ table.conjugation-table {
 
 a {
 	color: black;
-	font-weight: 700;
 	cursor: pointer;
+}
+
+.word-link {
+	font-weight: 700;
 }
 
 .word-link:before {
 	content: '→ ';
+	font-weight: 700;
 	color: black;
 }
 
