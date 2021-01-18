@@ -79,6 +79,85 @@ strings['en'] = {
 	'searching-error-description': 'Please try again later. If the problem persists, please <a href="//wimiso.nl/contact">contact</a> me.',
 }
 
+strings['de'] = {
+	'type-n': 'Nomen',
+	'type-n:unc': 'Nomen/nicht zählbar',
+	'type-n:si': 'Verb/si',
+	'type-n:pr': 'Nomen/Eigenname',
+	'type-pn': 'Pronomen',
+	'type-adj': 'Adjektiv',
+	'type-num': 'Numeral',
+	'type-adv': 'Adverbie',
+	'type-adp': 'Adposition',
+	'type-adp:len': 'Adposition/lenisierend',
+	'type-intj': 'Ausruf',
+	'type-part': 'Partikel',
+	'type-conj': 'Konjunktion',
+	'type-ctr': 'F-Wort',
+	'type-v:?': 'Verb/unbekannte Art',
+	'type-v:in': 'Verb/intransitiv',
+	'type-v:tr': 'Verb/transitiv',
+	'type-v:m': 'Verb/modal',
+	'type-v:si': 'Verb/si',
+	'type-v:cp': 'Verb/Kopula',
+	'type-phr': 'Phrase',
+	'type-inter': 'Interrogativ',
+	'type-aff:pre': 'Präfix',
+	'type-aff:in': 'Infix',
+	'type-aff:suf': 'Suffix',
+
+	'stress-unknown': '(Betonung unbekannt)',
+
+	'status-unconfirmed': 'Unbestätigtes Wort',
+	'status-unconfirmed-header': 'Unbestätigt:',
+	'status-unofficial': 'Inoffizielles Wort',
+	'status-unofficial-header': 'Inoffiziell:',
+	'status-loan': 'Lehnwort',
+	'status-loan-header': 'Lehnwort:',
+	'status-unconfirmed-explanation': 'Dieses Wort wurde nie offiziell von Paul Frommer bestätigt. Sei dir dessen bewusst, wenn du es verwenden möchtest.',
+	'status-loan-explanation': 'Dieses Wort wurde der englischen oder einer anderen Sprache der Erde entlehnt.  Der Vollständigkeit halber schließen wir Lehnwörter in diesem Wörterbuch ein, und auch nur, sofern Paul Frommer diese in einem seiner Texte verwendet hat. Da jedoch theoretisch jedes Wort in die Sprache der Na\'vi entlehnt werden kann, wenn die Notwendigkeit dafür besteht, über Erdkonzepte zu sprechen, findet diese Unterscheidung nach eigenem Ermessen statt.',
+
+	'image-drawn-by': 'gezeichnet von',
+
+	'etymology': 'Etymologie',
+	'etymology-from': 'Von',
+
+	'source': 'Quelle',
+
+	'see-also': 'Siehe auch',
+
+	'conjugated-forms': 'Konjugierte Formen',
+	'singular': 'Singular',
+	'dual': 'Dual',
+	'trial': 'Trial',
+	'plural': 'Plural',
+	'subjective': 'Subjektiv',
+	'agentive': 'Agentiv',
+	'patientive': 'Patientiv',
+	'dative': 'Dativ',
+	'genitive': 'Genitiv',
+	'topical': 'Topical',
+	'or': 'oder',
+
+	'attributive-forms': 'Attributive Formen',
+
+	'infix-positions': 'Infixpositionen',
+
+	'sentence-search': 'Satzsuche',
+	'usages-found-singular': 'gefundene Anwendung',
+	'usages-found-plural': 'gefundene Anwendungen',
+
+	'no-results': 'Keine Ergebnisse gefunden',
+	'no-results-description': 'Bitte stelle sicher, dass du nach einem Na\'vi-Wort suchst. Im Moment bietet Reykunyu nur Suchen von Na\'vi in andere Sprachen an.',
+	'did-you-mean': 'Meintest du',
+
+	'omitted-more': 'mehr',
+	'not-found': '(nicht gefunden)',
+
+	'searching-error': 'Bei der Suche ist etwas schiefgelaufen',
+	'searching-error-description': 'Bitte versuche es später erneut. Falls dieses Problem fortbestehen sollte, <a href="//wimiso.nl/contact">wende dich bitte an mich</a>.',
+}
+
 strings['nl'] = {
 	'type-n': 'zelfstandig naamwoord',
 	'type-n:unc': 'zelfstandig naamwoord/ontelbaar',
