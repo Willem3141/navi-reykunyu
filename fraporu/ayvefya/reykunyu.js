@@ -336,7 +336,6 @@ function affixesSection(affixes) {
 	let $table = $('<table/>').appendTo($affixes);
 	for (let a of affixes) {
 		const affix = a['affix'];
-		console.log(affix["na'vi"]);
 		let $tr = $('<tr/>').appendTo($table);
 		let $affixLink = $('<a/>')
 				.addClass('word-link')
@@ -557,7 +556,7 @@ function adjectiveConjugationSection(word, type, note) {
 	let $header = $('<div/>').addClass('header').text(_('attributive-forms')).appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 
-	let html = "&lt;noun&gt; " + prefixed(word);
+	let html = "&lt;" + _('type-n') + "&gt; " + prefixed(word);
 	html += "&nbsp;&nbsp;<span class='muted'>" + _('or') + "</span>&nbsp;&nbsp;";
 	html += suffixed(word) + " &lt;" + _('type-n') + "&gt;";
 	$body.html(html);
