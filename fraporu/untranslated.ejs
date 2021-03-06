@@ -1,0 +1,63 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Untranslated words &bull; Reykunyu</title>
+		<link rel="stylesheet" type="text/css" href="aysrungsiyu/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="tìlam/tìlam.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<h1>
+				Untranslated words
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
+				<a href="/" class="ui icon right floated top right basic button">
+					<i class="arrow left icon"></i> Back to Reykunyu
+				</a>
+			</h1>
+
+			<p>The following words do not have a German translation at all:</p>
+
+			<table class="ui table">
+				<thead>
+					<tr>
+						<th>Word</th>
+						<th>English</th>
+						<th>German</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<% for (let word of untranslated) { %>
+					<% let first = true; %>
+					<% for (let translation of word['translations']) { %>
+					<tr>
+						<% if (first) {
+						first = false; %>
+						<td rowspan="<%= word['translations'].length %>"><%= word["na'vi"] %> <span class="muted">(<%= word['type'] %>)</span></td>
+						<% } %>
+						<td><%= translation["en"] %></td>
+						<td><% if (translation["de"]) { %><%= translation["de"] %><% } else { %><span class='muted'>(none)</span><% } %></td>
+						<td>
+							<a class="ui icon basic button edit-button" href="/edit?word=<%= word['na\'vi'] %>&type=<%= word['type'] %>">
+								<i class="pencil icon"></i>
+							</a>
+						</td>
+					</tr>
+					<% } %>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
+
+		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
+	</body>
+</html>
+

@@ -214,6 +214,17 @@ app.get('/history', function(req, res) {
 	res.render('history', { user: req.user, history: historyData });
 });
 
+app.get('/untranslated', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	console.log('blap');
+	let untranslated = reykunyu.getUntranslated('de');
+	res.render('untranslated', { user: req.user, untranslated: untranslated });
+});
+
 app.get('/api/fwew', function(req, res) {
 	res.json(reykunyu.getResponsesFor(req.query["tìpawm"]));
 });

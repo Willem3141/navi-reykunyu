@@ -5,6 +5,7 @@ module.exports = {
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
 	'getRandomWords': getRandomWords,
+	'getUntranslated': getUntranslated,
 	'getAll': getAll,
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
@@ -599,6 +600,24 @@ function getRandomWords(number) {
 		const h = allWords[i];
 		allWords[i] = allWords[random];
 		allWords[random] = h;
+	}
+
+	return results;
+}
+
+function getUntranslated(language) {
+	let results = [];
+
+	wordLoop:
+	for (let w in dictionary) {
+		let word = dictionary[w];
+		for (let translation of word['translations']) {
+			if (!translation.hasOwnProperty(language) ||
+					translation[language].length === 0) {
+				results.push(word);
+				continue wordLoop;
+			}
+		}
 	}
 
 	return results;
