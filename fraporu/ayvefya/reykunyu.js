@@ -347,6 +347,9 @@ function affixesSection(affixes) {
 		$meaningCell = $('<td/>').appendTo($tr);
 		$meaningCell.append(smallTypeBadge(affix['type']));
 		$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
+		if (a['translation']) {
+			$('<td/>').html('&ldquo;' + a['translation'] + '&rdquo;').appendTo($tr);
+		}
 	}
 
 	$affixesSection.append($affixes);
@@ -770,6 +773,7 @@ function createResults(results) {
 	}
 }
 
+// TODO remove as soon as the server sends this
 function getShortTranslation(result) {
 	if (result["short_translation"]) {
 		return result["short_translation"];

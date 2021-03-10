@@ -306,7 +306,7 @@ function lookUpWord(queryWord) {
 				"type": "n",
 				"conjugation": nounResult
 			}];
-			noun["affixes"] = makeAffixList(noun["conjugated"]);
+			noun["affixes"] = makeAffixList(noun);
 			wordResults.push(noun);
 		}
 		if (nounResult["root"].endsWith("yu")) {
@@ -328,7 +328,7 @@ function lookUpWord(queryWord) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					verb["affixes"] = makeAffixList(verb["conjugated"]);
+					verb["affixes"] = makeAffixList(verb);
 					let conjugation = conjugationString.formsFromString(
 						verbs.conjugate(verb["infixes"], verbResult["infixes"]));
 					if (conjugation.indexOf(possibleVerb) !== -1) {
@@ -361,7 +361,7 @@ function lookUpWord(queryWord) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					word["affixes"] = makeAffixList(word["conjugated"]);
+					word["affixes"] = makeAffixList(word);
 					wordResults.push(word);
 				}
 
@@ -375,7 +375,7 @@ function lookUpWord(queryWord) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					word["affixes"] = makeAffixList(word["conjugated"]);
+					word["affixes"] = makeAffixList(word);
 					wordResults.push(word);
 				}
 			}
@@ -391,7 +391,7 @@ function lookUpWord(queryWord) {
 				"type": "v",
 				"conjugation": result
 			}];
-			verb["affixes"] = makeAffixList(verb["conjugated"]);
+			verb["affixes"] = makeAffixList(verb);
 			let conjugation = conjugationString.formsFromString(
 					verbs.conjugate(verb["infixes"], result["infixes"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
@@ -469,20 +469,22 @@ function findVerb(word) {
 	return results;
 }
 
-function makeAffixList(conjugated) {
+function makeAffixList(word) {
 	list = [];
+
+	let conjugated = word['conjugated'];
 
 	for (let conjugation of conjugated) {
 		if (conjugation['type'] === 'n') {
 			let affixes = conjugation['conjugation']['affixes'];
-			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
+			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
+			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
 			if (affixes[1] === '(ay)') {
 				addAffix(list, 'prefix', 'ay', ['aff:pre']);
 			} else {
 				addAffix(list, 'prefix', affixes[1], ['aff:pre']);
 			}
-			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
-			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
+			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
 			addAffix(list, 'suffix', affixes[4], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len']);
 			addAffix(list, 'suffix', affixes[6], ['part']);
@@ -496,6 +498,74 @@ function makeAffixList(conjugated) {
 			addAffix(list, 'infix', infixes[0], ['aff:in']);
 			addAffix(list, 'infix', infixes[1], ['aff:in']);
 			addAffix(list, 'infix', infixes[2], ['aff:in']);
+		}
+	}
+
+	let translation = getShortTranslation(word);
+	for (let i = 0; i < list.length; i++) {
+		let a = list[i];
+		let newTranslation;
+		let affix = a['affix']["na'vi"];
+		switch (affix) {
+			case 'am':
+				newTranslation = 'did ' + translation;  // TODO past-tense-ify instead
+				break;
+			case 'ay':
+				if (a['affix']['type'] === 'aff:in') {
+					newTranslation = 'will ' + translation;
+				} else {
+					newTranslation = translation;  // TODO pluralize
+				}
+				break;
+			case 'äp':
+				newTranslation = translation + ' oneself';
+				break;
+			case 'eyk':
+				newTranslation = 'cause (someone) to ' + translation;
+				break;
+			case 'fì':
+				newTranslation = 'this ' + translation;
+				break;
+			case 'fkeyk':
+				newTranslation = 'state of (a/the) ' + translation;
+				break;
+			case 'fne':
+				newTranslation = 'type of ' + translation;
+				break;
+			case 'fra':
+				newTranslation = 'each ' + translation;
+				break;
+			case 'ìm':
+				newTranslation = 'did just ' + translation;  // TODO past-tense-ify instead
+				break;
+			case 'ìy':
+				newTranslation = 'will soon ' + translation;
+				break;
+			case 'me':
+				newTranslation = 'two ' + translation;  // TODO pluralize
+				break;
+			case 'o':
+				newTranslation = 'some ' + translation;  // TODO pluralize
+				break;
+			case 'pe':
+				newTranslation = 'which ' + translation;
+				break;
+			case 'pxe':
+				newTranslation = 'three ' + translation;  // TODO pluralize
+				break;
+			case 'tsa':
+				newTranslation = 'that ' + translation;
+				break;
+			case 'tsyìp':
+				newTranslation = 'little ' + translation;
+				break;
+			case 'yu':
+				newTranslation = 'someone who ' + translation;  // TODO 3rd-person-ify
+				break;
+		}
+		if (newTranslation) {
+			a['translation'] = newTranslation;
+			translation = newTranslation;
 		}
 	}
 
@@ -519,6 +589,25 @@ function addAffix(list, affixType, affixString, types) {
 			'affix': affix
 		});
 	}
+}
+
+function getShortTranslation(word) {
+	if (word["short_translation"]) {
+		return word["short_translation"];
+	}
+
+	let translation = word["translations"][0]['en'];
+	translation = translation.split(',')[0];
+	translation = translation.split(';')[0];
+	translation = translation.split(' | ')[0];
+	translation = translation.split(' (')[0];
+
+	if (word["type"][0] === "v"
+		&& translation.indexOf("to ") === 0) {
+		translation = translation.substr(3);
+	}
+
+	return translation;
 }
 
 function getSuggestionsFor(query, language) {
