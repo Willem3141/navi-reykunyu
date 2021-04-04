@@ -279,7 +279,7 @@ strings['fr'] = {
 	'type-aff:in': 'infixe',
 	'type-aff:suf': 'suffixe',
 
-	'stress-unknown': '(accentuation inconnue)',
+	'stress-unknown': '(accentuation tonique inconnue)',
 
 	'status-unconfirmed': 'mot non confirmé',
 	'status-unconfirmed-header': 'Non confirmé:',
@@ -287,7 +287,7 @@ strings['fr'] = {
 	'status-unofficial-header': 'Non officiel:',
 	'status-loan': 'mot emprunté',
 	'status-loan-header': 'Mot emprunté:',
-	'status-unconfirmed-explanation': 'Ce mot n’a jamais été officiellement confirmé par Paul Frommer. Veuillez gardez cela à l’esprit si vous décidez de l’utiliser.',
+	'status-unconfirmed-explanation': 'Ce mot n’a jamais été officiellement confirmé par Paul Frommer. Veuillez garder cela à l’esprit si vous décidez de l’utiliser.',
 	'status-loan-explanation': 'Ce mot a été emprunt de l’anglais ou d’une langue terrestre. Pour une documentation complète de la langue, nous incluons les emprunts si et seulement si Paul Frommer les a utilisés dans ses écrits. Cependant, puisque n’importe quel mot peut être emprunté par le Na’vi, si le besoin de parler des concepts terriens survient, cette distinction est par définition arbitraire.',
 
 	'image-drawn-by': 'dessiné par',
@@ -330,7 +330,6 @@ strings['fr'] = {
 
 	'searching-error': 'Un problème est survenu pendant la recherche',
 	'searching-error-description': 'Veuillez s’il vous plait essayer plus tard. Si le problème persiste, veuillez s’il vous plaît me <a href="//wimiso.nl/contact">contacter</a>.',
-}
 }
 
 strings['hu'] = {
