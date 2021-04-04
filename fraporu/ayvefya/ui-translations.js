@@ -252,6 +252,85 @@ strings['et'] = {
 
 strings['fr'] = {
 	'language': 'Français'
+
+	'type-n': 'nom',
+	'type-n:unc': 'nom/indénombrable',
+	'type-n:si': 'verbe/si',
+	'type-n:pr': 'nom/nom propre',
+	'type-pn': 'pronom',
+	'type-adj': 'adjectif',
+	'type-num': 'numéral',
+	'type-adv': 'adverbe',
+	'type-adp': 'adposition',
+	'type-adp:len': 'adposition/lénition',
+	'type-intj': 'interjection',
+	'type-part': 'particule',
+	'type-conj': 'conjonction',
+	'type-ctr': 'mot en F',
+	'type-v:?': 'verbe/type inconnu',
+	'type-v:in': 'verbe/intransitif',
+	'type-v:tr': 'verbe/transitif',
+	'type-v:m': 'verbe/modal',
+	'type-v:si': 'verbe/si',
+	'type-v:cp': 'verbe/attributif',
+	'type-phr': 'loucution',
+	'type-inter': 'interrogatif',
+	'type-aff:pre': 'préfixe',
+	'type-aff:in': 'infixe',
+	'type-aff:suf': 'suffixe',
+
+	'stress-unknown': '(accentuation inconnue)',
+
+	'status-unconfirmed': 'mot non confirmé',
+	'status-unconfirmed-header': 'Non confirmé:',
+	'status-unofficial': 'mot non officiel',
+	'status-unofficial-header': 'Non officiel:',
+	'status-loan': 'mot emprunté',
+	'status-loan-header': 'Mot emprunté:',
+	'status-unconfirmed-explanation': 'Ce mot n’a jamais été officiellement confirmé par Paul Frommer. Veuillez gardez cela à l’esprit si vous décidez de l’utiliser.',
+	'status-loan-explanation': 'Ce mot a été emprunt de l’anglais ou d’une langue terrestre. Pour une documentation complète de la langue, nous incluons les emprunts si et seulement si Paul Frommer les a utilisés dans ses écrits. Cependant, puisque n’importe quel mot peut être emprunté par le Na’vi, si le besoin de parler des concepts terriens survient, cette distinction est par définition arbitraire.',
+
+	'image-drawn-by': 'dessiné par',
+
+	'etymology': 'Étymologie',
+	'etymology-from': 'De',
+
+	'source': 'Source',
+
+	'see-also': 'See also',
+
+	'conjugated-forms': 'Formes conjuguées',
+	'singular': 'singulier',
+	'dual': 'duel',
+	'trial': 'triel',
+	'plural': 'pluriel',
+	'subjective': 'cas sujet',
+	'agentive': 'agentif',
+	'patientive': 'patientif',
+	'dative': 'datif',
+	'genitive': 'génitif',
+	'topical': 'topical',
+	'or': 'or',
+
+	'attributive-forms': 'Formes attributives',
+
+	'infix-positions': 'Emplacement des infixes',
+
+	'sentence-search': 'Recherche de phrase',
+	'usages-found-singular': 'usage trouvé',
+	'usages-found-plural': 'usages trouvés',
+
+	'no-results': 'Aucuns résultats',
+	'no-results-description-navi': 'Si vous cherchez un mot en français, veuillez basculer vers le mode <i>Français &rarr; Na\'vi</i>.',
+	'no-results-description-english': 'Si vous cherchez un mot en na’vi, veuillez basculer vers le mode <i>Na\'vi &rarr; Français</i>.',
+	'did-you-mean': 'Did you mean',
+
+	'omitted-more': 'plus',
+	'not-found': '(pas trouvé)',
+
+	'searching-error': 'Un problème est survenu pendant la recherche',
+	'searching-error-description': 'Veuillez s’il vous plait essayer plus tard. Si le problème persiste, veuillez s’il vous plaît me <a href="//wimiso.nl/contact">contacter</a>.',
+}
 }
 
 strings['hu'] = {
