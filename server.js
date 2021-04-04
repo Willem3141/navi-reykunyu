@@ -237,6 +237,10 @@ app.get('/api/search', function(req, res) {
 	res.json(reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"]));
 });
 
+app.get('/api/suggest', function(req, res) {
+	res.json(reykunyu.getReverseSuggestionsFor(req.query["query"], req.query["language"]));
+});
+
 app.get('/api/frau', function(req, res) {
 	res.json(reykunyu.getAll());
 });

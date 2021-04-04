@@ -1,6 +1,8 @@
 let strings = {}
 
 strings['en'] = {
+	'language': 'English',
+
 	'type-n': 'noun',
 	'type-n:unc': 'noun/uncountable',
 	'type-n:si': 'verb/si',
@@ -69,7 +71,8 @@ strings['en'] = {
 	'usages-found-plural': 'usages found',
 
 	'no-results': 'No results found',
-	'no-results-description': 'Please make sure you are searching for a Na\'vi word. At the moment, Reykunyu is Na\'vi-to-English only.',
+	'no-results-description-navi': 'If you\'re searching for an English word, please switch to <i>English &rarr; Na\'vi</i> mode.',
+	'no-results-description-english': 'If you\'re searching for a Na\'vi word, please switch to <i>Na\'vi &rarr; English</i> mode.',
 	'did-you-mean': 'Did you mean',
 
 	'omitted-more': 'more',
@@ -80,6 +83,8 @@ strings['en'] = {
 }
 
 strings['de'] = {
+	'language': 'Deutsch',
+
 	'type-n': 'Nomen',
 	'type-n:unc': 'Nomen/nicht zählbar',
 	'type-n:si': 'Verb/si',
@@ -148,7 +153,8 @@ strings['de'] = {
 	'usages-found-plural': 'gefundene Anwendungen',
 
 	'no-results': 'Keine Ergebnisse gefunden',
-	'no-results-description': 'Bitte stelle sicher, dass du nach einem Na\'vi-Wort suchst. Im Moment bietet Reykunyu nur Suchen von Na\'vi in andere Sprachen an.',
+	'no-results-description-navi': 'Du willst nach einem deutschen Wort suchen? Dann stelle oben den Modus auf <i>Deutsch &rarr; Na\'vi</i>.',
+	'no-results-description-english': 'Du willst nach einem Na\'vi-Wort suchen? Dann stelle oben den Modus auf <i>Na\'vi &rarr; Deutsch</i>.',
 	'did-you-mean': 'Meintest du',
 
 	'omitted-more': 'mehr',
@@ -159,6 +165,8 @@ strings['de'] = {
 }
 
 strings['nl'] = {
+	'language': 'Nederlands',
+
 	'type-n': 'zelfstandig naamwoord',
 	'type-n:unc': 'zelfstandig naamwoord/ontelbaar',
 	'type-n:si': 'werkwoord/si',
@@ -227,7 +235,8 @@ strings['nl'] = {
 	'usages-found-plural': 'voorkomens gevonden',
 
 	'no-results': 'Geen resultaten',
-	'no-results-description': 'Let erop dat je naar een Na\'vi-woord zoekt. Op dit moment kan Reykunyu alleen van Na\'vi naar Nederlands zoeken, niet andersom.',
+	'no-results-description-navi': 'Heb je een Nederlandse zoekterm ingevoerd, zet dan hierboven de modus op <i>Nederlands &rarr; Na\'vi</i>.',
+	'no-results-description-english': 'Heb je een zoekterm in het Na\'vi ingevoerd, zet dan hierboven de modus op <i>Na\'vi &rarr; Nederlands</i>.',
 	'did-you-mean': 'Bedoelde je misschien',
 
 	'omitted-more': 'meer',
@@ -235,6 +244,30 @@ strings['nl'] = {
 
 	'searching-error': 'Er ging iets mis tijdens het zoeken',
 	'searching-error-description': 'Probeer het later opnieuw. Als het probleem aanhoudt, <a href="//wimiso.nl/contact">laat het dan weten</a>.',
+}
+
+strings['et'] = {
+	'language': 'Eesti'
+}
+
+strings['fr'] = {
+	'language': 'Français'
+}
+
+strings['hu'] = {
+	'language': 'Magyar'
+}
+
+strings['pl'] = {
+	'language': 'Polski'
+}
+
+strings['pl'] = {
+	'language': 'Русский'
+}
+
+strings['sv'] = {
+	'language': 'Svenska'
 }
 
 function _(key) {

@@ -123,8 +123,11 @@ h1 #user-label {
 
 .result .result-word .id {
 	color: #aaa;
-	width: 28px;
+	width: 48px;
 	display: inline-block;
+	text-align: right;
+	margin-left: -20px;
+	padding-right: 5px;
 }
 
 .result .result-word .id,

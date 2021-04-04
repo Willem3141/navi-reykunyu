@@ -61,17 +61,17 @@
 			</h1>
 			<form id="search-form">
 				<div class="ui search fluid">
-					<div class="ui left icon input fluid">
+					<div class="ui right action left icon input fluid">
 						<i class="search icon"></i>
-						<input id="search-box" type="search" placeholder="Search..." autofocus value="<%= query %>">
-						<!--<select id="mode-dropdown" class="ui compact selection dropdown">
-							<option selected value="navi">Single word</option>
-							<option value="english">Sentence search</option>
-						</select>
-						<select id="mode-direction" class="ui compact selection dropdown">
-							<option selected value="navi">Na'vi &rarr; English</option>
-							<option value="english">English &rarr; Na'vi</option>
-						</select>-->
+						<input id="search-box" type="search" placeholder="Enter Na'vi word(s) to search..." autofocus value="<%= query %>">
+						<div id="mode-direction" class="ui compact selection dropdown">
+							<span class="text">Na'vi &rarr; <span class="current-lang">English</span></span>
+							<i class="dropdown icon"></i>
+							<div class="menu">
+								<div class="item" data-value="navi">Na'vi &rarr; <span class="current-lang">English</span></div>
+								<div class="item" data-value="english"><span class="current-lang">English</span> &rarr; Na'vi</div>
+							</div>
+						</div>
 					</div>
 					<div class="results"></div>
 				</div>

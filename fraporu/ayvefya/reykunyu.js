@@ -5,9 +5,12 @@ $(function() {
 
 	$('#search-form').submit(sngäiTìfwusew);
 
+	$('.ui.dropdown').dropdown();
+
 	if (!localStorage.getItem('reykunyu-language')) {
 		localStorage.setItem('reykunyu-language', 'en');
 	}
+	$('.current-lang').text(_('language'));
 	$('#language-dropdown').dropdown('set selected',
 			localStorage.getItem('reykunyu-language'));
 	$('#language-dropdown').dropdown({
@@ -16,17 +19,50 @@ $(function() {
 			sngäiTìfwusew();
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
+			$('.current-lang').text(_('language'));
+			return false;
+		}
+	});
+
+	if (!localStorage.getItem('reykunyu-mode')) {
+		localStorage.setItem('reykunyu-mode', 'navi');
+	}
+	$('#mode-direction').dropdown('set selected',
+			localStorage.getItem('reykunyu-mode'));
+	$('#mode-direction').dropdown({
+		onChange: function(value) {
+			localStorage.setItem('reykunyu-mode', value);
+			sngäiTìfwusew();
+			$('.ui.search').search('clear cache');
+			setUpAutocomplete();
 			return false;
 		}
 	});
 
 	setUpAutocomplete();
+
+	$('.ui.checkbox').checkbox();
+	$('#api-button').on("click", function() {
+		$('#api-modal').modal("show");
+	});
+	$('#settings-button').on("click", function() {
+		$('#settings-modal').modal("show");
+	});
+	$('#credits-button').on("click", function() {
+		$('#credits-modal').modal("show");
+	});
 });
 
 function setUpAutocomplete() {
+	let url = null;
+	if (localStorage.getItem('reykunyu-mode') === 'navi') {
+		url = 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}';
+	} else {
+		url = 'api/suggest?language=' + localStorage.getItem('reykunyu-language') + '&query={query}';
+	}
 	$('.ui.search').search({
 		apiSettings: {
-			url: 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}'
+			url: url
 		},
 		maxResults: 0,
 		searchDelay: 0,
@@ -41,18 +77,6 @@ function setUpAutocomplete() {
 		}
 	});
 }
-
-$('.ui.checkbox').checkbox();
-$('.ui.dropdown').dropdown();
-$('#api-button').on("click", function() {
-	$('#api-modal').modal("show");
-});
-$('#settings-button').on("click", function() {
-	$('#settings-modal').modal("show");
-});
-$('#credits-button').on("click", function() {
-	$('#credits-modal').modal("show");
-});
 
 // tìng fnelä tstxoti angim
 // fnel - fnelä tstxo apup (natkenong "n", "vtr")
@@ -664,7 +688,7 @@ function addLemmaClass($element, type) {
 //      result)
 // r -- the result itself
 // query -- the query that the user searched for
-function createResultBlock(i, r, query) {
+function createResultBlock(i, r) {
 	let $result = $('<div/>').addClass('result');
 
 	let $resultWord = $('<div/>').addClass('result-word');
@@ -757,16 +781,15 @@ function createErrorBlock(text, subText) {
 }
 
 function createResults(results) {
-	console.log(results);
 	if (results["sì'eyng"].length) {
 		for (let i = 0; i < results["sì'eyng"].length; i++) {
-			$results.append(createResultBlock(i, results["sì'eyng"][i], results["tìpawm"]));
+			$results.append(createResultBlock(i, results["sì'eyng"][i]));
 		}
 	} else if (results["aysämok"].length) {
 		const suggestions = results["aysämok"].map(a => "<b>" + a + "</b>");
 		$results.append(createErrorBlock(_("no-results"), _("did-you-mean") + " " + suggestions.join(', ').replace(/, ([^,]*)$/, " " + _("or") + " $1") + "?"));
 	} else {
-		$results.append(createErrorBlock(_("no-results"), _("no-results-description")));
+		$results.append(createErrorBlock(_("no-results"), _("no-results-description-navi")));
 	}
 }
 
@@ -829,6 +852,16 @@ function sngäiTìfwusew() {
 	$results.empty();
 	$sentenceBar = $('#sentence-bar');
 	$sentenceBar.empty();
+	const mode = localStorage.getItem('reykunyu-mode');
+	if (mode === 'navi') {
+		doSearchNavi();
+	} else if (mode === 'english') {
+		doSearchEnglish();
+	}
+	return false;
+}
+
+function doSearchNavi() {
 	let tìpawm = $('#search-box').val();
 	$.getJSON('/api/fwew', {'tìpawm': tìpawm})
 		.done(function(tìeyng) {
@@ -865,6 +898,29 @@ function sngäiTìfwusew() {
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
 		});
-	return false;
+}
+
+function doSearchEnglish() {
+	let query = $('#search-box').val();
+	$.getJSON('/api/search', {'query': query, 'language': localStorage.getItem('reykunyu-language')})
+		.done(function(tìeyng) {
+			console.log(tìeyng);
+
+			$results.empty();
+
+			if (tìeyng.length) {
+				for (let i = 0; i < tìeyng.length; i++) {
+					const result = tìeyng[i];
+					$results.append(createResultBlock(i, result));
+				}
+			} else {
+				$results.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+			}
+		})
+		.fail(function() {
+			$sentenceBar.empty();
+			$results.empty();
+			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
+		});
 }
 

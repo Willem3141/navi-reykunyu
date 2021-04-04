@@ -4,6 +4,7 @@ module.exports = {
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
+	'getReverseSuggestionsFor': getReverseSuggestionsFor,
 	'getRandomWords': getRandomWords,
 	'getUntranslated': getUntranslated,
 	'getAll': getAll,
@@ -522,6 +523,9 @@ function addAffix(list, affixType, affixString, types) {
 }
 
 function getSuggestionsFor(query, language) {
+	if (query.length < 3) {
+		return {'results': []};
+	}
 	query = preprocessQuery(query);
 	query = query.toLowerCase();
 	let results = [];
@@ -538,6 +542,46 @@ function getSuggestionsFor(query, language) {
 	}
 	return {
 		'results': results
+	};
+}
+
+function getReverseSuggestionsFor(query, language) {
+	if (query.length < 3) {
+		return {'results': []};
+	}
+
+	let results = new Set();
+
+	if (!language) {
+		language = "en";
+	}
+
+	query = query.toLowerCase();
+
+	for (word in dictionary) {
+		if (dictionary.hasOwnProperty(word)) {
+			let translation = dictionary[word]['translations'][0][language];
+			if (translation) {
+				// split translation into words
+				translation = translation.replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
+				translation = translation.split(' ');
+				for (const w of translation) {
+					if (w.toLowerCase().startsWith(query)) {
+						results.add(w);
+					}
+				}
+			}
+		}
+	}
+
+	resultsArray = Array.from(results);
+	resultsArray.sort(function(a, b) {
+		return a.localeCompare(b, language, {'sensitivity': 'base'});
+	});
+	resultsArray = resultsArray.map(elem => ({'title': elem}));
+
+	return {
+		'results': resultsArray
 	};
 }
 
