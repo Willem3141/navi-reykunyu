@@ -262,7 +262,7 @@ strings['pl'] = {
 	'language': 'Polski'
 }
 
-strings['pl'] = {
+strings['ru'] = {
 	'language': 'Русский'
 }
 
