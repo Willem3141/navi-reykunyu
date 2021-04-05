@@ -251,7 +251,7 @@ strings['et'] = {
 }
 
 strings['fr'] = {
-	'language': 'Français'
+	'language': 'Français',
 
 	'type-n': 'nom',
 	'type-n:unc': 'nom/indénombrable',
