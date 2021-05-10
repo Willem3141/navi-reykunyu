@@ -718,21 +718,43 @@ function getTransitivityList() {
 }
 
 function getRhymes(query) {
-	let result = [];
+	query = query.toLowerCase();
 
-	for (word in dictionary) {
+	let words = {};
+
+	for (const word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
-			if (rhymes.rhymes(dictionary[word]["na'vi"], query.toLowerCase())) {
-				result.push(dictionary[word]);
+			if (rhymes.rhymes(dictionary[word]["na'vi"], query)) {
+				let key = 0;
+				if (dictionary[word].hasOwnProperty('pronunciation')) {
+					key = dictionary[word]['pronunciation'][0].split('-').length;
+				}
+				if (!words.hasOwnProperty(key)) {
+					words[key] = [];
+				}
+				let subKey = 0;
+				if (dictionary[word].hasOwnProperty('pronunciation')) {
+					subKey = dictionary[word]['pronunciation'][1];
+				}
+				if (!words[key].hasOwnProperty(subKey)) {
+					words[key][subKey] = [];
+				}
+				words[key][subKey].push(dictionary[word]);
 			}
 		}
 	}
 
-	result.sort(function(a, b) {
-		return a["na'vi"].localeCompare(b["na'vi"]);
-	});
+	for (const s in Object.keys(words)) {
+		for (const s2 in Object.keys(words[s])) {
+			if (words[s][s2]) {
+				words[s][s2].sort(function(a, b) {
+					return a["na'vi"].localeCompare(b["na'vi"]);
+				});
+			}
+		}
+	}
 
-	return result;
+	return words;
 }
 
 function removeWord(word, type) {
