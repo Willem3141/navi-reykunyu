@@ -288,6 +288,10 @@ app.get('/api/random', function(req, res) {
 	res.json(reykunyu.getRandomWords(req.query["holpxay"]));
 });
 
+app.get('/api/rhymes', function(req, res) {
+	res.json(reykunyu.getRhymes(req.query["tìpawm"]));
+});
+
 app.use('/ayrel', express.static('ayrel'));
 
 app.post('/api/discord/interactions', di.verifyKeyMiddleware('7cf7cb6385a26d7257e359bbf47d56b6824fda941dffa0bc629347c34c56d1d5'), function(req, res) {

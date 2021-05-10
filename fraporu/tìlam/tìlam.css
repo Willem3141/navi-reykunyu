@@ -111,6 +111,7 @@ h1 #user-label {
 
 #results .result {
 	margin-top: 50px;
+	clear: right;
 }
 
 .result .result-word {

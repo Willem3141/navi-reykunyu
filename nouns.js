@@ -49,38 +49,15 @@
  */
 
 var convert = require("./convert");
+var phonology = require("./phonology");
 
 module.exports = {
 	conjugate: conjugate,
 	parse: parse
 }
 
-let vowels = ["a", "ä", "e", "i", "ì", "o", "u"];
-
-function isVowel(char) {
-	return vowels.includes(char);
-}
-
-let diphthongs = ["1", "2", "3", "4"];
-
-function isDiphthong(char) {
-	return diphthongs.includes(char);
-}
-
-function isConsonant(char) {
-	return !isVowel(char) && !isDiphthong(char);
-}
-
 function lastLetter(noun) {
 	return noun.slice(-1);
-}
-
-function endsInVowel(noun) {
-	return isVowel(lastLetter(noun));
-}
-
-function endsInConsonant(noun) {
-	return isConsonant(lastLetter(noun));
 }
 
 let caseFunctions = {
@@ -183,7 +160,7 @@ function subjectiveSuffix(noun) {
 }
 
 function agentiveSuffix(noun) {
-	if (endsInVowel(noun)) {
+	if (phonology.endsInVowel(noun)) {
 		return ["l"];
 	} else {
 		return ["ìl"];
@@ -191,10 +168,10 @@ function agentiveSuffix(noun) {
 }
 
 function patientiveSuffix(noun) {
-	if (endsInVowel(noun)) {
+	if (phonology.endsInVowel(noun)) {
 		return ["t", "ti"];
 	} else {
-		if (endsInConsonant(noun)) {
+		if (phonology.endsInConsonant(noun)) {
 			return ["it", "ti"];
 		} else {
 			if (noun.slice(-1) === "2") {  // ay
@@ -209,10 +186,10 @@ function patientiveSuffix(noun) {
 }
 
 function dativeSuffix(noun) {
-	if (endsInVowel(noun)) {
+	if (phonology.endsInVowel(noun)) {
 		return ["r", "ru"];
 	} else {
-		if (endsInConsonant(noun)) {
+		if (phonology.endsInConsonant(noun)) {
 			if (noun.slice(-1) === "'") {
 				return ["ur", "ru"];
 			} else {
@@ -231,7 +208,7 @@ function dativeSuffix(noun) {
 }
 
 function genitiveSuffix(noun) {
-	if (endsInVowel(noun)) {
+	if (phonology.endsInVowel(noun)) {
 		if (noun.slice(-1) === "o" || noun.slice(-1) === "u") {
 			return ["ä"];
 		} else {
@@ -251,7 +228,7 @@ function genitiveSuffix(noun) {
 }
 
 function topicalSuffix(noun) {
-	if (endsInConsonant(noun)) {
+	if (phonology.endsInConsonant(noun)) {
 		return ["ìri"];
 	} else {
 		return ["ri"];

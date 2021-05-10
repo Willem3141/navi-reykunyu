@@ -10,6 +10,7 @@ module.exports = {
 	'getAll': getAll,
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
+	'getRhymes': getRhymes,
 	'removeWord': removeWord,
 	'insertWord': insertWord,
 	'saveDictionary': saveDictionary
@@ -24,6 +25,7 @@ const conjugationString = require('./conjugationString');
 const convert = require('./convert');
 const nouns = require('./nouns');
 const pronouns = require('./pronouns');
+const rhymes = require('./rhymes');
 const verbs = require('./verbs');
 
 const matchAll = require('string.prototype.matchall');
@@ -713,6 +715,24 @@ function getTransitivityList() {
 	}
 
 	return list;
+}
+
+function getRhymes(query) {
+	let result = [];
+
+	for (word in dictionary) {
+		if (dictionary.hasOwnProperty(word)) {
+			if (rhymes.rhymes(dictionary[word]["na'vi"], query.toLowerCase())) {
+				result.push(dictionary[word]);
+			}
+		}
+	}
+
+	result.sort(function(a, b) {
+		return a["na'vi"].localeCompare(b["na'vi"]);
+	});
+
+	return result;
 }
 
 function removeWord(word, type) {

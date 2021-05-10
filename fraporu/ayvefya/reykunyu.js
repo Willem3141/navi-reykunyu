@@ -55,7 +55,8 @@ $(function() {
 
 function setUpAutocomplete() {
 	let url = null;
-	if (localStorage.getItem('reykunyu-mode') === 'navi') {
+	if (localStorage.getItem('reykunyu-mode') === 'navi' ||
+			localStorage.getItem('reykunyu-mode') === 'rhymes') {
 		url = 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}';
 	} else {
 		url = 'api/suggest?language=' + localStorage.getItem('reykunyu-language') + '&query={query}';
@@ -857,6 +858,8 @@ function sngäiTìfwusew() {
 		doSearchNavi();
 	} else if (mode === 'english') {
 		doSearchEnglish();
+	} else if (mode === 'rhymes') {
+		doSearchRhymes();
 	}
 	return false;
 }
@@ -865,8 +868,6 @@ function doSearchNavi() {
 	let tìpawm = $('#search-box').val();
 	$.getJSON('/api/fwew', {'tìpawm': tìpawm})
 		.done(function(tìeyng) {
-			console.log(tìeyng);
-
 			$results.empty();
 
 			$results.append(createResults(tìeyng[0]));
@@ -904,8 +905,6 @@ function doSearchEnglish() {
 	let query = $('#search-box').val();
 	$.getJSON('/api/search', {'query': query, 'language': localStorage.getItem('reykunyu-language')})
 		.done(function(tìeyng) {
-			console.log(tìeyng);
-
 			$results.empty();
 
 			if (tìeyng.length) {
@@ -915,6 +914,28 @@ function doSearchEnglish() {
 				}
 			} else {
 				$results.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+			}
+		})
+		.fail(function() {
+			$sentenceBar.empty();
+			$results.empty();
+			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
+		});
+}
+
+function doSearchRhymes() {
+	let tìpawm = $('#search-box').val();
+	$.getJSON('/api/rhymes', {'tìpawm': tìpawm})
+		.done(function(tìeyng) {
+			$results.empty();
+
+			if (tìeyng.length) {
+				for (let i = 0; i < tìeyng.length; i++) {
+					const result = tìeyng[i];
+					$results.append(createResultBlock(i, result));
+				}
+			} else {
+				$results.append(createErrorBlock(_("no-results"), _("no-results-description")));
 			}
 		})
 		.fail(function() {
