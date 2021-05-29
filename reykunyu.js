@@ -745,11 +745,13 @@ function getRhymes(query) {
 	}
 
 	for (const s in Object.keys(words)) {
-		for (const s2 in Object.keys(words[s])) {
-			if (words[s][s2]) {
-				words[s][s2].sort(function(a, b) {
-					return a["na'vi"].localeCompare(b["na'vi"]);
-				});
+		if (words[s]) {
+			for (const s2 in Object.keys(words[s])) {
+				if (words[s][s2]) {
+					words[s][s2].sort(function(a, b) {
+						return a["na'vi"].localeCompare(b["na'vi"]);
+					});
+				}
 			}
 		}
 	}
