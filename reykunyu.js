@@ -24,6 +24,7 @@ const adjectives = require('./adjectives');
 const conjugationString = require('./conjugationString');
 const convert = require('./convert');
 const nouns = require('./nouns');
+const numbers = require('./numbers');
 const pronouns = require('./pronouns');
 const rhymes = require('./rhymes');
 const verbs = require('./verbs');
@@ -623,6 +624,15 @@ function getReverseResponsesFor(query, language) {
 					results.push(dictionary[word]);
 				}
 			}
+		}
+	}
+
+	// special case: numbers
+	if (/^\d+$/.test(query)) {
+		const number = parseInt(query, 10);
+		const result = numbers.conjugate(number);
+		if (result !== null) {
+			results.push(result);
 		}
 	}
 
