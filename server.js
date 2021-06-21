@@ -241,6 +241,14 @@ app.get('/api/suggest', function(req, res) {
 	res.json(reykunyu.getReverseSuggestionsFor(req.query["query"], req.query["language"]));
 });
 
+app.get('/api/annotated/search', function(req, res) {
+	res.json(reykunyu.getAnnotatedResponsesFor(req.query["query"]));
+});
+
+app.get('/api/annotated/suggest', function(req, res) {
+	res.json(reykunyu.getAnnotatedSuggestionsFor(req.query["query"]));
+});
+
 app.get('/api/frau', function(req, res) {
 	res.json(reykunyu.getAll());
 });

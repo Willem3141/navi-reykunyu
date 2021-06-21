@@ -11,6 +11,8 @@ module.exports = {
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
 	'getRhymes': getRhymes,
+	'getAnnotatedResponsesFor': getAnnotatedResponsesFor,
+	'getAnnotatedSuggestionsFor': getAnnotatedSuggestionsFor,
 	'removeWord': removeWord,
 	'insertWord': insertWord,
 	'saveDictionary': saveDictionary
@@ -45,6 +47,8 @@ fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 	let key = wordData["na'vi"].toLowerCase() + ":" + wordData["type"];
 	dictionary[key] = wordData;
 });*/
+
+var annotated = JSON.parse(fs.readFileSync(__dirname + "/annotated.json"));
 
 var pronounForms = {};
 var allWords = [];
@@ -765,6 +769,42 @@ function getRhymes(query) {
 	}
 
 	return words;
+}
+
+function getAnnotatedResponsesFor(query) {
+	query = query.toLowerCase();
+	let results = [];
+
+	if (annotated.hasOwnProperty(query)) {
+		results.push(annotated[query]);
+	}
+	let upperCasedQuery = query[0].toUpperCase() + query.substring(1);
+	if (annotated.hasOwnProperty(upperCasedQuery)) {
+		results.push(annotated[upperCasedQuery]);
+	}
+
+	return results;
+}
+
+function getAnnotatedSuggestionsFor(query) {
+	if (query.length < 1) {
+		return {'results': []};
+	}
+
+	query = query.toLowerCase();
+	resultsArray = [];
+
+	for (word in annotated) {
+		if (annotated.hasOwnProperty(word)) {
+			if (word.toLowerCase().startsWith(query)) {
+				resultsArray.push({'title': word});
+			}
+		}
+	}
+
+	return {
+		'results': resultsArray
+	};
 }
 
 function removeWord(word, type) {

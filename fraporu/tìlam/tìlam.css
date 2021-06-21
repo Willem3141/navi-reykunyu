@@ -61,6 +61,10 @@ h1 #user-label {
 	font-family: 'Calluna Sans';
 }
 
+#mode-direction {
+	width: 200px;
+}
+
 .ui.search > .results {
 	max-height: 500px;
 	overflow-y: auto;
@@ -428,6 +432,44 @@ a {
 	background-position: 0 5px;
 	font-weight: 700;
 	padding-left: 22px;
+}
+
+.result-annotated {
+	max-width: 500px;
+	padding: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid #ddd;
+	text-align: justify;
+}
+
+.result-annotated .purple {
+	color: #8623dd;
+}
+
+.result-annotated .ipa {
+	font-family: "Gentium Plus";
+}
+
+.result-annotated a {
+	text-decoration: underline;
+}
+
+.result-annotated a.source-link {
+	color: #1e70bf;
+	text-decoration: none;
+}
+
+.result-annotated a.source-link,
+.result-annotated .small-capitals {
+	font-variant: small-caps;
+}
+
+.credits-footer {
+	margin-top: 40px;
+	padding-top: 10px;
+	text-align: center;
+	font-style: italic;
 }
 
 @media (prefers-color-scheme: dark) {

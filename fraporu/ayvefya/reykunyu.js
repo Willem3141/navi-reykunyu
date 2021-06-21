@@ -58,6 +58,8 @@ function setUpAutocomplete() {
 	if (localStorage.getItem('reykunyu-mode') === 'navi' ||
 			localStorage.getItem('reykunyu-mode') === 'rhymes') {
 		url = 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}';
+	} else if (localStorage.getItem('reykunyu-mode') === 'annotated') {
+		url = 'api/annotated/suggest?' + '&query={query}';
 	} else {
 		url = 'api/suggest?language=' + localStorage.getItem('reykunyu-language') + '&query={query}';
 	}
@@ -858,6 +860,8 @@ function sngäiTìfwusew() {
 		doSearchNavi();
 	} else if (mode === 'english') {
 		doSearchEnglish();
+	} else if (mode === 'annotated') {
+		doSearchAnnotated();
 	} else if (mode === 'rhymes') {
 		doSearchRhymes();
 	}
@@ -914,6 +918,44 @@ function doSearchEnglish() {
 				}
 			} else {
 				$results.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+			}
+		})
+		.fail(function() {
+			$sentenceBar.empty();
+			$results.empty();
+			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
+		});
+}
+
+function createAnnotatedBlock(definition) {
+	let block = $('<div/>')
+		.addClass('result')
+		.addClass('result-annotated')
+		.html(definition);
+	return block;
+}
+
+function createAnnotatedFooter() {
+	let block = $('<div/>')
+		.addClass('credits-footer')
+		.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2020-11-25');
+	return block;
+}
+
+function doSearchAnnotated() {
+	let query = $('#search-box').val();
+	$.getJSON('/api/annotated/search', {'query': query})
+		.done(function(result) {
+			$results.empty();
+
+			if (result.length) {
+				for (let i = 0; i < result.length; i++) {
+					const definition = result[i];
+					$results.append(createAnnotatedBlock(definition));
+				}
+				$results.append(createAnnotatedFooter());
+			} else {
+				$results.append(createErrorBlock(_("no-results"), _("no-results-description")));
 			}
 		})
 		.fail(function() {
