@@ -144,6 +144,9 @@ function conjugationExplanation(conjugation) {
 			case "v_to_n":
 				$explanation.append(verbToNounConjugationExplanation(c));
 				break;
+			case "v_to_adj":
+				$explanation.append(verbToAdjectiveConjugationExplanation(c));
+				break;
 		}
 	}
 
@@ -229,6 +232,22 @@ function verbToNounConjugationExplanation(conjugation) {
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 	$('<span/>').addClass('suffix').text(conjugation["affixes"][0]).appendTo($conjugation);
+	
+	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
+	
+	return $conjugation;
+}
+
+function verbToAdjectiveConjugationExplanation(conjugation) {
+	let $conjugation = $('<div/>').addClass('conjugation-explanation');
+	
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+
+	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
+	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 	
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);

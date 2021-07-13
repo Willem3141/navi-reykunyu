@@ -410,17 +410,49 @@ function lookUpWord(queryWord) {
 
 	// handle conjugated adjectives
 	let adjectiveResults = adjectives.parse(queryWord);
-	adjectiveResults.forEach(function(result) {
-		if (dictionary.hasOwnProperty(result["root"] + ":adj")) {
-			adjective = JSON.parse(JSON.stringify(dictionary[result["root"] + ":adj"]));
+	adjectiveResults.forEach(function(adjResult) {
+		if (dictionary.hasOwnProperty(adjResult["root"] + ":adj")) {
+			adjective = JSON.parse(JSON.stringify(dictionary[adjResult["root"] + ":adj"]));
 			adjective["conjugated"] = [{
 				"type": "adj",
-				"conjugation": result
+				"conjugation": adjResult
 			}];
 			let conjugation = conjugationString.formsFromString(
-					adjectives.conjugate(adjective["na'vi"].toLowerCase(), result["form"]));
+					adjectives.conjugate(adjective["na'vi"].toLowerCase(), adjResult["form"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
 				wordResults.push(adjective);
+			}
+		}
+
+		const prefixes = ['tsuk', 'ketsuk'];
+		for (const prefix of prefixes) {
+			if (adjResult["root"].startsWith(prefix)) {
+				let possibleVerb = adjResult["root"].substring(prefix.length);
+				let verbResults = verbs.parse(possibleVerb);
+				verbResults.forEach(function(verbResult) {
+					for (let verb of findVerb(verbResult["root"])) {
+						verb["conjugated"] = [{
+							"type": "v",
+							"conjugation": verbResult
+						}, {
+							"type": "v_to_adj",
+							"conjugation": {
+								"result": adjResult["root"],
+								"root": possibleVerb,
+								"affixes": [prefix]
+							}
+						}, {
+							"type": "adj",
+							"conjugation": adjResult
+						}];
+						verb["affixes"] = makeAffixList(verb["conjugated"]);
+						let conjugation = conjugationString.formsFromString(
+							verbs.conjugate(verb["infixes"], verbResult["infixes"]));
+						if (conjugation.indexOf(possibleVerb) !== -1) {
+							wordResults.push(verb);
+						}
+					}
+				});
 			}
 		}
 	});
@@ -498,6 +530,10 @@ function makeAffixList(conjugated) {
 		if (conjugation['type'] === 'v_to_n') {
 			let affixes = conjugation['conjugation']['affixes'];
 			addAffix(list, 'suffix', affixes[0], ['aff:suf']);
+		}
+		if (conjugation['type'] === 'v_to_adj') {
+			let affixes = conjugation['conjugation']['affixes'];
+			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
 		}
 		if (conjugation['type'] === 'v') {
 			let infixes = conjugation['conjugation']['infixes'];

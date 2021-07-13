@@ -23,6 +23,10 @@
   font-weight: bold;
   font-style: italic;
 }
+@font-face {
+  font-family: 'Gentium Plus';
+  src: url('/fonts/GentiumPlus-Regular.woff2');
+}
 
 body,
 .ui.button,
