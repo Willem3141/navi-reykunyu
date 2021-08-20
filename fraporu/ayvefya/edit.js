@@ -25,15 +25,19 @@ $(function() {
 	});
 
 	$('#save-button').on('click', function () {
-		const wordData = generateWordData();
-		const url = $('body').data('url');
-		$.post(url, {
-			'word': word,
-			'type': type,
-			'data': JSON.stringify(wordData)
-		}, function () {
-			document.location.href = '/?q=' + wordData["na'vi"];
-		});
+		try {
+			const wordData = generateWordData();
+			const url = $('body').data('url');
+			$.post(url, {
+				'word': word,
+				'type': type,
+				'data': JSON.stringify(wordData)
+			}, function () {
+				document.location.href = '/?q=' + wordData["na'vi"];
+			});
+		} catch (e) {
+			alert(e);
+		}
 	});
 
 	$('#translations-modal-cancel-button').on('click', function () {
@@ -68,8 +72,12 @@ function generateWordData() {
 	word = {};
 	word["na'vi"] = $('#root-field').val();
 	word["type"] = $('#type-field').val();
-	if (word["type"].startsWith('v:') && $('#infixes-field').val()) {
-		word["infixes"] = $('#infixes-field').val();
+	if (word["type"].startsWith('v:')) {
+		if ($('#infixes-field').val()) {
+			word["infixes"] = $('#infixes-field').val();
+		} else {
+			throw new Error('Cannot save a verb without infix data');
+		}
 	}
 	if ($('#meaning-note-field').val()) {
 		word["meaning_note"] = $('#meaning-note-field').val();
