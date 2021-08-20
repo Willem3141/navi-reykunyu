@@ -70,7 +70,7 @@ function showHideInfixes() {
 
 function generateWordData() {
 	word = {};
-	word["na'vi"] = $('#root-field').val();
+	word["na'vi"] = preprocess($('#root-field').val());
 	word["type"] = $('#type-field').val();
 	if (word["type"].startsWith('v:')) {
 		if ($('#infixes-field').val()) {
@@ -87,7 +87,7 @@ function generateWordData() {
 	}
 	if ($('#pronunciation-field .syllables-cell').val()) {
 		word["pronunciation"] = [
-			$('#pronunciation-field .syllables-cell').val(),
+			preprocess($('#pronunciation-field .syllables-cell').val()),
 			parseInt($('#pronunciation-field .stress-cell').val(), 10)
 		];
 	}
@@ -138,5 +138,11 @@ function generateWordData() {
 	}
 
 	return word;
+}
+
+function preprocess(query) {
+	query = query.replace(/’/g, "'");
+	query = query.replace(/‘/g, "'");
+	return query;
 }
 
