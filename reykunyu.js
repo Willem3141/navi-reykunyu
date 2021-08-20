@@ -817,8 +817,10 @@ function getAnnotatedResponsesFor(query) {
 		results.push(annotated[query]);
 	}
 	let upperCasedQuery = query[0].toUpperCase() + query.substring(1);
-	if (annotated.hasOwnProperty(upperCasedQuery)) {
-		results.push(annotated[upperCasedQuery]);
+	if (upperCasedQuery !== query) {
+		if (annotated.hasOwnProperty(upperCasedQuery)) {
+			results.push(annotated[upperCasedQuery]);
+		}
 	}
 
 	return results;
