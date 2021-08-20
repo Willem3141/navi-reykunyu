@@ -240,6 +240,8 @@ function getResponsesFor(query) {
 			"aysämok": suggestions
 		});
 	}
+
+	postprocessResults(results);
 	
 	return results;
 }
@@ -562,6 +564,44 @@ function addAffix(list, affixType, affixString, types) {
 			'type': affixType,
 			'affix': affix
 		});
+	}
+}
+
+/**
+ * Merges si-verbs into a single entry in the results array.
+ *
+ * A phrase like "kaltxì si" should be seen as a single si-verb, so this method
+ * finds instances of n:si + v:si and merges them into a single entry.
+ */
+function postprocessResults(results) {
+	for (let i = 0; i < results.length - 1; i++) {
+		const second = results[i + 1];
+
+		if (second["sì'eyng"].length !== 1) {
+			continue;
+		}
+		const secondAnswer = second["sì'eyng"][0];
+		if (secondAnswer["type"] !== "v:si") {
+			continue;
+		}
+
+		const first = results[i];
+		let newResult = {
+			"tìpawm": first["tìpawm"] + " " + second["tìpawm"],
+			"sì'eyng": [],
+			"aysämok": []
+		};
+
+		for (let answer of first["sì'eyng"]) {
+			if (answer["type"] === "n:si") {
+				newResult["sì'eyng"].push(answer);
+			}
+		}
+
+		if (newResult["sì'eyng"].length > 0) {
+			results[i + 1] = newResult;
+			results.splice(i, 1);
+		}
 	}
 }
 
