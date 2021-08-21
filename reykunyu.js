@@ -597,6 +597,7 @@ function postprocessResults(results) {
 			if (answer["type"] === "n:si") {
 				let newAnswer = JSON.parse(JSON.stringify(answer));
 				newAnswer["type"] = "nv:si";
+				newAnswer["conjugated"] = secondAnswer["conjugated"];
 				newResult["sì'eyng"].push(newAnswer);
 			}
 		}

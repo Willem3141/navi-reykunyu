@@ -331,7 +331,7 @@ function pronunciationSection(lìupam, fnel) {
 		}
 		$tìlam.append($lìkong);
 	}
-	if (fnel === "n:si") {
+	if (fnel === "n:si" || fnel === "nv:si") {
 		$tìlam.append(" si");
 	}
 	$tìlam.append(")");
@@ -683,7 +683,7 @@ function sentencesSection(sentences, lemma) {
 }
 
 function lemmaForm(word, type) {
-	if (type === "n:si") {
+	if (type === "n:si" || type === "nv:si") {
 		return word + ' si';
 	} else if (type === 'aff:pre') {
 		return word + "-";
