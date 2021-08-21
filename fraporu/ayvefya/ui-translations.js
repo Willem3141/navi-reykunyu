@@ -28,6 +28,7 @@ strings['en'] = {
 	'type-aff:pre': 'prefix',
 	'type-aff:in': 'infix',
 	'type-aff:suf': 'suffix',
+	'type-nv:si': 'verb/si',
 
 	'stress-unknown': '(stress pattern unknown)',
 
@@ -110,6 +111,7 @@ strings['de'] = {
 	'type-aff:pre': 'Präfix',
 	'type-aff:in': 'Infix',
 	'type-aff:suf': 'Suffix',
+	'type-nv:si': 'Verb/si',
 
 	'stress-unknown': '(Betonung unbekannt)',
 
@@ -192,6 +194,7 @@ strings['nl'] = {
 	'type-aff:pre': 'voorvoegsel',
 	'type-aff:in': 'infix',
 	'type-aff:suf': 'achtervoegsel',
+	'type-nv:si': 'werkwoord/si',
 
 	'stress-unknown': '(klemtoon onbekend)',
 
@@ -278,6 +281,7 @@ strings['fr'] = {
 	'type-aff:pre': 'préfixe',
 	'type-aff:in': 'infixe',
 	'type-aff:suf': 'suffixe',
+	'type-nv:si': 'verbe/si',
 
 	'stress-unknown': '(accentuation tonique inconnue)',
 

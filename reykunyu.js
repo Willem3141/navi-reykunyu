@@ -571,7 +571,8 @@ function addAffix(list, affixType, affixString, types) {
  * Merges si-verbs into a single entry in the results array.
  *
  * A phrase like "kaltxì si" should be seen as a single si-verb, so this method
- * finds instances of n:si + v:si and merges them into a single entry.
+ * finds instances of n:si + v:si and merges them into a single entry of type
+ * nv:si.
  */
 function postprocessResults(results) {
 	for (let i = 0; i < results.length - 1; i++) {
@@ -594,7 +595,9 @@ function postprocessResults(results) {
 
 		for (let answer of first["sì'eyng"]) {
 			if (answer["type"] === "n:si") {
-				newResult["sì'eyng"].push(answer);
+				let newAnswer = JSON.parse(JSON.stringify(answer));
+				newAnswer["type"] = "nv:si";
+				newResult["sì'eyng"].push(newAnswer);
 			}
 		}
 
