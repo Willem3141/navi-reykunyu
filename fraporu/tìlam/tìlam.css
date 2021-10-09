@@ -562,5 +562,10 @@ a {
 	.word-link {
 		color: white;
 	}
+
+	a,
+	.ui.form .field > label {
+		color: white;
+	}
 }
 

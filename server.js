@@ -221,7 +221,7 @@ app.get('/untranslated', function(req, res) {
 		return;
 	}
 	console.log('blap');
-	let untranslated = reykunyu.getUntranslated('de');
+	let untranslated = reykunyu.getUntranslated('fr');
 	res.render('untranslated', { user: req.user, untranslated: untranslated });
 });
 
@@ -293,7 +293,7 @@ app.get('/api/parse', function(req, res) {
 });
 
 app.get('/api/random', function(req, res) {
-	res.json(reykunyu.getRandomWords(req.query["holpxay"]));
+	res.json(reykunyu.getRandomWords(req.query["holpxay"], req.query["fnel"]));
 });
 
 app.get('/api/rhymes', function(req, res) {

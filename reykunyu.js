@@ -51,7 +51,11 @@ fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
 var annotated = JSON.parse(fs.readFileSync(__dirname + "/annotated.json"));
 
 var pronounForms = {};
+
+// list of all words, for randomization
 var allWords = [];
+var allWordsOfType = {};
+
 reloadData();
 
 function reloadData() {
@@ -61,6 +65,21 @@ function reloadData() {
 	for (let word of Object.keys(dictionary)) {
 		allWords.push(dictionary[word]);
 	}
+
+	allWordsOfType = {};
+	for (const type of ['n', 'adj', 'v:', 'v:in', 'v:tr', 'adv', 'adp', 'aff:in']) {
+		allWordsOfType[type] = getAllWordsOfType(type);
+	}
+}
+
+function getAllWordsOfType(type) {
+	let result = [];
+	for (let word of Object.keys(dictionary)) {
+		if (dictionary[word]['type'].startsWith(type)) {
+			result.push(dictionary[word]);
+		}
+	}
+	return result;
 }
 
 /*var lines = fs.readFileSync(__dirname + "/aysìkenong/corpus.tsv", 'utf8').split("\n");
@@ -723,23 +742,27 @@ function getReverseResponsesFor(query, language) {
 	return results;
 }
 
-function getRandomWords(number) {
+function getRandomWords(number, type) {
 	let results = [];
-	const n = allWords.length;
+	let wordList = allWords;
+	if (type && allWordsOfType.hasOwnProperty(type)) {
+		wordList = allWordsOfType[type];
+	}
+	const n = wordList.length;
 
 	for (let i = n - 1; i >= n - number; i--) {
 
 		// draw random word in [0, i]
 		let random = Math.floor(Math.random() * (i + 1));
-		let randomWord = allWords[random];
+		let randomWord = wordList[random];
 		results.push(randomWord);
 
 		// swap drawn word to the end so we won't draw it again
-		// (note: we don't care that allWords gets shuffled in the process because we use it only for
+		// (note: we don't care that wordList gets shuffled in the process because we use it only for
 		// random draws anyway)
-		const h = allWords[i];
-		allWords[i] = allWords[random];
-		allWords[random] = h;
+		const h = wordList[i];
+		wordList[i] = wordList[random];
+		wordList[random] = h;
 	}
 
 	return results;
