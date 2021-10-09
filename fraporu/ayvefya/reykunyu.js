@@ -420,9 +420,22 @@ function createWordLink(link) {
 		return $('<b/>').text(link);
 	} else {
 		let $link = $('<span/>');
-		$link.append($('<a/>').addClass('word-link').text(link["na'vi"]));
-		$link.append(' (' + link["translations"] + ')');
+		$link.append($('<a/>')
+			.addClass('word-link')
+			.attr('href', "/?q=" + link["na'vi"])
+			.text(link["na'vi"]));
+		$link.append(' (' + getShortTranslation(link) + ')');
 		return $link;
+	}
+}
+
+function appendLinkString(linkString, $div) {
+	for (let piece of linkString) {
+		if (typeof piece === 'string') {
+			$div.append(piece);
+		} else {
+			$div.append(createWordLink(piece));
+		}
 	}
 }
 
@@ -430,23 +443,27 @@ function etymologySection(etymology) {
 	let $etymologySection = $('<div/>').addClass('result-item etymology');
 	$etymologySection.append($('<div/>').addClass('header').text(_('etymology')));
 	let $etymology = $('<div/>').addClass('body');
-
-	if (typeof etymology === "string") {
-		$etymology.append(etymology);
-	} else {
-		$etymology.append(_('etymology-from') + ' ');
-		for (let i = 0; i < etymology.length; i++) {
-			if (i > 0) {
-				$etymology.append(' + ');
-			}
-			let link = etymology[i];
-			$etymology.append(createWordLink(link));
-		}
-		$etymology.append('.');
-	}
-
+	appendLinkString(etymology, $etymology);
 	$etymologySection.append($etymology);
 	return $etymologySection;
+}
+
+function derivedSection(derived) {
+	let $derivedSection = $('<div/>').addClass('result-item derived');
+	$derivedSection.append($('<div/>').addClass('header').text(_('derived')));
+	let $derived = $('<div/>').addClass('body');
+
+	let first = true;
+	for (let word of derived) {
+		if (!first) {
+			$derived.append(', ');
+		}
+		$derived.append(createWordLink(word));
+		first = false;
+	}
+
+	$derivedSection.append($derived);
+	return $derivedSection;
 }
 
 // ngop sästarsìmit aysätareyä
@@ -763,6 +780,9 @@ function createResultBlock(i, r) {
 
 	if (r["etymology"]) {
 		$result.append(etymologySection(r["etymology"]));
+	}
+	if (r["derived"]) {
+		$result.append(derivedSection(r["derived"]));
 	}
 
 	if (r["conjugation"]) {

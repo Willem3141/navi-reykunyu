@@ -35,26 +35,71 @@ const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
 var dictionary = JSON.parse(fs.readFileSync(__dirname + "/words.json"));
-/*var dictionary = {};
-fs.readdirSync(__dirname + "/aylì'u").forEach(file => {
-	let wordData;
-	try {
-		wordData = (JSON.parse(fs.readFileSync(__dirname + "/aylì'u/" + file, 'utf8')));
-	} catch (e) {
-		console.log("error when reading " + file + "; ignoring");
-		return;
-	}
-	let key = wordData["na'vi"].toLowerCase() + ":" + wordData["type"];
-	dictionary[key] = wordData;
-});*/
-
 var annotated = JSON.parse(fs.readFileSync(__dirname + "/annotated.json"));
+var derivedWords = {};
 
 var pronounForms = {};
 var allWords = [];
 reloadData();
 
+// Replaces word links in a string by dictionary objects.
+function addWordLinks(text) {
+
+	// matches word links between brackets
+	const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
+	pieces = text.split(wordLinkRegex);
+
+	let list = [];
+	for (let i = 0; i < pieces.length; i++) {
+		if (i % 3 === 0) {
+			// string piece: just place it into the list
+			list.push(pieces[i]);
+		} else {
+			// regex-matched piece: get object from dictionary
+			const navi = pieces[i];
+			const type = pieces[i + 1];
+			const key = navi + ':' + type;
+			if (dictionary.hasOwnProperty(key)) {
+				list.push(stripToLinkData(dictionary[key]));
+			} else {
+				console.log('Invalid reference to [' + key + ']');
+			}
+			i++;  // skip type
+		}
+	}
+	return list;
+}
+
 function reloadData() {
+
+	for (let word of Object.keys(dictionary)) {
+		if (dictionary[word].hasOwnProperty('etymology')) {
+			let etymology = dictionary[word]['etymology'];
+			if (Array.isArray(etymology)) {
+				// TODO deprecate this
+				continue;
+			}
+			etymology = addWordLinks(etymology);
+			for (let piece of etymology) {
+				if (typeof piece === "string") {
+					continue;
+				}
+				const navi = piece["na'vi"];
+				const type = piece["type"];
+				const key = navi + ':' + type;
+				if (dictionary.hasOwnProperty(key)) {
+					if (!derivedWords.hasOwnProperty(key)) {
+						derivedWords[key] = [];
+					}
+					derivedWords[key].push(stripToLinkData(dictionary[word]));
+				} else {
+					console.log('Invalid reference to [' + key + '] in etymology for ' + word);
+				}
+			}
+			
+		}
+	}
+
 	pronounForms = pronouns.getConjugatedForms(dictionary);
 
 	allWords = [];
@@ -63,35 +108,21 @@ function reloadData() {
 	}
 }
 
-/*var lines = fs.readFileSync(__dirname + "/aysìkenong/corpus.tsv", 'utf8').split("\n");
-var sentences = [];
-lines.forEach(line => {
-	let fields = line.split("\t");
-	let id = fields[0];
-	let navi = fields[1];
-	let naviWords = fields[2];
-	let mapping = fields[3];
-	let english = fields[4];
-	let ownTranslation = fields[5];
-	let source = fields[6];
-	let sourceUrl = fields[7];
-	let sentence = {
-		"id": id,
-		"navi": navi.split(/[ —]/),
-		"naviWords": naviWords.split(/[ —]/),
-		"mapping": mapping.split(/[ —]/),
-		"english": english.split(/[ —]/),
-		"ownTranslation": !(ownTranslation === ""),
-		"source": source,
-		"sourceUrl": sourceUrl
+// Given a word object, returns an object that contains only the word data
+// relevant when making a word link (Na'vi word, type, and translations).
+// Calling this function makes the returned data smaller, and avoids potential
+// infinite loops if two words happen to have word links to each other.
+function stripToLinkData(word) {
+	let result = {
+		"na'vi": word["na'vi"],
+		"type": word["type"],
+		"translations": word["translations"]
 	};
-	sentences.push(sentence);
-	sentence["naviWords"].forEach(naviWord => {
-		if (dictionary.hasOwnProperty(naviWord)) {
-			dictionary[naviWord]["sentences"].push(sentence);
-		}
-	});
-});*/
+	if (word.hasOwnProperty("short_translation")) {
+		result["short_translation"] = word["short_translation"];
+	}
+	return result;
+}
 
 function simplifiedTranslation(translation, language) {
 	let result = "";
@@ -109,37 +140,6 @@ function simplifiedTranslation(translation, language) {
 	
 	return result;
 }
-
-/*for (word in dictionary) {
-	if (dictionary.hasOwnProperty(word)) {
-		
-		let etymologyList = dictionary[word]["etymology"];
-		if (etymologyList) {
-			for (let i = 0; i < etymologyList.length; i++) {
-				let word = dictionary[etymologyList[i]];
-				if (word) {
-					etymologyList[i] = {
-						"na'vi": word["na'vi"],
-						"translations": simplifiedTranslation(word["translations"])
-					}
-				}
-			}
-		}
-		
-		let seeAlsoList = dictionary[word]["seeAlso"];
-		if (seeAlsoList) {
-			for (let i = 0; i < seeAlsoList.length; i++) {
-				let word = dictionary[seeAlsoList[i]];
-				if (word) {
-					seeAlsoList[i] = {
-						"na'vi": word["na'vi"],
-						"translations": simplifiedTranslation(word["translations"])
-					}
-				}
-			}
-		}
-	}
-}*/
 
 function getWord(word, type) {
 	return dictionary[word.toLowerCase() + ':' + type];
@@ -304,6 +304,10 @@ function forbiddenByExternalLenition(result) {
 	return hasNoDeterminer;
 }
 
+// Looks up a single word; returns a list of results.
+//
+// This method ensures that the data returned is a deep copy (i.e., we can
+// safely change it without changing the dictionary data itself).
 function lookUpWord(queryWord) {
 	let wordResults = [];
 
@@ -468,7 +472,7 @@ function lookUpWord(queryWord) {
 					type !== "adj" &&
 					!dictionary[word].hasOwnProperty('conjugation') &&
 					type.indexOf("v:") === -1) {
-				wordResults.push(dictionary[word]);
+				wordResults.push(JSON.parse(JSON.stringify(dictionary[word])));
 			}
 		}
 	}
@@ -568,13 +572,33 @@ function addAffix(list, affixType, affixString, types) {
 }
 
 /**
+ * Given a result object, postprocesses it by adding word links, and doing
+ * si-verb merges.
+ */
+function postprocessResults(results) {
+	mergeSiVerbs(results);
+
+	for (let word of results) {
+		for (let result of word['sì\'eyng']) {
+			if (result.hasOwnProperty('etymology')) {
+				result['etymology'] = addWordLinks(result['etymology']);
+			}
+			const key = result['na\'vi'] + ':' + result['type'];
+			if (derivedWords.hasOwnProperty(key)) {
+				result['derived'] = derivedWords[key];
+			}
+		}
+	}
+}
+
+/**
  * Merges si-verbs into a single entry in the results array.
  *
  * A phrase like "kaltxì si" should be seen as a single si-verb, so this method
  * finds instances of n:si + v:si and merges them into a single entry of type
  * nv:si.
  */
-function postprocessResults(results) {
+function mergeSiVerbs(results) {
 	for (let i = 0; i < results.length - 1; i++) {
 		const second = results[i + 1];
 

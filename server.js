@@ -214,6 +214,14 @@ app.get('/history', function(req, res) {
 	res.render('history', { user: req.user, history: historyData });
 });
 
+app.get('/etymology-editor', function(req, res) {
+	res.render('etymologyEditor', {
+		'user': req.user,
+		'post_url': '/edit',
+		'words': reykunyu.getAll()
+	});
+});
+
 app.get('/untranslated', function(req, res) {
 	if (!req.user) {
 		res.status(403);

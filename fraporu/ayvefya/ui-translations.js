@@ -45,6 +45,7 @@ strings['en'] = {
 
 	'etymology': 'Etymology',
 	'etymology-from': 'From',
+	'derived': 'Derived words',
 
 	'source': 'Source',
 
@@ -211,6 +212,7 @@ strings['nl'] = {
 
 	'etymology': 'Etymologie',
 	'etymology-from': 'Van',
+	'derived': 'Afgeleide woorden',
 
 	'source': 'Bron',
 

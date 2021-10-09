@@ -476,6 +476,14 @@ a {
 	font-style: italic;
 }
 
+.etymology-field {
+	transition: background-color .2s !important;
+}
+
+.etymology-field.edit-succeeded {
+	background-color: #bbface !important;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #000;

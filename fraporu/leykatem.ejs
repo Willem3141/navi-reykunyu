@@ -188,10 +188,6 @@ const types = [
 						<input id="status-note-field" type="text" value="<%= word['status_note'] %>">
 					</div>
 				</div>
-				<% if (word['etymology'] && typeof word['etymology'] !== 'string') {
-					let e = word['etymology'].map(e => ('[' + e + ']'));
-					word['etymology'] = 'From ' + e.join(' + ') + '.';
-				} %>
 				<div class="field">
 					<label>Etymology</label>
 					<textarea id="etymology-field" rows="2"><%= word['etymology'] %></textarea>
