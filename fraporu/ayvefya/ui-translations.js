@@ -251,6 +251,90 @@ strings['nl'] = {
 	'searching-error-description': 'Probeer het later opnieuw. Als het probleem aanhoudt, <a href="//wimiso.nl/contact">laat het dan weten</a>.',
 }
 
+strings['x-navi'] = {
+	'language': 'Na’vi',
+
+	'type-n': 'tstxolì’u',
+	'type-n:unc': 'tstxolì’u/ketsuktiam',
+	'type-n:si': 'kemlì’u/si',
+	'type-n:pr': 'kemlì’u/tstxo',
+	'type-pn': 'pronoun',
+	'type-adj': 'syonlì’u',
+	'type-num': 'holpxay',
+	'type-adv': 'fyalì’u',
+	'type-adp': 'starlì’u',
+	'type-adp:len': 'starlì’u/leniting',
+	'type-intj': 'interjection',
+	'type-part': 'particle',
+	'type-conj': 'conjunction',
+	'type-ctr': 'F-word',
+	'type-v:?': 'kemlì’u/unknown type',
+	'type-v:in': 'kemlì’u/intransitive',
+	'type-v:tr': 'kemlì’u/transitive',
+	'type-v:m': 'kemlì’u/modal',
+	'type-v:si': 'kemlì’u/si',
+	'type-v:cp': 'kemlì’u/copula',
+	'type-phr': 'lì’fyavi',
+	'type-inter': 'interrogative',
+	'type-aff:pre': 'eolì’uvi',
+	'type-aff:in': 'kemlì’uvi',
+	'type-aff:suf': 'uolì’uvi',
+	'type-nv:si': 'kemlì’u/si',
+
+	'stress-unknown': '(lì’upam akawnomum)',
+
+	'status-unconfirmed': 'unconfirmed word',
+	'status-unconfirmed-header': 'Unconfirmed:',
+	'status-unofficial': 'unofficial word',
+	'status-unofficial-header': 'Unofficial:',
+	'status-loan': 'loanword',
+	'status-loan-header': 'Loanword:',
+	'status-unconfirmed-explanation': 'This word has never been officially confirmed by Paul Frommer. Keep that in mind if you decide to use it.',
+	'status-loan-explanation': 'This word was loaned from English or another Earth language. For completeness, we include loanwords in this dictionary if and only if Paul Frommer has used them in one of his writings. However, since any word could be loaned into Na\'vi if the need arises to talk about Earth concepts, this distinction is by definition arbitrary.',
+
+	'image-drawn-by': '&ndash; reltse’o a ta',
+
+	'etymology': 'Fìlì’uä tsim',
+	'etymology-from': 'Ta',
+	'derived': 'Fìlì’uta a aylì’u',
+
+	'source': 'Säomumä tsim',
+
+	'see-also': 'Tawnarea aylì’u',
+
+	'conjugated-forms': 'Aysrey alawnatem',
+	'singular': '’aw',
+	'dual': 'mune',
+	'trial': 'pxey',
+	'plural': 'pxay',
+	'subjective': 'subjective',
+	'agentive': 'agentive',
+	'patientive': 'patientive',
+	'dative': 'dative',
+	'genitive': 'genitive',
+	'topical': 'topical',
+	'or': 'fu',
+
+	'attributive-forms': 'Attributive forms',
+
+	'infix-positions': 'Kemlì’uviyä meseng',
+
+	'sentence-search': 'Sentence search',
+	'usages-found-singular': 'usage found',
+	'usages-found-plural': 'usages found',
+
+	'no-results': 'Ke rìmun kea aylì’ut',
+	'no-results-description-navi': 'Txo ngal fwivew lì’uti fa lì’fya alahe, tsakrr rutxe io fìpamrel ftxivey tsalì’fyat.',
+	'no-results-description-english': 'You shouldn’t be able to see this text. If you do, please panic and inform Wllìm ;)',  // Na’vi language doesn’t allow reverse searching because it makes no sense
+	'did-you-mean': 'Srake kolan lì’ut alu',
+
+	'omitted-more': 'nì’ul',
+	'not-found': '(ke rìmun)',
+
+	'searching-error': 'Fwew a krr kxeyey lìmen',
+	'searching-error-description': 'Rutxe mawkrr fmi nìmum. Txo fìtìngäzìk ’ivì’awn, tsakrr rutxe <a href="//wimiso.nl/contact">peng</a> oehu.',
+}
+
 strings['et'] = {
 	'language': 'Eesti'
 }

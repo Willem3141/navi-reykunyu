@@ -11,6 +11,7 @@ $(function() {
 		localStorage.setItem('reykunyu-language', 'en');
 	}
 	$('.current-lang').text(_('language'));
+	$('.mode-english-item').toggle(localStorage.getItem('reykunyu-language') !== 'x-navi');  // for Na’vi it makes no sense to reverse search
 	$('#language-dropdown').dropdown('set selected',
 			localStorage.getItem('reykunyu-language'));
 	$('#language-dropdown').dropdown({
@@ -20,6 +21,7 @@ $(function() {
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			$('.current-lang').text(_('language'));
+			$('.mode-english-item').toggle(value !== 'x-navi');  // for Na’vi it makes no sense to reverse search
 			return false;
 		}
 	});
@@ -293,11 +295,11 @@ function getTranslation(tìralpeng) {
 function translationSection(sìralpeng) {
 	let $section = $('<div/>').addClass('result-item definition');
 	if (sìralpeng.length === 1) {
-		$section.text(getTranslation(sìralpeng[0]));
+		$section.html(getTranslation(sìralpeng[0]));
 	} else {
 		let $list = $('<ol/>').addClass('meaning-list').appendTo($section);
 		for (let i = 0; i < sìralpeng.length; i++) {
-			$('<li/>').text(getTranslation(sìralpeng[i])).appendTo($list);
+			$('<li/>').html(getTranslation(sìralpeng[i])).appendTo($list);
 		}
 	}
 	return $section;

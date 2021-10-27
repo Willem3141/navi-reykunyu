@@ -52,6 +52,8 @@
 							<div class="item" data-value="pl">Polski</div>
 							<div class="item" data-value="ru">Русский</div>
 							<div class="item" data-value="sv">Svenska</div>
+							<div class="divider"></div>
+							<div class="item" data-value="x-navi">Na’vi</div>
 						</div>
 					</div>
 					<% if (user) { %>
@@ -70,7 +72,7 @@
 							<i class="dropdown icon"></i>
 							<div class="menu">
 								<div class="item" data-value="navi">Na'vi &rarr; <span class="current-lang">English</span></div>
-								<div class="item" data-value="english"><span class="current-lang">English</span> &rarr; Na'vi</div>
+								<div class="item mode-english-item" data-value="english"><span class="current-lang">English</span> &rarr; Na'vi</div>
 								<div class="item" data-value="annotated">Annotated Dictionary</div>
 								<div class="item" data-value="rhymes">Rhymes</div>
 							</div>
@@ -200,13 +202,16 @@
 				Credits
 			</div>
 			<div class="content">
-				<p>Reykunyu was created by Wllìm, but would not have been possible without the help of the following projects and people.</p>
+				<p>Reykunyu was created by Wllìm, but would not have been possible without the help of the following community members and other people.</p>
 				<p><i>Irayo nìtxan ma frapo!</i></p>
 				<div class="ui small inverted header">
 					Dictionary data
 				</div>
-				<p>Base dictionary data was taken from Eana Eltu.</p>
-				<p>Example sentences originate from the Annotated Dictionary project by Plumps.</p>
+				<p>The base dictionary data was taken from Eana Eltu by Mark Miller, Tirea Aean, and others, and then edited further by Eana Unil, Tekre, and Wllìm. The Annotated Dictionary definitions were taken from the Annotated Dictionary project by Plumps.</p>
+				<div class="ui small inverted header">
+					Artwork
+				</div>
+				<p>The drawings of Pandoran animals were made by Eana Unil. (Haven’t encountered one yet? Try searching for ‘toruk’!) Reykunyu’s logo was drawn by Eana Unil, and the calligraphy in the header was made by Nahura.</p>
 				<div class="ui small inverted header">
 					Libraries
 				</div>
@@ -214,7 +219,11 @@
 				<div class="ui small inverted header">
 					Sources
 				</div>
-				<p>Reykunyu is licensed under the GPLv3, and the source code can be found on <a href="https://github.com/Willem3141/navi-reykunyu">GitHub</a>.</p>
+				<p>Reykunyu is licensed under the GPLv3, and the source code can be found on <a href="https://github.com/Willem3141/navi-reykunyu">GitHub</a>. The main dictionary data (which you can get in JSON form <a href="/api/list/all">here</a>) is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC-BY-SA-NC 3.0</a>. This excludes the Annotated Dictionary data and the animal drawings, which are copyrighted by their respective authors.</p>
+				<div class="ui small inverted header">
+					Interested in learning Na’vi?
+				</div>
+				<p>A dictionary like Reykunyu is great for reference, but not so great to actually study a language. For proper learning materials (grammar guides, lessons, word lists for beginners, etc.) please visit one of the websites dedicated to learning Na’vi: <a href="https://www.kelutral.org/">Kelutral</a> or <a href="https://learnnavi.org/">Learn Na’vi</a>.</p>
 			</div>
 			<div class="actions">
 				<div class="ui green ok inverted button">

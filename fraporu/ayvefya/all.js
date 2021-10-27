@@ -56,7 +56,7 @@ function createWordBlock(word) {
 	$block.append(' ');
 	$block.append($('<div/>').addClass("ui horizontal label").text(word["type"]));
 	$block.append(' ');
-	$block.append($('<span/>').addClass('translation').text(getTranslation(word["translations"][0])));
+	$block.append($('<span/>').addClass('translation').html(getTranslation(word["translations"][0])));
 	return $block;
 }
 

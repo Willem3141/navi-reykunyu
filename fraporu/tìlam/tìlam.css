@@ -398,7 +398,7 @@ table.conjugation-table {
 	color: #17e;
 }
 
-a {
+.result a {
 	color: black;
 	cursor: pointer;
 }
