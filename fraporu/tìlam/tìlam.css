@@ -1,37 +1,37 @@
 @import url('https://fonts.googleapis.com/css?family=Julius+Sans+One&subset=latin,latin-ext');
 @font-face {
-  font-family: 'Calluna Sans';
-  src: url('/fonts/CallunaSansRegular-webfont.woff2') format('woff2'), url('/fonts/CallunaSansRegular-webfont.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
+	font-family: 'Calluna Sans';
+	src: url('/fonts/CallunaSansRegular-webfont.woff2') format('woff2'), url('/fonts/CallunaSansRegular-webfont.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
 }
 @font-face {
-  font-family: 'Calluna Sans';
-  src: url('/fonts/CallunaSansItalic-webfont.woff2') format('woff2'), url('/fonts/CallunaSansItalic-webfont.woff') format('woff');
-  font-weight: normal;
-  font-style: italic;
+	font-family: 'Calluna Sans';
+	src: url('/fonts/CallunaSansItalic-webfont.woff2') format('woff2'), url('/fonts/CallunaSansItalic-webfont.woff') format('woff');
+	font-weight: normal;
+	font-style: italic;
 }
 @font-face {
-  font-family: 'Calluna Sans';
-  src: url('/fonts/CallunaSansBold-webfont.woff2') format('woff2'), url('/fonts/CallunaSansBold-webfont.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
+	font-family: 'Calluna Sans';
+	src: url('/fonts/CallunaSansBold-webfont.woff2') format('woff2'), url('/fonts/CallunaSansBold-webfont.woff') format('woff');
+	font-weight: bold;
+	font-style: normal;
 }
 @font-face {
-  font-family: 'Calluna Sans';
-  src: url('/fonts/CallunaSansBoldItalic-webfont.woff2') format('woff2'), url('/fonts/CallunaSansBoldItalic-webfont.woff') format('woff');
-  font-weight: bold;
-  font-style: italic;
+	font-family: 'Calluna Sans';
+	src: url('/fonts/CallunaSansBoldItalic-webfont.woff2') format('woff2'), url('/fonts/CallunaSansBoldItalic-webfont.woff') format('woff');
+	font-weight: bold;
+	font-style: italic;
 }
 @font-face {
-  font-family: 'Gentium Plus';
-  src: url('/fonts/GentiumPlus-Regular.woff2');
+	font-family: 'Gentium Plus';
+	src: url('/fonts/GentiumPlus-Regular.woff2');
 }
 
 body,
 .ui.button,
 .ui.modal > .header,
-h2, h3, h4, h5,
+h1, h2, h3, h4, h5,
 .ui.menu,
 .ui.form input {
 	font-family: 'Calluna Sans' !important;
@@ -52,7 +52,6 @@ body {
 }
 
 h1 {
-	font-family: 'Julius Sans One';
 	padding-bottom: 5px;
 	border-bottom: 1px solid #ddd;
 }
@@ -60,6 +59,20 @@ h1 {
 h1 #user-label {
 	position: relative;
 	top: -5px;
+}
+
+h1 .logo {
+	background-image: url('/ayrel/reykunyu.svg');
+	background-repeat: no-repeat;
+	background-size: contain;
+	width: 150px;
+	height: 50px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#language-dropdown {
+	margin-left: 10px;
 }
 
 #search-box {
@@ -493,6 +506,10 @@ table.conjugation-table {
 
 	h1 {
 		border-bottom-color: #555;
+	}
+
+	h1 .logo {
+		background-image: url('/ayrel/reykunyu-dark.svg');
 	}
 
 	.result .result-word {

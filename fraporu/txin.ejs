@@ -12,55 +12,50 @@
 	<body<%- user ? ' class="editable"' : '' %>>
 		<div class="container">
 			<h1>
-				Reykunyu
-					<div class="ui icon right floated top right pointing dropdown basic button">
-						<i class="cogs icon"></i>
-						<div class="menu">
-							<% if (user) { %>
-							<div class="ui dropdown item">
-								Administration
-								<i class="dropdown icon"></i>
-								<div class="menu">
-									<a href="/add" class="item">Add new word</a>
-									<a href="/history" class="item">Recent edits</a>
-									<a href="/untranslated" class="item">Untranslated words</a>
-									<a href="/etymology-editor" class="item">Etymology editor</a>
-									<a href="/logout" class="item">Logout</a>
-								</div>
-							</div>
-							<!--<a href="/add" class="item">Add word</a>-->
-							<% } else { %>
-							<a href="/login" class="item">Login</a>
-							<% } %>
-							<a href="/all" class="item">Complete word list</a>
-							<div id="api-button" class="item">API</div>
-							<div id="settings-button" class="item">Settings</div>
-							<div id="credits-button" class="item">Credits</div>
-						</div>
+				<div class="logo"></div>
+				<div id="language-dropdown" class="ui icon right floated top right dropdown basic button">
+					<i class="globe icon"></i>
+					<span class="text">English</span>
+					&nbsp;<i class="dropdown icon"></i>
+					<div class="menu">
+						<div class="item" data-value="de">Deutsch</div>
+						<div class="item" data-value="et">Eesti</div>
+						<div class="item" data-value="en">English</div>
+						<div class="item" data-value="fr">Français</div>
+						<div class="item" data-value="hu">Magyar</div>
+						<div class="item" data-value="nl">Nederlands</div>
+						<div class="item" data-value="pl">Polski</div>
+						<div class="item" data-value="ru">Русский</div>
+						<div class="item" data-value="sv">Svenska</div>
+						<div class="divider"></div>
+						<div class="item" data-value="x-navi">Na’vi</div>
 					</div>
-					<div id="language-dropdown" class="ui icon right floated top right dropdown basic button">
-						<i class="globe icon"></i>
-						<span class="text">English</span>
+				</div>
+				<div class="ui buttons right floated">
+					<a class="ui icon basic button" href="/all"><i class="book icon"></i> All words</a>
+					<% if (user) { %>
+					<div class="ui icon top right pointing dropdown basic button">
+						<i class="wrench icon"></i> Administration
 						&nbsp;<i class="dropdown icon"></i>
 						<div class="menu">
-							<div class="item" data-value="de">Deutsch</div>
-							<div class="item" data-value="et">Eesti</div>
-							<div class="item" data-value="en">English</div>
-							<div class="item" data-value="fr">Français</div>
-							<div class="item" data-value="hu">Magyar</div>
-							<div class="item" data-value="nl">Nederlands</div>
-							<div class="item" data-value="pl">Polski</div>
-							<div class="item" data-value="ru">Русский</div>
-							<div class="item" data-value="sv">Svenska</div>
-							<div class="divider"></div>
-							<div class="item" data-value="x-navi">Na’vi</div>
+							<a href="/add" class="item">Add new word</a>
+							<a href="/history" class="item">Recent edits</a>
+							<a href="/untranslated" class="item">Untranslated words</a>
+							<a href="/etymology-editor" class="item">Etymology editor</a>
+							<a href="/logout" class="item">Logout</a>
 						</div>
 					</div>
-					<% if (user) { %>
-					<div id="user-label" class="ui left pointing basic label">
-						Kaltxì ma <%= user.username %>!
-					</div>
+					<% } else { %>
+					<a class="ui icon basic button" href="/login"><i class="user icon"></i> Login</a>
 					<% } %>
+					<div id="settings-button" class="ui icon basic button" href="/all"><i class="cogs icon"></i> Settings</div>
+					<div id="credits-button" class="ui icon basic button" href="/all"><i class="question icon"></i> Help</div>
+			</div>
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
 			</h1>
 			<form id="search-form">
 				<div class="ui search fluid">
