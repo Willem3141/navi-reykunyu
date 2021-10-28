@@ -416,7 +416,7 @@ table.conjugation-table {
 }
 
 .result a {
-	color: black;
+	color: #222;
 	cursor: pointer;
 }
 
@@ -427,7 +427,7 @@ table.conjugation-table {
 .word-link:before {
 	content: '→ ';
 	font-weight: 700;
-	color: black;
+	color: #222;
 }
 
 /* word list */
@@ -501,7 +501,36 @@ table.conjugation-table {
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #000;
+	}
+
+	body,
+	.word-link,
+	.word-link::before,
+	.result a,
+	.ui.form .field > label,
+	.ui.label,
+	.ui.search > .results .result .title,
+	.ui.selection.dropdown:hover,
+	.ui.selection.dropdown:focus,
+	.ui.selection.visible.dropdown > .text:not(.default) {
 		color: #eee;
+	}
+
+	.ui.basic.button:hover {
+		color: #eee !important;
+		background-color: #333 !important;
+	}
+
+	.ui.search > .results .result .description {
+		color: #999;
+	}
+
+	.ui.search > .results .result:hover {
+		background-color: #222;
+	}
+
+	.ui.modal {
+		color: #222;
 	}
 
 	h1 {
@@ -549,7 +578,7 @@ table.conjugation-table {
 		background-color: #000 !important;
 	}
 
-	.ui.basic.button {
+	h1 .ui.basic.button {
 		color: #eee !important;
 	}
 
@@ -585,13 +614,17 @@ table.conjugation-table {
 		background: #444;
 	}
 
-	.word-link {
-		color: white;
+	.ui.label {
+		background-color: #555;
 	}
 
-	a,
-	.ui.form .field > label {
-		color: white;
+	.ui.search > .results {
+		background-color: #000;
+		border-color: #333;
+	}
+
+	.ui.selection.dropdown:hover {
+		border-color: #777;
 	}
 }
 
