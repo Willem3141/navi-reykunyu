@@ -176,6 +176,10 @@ h1 .logo {
 	text-decoration: underline;
 }
 
+.ipa {
+	font-family: "Gentium Plus";
+}
+
 .result .result-word .status-badge {
 	margin-left: 26px;
 	position: relative;
@@ -463,10 +467,6 @@ table.conjugation-table {
 
 .result-annotated .purple {
 	color: #8623dd;
-}
-
-.result-annotated .ipa {
-	font-family: "Gentium Plus";
 }
 
 .result-annotated a {

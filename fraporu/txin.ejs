@@ -12,7 +12,7 @@
 	<body<%- user ? ' class="editable"' : '' %>>
 		<div class="container">
 			<h1>
-				<div class="logo"></div>
+				<a class="logo" href="/"></a>
 				<div id="language-dropdown" class="ui icon right floated top right dropdown basic button">
 					<i class="globe icon"></i>
 					<span class="text">English</span>
@@ -173,7 +173,7 @@
 				<div class="ui small header">
 					Pronunciation
 				</div>
-				<p>By default, Reykunyu shows the pronunciation of words in Na'vi spelling, with the stressed syllable underlined (<b>nay-<u>weng</u></b>). This checkbox allows you to use IPA (International Phonetic Alphabet) notation instead (<b>naj.ˈwɛŋ</b>).</p>
+				<p>By default, Reykunyu shows the pronunciation of words in Na'vi spelling, with the stressed syllable underlined (nay-<u>weng</u>). This checkbox allows you to use IPA (International Phonetic Alphabet) notation instead (<span class="ipa">naj.ˈwɛŋ</span>).</p>
 				<div class="ui checkbox">
 					<input type="checkbox" name="ipa">
 					<label for="ipa">
