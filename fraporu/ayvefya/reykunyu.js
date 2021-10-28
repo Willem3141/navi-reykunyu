@@ -41,13 +41,27 @@ $(function() {
 		}
 	});
 
+	if (!localStorage.getItem('reykunyu-ipa')) {
+		localStorage.setItem('reykunyu-ipa', false);
+	}
+
 	setUpAutocomplete();
 
 	$('.ui.checkbox').checkbox();
+	$('#settings-modal').modal({
+		onApprove: function() {
+			localStorage.setItem('reykunyu-ipa',
+				$('#ipa-checkbox').prop('checked') ? '1' : '0');
+		},
+		blurring: true
+	});
+
 	$('#api-button').on("click", function() {
 		$('#api-modal').modal("show");
 	});
 	$('#settings-button').on("click", function() {
+		$('#ipa-checkbox').prop('checked',
+			localStorage.getItem('reykunyu-ipa') === '1');
 		$('#settings-modal').modal("show");
 	});
 	$('#credits-button').on("click", function() {
@@ -339,6 +353,81 @@ function pronunciationSection(lìupam, fnel) {
 	$tìlam.append(")");
 	
 	return $tìlam;
+}
+
+function pronunciationSectionIpa(pronunciation, fnel) {
+	let $result = $('<span/>').addClass('stress');
+	if (!pronunciation) {
+		$result.append(_("stress-unknown"));
+		return $result;
+	}
+	if (pronunciation.length === 0) {
+		return $result;
+	}
+
+	$result.addClass('ipa');
+	const syllables = pronunciation[0].split("-");
+	let ipa = '';
+	for (let i = 0; i < syllables.length; i++) {
+		if (i > 0) {
+			ipa += '.';
+		}
+		if (syllables.length > 1 && i + 1 === pronunciation[1]) {
+			ipa += 'ˈ';
+		}
+		ipa += syllableToIpa(syllables[i]);
+	}
+
+	if (['p', 't', 'k'].includes(ipa[ipa.length - 1])) {
+		ipa += '\u031A';  // unreleased mark
+	}
+
+	if (fnel === "n:si" || fnel === "nv:si") {
+		ipa += " si";
+	}
+	$result.text("(" + ipa + ")");
+	
+	return $result;
+}
+
+function syllableToIpa(text) {
+	let ipa = '';
+
+	const ipaMapping = {
+		'px': 'p’',
+		'tx': 't’',
+		'kx': 'k’',
+		'\'': 'ʔ',
+		'ts': 't͡s',
+		'ng': 'ŋ',
+		'r': 'ɾ',
+		'y': 'j',
+		'ì': 'ɪ',
+		'e': 'ɛ',
+		'ä': 'æ',
+		'a': 'ɑ',
+		'rr': 'r̩ː',
+		'll': 'l̩ː',
+	};
+
+	for (let i = 0; i < text.length; i++) {
+		if (i < text.length - 1) {
+			const nextTwo = text[i] + text[i + 1];
+			if (ipaMapping.hasOwnProperty(nextTwo)) {
+				ipa += ipaMapping[nextTwo];
+				i++;
+				continue;
+			}
+		}
+		const next = text[i];
+		if (ipaMapping.hasOwnProperty(next)) {
+			ipa += ipaMapping[next];
+			continue;
+		}
+		ipa += next;
+	}
+
+	return ipa;
 }
 
 function editButton(word, type) {
@@ -744,7 +833,11 @@ function createResultBlock(i, r) {
 		$resultWord.append(statusBadge(r["status"]));
 	}
 
-	$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
+	if (localStorage.getItem('reykunyu-ipa') === '1') {
+		$resultWord.append(pronunciationSectionIpa(r["pronunciation"], r["type"]));
+	} else {
+		$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
+	}
 
 	const showEditButton = $('body').hasClass('editable');
 	if (showEditButton) {
