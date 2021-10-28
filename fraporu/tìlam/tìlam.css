@@ -578,7 +578,8 @@ table.conjugation-table {
 		background-color: #000 !important;
 	}
 
-	h1 .ui.basic.button {
+	h1 .ui.basic.button,
+	.edit-button.ui.basic.button {
 		color: #eee !important;
 	}
 
