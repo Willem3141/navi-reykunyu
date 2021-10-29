@@ -75,6 +75,15 @@ h1 .logo {
 	margin-left: 10px;
 }
 
+h1::after {
+	content: ".";
+	visibility: hidden;
+	clear: both;
+	display: block;
+	height: 0px;
+	width: 0px;
+}
+
 #search-box {
 	font-family: 'Calluna Sans';
 }
