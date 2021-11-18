@@ -392,6 +392,7 @@ function pronunciationSectionIpa(pronunciation, fnel) {
 
 function syllableToIpa(text) {
 	let ipa = '';
+	text = text.toLowerCase();
 
 	const ipaMapping = {
 		'px': 'p’',
