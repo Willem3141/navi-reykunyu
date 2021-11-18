@@ -76,6 +76,8 @@ function addWordLinks(text) {
 
 function reloadData() {
 
+	derivedWords = {};
+
 	for (let word of Object.keys(dictionary)) {
 		if (dictionary[word].hasOwnProperty('etymology')) {
 			let etymology = dictionary[word]['etymology'];
