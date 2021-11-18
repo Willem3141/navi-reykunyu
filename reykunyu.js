@@ -942,12 +942,12 @@ function getAnnotatedSuggestionsFor(query) {
 }
 
 function removeWord(word, type) {
-	delete dictionary[word + ':' + type];
+	delete dictionary[word.toLowerCase() + ':' + type];
 	reloadData();
 }
 
 function insertWord(data) {
-	dictionary[data["na'vi"] + ':' + data["type"]] = data;
+	dictionary[data["na'vi"].toLowerCase() + ':' + data["type"]] = data;
 	reloadData();
 }
 
