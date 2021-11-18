@@ -81,10 +81,6 @@ function reloadData() {
 	for (let word of Object.keys(dictionary)) {
 		if (dictionary[word].hasOwnProperty('etymology')) {
 			let etymology = dictionary[word]['etymology'];
-			if (Array.isArray(etymology)) {
-				// TODO deprecate this
-				continue;
-			}
 			etymology = addWordLinks(etymology);
 			for (let piece of etymology) {
 				if (typeof piece === "string") {
@@ -102,8 +98,13 @@ function reloadData() {
 					console.log('Invalid reference to [' + key + '] in etymology for ' + word);
 				}
 			}
-			
 		}
+	}
+
+	for (let word of Object.keys(derivedWords)) {
+		derivedWords[word].sort(function(a, b) {
+			return a["na'vi"].localeCompare(b["na'vi"]);
+		});
 	}
 
 	pronounForms = pronouns.getConjugatedForms(dictionary);
