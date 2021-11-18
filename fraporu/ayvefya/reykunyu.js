@@ -511,10 +511,12 @@ function createWordLink(link) {
 		return $('<b/>').text(link);
 	} else {
 		let $link = $('<span/>');
-		$link.append($('<a/>')
+		let $word = $('<a/>')
 			.addClass('word-link')
 			.attr('href', "/?q=" + link["na'vi"])
-			.text(link["na'vi"]));
+			.html(lemmaForm(link["na'vi"], link["type"]));
+		addLemmaClass($word, link["type"]);
+		$link.append($word);
 		$link.append(' (' + getShortTranslation(link) + ')');
 		return $link;
 	}

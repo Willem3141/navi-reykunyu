@@ -388,6 +388,7 @@ table.conjugation-table {
 }
 
 .prefix,
+.word-link.prefix,
 .word-link .prefix {
 	color: #dd2255;
 	font-weight: bold;
@@ -399,12 +400,14 @@ table.conjugation-table {
 }
 
 .infix,
+.word-link.infix,
 .word-link .infix {
 	color: #8623dd;
 	font-weight: bold;
 }
 
 .suffix,
+.word-link.suffix,
 .word-link .suffix {
 	color: #2255dd;
 	font-weight: bold;
