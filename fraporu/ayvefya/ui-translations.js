@@ -384,6 +384,7 @@ strings['fr'] = {
 
 	'etymology': 'Étymologie',
 	'etymology-from': 'De',
+	'derived': 'Mots dérivés',
 
 	'source': 'Source',
 
