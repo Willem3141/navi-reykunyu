@@ -766,6 +766,25 @@ function getReverseResponsesFor(query, language) {
 		}
 	}
 
+	// sort on result relevancy
+	// higher scores result in being sorted lower
+	let resultScore = function (result) {
+		let translation = result['translations'][0][language];
+		if (translation.toLowerCase() !== query) {
+			// the longer the translation, the lower it should be sorted because
+			// in long translations, it is likely that the searched word is only
+			// a small, irrelevant part of the translation
+			return translation.length;
+		}
+		return 0;
+	}
+
+	results.sort((a, b) => {
+		scoreA = resultScore(a);
+		scoreB = resultScore(b);
+		return scoreA - scoreB;
+	});
+
 	return results;
 }
 
