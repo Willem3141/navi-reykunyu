@@ -82,6 +82,10 @@ strings['en'] = {
 
 	'searching-error': 'Something went wrong while searching',
 	'searching-error-description': 'Please try again later. If the problem persists, please <a href="//wimiso.nl/contact">contact</a> me.',
+
+	'syllable': 'syllable',
+	'syllables': 'syllables',
+	'stressed-on': 'stressed on syllable',
 }
 
 strings['de'] = {
@@ -249,6 +253,10 @@ strings['nl'] = {
 
 	'searching-error': 'Er ging iets mis tijdens het zoeken',
 	'searching-error-description': 'Probeer het later opnieuw. Als het probleem aanhoudt, <a href="//wimiso.nl/contact">laat het dan weten</a>.',
+
+	'syllable': 'lettergreep',
+	'syllables': 'lettergrepen',
+	'stressed-on': 'klemtoon op lettergreep',
 }
 
 strings['x-navi'] = {
