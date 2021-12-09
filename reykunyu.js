@@ -602,14 +602,18 @@ function postprocessResults(results) {
 
 	for (let word of results) {
 		for (let result of word['sì\'eyng']) {
-			if (result.hasOwnProperty('etymology')) {
-				result['etymology'] = addWordLinks(result['etymology']);
-			}
-			const key = result['na\'vi'] + ':' + result['type'];
-			if (derivedWords.hasOwnProperty(key)) {
-				result['derived'] = derivedWords[key];
-			}
+			postprocessResult(result);
 		}
+	}
+}
+
+function postprocessResult(result) {
+	if (result.hasOwnProperty('etymology')) {
+		result['etymology'] = addWordLinks(result['etymology']);
+	}
+	const key = result['na\'vi'] + ':' + result['type'];
+	if (derivedWords.hasOwnProperty(key)) {
+		result['derived'] = derivedWords[key];
 	}
 }
 
@@ -751,7 +755,8 @@ function getReverseResponsesFor(query, language) {
 				translation = translation.replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
 				translation = translation.split(' ').map((v) => v.toLowerCase());
 				if (translation.includes(query)) {
-					results.push(dictionary[word]);
+					let result = JSON.parse(JSON.stringify(dictionary[word]));
+					results.push(result);
 				}
 			}
 		}
@@ -784,6 +789,10 @@ function getReverseResponsesFor(query, language) {
 		scoreB = resultScore(b);
 		return scoreA - scoreB;
 	});
+
+	for (let result of results) {
+		postprocessResult(result);
+	}
 
 	return results;
 }
