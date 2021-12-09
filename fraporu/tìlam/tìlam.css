@@ -510,6 +510,10 @@ table.conjugation-table {
 	background-color: #bbface !important;
 }
 
+.stressed-cell {
+	width: 200px;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #000;

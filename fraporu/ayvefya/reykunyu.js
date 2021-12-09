@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
 	if ($('#search-box').val().length) {
 		sngäiTìfwusew();
 	}
@@ -13,9 +13,9 @@ $(function() {
 	$('.current-lang').text(_('language'));
 	$('.mode-english-item').toggle(localStorage.getItem('reykunyu-language') !== 'x-navi');  // for Na’vi it makes no sense to reverse search
 	$('#language-dropdown').dropdown('set selected',
-			localStorage.getItem('reykunyu-language'));
+		localStorage.getItem('reykunyu-language'));
 	$('#language-dropdown').dropdown({
-		onChange: function(value) {
+		onChange: function (value) {
 			localStorage.setItem('reykunyu-language', value);
 			sngäiTìfwusew();
 			$('.ui.search').search('clear cache');
@@ -30,9 +30,9 @@ $(function() {
 		localStorage.setItem('reykunyu-mode', 'navi');
 	}
 	$('#mode-direction').dropdown('set selected',
-			localStorage.getItem('reykunyu-mode'));
+		localStorage.getItem('reykunyu-mode'));
 	$('#mode-direction').dropdown({
-		onChange: function(value) {
+		onChange: function (value) {
 			localStorage.setItem('reykunyu-mode', value);
 			sngäiTìfwusew();
 			$('.ui.search').search('clear cache');
@@ -49,22 +49,22 @@ $(function() {
 
 	$('.ui.checkbox').checkbox();
 	$('#settings-modal').modal({
-		onApprove: function() {
+		onApprove: function () {
 			localStorage.setItem('reykunyu-ipa',
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
 		},
 		blurring: true
 	});
 
-	$('#api-button').on("click", function() {
+	$('#api-button').on("click", function () {
 		$('#api-modal').modal("show");
 	});
-	$('#settings-button').on("click", function() {
+	$('#settings-button').on("click", function () {
 		$('#ipa-checkbox').prop('checked',
 			localStorage.getItem('reykunyu-ipa') === '1');
 		$('#settings-modal').modal("show");
 	});
-	$('#credits-button').on("click", function() {
+	$('#credits-button').on("click", function () {
 		$('#credits-modal').modal("show");
 	});
 });
@@ -72,7 +72,7 @@ $(function() {
 function setUpAutocomplete() {
 	let url = null;
 	if (localStorage.getItem('reykunyu-mode') === 'navi' ||
-			localStorage.getItem('reykunyu-mode') === 'rhymes') {
+		localStorage.getItem('reykunyu-mode') === 'rhymes') {
 		url = 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}';
 	} else if (localStorage.getItem('reykunyu-mode') === 'annotated') {
 		url = 'api/annotated/suggest?' + '&query={query}';
@@ -89,7 +89,7 @@ function setUpAutocomplete() {
 			'prompt': '#search-box'
 		},
 		showNoResults: false,
-		onSelect: function(result) {
+		onSelect: function (result) {
 			$('#search-box').val(result['title']);
 			sngäiTìfwusew();
 			return false;
@@ -171,7 +171,7 @@ function conjugationExplanation(conjugation) {
 
 function nounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-	
+
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	for (let i = 0; i <= 2; i++) {
@@ -180,19 +180,19 @@ function nounConjugationExplanation(conjugation) {
 			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 		}
 	}
-	
+
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
-	
+
 	for (let i = 3; i <= 6; i++) {
 		if (conjugation["affixes"][i]) {
 			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 			$('<span/>').addClass('suffix').text(conjugation["affixes"][i]).appendTo($conjugation);
 		}
 	}
-	
+
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
-	
+
 	return $conjugation;
 }
 
@@ -209,7 +209,7 @@ function verbConjugationExplanation(conjugation) {
 			$('<span/>').addClass('infix').html("&#x2039;" + conjugation["infixes"][i] + "&#x203a;").appendTo($conjugation);
 		}
 	}
-	
+
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
@@ -232,7 +232,7 @@ function adjectiveConjugationExplanation(conjugation) {
 		$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 		$('<span/>').addClass('suffix').html("a").appendTo($conjugation);
 	}
-	
+
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
@@ -241,59 +241,59 @@ function adjectiveConjugationExplanation(conjugation) {
 
 function verbToNounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-	
+
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 	$('<span/>').addClass('suffix').text(conjugation["affixes"][0]).appendTo($conjugation);
-	
+
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
-	
+
 	return $conjugation;
 }
 
 function verbToAdjectiveConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-	
+
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
-	
+
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
-	
+
 	return $conjugation;
 }
 
 function externalLenitionExplanation(lenition) {
 	let $lenition = $('<div/>').addClass('lenition-explanation');
-	
+
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($lenition);
 
 	$('<span/>').text(lenition["by"]).appendTo($lenition);
 	$('<span/>').addClass('operator').text('+').appendTo($lenition);
 	$('<span/>').text(lenition["from"]).appendTo($lenition);
-	
+
 	$('<span/>').addClass('operator').text('=').appendTo($lenition);
 
 	$('<span/>').addClass('word').text(lenition["by"] + " " + lenition["to"]).appendTo($lenition);
-	
+
 	return $lenition;
 }
 
 function imageSection(name, image) {
 	let $section = $('<div/>').addClass('definition-image');
 	$('<img/>').attr('src', '/ayrel/' + image)
-			.appendTo($section);
+		.appendTo($section);
 	$('<div/>').addClass('credit')
-			.text(name + ' ' + _('image-drawn-by') + ' Eana Unil')
-			.appendTo($section);
+		.text(name + ' ' + _('image-drawn-by') + ' Eana Unil')
+		.appendTo($section);
 	return $section;
 }
 
@@ -332,7 +332,7 @@ function pronunciationSection(lìupam, fnel) {
 	if (lìupam.length === 0) {
 		return $tìlam;
 	}
-	
+
 	$tìlam.append("(");
 	aylìkong = lìupam[0].split("-");
 	for (let i = 0; i < aylìkong.length; i++) {
@@ -351,7 +351,7 @@ function pronunciationSection(lìupam, fnel) {
 		$tìlam.append(" si");
 	}
 	$tìlam.append(")");
-	
+
 	return $tìlam;
 }
 
@@ -386,7 +386,7 @@ function pronunciationSectionIpa(pronunciation, fnel) {
 		ipa += " si";
 	}
 	$result.text("(" + ipa + ")");
-	
+
 	return $result;
 }
 
@@ -476,10 +476,10 @@ function affixesSection(affixes) {
 		const affix = a['affix'];
 		let $tr = $('<tr/>').appendTo($table);
 		let $affixLink = $('<a/>')
-				.addClass('word-link')
-				.html(lemmaForm(affix["na'vi"], affix['type']))
-				//.addClass(a['type'])
-				.attr('href', '/?q=' + affix["na'vi"]);
+			.addClass('word-link')
+			.html(lemmaForm(affix["na'vi"], affix['type']))
+			//.addClass(a['type'])
+			.attr('href', '/?q=' + affix["na'vi"]);
 		addLemmaClass($affixLink, affix['type']);
 		$('<td/>').append($affixLink).appendTo($tr);
 		$meaningCell = $('<td/>').appendTo($tr);
@@ -780,10 +780,10 @@ function createSentence(sentence, lemma) {
 function sentencesSection(sentences, lemma) {
 	let $section = $('<details/>').addClass('result-item examples');
 	let $header = $('<summary/>').addClass('header')
-			.text(_('sentence-search') + ' (' + sentences.length + ' '
-				+ (sentences.length > 1 ? _('usages-found-singular') : _('usages-found-plural'))
-				+ ')')
-			.appendTo($section);
+		.text(_('sentence-search') + ' (' + sentences.length + ' '
+			+ (sentences.length > 1 ? _('usages-found-singular') : _('usages-found-plural'))
+			+ ')')
+		.appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 
 	for (let i = 0; i < sentences.length; i++) {
@@ -1007,8 +1007,8 @@ function sngäiTìfwusew() {
 
 function doSearchNavi() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/fwew', {'tìpawm': tìpawm})
-		.done(function(tìeyng) {
+	$.getJSON('/api/fwew', { 'tìpawm': tìpawm })
+		.done(function (tìeyng) {
 			$results.empty();
 
 			$results.append(createResults(tìeyng[0]));
@@ -1027,7 +1027,7 @@ function doSearchNavi() {
 				}
 				$sentenceBar.append($item);
 				let result = tìeyng[i];
-				$item.on("click", function() {
+				$item.on("click", function () {
 					$("#sentence-bar .item").removeClass("active");
 					$item.addClass("active");
 					$results.empty();
@@ -1035,7 +1035,7 @@ function doSearchNavi() {
 				});
 			}
 		})
-		.fail(function() {
+		.fail(function () {
 			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
@@ -1044,8 +1044,8 @@ function doSearchNavi() {
 
 function doSearchEnglish() {
 	let query = $('#search-box').val();
-	$.getJSON('/api/search', {'query': query, 'language': localStorage.getItem('reykunyu-language')})
-		.done(function(tìeyng) {
+	$.getJSON('/api/search', { 'query': query, 'language': localStorage.getItem('reykunyu-language') })
+		.done(function (tìeyng) {
 			$results.empty();
 
 			if (tìeyng.length) {
@@ -1057,7 +1057,7 @@ function doSearchEnglish() {
 				$results.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
 			}
 		})
-		.fail(function() {
+		.fail(function () {
 			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
@@ -1081,8 +1081,8 @@ function createAnnotatedFooter() {
 
 function doSearchAnnotated() {
 	let query = $('#search-box').val();
-	$.getJSON('/api/annotated/search', {'query': query})
-		.done(function(result) {
+	$.getJSON('/api/annotated/search', { 'query': query })
+		.done(function (result) {
 			$results.empty();
 
 			if (result.length) {
@@ -1095,29 +1095,74 @@ function doSearchAnnotated() {
 				$results.append(createErrorBlock(_("no-results"), _("no-results-description")));
 			}
 		})
-		.fail(function() {
+		.fail(function () {
 			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
 		});
 }
 
+function rhymesWithSyllableCountSection(syllableCount, rhymes) {
+	let $syllableSection = $('<div/>').addClass('result-item etymology');
+	if (syllableCount == 0) {
+		$syllableSection.append($('<div/>').addClass('header').text(_('stress-unknown')));
+	} else if (syllableCount == 1) {
+		$syllableSection.append($('<div/>').addClass('header').text(syllableCount + ' ' + _('syllable')));
+	} else {
+		$syllableSection.append($('<div/>').addClass('header').text(syllableCount + ' ' + _('syllables')));
+	}
+	let $body = $('<div/>').addClass('body');
+	let $table = $('<table/>');
+	for (const stress in rhymes) {
+		if (rhymes[stress]) {
+			let $row = $('<tr/>');
+			if (stress > 0) {
+				$row.append($('<td/>').addClass('stressed-cell').html(_('stressed-on') + ' <b>' + stress + '</b>: '));
+			}
+			let $cell = $('<td/>');
+			let needsComma = false;
+			for (const word of rhymes[stress]) {
+				if (needsComma) {
+					$cell.append(', ');
+				}
+				$cell.append(createWordLink(word));
+				needsComma = true;
+			}
+			$row.append($cell);
+			$table.append($row);
+		}
+	}
+	$body.append($table);
+	$syllableSection.append($body);
+	return $syllableSection;
+}
+
 function doSearchRhymes() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/rhymes', {'tìpawm': tìpawm})
-		.done(function(tìeyng) {
+	$.getJSON('/api/rhymes', { 'tìpawm': tìpawm })
+		.done(function (response) {
 			$results.empty();
 
-			if (tìeyng.length) {
-				for (let i = 0; i < tìeyng.length; i++) {
-					const result = tìeyng[i];
-					$results.append(createResultBlock(i, result));
-				}
-			} else {
+			//let $resultWord = $('<div/>').addClass('result-word');
+
+			console.log(response);
+
+			if (response.length === 0) {
 				$results.append(createErrorBlock(_("no-results"), _("no-results-description")));
+			} else {
+				let $result = $('<div/>').addClass('result');
+				$results.append($result);
+				for (const syllableCount in response) {
+					if (syllableCount > 0 && response[syllableCount]) {
+						$result.append(rhymesWithSyllableCountSection(syllableCount, response[syllableCount]));
+					}
+				}
+				if (response[0]) {
+					$result.append(rhymesWithSyllableCountSection(0, response[0]));
+				}
 			}
 		})
-		.fail(function() {
+		.fail(function () {
 			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
