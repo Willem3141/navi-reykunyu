@@ -611,6 +611,9 @@ function postprocessResult(result) {
 	if (result.hasOwnProperty('etymology')) {
 		result['etymology'] = addWordLinks(result['etymology']);
 	}
+	if (result.hasOwnProperty('meaning_note')) {
+		result['meaning_note'] = addWordLinks(result['meaning_note']);
+	}
 	const key = result['na\'vi'] + ':' + result['type'];
 	if (derivedWords.hasOwnProperty(key)) {
 		result['derived'] = derivedWords[key];

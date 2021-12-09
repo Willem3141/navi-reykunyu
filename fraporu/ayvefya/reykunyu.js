@@ -462,7 +462,7 @@ function statusNoteSection(wordStatus, statusNote) {
 
 function noteSection(note) {
 	let $noteSection = $('<div/>').addClass('result-item note');
-	$noteSection.html(note);
+	appendLinkString(note, $noteSection);
 	return $noteSection;
 }
 
