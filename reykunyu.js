@@ -102,7 +102,7 @@ function reloadData() {
 	}
 
 	for (let word of Object.keys(derivedWords)) {
-		derivedWords[word].sort(function(a, b) {
+		derivedWords[word].sort(function (a, b) {
 			return a["na'vi"].localeCompare(b["na'vi"]);
 		});
 	}
@@ -148,7 +148,7 @@ function stripToLinkData(word) {
 
 function simplifiedTranslation(translation, language) {
 	let result = "";
-	
+
 	for (let i = 0; i < translation.length; i++) {
 		if (i > 0) {
 			result += "; ";
@@ -159,7 +159,7 @@ function simplifiedTranslation(translation, language) {
 			result += translation[i]["en"].split(",")[0];
 		}
 	}
-	
+
 	return result;
 }
 
@@ -174,14 +174,14 @@ function hasWord(word, type) {
 function getResponsesFor(query) {
 	query = preprocessQuery(query);
 	let results = [];
-	
+
 	// first split query on spaces to get individual words
 	const spacesRegex = /\s+/g;
 	let queryWords = query.split(spacesRegex);
 
 	// maintains if the previous word was a leniting adposition
 	let externalLenition = false;
-	
+
 	for (let i = 0; i < queryWords.length; i++) {
 		let queryWord = queryWords[i];
 		queryWord = queryWord.replace(/[ .,!?:;]+/g, "");
@@ -264,7 +264,7 @@ function getResponsesFor(query) {
 	}
 
 	postprocessResults(results);
-	
+
 	return results;
 }
 
@@ -318,7 +318,7 @@ function forbiddenByExternalLenition(result) {
 	const pluralPrefix = outerConjugated["conjugation"]["affixes"][1];
 	console.log(outerConjugated);
 	let isShortPlural = pluralPrefix === "(ay)" ||
-			(pluralPrefix === "ay" && !outerConjugated["conjugation"]["result"].startsWith("ay"));
+		(pluralPrefix === "ay" && !outerConjugated["conjugation"]["result"].startsWith("ay"));
 	if (!isShortPlural) {
 		return false;
 	}
@@ -335,7 +335,7 @@ function lookUpWord(queryWord) {
 
 	// handle conjugated nouns and pronouns
 	let nounResults = nouns.parse(queryWord);
-	nounResults.forEach(function(nounResult) {
+	nounResults.forEach(function (nounResult) {
 		let noun = findNoun(nounResult["root"]);
 		if (noun) {
 			noun["conjugated"] = [{
@@ -348,7 +348,7 @@ function lookUpWord(queryWord) {
 		if (nounResult["root"].endsWith("yu")) {
 			let possibleVerb = nounResult["root"].slice(0, -2);
 			let verbResults = verbs.parse(possibleVerb);
-			verbResults.forEach(function(verbResult) {
+			verbResults.forEach(function (verbResult) {
 				for (let verb of findVerb(verbResult["root"])) {
 					verb["conjugated"] = [{
 						"type": "v",
@@ -384,10 +384,10 @@ function lookUpWord(queryWord) {
 				// are empty (because in pronounForms, all plural- and
 				// case-affixed forms are already included)
 				if (nounResult["affixes"][1] === "" &&
-						nounResult["affixes"][2] === "" &&
-						(nounResult["affixes"][3] === "" || foundForm["case"] === "") &&
-						nounResult["affixes"][4] === "" &&
-						(nounResult["affixes"][5] === "" || (nounResult["affixes"][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(nounResult["affixes"][5]) === -1))) {
+					nounResult["affixes"][2] === "" &&
+					(nounResult["affixes"][3] === "" || foundForm["case"] === "") &&
+					nounResult["affixes"][4] === "" &&
+					(nounResult["affixes"][5] === "" || (nounResult["affixes"][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(nounResult["affixes"][5]) === -1))) {
 					nounResult["root"] = word["na'vi"];
 					nounResult["affixes"][1] = foundForm["plural"];
 					if (foundForm["case"] !== "") {
@@ -420,7 +420,7 @@ function lookUpWord(queryWord) {
 
 	// handle conjugated verbs
 	let verbResults = verbs.parse(queryWord);
-	verbResults.forEach(function(result) {
+	verbResults.forEach(function (result) {
 		let results = findVerb(result["root"]);
 		for (let verb of results) {
 			verb["conjugated"] = [{
@@ -429,7 +429,7 @@ function lookUpWord(queryWord) {
 			}];
 			verb["affixes"] = makeAffixList(verb["conjugated"]);
 			let conjugation = conjugationString.formsFromString(
-					verbs.conjugate(verb["infixes"], result["infixes"]));
+				verbs.conjugate(verb["infixes"], result["infixes"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
 				wordResults.push(verb);
 			}
@@ -438,7 +438,7 @@ function lookUpWord(queryWord) {
 
 	// handle conjugated adjectives
 	let adjectiveResults = adjectives.parse(queryWord);
-	adjectiveResults.forEach(function(adjResult) {
+	adjectiveResults.forEach(function (adjResult) {
 		if (dictionary.hasOwnProperty(adjResult["root"] + ":adj")) {
 			adjective = JSON.parse(JSON.stringify(dictionary[adjResult["root"] + ":adj"]));
 			adjective["conjugated"] = [{
@@ -446,7 +446,7 @@ function lookUpWord(queryWord) {
 				"conjugation": adjResult
 			}];
 			let conjugation = conjugationString.formsFromString(
-					adjectives.conjugate(adjective["na'vi"].toLowerCase(), adjResult["form"]));
+				adjectives.conjugate(adjective["na'vi"].toLowerCase(), adjResult["form"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
 				wordResults.push(adjective);
 			}
@@ -457,7 +457,7 @@ function lookUpWord(queryWord) {
 			if (adjResult["root"].startsWith(prefix)) {
 				let possibleVerb = adjResult["root"].substring(prefix.length);
 				let verbResults = verbs.parse(possibleVerb);
-				verbResults.forEach(function(verbResult) {
+				verbResults.forEach(function (verbResult) {
 					for (let verb of findVerb(verbResult["root"])) {
 						verb["conjugated"] = [{
 							"type": "v",
@@ -490,10 +490,10 @@ function lookUpWord(queryWord) {
 		if (dictionary.hasOwnProperty(word)) {
 			let type = dictionary[word]['type'];
 			if (dictionary[word]["na'vi"].toLowerCase() === queryWord &&
-					type !== "n" && type !== "n:pr" &&
-					type !== "adj" &&
-					!dictionary[word].hasOwnProperty('conjugation') &&
-					type.indexOf("v:") === -1) {
+				type !== "n" && type !== "n:pr" &&
+				type !== "adj" &&
+				!dictionary[word].hasOwnProperty('conjugation') &&
+				type.indexOf("v:") === -1) {
 				wordResults.push(JSON.parse(JSON.stringify(dictionary[word])));
 			}
 		}
@@ -657,7 +657,7 @@ function mergeSiVerbs(results) {
 
 function getSuggestionsFor(query, language) {
 	if (query.length < 3) {
-		return {'results': []};
+		return { 'results': [] };
 	}
 	query = preprocessQuery(query);
 	query = query.toLowerCase();
@@ -680,7 +680,7 @@ function getSuggestionsFor(query, language) {
 
 function getReverseSuggestionsFor(query, language) {
 	if (query.length < 3) {
-		return {'results': []};
+		return { 'results': [] };
 	}
 
 	let results = new Set();
@@ -708,10 +708,10 @@ function getReverseSuggestionsFor(query, language) {
 	}
 
 	resultsArray = Array.from(results);
-	resultsArray.sort(function(a, b) {
-		return a.localeCompare(b, language, {'sensitivity': 'base'});
+	resultsArray.sort(function (a, b) {
+		return a.localeCompare(b, language, { 'sensitivity': 'base' });
 	});
-	resultsArray = resultsArray.map(elem => ({'title': elem}));
+	resultsArray = resultsArray.map(elem => ({ 'title': elem }));
 
 	return {
 		'results': resultsArray
@@ -822,7 +822,7 @@ function getUntranslated(language) {
 		let word = dictionary[w];
 		for (let translation of word['translations']) {
 			if (!translation.hasOwnProperty(language) ||
-					translation[language].length === 0) {
+				translation[language].length === 0) {
 				results.push(word);
 				continue wordLoop;
 			}
@@ -911,7 +911,7 @@ function getRhymes(query) {
 		if (words[s]) {
 			for (const s2 in Object.keys(words[s])) {
 				if (words[s][s2]) {
-					words[s][s2].sort(function(a, b) {
+					words[s][s2].sort(function (a, b) {
 						return a["na'vi"].localeCompare(b["na'vi"]);
 					});
 				}
@@ -941,7 +941,7 @@ function getAnnotatedResponsesFor(query) {
 
 function getAnnotatedSuggestionsFor(query) {
 	if (query.length < 1) {
-		return {'results': []};
+		return { 'results': [] };
 	}
 
 	query = query.toLowerCase();
@@ -950,7 +950,7 @@ function getAnnotatedSuggestionsFor(query) {
 	for (word in annotated) {
 		if (annotated.hasOwnProperty(word)) {
 			if (word.toLowerCase().startsWith(query)) {
-				resultsArray.push({'title': word});
+				resultsArray.push({ 'title': word });
 			}
 		}
 	}
