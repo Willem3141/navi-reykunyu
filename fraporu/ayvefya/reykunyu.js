@@ -48,12 +48,13 @@ $(function () {
 	setUpAutocomplete();
 
 	$('.ui.checkbox').checkbox();
+	$('#infix-details-modal').modal();
+	$('#infix-details-modal button').popup();
 	$('#settings-modal').modal({
 		onApprove: function () {
 			localStorage.setItem('reykunyu-ipa',
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
 		},
-		blurring: true
 	});
 
 	$('#api-button').on("click", function () {
@@ -66,6 +67,12 @@ $(function () {
 	});
 	$('#credits-button').on("click", function () {
 		$('#credits-modal').modal("show");
+	});
+
+	$('.infix-button').on('click', function () {
+		$(this).addClass('active').siblings().removeClass('active');
+		self.updateInfixDisabledButtons();
+		self.updateInfixResults();
 	});
 });
 
@@ -687,7 +694,6 @@ function nounConjugationString(c) {
 	return formatted;
 }
 
-
 function createNounConjugation(word, type, uncountable) {
 
 	let conjugation = [];
@@ -726,17 +732,242 @@ function adjectiveConjugationSection(word, type, note) {
 }
 
 // ngop hapxìt a wìntxu hemlì'uvit
-function infixesSection(infixes, note) {
+function infixesSection(word, infixes, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text(_('infix-positions')).appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
-	infixes = infixes.replace(".", "<span class='root-infix'>&#x2039;1&#x203a;</span>");
-	infixes = infixes.replace(".", "<span class='root-infix'>&#x2039;2&#x203a;</span>");
-	$body.html(infixes);
+	let infixesHtml = infixes.replace(".", "<span class='root-infix'>&#x2039;1&#x203a;</span>");
+	infixesHtml = infixesHtml.replace(".", "<span class='root-infix'>&#x2039;2&#x203a;</span>");
+	$body.html(infixesHtml + '&nbsp;&nbsp;');
+	let $infixDetailsButton = $('<button/>')
+		.addClass('ui circular basic icon button')
+		.html('<i class="icon th list"></i>');
+	const self = this;
+	$infixDetailsButton.on("click", function () {
+		$('#infix-details-modal').modal("show");
+		$('#infix-details-word').text(word);
+		$('#infix-details-input').text(word);
+		$('#infix-details-infixes').text(infixes);
+		self.updateInfixDisabledButtons();
+		self.updateInfixResults();
+	});
+	$body.append($infixDetailsButton);
 	if (note) {
 		$body.append($('<div/>').addClass("conjugation-note").html(note));
 	}
 	return $section;
+}
+
+function updateInfixDisabledButtons() {
+
+	const disableAndReplaceBy = function ($toDisable, $toReplaceBy) {
+		$toDisable.addClass('disabled')
+		if ($toDisable.hasClass('active')) {
+			$toDisable.removeClass('active');
+			$toReplaceBy.addClass('active');
+		}
+	};
+
+	const enable = function ($toEnable) {
+		$toEnable.removeClass('disabled');
+	};
+
+	// reflexive infix cannot be combined with passive participles
+	// (http://forum.learnnavi.org/language-updates/reflexive-causative-in-combination-with-the-infixes-ltusgt-and-ltawngt)
+	if ($('#äp-button').hasClass('active') || $('#äpeyk-button').hasClass('active')) {
+		disableAndReplaceBy($('#awn-button'), $('#no-mode-button'));
+	} else {
+		enable($('#awn-button'))
+	}
+
+	// participles cannot have aspect, tense, intent, mood
+	if ($('#us-button').hasClass('active') || $('#awn-button').hasClass('active')) {
+		disableAndReplaceBy($('#ol-button'), $('#no-aspect-button'));
+		disableAndReplaceBy($('#er-button'), $('#no-aspect-button'));
+
+		disableAndReplaceBy($('#am-button'), $('#no-tense-button'));
+		disableAndReplaceBy($('#ìm-button'), $('#no-tense-button'));
+		disableAndReplaceBy($('#ìy-button'), $('#no-tense-button'));
+		disableAndReplaceBy($('#ay-button'), $('#no-tense-button'));
+
+		disableAndReplaceBy($('#s-button'), $('#no-intent-button'));
+
+		disableAndReplaceBy($('#ei-button'), $('#no-mood-button'));
+		disableAndReplaceBy($('#äng-button'), $('#no-mood-button'));
+		disableAndReplaceBy($('#uy-button'), $('#no-mood-button'));
+		disableAndReplaceBy($('#ats-button'), $('#no-mood-button'));
+
+		return;
+	}
+
+	enable($('#ol-button'));
+	enable($('#er-button'));
+	enable($('#am-button'));
+	enable($('#ìm-button'));
+	enable($('#ìy-button'));
+	enable($('#ay-button'));
+
+	// with the subjunctive, no "near" tense gradations are possible...
+	if ($('#iv-button').hasClass('active')) {
+		disableAndReplaceBy($('#ìm-button'), $('#no-tense-button'));
+		disableAndReplaceBy($('#ìy-button'), $('#no-tense-button'));
+
+		// ... and we cannot combine aspect and tense anymore
+		if (!$('#no-aspect-button').hasClass('active')) {
+			disableAndReplaceBy($('#am-button'), $('#no-tense-button'));
+			disableAndReplaceBy($('#ay-button'), $('#no-tense-button'));
+		}
+	}
+
+	// intent cannot be present if aspect is marked, and we have a future tense
+	if ($('#no-mode-button').hasClass('active') && $('#no-aspect-button').hasClass('active') &&
+		($('#ìy-button').hasClass('active') || $('#ay-button').hasClass('active'))) {
+		enable($('#s-button'));
+	} else {
+		disableAndReplaceBy($('#s-button'), $('#no-intent-button'));
+	}
+
+	enable($('#ei-button'));
+	enable($('#äng-button'));
+	enable($('#uy-button'));
+	enable($('#ats-button'));
+}
+
+function updateInfixResults() {
+    // finds and returns the pre-first infix
+    function prefirstInfix() {
+        if ($('#eyk-button').hasClass('active')) {
+			return 'eyk';
+        } else if ($('#äp-button').hasClass('active')) {
+			return 'äp';
+        } else if ($('#äpeyk-button').hasClass('active')) {
+			return 'äpeyk';
+        } else {
+			return '';
+        }
+    }
+
+    // finds and returns the first infix
+    // yes, I know, this function is large and ugly ;)
+    function firstInfix() {
+        if ($('#us-button').hasClass('active')) {
+			return 'us';
+        } else if ($('#awn-button').hasClass('active')) {
+			return 'awn';
+        } else if ($('#iv-button').hasClass('active')) {
+
+            // subjunctive infixes
+            if ($('#ay-button').hasClass('active')) {
+                return 'ìyev';
+
+            } else if ($('#no-tense-button').hasClass('active')) {
+                if ($('#no-aspect-button').hasClass('active')) {
+					return 'iv';
+                } else if ($('#ol-button').hasClass('active')) {
+					return 'ilv';
+                } else {
+					return 'irv';
+                }
+
+            } else if ($('#am-button').hasClass('active')) {
+				return 'ìmv';
+            }
+
+        } else {
+            // non-subjunctive infixes
+            if ($('#ay-button').hasClass('active')) {
+                if ($('#no-aspect-button').hasClass('active')) {
+                    if ($('#no-intent-button').hasClass('active')) {
+						return 'ay';
+                    } else {
+						return 'asy';
+                    }
+                } else if ($('#ol-button').hasClass('active')) {
+					return 'aly';
+                } else {
+					return 'ary';
+                }
+
+            } else if ($('#ìy-button').hasClass('active')) {
+                if ($('#no-aspect-button').hasClass('active')) {
+                    if ($('#no-intent-button').hasClass('active')) {
+						return 'ìy';
+                    } else {
+						return 'ìsy';
+                    }
+                } else if ($('#ol-button').hasClass('active')) {
+					return 'ìly';
+                } else {
+					return 'ìry';
+                }
+
+            } else if ($('#no-tense-button').hasClass('active')) {
+                if ($('#no-aspect-button').hasClass('active')) {
+					return '';
+                } else if ($('#ol-button').hasClass('active')) {
+					return 'ol';
+                } else {
+					return 'er';
+                }
+
+            } else if ($('#ìm-button').hasClass('active')) {
+                if ($('#no-aspect-button').hasClass('active')) {
+					return 'ìm';
+                } else if ($('#ol-button').hasClass('active')) {
+					return 'ìlm';
+                } else {
+					return 'ìrm';
+                }
+
+            } else if ($('#am-button').hasClass('active')) {
+                if ($('#no-aspect-button').hasClass('active')) {
+					return 'am';
+                } else if ($('#ol-button').hasClass('active')) {
+					return 'alm';
+                } else {
+					return 'arm';
+                }
+            }
+        }
+    }
+
+    // finds and returns the second infix
+    function secondInfix() {
+        if ($('#ei-button').hasClass('active')) {
+			return 'ei';
+        } else if ($('#äng-button').hasClass('active')) {
+			return 'äng';
+        } else if ($('#uy-button').hasClass('active')) {
+			return 'uy';
+        } else if ($('#ats-button').hasClass('active')) {
+			return 'ats';
+        } else {
+			return '';
+        }
+    }
+
+	const infixes = $('#infix-details-infixes').text();
+	const prefirst = prefirstInfix();
+	const first = firstInfix();
+	const second = secondInfix();
+
+	const self = this;
+	$.getJSON('/api/conjugate/verb', { 'verb': infixes, 'prefirst': prefirst, 'first': first, 'second': second })
+		.done(function (result) {
+			$('#infix-details-result').html(self.verbConjugationString(result));
+		});
+}
+
+function verbConjugationString(c) {
+	let html = '';
+	for (let k = 0; k < c.length; k++) {
+		if (k > 0) {
+			html += "&nbsp;&nbsp;<span class='muted'>" + _('or') + "</span>&nbsp;&nbsp;";
+		}
+		html += c[k];
+	}
+
+	return html;
 }
 
 function createSentence(sentence, lemma) {
@@ -894,7 +1125,7 @@ function createResultBlock(i, r) {
 	}
 
 	if (r["infixes"]) {
-		$result.append(infixesSection(r["infixes"], r["conjugation_note"]));
+		$result.append(infixesSection(r["na'vi"], r["infixes"], r["conjugation_note"]));
 	}
 
 	if (r["sentences"] && r["sentences"].length) {

@@ -28,6 +28,8 @@ var http = require('http').Server(app);
 var config = JSON.parse(fs.readFileSync('config.json'));
 
 var reykunyu = require('./reykunyu');
+var conjugationString = require('./conjugationString');
+var verbs = require('./verbs');
 
 var tslamyu;
 try {
@@ -255,6 +257,11 @@ app.get('/api/annotated/search', function(req, res) {
 
 app.get('/api/annotated/suggest', function(req, res) {
 	res.json(reykunyu.getAnnotatedSuggestionsFor(req.query["query"]));
+});
+
+app.get('/api/conjugate/verb', function(req, res) {
+	res.json(conjugationString.formsFromString(verbs.conjugate(
+		req.query["verb"], [req.query["prefirst"], req.query["first"], req.query["second"]])));
 });
 
 app.get('/api/frau', function(req, res) {

@@ -514,6 +514,20 @@ table.conjugation-table {
 	width: 200px;
 }
 
+/* infix details dialog */
+#infix-details-input,
+#infix-details-result {
+	text-align: center;
+	font-weight: 700;
+	font-size: 125%;
+}
+
+#infix-details-input-translation,
+#infix-details-result-translation {
+	text-align: center;
+	color: #888;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #000;
