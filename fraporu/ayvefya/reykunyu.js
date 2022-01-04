@@ -1306,7 +1306,7 @@ function createAnnotatedBlock(definition) {
 function createAnnotatedFooter() {
 	let block = $('<div/>')
 		.addClass('credits-footer')
-		.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2021-05-09');
+		.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2022-01-04');
 	return block;
 }
 
