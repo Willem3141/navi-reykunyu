@@ -1,0 +1,102 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Corpus editor &bull; Reykunyu</title>
+		<link rel="stylesheet" type="text/css" href="/aysrungsiyu/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/tìlam/tìlam.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<h1>
+				<span class="muted">Reykunyu &rarr;</span> Corpus editor
+				<a href="/" class="ui icon right floated top right basic button">
+					<i class="arrow left icon"></i> Back to Reykunyu
+				</a>
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
+			</h1>
+
+			<div class="ui form">
+				<div class="field">
+					<label>Sentence</label>
+					<input id="sentence-field" type="text" value="<%= sentence['na\'vi'].map(s => s[0]).join(' ') %>">
+				</div>
+				<div class="field">
+					<label>Translation</label>
+					<input id="translation-field" type="text" value="<%= sentence['translations']['en'].join(' ') %>">
+				</div>
+				<div class="ui section divider"></div>
+				<h2>Grammatical analysis</h2>
+				<div class="field">
+					<p>
+						After pressing this button, Reykunyu will analyze the Na'vi sentence to figure out what root words are used in the sentence. The data will fill the table below. For some words Reykunyu may find no results or it may find more than one option. You can manually edit the table to fix these cases.
+					</p>
+					<a href="/" class="ui button">
+						Analyze sentence
+					</a>
+				</div>
+				<table class="ui table">
+					<thead>
+						<tr>
+							<th>Na'vi word in sentence</th>
+							<th>Corresponding root word</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% for (let word of sentence["na'vi"]) { %>
+							<tr>
+								<td style="width: 25%;">
+									<input value=<%= word[0] %>>
+								</td>
+								<td style="width: 25%;">
+									<input value=<%= word[1] %>>
+								</td>
+							</tr>
+						<% } %>
+					</tbody>
+				</table>
+				<div class="ui section divider"></div>
+				<h2>Translation match</h2>
+				<p>Click a Na'vi word in the upper row, then select the English word(s), if any, that (roughly) translate that word. In unclear cases just use your best judgment.</p>
+				<table class="ui table">
+					<tr>
+						<td>
+							<% for (let i = 0; i < sentence['na\'vi'].length; i++) { %>
+								<button class="compact ui button">
+									<sup class="muted"><%= i + 1 %></sup> <%= sentence['na\'vi'][i][0] %>
+								</button>
+							<% } %>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<% for (let i = 0; i < sentence['translations']['en'].length; i++) { %>
+								<button class="compact ui button">
+									<sup class="muted"><%= i + 1 %></sup> <%= sentence['translations']['en'][i] %>
+								</button>
+							<% } %>
+						</td>
+					</tr>
+				</table>
+				<div class="ui section divider"></div>
+				<a href="/" class="ui floated right submit button">
+					Cancel
+				</a>
+				<div id="save-button" class="ui floated right primary submit icon labeled button">
+					<i class="check icon"></i>
+					Save
+				</div>
+			</div>
+		</div>
+
+		<script src="/aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="/aysrungsiyu/semantic/dist/semantic.js"></script>
+		<script src="/ayvefya/corpusEditor.js"></script>
+	</body>
+</html>

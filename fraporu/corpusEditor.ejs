@@ -1,0 +1,71 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Corpus editor &bull; Reykunyu</title>
+		<link rel="stylesheet" type="text/css" href="aysrungsiyu/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="tìlam/tìlam.css" rel="stylesheet">
+		<link rel="manifest" href="manifest.webmanifest">
+	</head>
+	<body>
+		<div class="container">
+			<h1>
+				<span class="muted">Reykunyu &rarr;</span> Corpus editor
+				<a href="/" class="ui icon right floated top right basic button">
+					<i class="arrow left icon"></i> Back to Reykunyu
+				</a>
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
+			</h1>
+
+			<p>On this page, you can edit Reykunyu's corpus of example sentences.</p>
+			<div class="ui section divider"></div>
+			<div class="ui form">
+				<table class="ui table">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Source</th>
+							<th>Sentence</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<% for (let key in sentences) {
+							const sentence = sentences[key];
+						%>
+						<tr>
+							<td>
+								<%= key %>
+							</td>
+							<td>
+								<a href="<%= sentence['source']['url'] %>"><%= sentence["source"]["name"] %></a>
+							</td>
+							<td>
+								<%= sentence["na'vi"].map(s => s[0]).join(' ') %>
+								<br>
+								<span class="muted"><%= sentence["translations"]["en"].join(' ') %></span>
+							</td>
+							<td>
+								<a class="ui icon basic button" href="corpus-editor/edit?sentence=<%= key %>">
+									<i class="pencil icon"></i>
+								</a>
+							</td>
+						</tr>
+						<% } %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
+		<script src="ayvefya/corpusEditor.js"></script>
+	</body>
+</html>
+

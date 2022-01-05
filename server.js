@@ -211,16 +211,53 @@ app.get('/history', function(req, res) {
 		return;
 	}
 	let historyData = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
-	historyData.slice(Math.max(1, historyData.length - 20));  // 20 last elements
+	historyData = historyData.slice(Math.max(1, historyData.length - 50));  // 50 last elements
 	historyData.reverse();
 	res.render('history', { user: req.user, history: historyData });
 });
 
 app.get('/etymology-editor', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
 	res.render('etymologyEditor', {
 		'user': req.user,
 		'post_url': '/edit',
 		'words': reykunyu.getAll()
+	});
+});
+
+app.get('/corpus-editor', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	res.render('corpusEditor', {
+		'user': req.user,
+		'sentences': reykunyu.getAllSentences()
+	});
+});
+
+app.get('/corpus-editor/edit', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	const key = req.query["sentence"];
+	if (!key) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const sentence = reykunyu.getAllSentences()[key];
+	res.render('corpusEditorEdit', {
+		'user': req.user,
+		'key': key,
+		'sentence': sentence
 	});
 });
 
@@ -230,7 +267,6 @@ app.get('/untranslated', function(req, res) {
 		res.send('403 Forbidden');
 		return;
 	}
-	console.log('blap');
 	let untranslated = reykunyu.getUntranslated('fr');
 	res.render('untranslated', { user: req.user, untranslated: untranslated });
 });

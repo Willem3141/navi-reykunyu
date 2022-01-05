@@ -9,6 +9,12 @@ $(function() {
 	showHideInfixes();
 	$('#type-field').on('change', showHideInfixes);
 
+	$('.add-meaning-button').on('click', function () {
+		console.log('bla');
+		const $tr = $(this).closest('tr');
+		$tr.clone().insertAfter($tr);
+	});
+
 	$('.translation-button').on('click', function () {
 		const $tr = $(this).closest('tr');
 		const $field = $tr.find('input');

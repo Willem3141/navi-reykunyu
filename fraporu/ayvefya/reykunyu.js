@@ -834,117 +834,117 @@ function updateInfixDisabledButtons() {
 }
 
 function updateInfixResults() {
-    // finds and returns the pre-first infix
-    function prefirstInfix() {
-        if ($('#eyk-button').hasClass('active')) {
+	// finds and returns the pre-first infix
+	function prefirstInfix() {
+		if ($('#eyk-button').hasClass('active')) {
 			return 'eyk';
-        } else if ($('#äp-button').hasClass('active')) {
+		} else if ($('#äp-button').hasClass('active')) {
 			return 'äp';
-        } else if ($('#äpeyk-button').hasClass('active')) {
+		} else if ($('#äpeyk-button').hasClass('active')) {
 			return 'äpeyk';
-        } else {
+		} else {
 			return '';
-        }
-    }
+		}
+	}
 
-    // finds and returns the first infix
-    // yes, I know, this function is large and ugly ;)
-    function firstInfix() {
-        if ($('#us-button').hasClass('active')) {
+	// finds and returns the first infix
+	// yes, I know, this function is large and ugly ;)
+	function firstInfix() {
+		if ($('#us-button').hasClass('active')) {
 			return 'us';
-        } else if ($('#awn-button').hasClass('active')) {
+		} else if ($('#awn-button').hasClass('active')) {
 			return 'awn';
-        } else if ($('#iv-button').hasClass('active')) {
+		} else if ($('#iv-button').hasClass('active')) {
 
-            // subjunctive infixes
-            if ($('#ay-button').hasClass('active')) {
-                return 'ìyev';
+			// subjunctive infixes
+			if ($('#ay-button').hasClass('active')) {
+				return 'ìyev';
 
-            } else if ($('#no-tense-button').hasClass('active')) {
-                if ($('#no-aspect-button').hasClass('active')) {
+			} else if ($('#no-tense-button').hasClass('active')) {
+				if ($('#no-aspect-button').hasClass('active')) {
 					return 'iv';
-                } else if ($('#ol-button').hasClass('active')) {
+				} else if ($('#ol-button').hasClass('active')) {
 					return 'ilv';
-                } else {
+				} else {
 					return 'irv';
-                }
+				}
 
-            } else if ($('#am-button').hasClass('active')) {
+			} else if ($('#am-button').hasClass('active')) {
 				return 'ìmv';
-            }
+			}
 
-        } else {
-            // non-subjunctive infixes
-            if ($('#ay-button').hasClass('active')) {
-                if ($('#no-aspect-button').hasClass('active')) {
-                    if ($('#no-intent-button').hasClass('active')) {
+		} else {
+			// non-subjunctive infixes
+			if ($('#ay-button').hasClass('active')) {
+				if ($('#no-aspect-button').hasClass('active')) {
+					if ($('#no-intent-button').hasClass('active')) {
 						return 'ay';
-                    } else {
+					} else {
 						return 'asy';
-                    }
-                } else if ($('#ol-button').hasClass('active')) {
+					}
+				} else if ($('#ol-button').hasClass('active')) {
 					return 'aly';
-                } else {
+				} else {
 					return 'ary';
-                }
+				}
 
-            } else if ($('#ìy-button').hasClass('active')) {
-                if ($('#no-aspect-button').hasClass('active')) {
-                    if ($('#no-intent-button').hasClass('active')) {
+			} else if ($('#ìy-button').hasClass('active')) {
+				if ($('#no-aspect-button').hasClass('active')) {
+					if ($('#no-intent-button').hasClass('active')) {
 						return 'ìy';
-                    } else {
+					} else {
 						return 'ìsy';
-                    }
-                } else if ($('#ol-button').hasClass('active')) {
+					}
+				} else if ($('#ol-button').hasClass('active')) {
 					return 'ìly';
-                } else {
+				} else {
 					return 'ìry';
-                }
+				}
 
-            } else if ($('#no-tense-button').hasClass('active')) {
-                if ($('#no-aspect-button').hasClass('active')) {
+			} else if ($('#no-tense-button').hasClass('active')) {
+				if ($('#no-aspect-button').hasClass('active')) {
 					return '';
-                } else if ($('#ol-button').hasClass('active')) {
+				} else if ($('#ol-button').hasClass('active')) {
 					return 'ol';
-                } else {
+				} else {
 					return 'er';
-                }
+				}
 
-            } else if ($('#ìm-button').hasClass('active')) {
-                if ($('#no-aspect-button').hasClass('active')) {
+			} else if ($('#ìm-button').hasClass('active')) {
+				if ($('#no-aspect-button').hasClass('active')) {
 					return 'ìm';
-                } else if ($('#ol-button').hasClass('active')) {
+				} else if ($('#ol-button').hasClass('active')) {
 					return 'ìlm';
-                } else {
+				} else {
 					return 'ìrm';
-                }
+				}
 
-            } else if ($('#am-button').hasClass('active')) {
-                if ($('#no-aspect-button').hasClass('active')) {
+			} else if ($('#am-button').hasClass('active')) {
+				if ($('#no-aspect-button').hasClass('active')) {
 					return 'am';
-                } else if ($('#ol-button').hasClass('active')) {
+				} else if ($('#ol-button').hasClass('active')) {
 					return 'alm';
-                } else {
+				} else {
 					return 'arm';
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
-    // finds and returns the second infix
-    function secondInfix() {
-        if ($('#ei-button').hasClass('active')) {
+	// finds and returns the second infix
+	function secondInfix() {
+		if ($('#ei-button').hasClass('active')) {
 			return 'ei';
-        } else if ($('#äng-button').hasClass('active')) {
+		} else if ($('#äng-button').hasClass('active')) {
 			return 'äng';
-        } else if ($('#uy-button').hasClass('active')) {
+		} else if ($('#uy-button').hasClass('active')) {
 			return 'uy';
-        } else if ($('#ats-button').hasClass('active')) {
+		} else if ($('#ats-button').hasClass('active')) {
 			return 'ats';
-        } else {
+		} else {
 			return '';
-        }
-    }
+		}
+	}
 
 	const infixes = $('#infix-details-infixes').text();
 	const prefirst = prefirstInfix();
@@ -977,32 +977,38 @@ function createSentence(sentence, lemma) {
 
 	let englishHighlights = [];
 
-	for (let i = 0; i < sentence["navi"].length; i++) {
+	for (let i = 0; i < sentence["na'vi"].length; i++) {
 		if (i > 0) {
 			$original.append(" ");
 		}
-		if (sentence["naviWords"][i] === lemma) {
-			englishHighlights = sentence["mapping"][i].split(",");
-			$original.append($("<span/>").addClass("highlight").text(sentence["navi"][i]));
+		if (sentence["na'vi"][i][1].includes(lemma)) {
+			//englishHighlights = sentence["mapping"][i].split(",");
+			$original.append($("<span/>").addClass("highlight").text(sentence["na'vi"][i][0]));
 		} else {
-			$original.append(sentence["navi"][i]);
+			$original.append(sentence["na'vi"][i][0]);
 		}
 	}
 
-	for (let i = 0; i < sentence["english"].length; i++) {
+	$translation.append(sentence["translations"]["en"].join(' '));
+
+	/*for (let i = 0; i < sentence["translations"].length; i++) {
 		if (i > 0) {
 			$translation.append(" ");
 		}
-		if (englishHighlights.includes("" + (i + 1))) {
-			$translation.append($("<span/>").addClass("highlight").text(sentence["english"][i]));
-		} else {
+		//if (englishHighlights.includes("" + (i + 1))) {
+			//$translation.append($("<span/>").addClass("highlight").text(sentence["english"][i]));
+		//} else {
 			$translation.append(sentence["english"][i]);
-		}
-	}
+		//}
+	}*/
 
 	if (sentence["source"]) {
-		let $source = $('<div/>').addClass("source").appendTo($sentence);
-		$source.append(sentence["source"]);
+		$translation
+			.append('&nbsp;&nbsp;&ndash; ');
+		let $source = $('<a/>').addClass("source")
+			.attr('href', sentence['source']['url'])
+			.text(sentence['source']['name'])
+			.appendTo($translation);
 	}
 
 	return $sentence;
@@ -1012,7 +1018,7 @@ function sentencesSection(sentences, lemma) {
 	let $section = $('<details/>').addClass('result-item examples');
 	let $header = $('<summary/>').addClass('header')
 		.text(_('sentence-search') + ' (' + sentences.length + ' '
-			+ (sentences.length > 1 ? _('usages-found-singular') : _('usages-found-plural'))
+			+ (sentences.length > 1 ? _('usages-found-plural') : _('usages-found-singular'))
 			+ ')')
 		.appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);

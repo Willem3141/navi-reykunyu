@@ -87,12 +87,12 @@ const types = [
 										<input class="stress-cell" type="number" placeholder="1" value="<%= word['pronunciation'] ? word['pronunciation'][1] : '' %>">
 									</td>
 									<td class="one wide">
-										<div class="ui disabled floated small icon button">
+										<div class="ui disabled floated small icon button delete-pronunciation-button">
 											<i class="delete icon"></i>
 										</div>
 									</td>
 									<td class="one wide">
-										<div class="ui disabled floated small icon button">
+										<div class="ui disabled floated small icon button add-pronunciation-button">
 											<i class="add icon"></i>
 										</div>
 									</td>
@@ -134,9 +134,9 @@ const types = [
 							<% for (let i = 0; i < word['translations'].length; i++) {
 								const translation = word['translations'][i]; %>
 							<tr>
-								<td class="one wide">1.</td>
+								<td class="one wide"><%= i + 1 %>.</td>
 								<td>
-									<input type="text" placeholder="to hunt" value="<%= translation['en'] %>"<% for (let lang of Object.keys(translation)) { if (lang !== 'en') { %> data-<%= lang %>="<%= translation[lang] %>"<% } } %>>
+									<input type="text" placeholder="hunt" value="<%= translation['en'] %>"<% for (let lang of Object.keys(translation)) { if (lang !== 'en') { %> data-<%= lang %>="<%= translation[lang] %>"<% } } %>>
 								</td>
 								<td class="one wide">
 									<div class="translation-button ui floated small icon button" data-tooltip="Edit translations">
@@ -144,12 +144,12 @@ const types = [
 									</div>
 								</td>
 								<td class="one wide">
-									<div class="ui disabled floated small icon button" data-tooltip="Delete this meaning">
+									<div class="ui disabled floated small icon button delete-meaning-button" data-tooltip="Delete this meaning">
 										<i class="delete icon"></i>
 									</div>
 								</td>
 								<td class="one wide">
-									<div class="ui disabled floated small icon button" data-tooltip="Add another meaning">
+									<div class="ui floated small icon button add-meaning-button" data-tooltip="Add another meaning">
 										<i class="add icon"></i>
 									</div>
 								</td>

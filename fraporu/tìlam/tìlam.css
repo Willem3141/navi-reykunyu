@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Julius+Sans+One&subset=latin,latin-ext');
 @font-face {
 	font-family: 'Calluna Sans';
 	src: url('/fonts/CallunaSansRegular-webfont.woff2') format('woff2'), url('/fonts/CallunaSansRegular-webfont.woff') format('woff');
@@ -261,7 +260,12 @@ h1::after {
 
 .result .result-item.definition ol {
 	margin-top: 0;
-	margin-bottom: 0;
+	margin-bottom: 30px;
+}
+
+.result .result-item.definition ol li {
+	margin-top: 10px;
+	margin-bottom: 20px;
 }
 
 .result .result-item.note {
