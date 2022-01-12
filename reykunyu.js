@@ -354,7 +354,7 @@ function forbiddenByExternalLenition(result) {
 
 function lookUpWordOrPhrase(queryWord) {
 	// phrases
-	for (let length = 4; length > 1; length--) {
+	for (let length = 8; length > 1; length--) {
 		let phrase = queryWord.slice(0, length).join(' ');
 		let key = phrase + ':phr';
 		if (dictionary.hasOwnProperty(key)) {
