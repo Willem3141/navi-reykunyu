@@ -880,7 +880,7 @@ function getRandomWords(number, type) {
 		// draw random word in [0, i]
 		let random = Math.floor(Math.random() * (i + 1));
 		let randomWord = wordList[random];
-		results.push(randomWord);
+		results.push(JSON.parse(JSON.stringify(randomWord)));
 
 		// swap drawn word to the end so we won't draw it again
 		// (note: we don't care that wordList gets shuffled in the process because we use it only for
@@ -888,6 +888,10 @@ function getRandomWords(number, type) {
 		const h = wordList[i];
 		wordList[i] = wordList[random];
 		wordList[random] = h;
+	}
+
+	for (let result of results) {
+		postprocessResult(result);
 	}
 
 	return results;
