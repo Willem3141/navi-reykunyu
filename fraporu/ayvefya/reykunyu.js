@@ -1203,6 +1203,10 @@ function getShortTranslation(result) {
 	translation = translation.split(' | ')[0];
 	translation = translation.split(' (')[0];
 
+	if (translation.startsWith('(') && translation.endsWith(')')) {
+		translation = translation.substring(1, translation.length - 1);
+	}
+
 	if (result["type"][0] === "v"
 		&& translation.indexOf("to ") === 0) {
 		translation = translation.substr(3);
