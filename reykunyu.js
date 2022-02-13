@@ -212,7 +212,7 @@ function getResponsesFor(query) {
 
 	queryWords = queryWords.filter((i) => i !== '');
 
-	for (let i = 0; i < queryWords.length; ) {
+	for (let i = 0; i < queryWords.length;) {
 		let queryWord = queryWords[i];
 		let wordResults = [];
 		let wordCount = 1;
@@ -523,6 +523,24 @@ function lookUpWord(queryWord) {
 		}
 	});
 
+	// adverbs made from nì- + adjectives
+	if (queryWord.startsWith('nì')) {
+		const possibleAdjective = queryWord.substring(2);
+		if (dictionary.hasOwnProperty(possibleAdjective + ':adj')) {
+			const adjective = JSON.parse(JSON.stringify(dictionary[possibleAdjective + ':adj']));
+			adjective["conjugated"] = [{
+				"type": "adj_to_adv",
+				"conjugation": {
+					"result": 'nì' + possibleAdjective,
+					"root": possibleAdjective,
+					"affixes": ['nì']
+				}
+			}];
+			adjective["affixes"] = makeAffixList(adjective["conjugated"]);
+			wordResults.push(adjective);
+		}
+	}
+
 	// then other word types
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
@@ -579,8 +597,8 @@ function makeAffixList(conjugated) {
 	list = [];
 
 	for (let conjugation of conjugated) {
+		let affixes = conjugation['conjugation']['affixes'];
 		if (conjugation['type'] === 'n') {
-			let affixes = conjugation['conjugation']['affixes'];
 			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
 			if (affixes[1] === '(ay)') {
 				addAffix(list, 'prefix', 'ay', ['aff:pre']);
@@ -592,20 +610,21 @@ function makeAffixList(conjugated) {
 			addAffix(list, 'suffix', affixes[4], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len']);
 			addAffix(list, 'suffix', affixes[6], ['part']);
-		}
-		if (conjugation['type'] === 'v_to_n') {
-			let affixes = conjugation['conjugation']['affixes'];
+
+		} else if (conjugation['type'] === 'v_to_n') {
 			addAffix(list, 'suffix', affixes[0], ['aff:suf']);
-		}
-		if (conjugation['type'] === 'v_to_adj') {
-			let affixes = conjugation['conjugation']['affixes'];
+
+		} else if (conjugation['type'] === 'v_to_adj') {
 			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
-		}
-		if (conjugation['type'] === 'v') {
+
+		} else if (conjugation['type'] === 'v') {
 			let infixes = conjugation['conjugation']['infixes'];
 			addAffix(list, 'infix', infixes[0], ['aff:in']);
 			addAffix(list, 'infix', infixes[1], ['aff:in']);
 			addAffix(list, 'infix', infixes[2], ['aff:in']);
+
+		} else if (conjugation['type'] === 'adj_to_adv') {
+			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
 		}
 	}
 
