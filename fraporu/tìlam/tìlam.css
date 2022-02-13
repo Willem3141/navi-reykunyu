@@ -130,7 +130,6 @@ h1::after {
 
 #sentence-bar .item .label {
 	font-size: 75%;
-	text-transform: uppercase;
 }
 
 #sentence-bar .item .more {
@@ -167,9 +166,8 @@ h1::after {
 	font-weight: 700;
 }
 
-.result .result-word .type {
-	margin-left: 26px;
-	text-transform: uppercase;
+.result .result-word .type.lemma-type {
+	margin-left: 16px;
 	position: relative;
 	top: -5px;
 }

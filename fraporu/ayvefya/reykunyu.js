@@ -106,8 +106,9 @@ function setUpAutocomplete() {
 
 // tìng fnelä tstxoti angim
 // fnel - fnelä tstxo apup (natkenong "n", "vtr")
-function tstxoFnelä(fnel) {
-	const translation = _('type-' + fnel);
+// traditional - if true, use traditional type abbreviations
+function tstxoFnelä(fnel, traditional) {
+	const translation = _((traditional ? 'type-traditional-' : 'type-') + fnel);
 	if (translation) {
 		return translation;
 	}
@@ -116,17 +117,16 @@ function tstxoFnelä(fnel) {
 
 // ngop pätsìt a oeyktìng fnelit lì'uä
 // fnel - fnelä tstxo apup (natkenong "n", "v:tr")
-function typeBadge(fnel) {
-	fnel = tstxoFnelä(fnel).split('/');
+function typeBadge(fnel, small) {
+	fnel = tstxoFnelä(fnel, small).split('/');
 	let $pätsì = $('<span/>').addClass('type ui tag label').text(fnel[0]);
+	if (small) {
+		$pätsì.addClass('horizontal');
+		$pätsì.removeClass('tag');
+	}
 	if (fnel.length > 1) {
 		$pätsì.append($('<div/>').addClass('detail').text(fnel[1]));
 	}
-	return $pätsì;
-}
-
-function smallTypeBadge(fnel) {
-	let $pätsì = $('<div/>').addClass('type ui horizontal label').text(fnel);
 	return $pätsì;
 }
 
@@ -169,6 +169,9 @@ function conjugationExplanation(conjugation) {
 				break;
 			case "v_to_adj":
 				$explanation.append(verbToAdjectiveConjugationExplanation(c));
+				break;
+			case "adj_to_adv":
+				$explanation.append(adjectiveToAdverbConjugationExplanation(c));
 				break;
 		}
 	}
@@ -257,6 +260,7 @@ function verbToNounConjugationExplanation(conjugation) {
 	$('<span/>').addClass('suffix').text(conjugation["affixes"][0]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	typeBadge('n', true).appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
 	return $conjugation;
@@ -273,6 +277,24 @@ function verbToAdjectiveConjugationExplanation(conjugation) {
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	typeBadge('adj', true).appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
+
+	return $conjugation;
+}
+
+function adjectiveToAdverbConjugationExplanation(conjugation) {
+	let $conjugation = $('<div/>').addClass('conjugation-explanation');
+
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+
+	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
+	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
+
+	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	typeBadge('adv', true).appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
 	return $conjugation;
@@ -490,7 +512,7 @@ function affixesSection(affixes) {
 		addLemmaClass($affixLink, affix['type']);
 		$('<td/>').append($affixLink).appendTo($tr);
 		$meaningCell = $('<td/>').appendTo($tr);
-		$meaningCell.append(smallTypeBadge(affix['type']));
+		$meaningCell.append(typeBadge(affix['type'], true));
 		$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
 	}
 
@@ -1067,7 +1089,7 @@ function createResultBlock(i, r) {
 	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
 	addLemmaClass($lemma, r['type']);
 	$lemma.html(lemmaForm(r["na'vi"], r['type']));
-	$resultWord.append(typeBadge(r["type"]));
+	$resultWord.append(typeBadge(r["type"], true).addClass('lemma-type'));
 
 	if (r["status"]) {
 		$resultWord.append(statusBadge(r["status"]));
@@ -1207,9 +1229,7 @@ function createSentenceBarItem(result) {
 	for (let i = 0; i < Math.min(2, definitionCount); i++) {
 		let $definitionLabel = $('<div/>').addClass('definition')
 			.appendTo($itemContainer);
-		$('<div/>').addClass("ui horizontal label")
-			.text(result["sì'eyng"][i]["type"])
-			.appendTo($definitionLabel);
+		typeBadge(result["sì'eyng"][i]["type"], true).appendTo($definitionLabel);
 		$definitionLabel.append(getShortTranslation(result["sì'eyng"][i]));
 	}
 
