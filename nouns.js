@@ -117,11 +117,11 @@ function conjugate(noun, affixes, simple) {
 	}
 
 	// suffixes
-	let caseSuffix;
+	let caseSuffix = "";
 	if (caseFunctions.hasOwnProperty(affixes[5])) {
 		caseSuffix = caseFunctions[affixes[5]](noun + stemSuffix + determinerSuffix);
 	} else {
-		caseSuffix = [affixes[5]];
+		caseSuffix = affixes[5];
 	}
 
 	// special case for genitive -ia -> -iä - see genitiveSuffix()
@@ -162,7 +162,7 @@ function conjugate(noun, affixes, simple) {
 				convert.decompress(lenited[1]),
 				convert.decompress(stemSuffix),
 				convert.decompress(determinerSuffix),
-				convert.decompress(caseSuffix),
+				caseSuffix,
 				convert.decompress(finalSuffix)
 			].join('-');
 		}
@@ -184,7 +184,7 @@ function conjugate(noun, affixes, simple) {
 				noun,
 				convert.decompress(stemSuffix),
 				convert.decompress(determinerSuffix),
-				convert.decompress(caseSuffix),
+				caseSuffix,
 				convert.decompress(finalSuffix)
 			].join('-');
 		}
