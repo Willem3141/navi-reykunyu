@@ -105,7 +105,7 @@ function conjugate(noun, affixes, simple) {
 		determinerPrefix = determinerPrefix[0];  // fì- + ay- -> fay-, etc.
 	}
 
-	let pluralPrefix = [""];
+	let pluralPrefix = "";
 	if (affixes[1] !== "") {
 		pluralPrefix = pluralFunctions[plural](
 			stemPrefix + noun, determinerPrefix);
@@ -154,9 +154,17 @@ function conjugate(noun, affixes, simple) {
 			return pluralPrefix + '-{' + lenited[0] + '}' +
 				convert.decompress(lenited[1]) + '-' + caseSuffix;
 		} else {
-			return determinerPrefix + '-' + pluralPrefix + '-' + stemPrefix +
-				'-' + lenited[0] + '-' + convert.decompress(lenited[1]) + '-' + stemSuffix +
-				'-' + determinerSuffix + '-' + caseSuffix + '-' + finalSuffix;
+			return [
+				convert.decompress(determinerPrefix),
+				convert.decompress(pluralPrefix),
+				convert.decompress(stemPrefix),
+				lenited[0],
+				convert.decompress(lenited[1]),
+				convert.decompress(stemSuffix),
+				convert.decompress(determinerSuffix),
+				convert.decompress(caseSuffix),
+				convert.decompress(finalSuffix)
+			].join('-');
 		}
 
 	} else {
@@ -168,9 +176,17 @@ function conjugate(noun, affixes, simple) {
 		if (simple) {
 			return pluralPrefix + '-' + noun + '-' + caseSuffix;
 		} else {
-			return determinerPrefix + '-' + pluralPrefix + '-' + stemPrefix +
-				'--' + noun + '-' + stemSuffix +
-				'-' + determinerSuffix + '-' + caseSuffix + '-' + finalSuffix;
+			return [
+				convert.decompress(determinerPrefix),
+				convert.decompress(pluralPrefix),
+				convert.decompress(stemPrefix),
+				'',
+				noun,
+				convert.decompress(stemSuffix),
+				convert.decompress(determinerSuffix),
+				convert.decompress(caseSuffix),
+				convert.decompress(finalSuffix)
+			].join('-');
 		}
 	}
 }
