@@ -101,8 +101,13 @@ function conjugate(noun, affixes, simple) {
 
 	// prefixes
 	let determinerPrefix = convert.compress(affixes[0]);
+	// special case: fì- + ay- -> fay-, etc.
 	if (determinerPrefix !== "" && plural === "2") {  // ay
-		determinerPrefix = determinerPrefix[0];  // fì- + ay- -> fay-, etc.
+		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
+	}
+	// special case: tsa- + atan -> tsatan, etc.
+	if (determinerPrefix[determinerPrefix.length - 1] === noun[0] && plural === "" && stemPrefix === "") {
+		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
 	}
 
 	let pluralPrefix = "";
