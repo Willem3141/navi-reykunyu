@@ -101,12 +101,19 @@ function conjugate(noun, affixes, simple) {
 
 	// prefixes
 	let determinerPrefix = convert.compress(affixes[0]);
-	// special case: fì- + ay- -> fay-, etc.
 	if (determinerPrefix !== "" && plural === "2") {  // ay
+		// special case: fì- + ay- -> fay-, etc.
 		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
-	}
-	// special case: tsa- + atan -> tsatan, etc.
-	if (determinerPrefix[determinerPrefix.length - 1] === noun[0] && plural === "" && stemPrefix === "") {
+
+	} else if (determinerPrefix[determinerPrefix.length - 1] === convert.decompress(noun)[0] &&
+			plural === "" && stemPrefix === "") {
+		// special case: tsa- + atan -> tsatan, etc.
+		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
+
+	} else if (noun.length >= 2 && noun[0] === "'" &&
+		determinerPrefix[determinerPrefix.length - 1] === convert.decompress(noun)[1] &&
+			plural === "" && stemPrefix === "") {
+		// special case: pe- + 'eveng -> peveng (combination of the case above and ' lenition)
 		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
 	}
 
@@ -147,7 +154,7 @@ function conjugate(noun, affixes, simple) {
 	 * lenited letter of the stem prefix separate, and so on).
 	 */
 	let needsLenition =
-		(plural !== "" || (plural === "" && determinerPrefix === "pe")) &&
+		(plural !== "" || (plural === "" && (determinerPrefix === "pe" || determinerPrefix === "p"))) &&
 		stemPrefix === "";
 
 	if (needsLenition) {
