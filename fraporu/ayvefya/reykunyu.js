@@ -379,6 +379,11 @@ function pronunciationSection(lìupam, fnel) {
 	if (fnel === "n:si" || fnel === "nv:si") {
 		$tìlam.append(" si");
 	}
+
+	if (lìupam.length === 3) {
+		$tìlam.append(pronunciationAudioButtons(lìupam[2]));
+	}
+
 	$tìlam.append(")");
 
 	return $tìlam;
@@ -414,7 +419,11 @@ function pronunciationSectionIpa(pronunciation, fnel) {
 	if (fnel === "n:si" || fnel === "nv:si") {
 		ipa += " si";
 	}
-	$result.text("(" + ipa + ")");
+	$result.text("(" + ipa);
+	if (pronunciation.length === 3) {
+		$result.append(pronunciationAudioButtons(pronunciation[2]));
+	}
+	$result.append(")");
 
 	return $result;
 }
@@ -458,6 +467,37 @@ function syllableToIpa(text) {
 	}
 
 	return ipa;
+}
+
+function pronunciationAudioButtons(audioData) {
+	let $buttons = $('<div/>')
+		.addClass('pronunciation-audio-buttons buttons');
+	for (let audio of audioData) {
+		let $button = $('<a/>')
+			.addClass('ui icon compact mini basic button pronunciation-audio-button')
+			.attr('data-tooltip', 'Speaker: ' + audio['speaker']);
+		$('<i/>').addClass('play icon').appendTo($button);
+		let clip = null;
+		$button.on('click', function () {
+			function reset() {
+				clip = null;
+				$button.empty();
+				$('<i/>').addClass('play icon').appendTo($button);
+			}
+			if (clip === null) {
+				clip = new Audio('/fam/' + audio['file']);
+				clip.addEventListener('ended', reset);
+				clip.play();
+				$button.empty();
+				$('<i/>').addClass('stop icon').appendTo($button);
+			} else {
+				clip.pause();
+				reset();
+			}
+		});
+		$buttons.append($button);
+	}
+	return $buttons;
 }
 
 function editButton(word, type) {
