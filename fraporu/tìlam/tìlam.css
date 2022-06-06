@@ -1,26 +1,8 @@
 @font-face {
-	font-family: 'Calluna Sans';
-	src: url('/fonts/CallunaSansRegular-webfont.woff2') format('woff2'), url('/fonts/CallunaSansRegular-webfont.woff') format('woff');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Calluna Sans';
-	src: url('/fonts/CallunaSansItalic-webfont.woff2') format('woff2'), url('/fonts/CallunaSansItalic-webfont.woff') format('woff');
-	font-weight: normal;
-	font-style: italic;
-}
-@font-face {
-	font-family: 'Calluna Sans';
-	src: url('/fonts/CallunaSansBold-webfont.woff2') format('woff2'), url('/fonts/CallunaSansBold-webfont.woff') format('woff');
-	font-weight: bold;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Calluna Sans';
-	src: url('/fonts/CallunaSansBoldItalic-webfont.woff2') format('woff2'), url('/fonts/CallunaSansBoldItalic-webfont.woff') format('woff');
-	font-weight: bold;
-	font-style: italic;
+	font-family: 'Recursive';
+	font-weight: 300 1000;
+	font-style: oblique 0deg 14deg;
+	src: url('/fonts/Recursive_VF_1.078.woff2');
 }
 @font-face {
 	font-family: 'Gentium Plus';
@@ -32,16 +14,19 @@ body,
 .ui.modal .ui.header,
 h1, h2, h3, h4, h5,
 .ui.menu,
-.ui.form input {
-	font-family: 'Calluna Sans' !important;
+.ui.form input,
+#search-box,
+.ui.modal .header {
+	font-family: 'Recursive' !important;
 }
 
 body {
-	font-size: 16px;
+	font-size: 14px;
 	background-color: #fff;
 	color: #222;
 	padding: 0 15px;
 	width: 100%;
+	line-height: inherit;
 }
 
 .container {
@@ -83,10 +68,6 @@ h1::after {
 	width: 0px;
 }
 
-#search-box {
-	font-family: 'Calluna Sans';
-}
-
 #mode-direction {
 	width: 200px;
 }
@@ -97,7 +78,7 @@ h1::after {
 }
 
 .ui.search > .results .result .title {
-	font-family: 'Calluna Sans';
+	font-family: 'Recursive';
 	display: inline-block;
 	width: 30%;
 }
@@ -554,11 +535,27 @@ table.conjugation-table {
 	.ui.search > .results .result .title,
 	.ui.selection.dropdown:hover,
 	.ui.selection.dropdown:focus,
-	.ui.selection.visible.dropdown > .text:not(.default) {
+	.ui.selection.visible.dropdown > .text:not(.default),
+	.ui.modal .header,
+	.ui.modal .content,
+	.ui.checkbox label,
+	.ui.checkbox + label,
+	.ui.checkbox label:hover,
+	.ui.checkbox + label:hover,
+	.ui.checkbox input:focus ~ label,
+	.ui.vertical.divider {
 		color: #eee;
 	}
 
-	.ui.basic.button:hover {
+	.ui.basic.button,
+	.ui.basic.buttons .button {
+		color: #eee !important;
+	}
+
+	.ui.basic.button:hover,
+	.ui.basic.button.active,
+	.ui.basic.buttons .button:hover,
+	.ui.basic.buttons .button.active {
 		color: #eee !important;
 		background-color: #333 !important;
 	}
@@ -571,8 +568,14 @@ table.conjugation-table {
 		background-color: #222;
 	}
 
-	.ui.modal {
-		color: #222;
+	.ui.modal .header,
+	.ui.modal .content {
+		background-color: #111;
+	}
+
+	.ui.modal .actions,
+	.ui.segment {
+		background-color: #222;
 	}
 
 	h1 {
@@ -620,7 +623,7 @@ table.conjugation-table {
 		background-color: #000 !important;
 	}
 
-	h1 .ui.basic.button,
+	.ui.basic.button,
 	.edit-button.ui.basic.button {
 		color: #eee !important;
 	}
