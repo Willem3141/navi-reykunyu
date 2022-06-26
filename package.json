@@ -10,14 +10,17 @@
     "ejs": "^3.1.5",
     "express": "^4.10.2",
     "express-session": "^1.17.1",
+    "jquery": "^3.6.0",
     "js-levenshtein": "^1.1.6",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "string.prototype.matchall": "^4.0.2"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.14",
     "chai": "^4.2.0",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "typescript": "^4.6.4"
   },
   "scripts": {
     "test": "mocha sìfmetok"
