@@ -1,0 +1,121 @@
+@font-face {
+	font-family: 'Recursive';
+	font-weight: 300 1000;
+	font-style: oblique 0deg 14deg;
+	src: url('/fonts/Recursive_VF_1.078.woff2');
+}
+
+body {
+	margin: 0;
+	font-family: 'Recursive' !important;
+	line-height: 150%;
+	background-color: #96c8fa;
+}
+
+.top-bar {
+	background-color: #222;
+	color: #fff;
+	padding: 15px;
+	margin-bottom: 20px;
+}
+
+.title {
+	font-size: 25px;
+	font-weight: bold;
+}
+
+.beta-tag {
+	display: inline-block;
+	position: relative;
+	font-size: 10px;
+	rotate: -10deg;
+	top: -10px;
+	background-color: white;
+	color: black;
+	padding: 2px;
+	line-height: 10px;
+	border-radius: 10px;
+}
+
+.score {
+	float: right;
+}
+
+#score-field {
+	position: relative;
+	display: inline-block;
+	font-weight: bold;
+}
+#score-field.just-changed {
+	scale: 125%;
+}
+#score-field.in-transition {
+	transition: scale 0.25s;
+}
+
+.game-container {
+	padding-top: 40px;
+	text-align: center;
+}
+
+#definition .lemma {
+	font-weight: bold;
+}
+
+#definition .type {
+	font-style: italic;
+}
+
+#syllables {
+	padding: 20px;
+}
+
+.syllable, .separator {
+	display: inline-block;
+	vertical-align: top;
+	padding: 15px;
+}
+
+.syllable {
+	background-color: rgba(255, 255, 255, 0.25);
+	transition: background-color 0.1s, border 0.1s, box-shadow 0.1s;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.0);
+	cursor: pointer;
+}
+.syllable:hover {
+	background-color: rgba(255, 255, 255, 0.5);
+}
+.syllable.correct.chosen {
+	border: 1px solid #116633;
+	box-shadow: 0px 0px 10px #116633;
+}
+.syllable.incorrect.chosen {
+	border: 1px solid #661133;
+	box-shadow: 0px 0px 10px #661133;
+}
+
+.navi, .separator {
+	font-size: 32px;
+}
+
+.index {
+	opacity: 0.5;
+	padding-top: 5px;
+	margin-bottom: -5px;
+	transition: color 0.1s, font-size 0.1s;
+}
+.syllable.correct.chosen .index,
+.syllable.correct.correction .index {
+	color: #116633;
+	font-weight: bold;
+	opacity: 1;
+	font-size: 30px;
+}
+.syllable.incorrect.chosen .index {
+	color: #661133;
+	font-weight: bold;
+	opacity: 1;
+	font-size: 30px;
+}
+
