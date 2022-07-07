@@ -560,19 +560,29 @@ function affixesSection(affixes) {
 	return $affixesSection;
 }
 
-function sourceSection(source) {
+function sourceSection(sources) {
 	let $sourceSection = $('<div/>').addClass('result-item see-also');
 	$sourceSection.append($('<div/>').addClass('header').text(_('source')));
-	let $source = $('<div/>').addClass('body');
-	if (typeof source === "string") {
-		$source.html(source);
-	} else {
-		let $sourceLink = $('<a/>');
-		$sourceLink.attr('href', source[1]);
-		$sourceLink.html(source[0]);
-		$source.append($sourceLink);
+	for (let source of sources) {
+		let $source = $('<div/>').addClass('body');
+		if (source.length == 1) {
+			let $sourceText = $('<div/>');
+			$sourceText.text(source[0]);
+			$source.append($sourceText);
+		} else {
+			let $sourceLink = $('<a/>');
+			$sourceLink.attr('href', source[1]);
+			$sourceLink.text(source[0]);
+			$source.append($sourceLink);
+		}
+		if (source.length >= 3 && source[2]) {
+			$source.append(' (' + source[2] + ')');
+		}
+		if (source.length >= 4 && source[3]) {
+			$source.append(' (' + source[3] + ')');
+		}
+		$sourceSection.append($source);
 	}
-	$sourceSection.append($source);
 	return $sourceSection;
 }
 
