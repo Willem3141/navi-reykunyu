@@ -71,6 +71,7 @@
 							<div class="menu">
 								<div class="item" data-value="navi">Na'vi &rarr; <span class="current-lang">English</span></div>
 								<div class="item mode-english-item" data-value="english"><span class="current-lang">English</span> &rarr; Na'vi</div>
+								<div class="item" data-value="analyzer">Sentence analysis</div>
 								<div class="item" data-value="annotated">Annotated Dictionary</div>
 								<div class="item" data-value="rhymes">Rhymes</div>
 							</div>
@@ -304,6 +305,16 @@
 		<div id="settings-modal" class="ui modal">
 			<div class="header">Settings</div>
 			<div class="scrolling content">
+				<div class="ui small header">
+					Search directions
+				</div>
+				<p>Reykunyu can automatically switch between the <i>Na'vi &rarr; English</i> and <i>English &rarr; Na'vi</i> modes if it looks like you'd get better results in the other direction.</p>
+				<div class="ui checkbox">
+					<input id="direction-checkbox" type="checkbox" name="direction">
+					<label for="direction">
+						Automatically switch search directions
+					</label>
+				</div>
 				<div class="ui small header">
 					Pronunciation
 				</div>
