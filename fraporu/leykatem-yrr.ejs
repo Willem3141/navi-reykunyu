@@ -1,0 +1,52 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Word editor &bull; Reykunyu</title>
+		<link rel="stylesheet" type="text/css" href="../aysrungsiyu/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="../tìlam/tìlam.css" rel="stylesheet">
+	</head>
+	<body data-url="<%= post_url %>">
+		<div class="container">
+			<h1>
+				Word editor
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
+				<a href="/edit?word=<%= word['na\'vi'] %>&type=<%= word['type'] %>" class="ui icon right floated top right basic button">
+					<i class="edit icon"></i> Edit in visual editor
+				</a>
+				<a href="/" class="ui icon right floated top right basic button">
+					<i class="arrow left icon"></i> Back to Reykunyu
+				</a>
+			</h1>
+			<div class="ui form">
+				<h2>Raw editor</h2>
+				<p>On this page, you can edit the raw JSON definition of a word. This can be useful for technical reasons, but is usually not necessary.</p>
+
+				<div class="ui section divider"></div>
+
+				<textarea id="json-field" rows="25"><%= JSON.stringify(word, null, 4); %></textarea>
+
+				<div class="ui section divider"></div>
+
+				<a href="/" class="ui floated right submit button">
+					Cancel
+				</a>
+				<div id="save-button" class="ui floated right primary submit icon labeled button">
+					<i class="check icon"></i>
+					Save
+				</div>
+			</div>
+		</div>
+
+		<script src="../aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="../aysrungsiyu/semantic/dist/semantic.js"></script>
+		<script src="../ayvefya/editRaw.js"></script>
+	</body>
+</html>
+
