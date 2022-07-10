@@ -354,34 +354,35 @@ function translationSection(sìralpeng) {
 // fnel - fnel lì'uä (kin taluna txo fnel livu "n:si", tsakrr zene sivung lì'ut alu " si")
 function pronunciationSection(lìupam, fnel) {
 	let $tìlam = $('<span/>').addClass('stress');
-	if (!lìupam) {
+	if (!lìupam || lìupam.length === 0) {
 		$tìlam.append(_("stress-unknown"));
-		return $tìlam;
-	}
-	if (lìupam.length === 0) {
 		return $tìlam;
 	}
 
 	$tìlam.append("(");
-	aylìkong = lìupam[0].split("-");
-	for (let i = 0; i < aylìkong.length; i++) {
+	for (let i = 0; i < lìupam.length; i++) {
 		if (i > 0) {
-			$tìlam.append("-");
+			$tìlam.append(' ' + _('or') + ' ');
 		}
-		let $lìkong = $('<span/>').text(aylìkong[i]);
-		if (aylìkong.length > 1 && i + 1 === lìupam[1]) {
-			$lìkong.addClass("stressed");
-		} else {
-			$lìkong.addClass("unstressed");
+		aylìkong = lìupam[i]['syllables'].split("-");
+		for (let j = 0; j < aylìkong.length; j++) {
+			if (j > 0) {
+				$tìlam.append("-");
+			}
+			let $lìkong = $('<span/>').text(aylìkong[j]);
+			if (aylìkong.length > 1 && j + 1 === lìupam[i]['stressed']) {
+				$lìkong.addClass("stressed");
+			} else {
+				$lìkong.addClass("unstressed");
+			}
+			$tìlam.append($lìkong);
 		}
-		$tìlam.append($lìkong);
-	}
-	if (fnel === "n:si" || fnel === "nv:si") {
-		$tìlam.append(" si");
-	}
-
-	if (lìupam.length === 3) {
-		$tìlam.append(pronunciationAudioButtons(lìupam[2]));
+		if (fnel === "n:si" || fnel === "nv:si") {
+			$tìlam.append(" si");
+		}
+		if (lìupam[i].hasOwnProperty('audio')) {
+			$tìlam.append(pronunciationAudioButtons(lìupam[i]['audio']));
+		}
 	}
 
 	$tìlam.append(")");
@@ -391,37 +392,40 @@ function pronunciationSection(lìupam, fnel) {
 
 function pronunciationSectionIpa(pronunciation, fnel) {
 	let $result = $('<span/>').addClass('stress');
-	if (!pronunciation) {
+	if (!pronunciation || pronunciation.length === 0) {
 		$result.append(_("stress-unknown"));
-		return $result;
-	}
-	if (pronunciation.length === 0) {
 		return $result;
 	}
 
 	$result.addClass('ipa');
-	const syllables = pronunciation[0].split("-");
-	let ipa = '';
-	for (let i = 0; i < syllables.length; i++) {
+	$result.text("(");
+	for (let i = 0; i < pronunciation.length; i++) {
 		if (i > 0) {
-			ipa += '.';
+			$result.append(' ' + _('or') + ' ');
 		}
-		if (syllables.length > 1 && i + 1 === pronunciation[1]) {
-			ipa += 'ˈ';
+		const syllables = pronunciation[i]['syllables'].split("-");
+		let ipa = '';
+		for (let j = 0; j < syllables.length; j++) {
+			if (j > 0) {
+				ipa += '.';
+			}
+			if (syllables.length > 1 && j + 1 === pronunciation[i]['stressed']) {
+				ipa += 'ˈ';
+			}
+			ipa += syllableToIpa(syllables[j]);
 		}
-		ipa += syllableToIpa(syllables[i]);
-	}
 
-	if (['p', 't', 'k'].includes(ipa[ipa.length - 1])) {
-		ipa += '\u031A';  // unreleased mark
-	}
+		if (['p', 't', 'k'].includes(ipa[ipa.length - 1])) {
+			ipa += '\u031A';  // unreleased mark
+		}
 
-	if (fnel === "n:si" || fnel === "nv:si") {
-		ipa += " si";
-	}
-	$result.text("(" + ipa);
-	if (pronunciation.length === 3) {
-		$result.append(pronunciationAudioButtons(pronunciation[2]));
+		if (fnel === "n:si" || fnel === "nv:si") {
+			ipa += " si";
+		}
+		$result.append(ipa);
+		if (pronunciation[i].hasOwnProperty('audio')) {
+			$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+		}
 	}
 	$result.append(")");
 

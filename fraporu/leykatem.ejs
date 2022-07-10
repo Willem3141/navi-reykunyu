@@ -80,26 +80,37 @@ const types = [
 				<div class="fields">
 					<div class="eight wide field">
 						<label>Pronunciation</label>
+						<% if (!word.hasOwnProperty('pronunciation')) {
+							word['pronunciation'] = [['', '']];
+						} %>
 						<table id="pronunciation-field" class="ui compact table">
 							<tbody>
+								<% for (let i = 0; i < word['pronunciation'].length; i++) {
+									const pronunciation = word['pronunciation'][i]; %>
 								<tr>
 									<td>
-										<input class="syllables-cell" type="text" placeholder="ta-ron" value="<%= word['pronunciation'] ? word['pronunciation'][0] : '' %>">
+										<input class="syllables-cell" type="text" placeholder="ta-ron" value="<%= pronunciation['syllables'] %>">
 									</td>
-									<td class="five wide">
-										<input class="stress-cell" type="number" placeholder="1" value="<%= word['pronunciation'] ? word['pronunciation'][1] : '' %>">
+									<td class="three wide">
+										<input class="stress-cell" type="number" placeholder="1" value="<%= pronunciation['stressed'] %>">
 									</td>
 									<td class="one wide">
-										<div class="ui disabled floated small icon button delete-pronunciation-button">
+										<div class="ui floated small icon circular basic button colloquial-button <%= pronunciation['colloquial'] ? 'active' : '' %>" data-tooltip="If pressed, marks this pronunciation as colloquial">
+											<i class="bed icon"></i>
+										</div>
+									</td>
+									<td class="one wide">
+										<div class="ui floated small icon button delete-pronunciation-button">
 											<i class="delete icon"></i>
 										</div>
 									</td>
 									<td class="one wide">
-										<div class="ui disabled floated small icon button add-pronunciation-button">
+										<div class="ui floated small icon button add-pronunciation-button">
 											<i class="add icon"></i>
 										</div>
 									</td>
 								</tr>
+								<% } %>
 							</tbody>
 						</table>
 					</div>
@@ -205,7 +216,7 @@ const types = [
 				<table id="source-field" class="ui compact table">
 					<thead>
 						<tr>
-							<th class="three wide">Name</th>
+							<th class="four wide">Name</th>
 							<th class="three wide">URL</th>
 							<th class="three wide">Date</th>
 							<th>Remarks (optional)</th>

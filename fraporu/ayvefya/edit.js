@@ -9,6 +9,15 @@ $(function() {
 	showHideInfixes();
 	$('#type-field').on('change', showHideInfixes);
 
+	$('#pronunciation-field').on('click', '.add-pronunciation-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.clone().insertAfter($tr);
+	});
+	$('#pronunciation-field').on('click', '.delete-pronunciation-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.remove();
+	});
+
 	$('#definition-field').on('click', '.add-meaning-button', function () {
 		const $tr = $(this).closest('tr');
 		$tr.clone().insertAfter($tr);
@@ -110,11 +119,19 @@ function generateWordData() {
 	if ($('#conjugation-note-field').val()) {
 		word["conjugation_note"] = $('#conjugation-note-field').val();
 	}
-	if ($('#pronunciation-field .syllables-cell').val()) {
-		word["pronunciation"] = [
-			preprocess($('#pronunciation-field .syllables-cell').val()),
-			parseInt($('#pronunciation-field .stress-cell').val(), 10)
-		];
+	let pronunciations = [];
+	const $pronunciationRows= $('#pronunciation-field').find('tr');
+	$pronunciationRows.each(function() {
+		if ($(this).find('.syllables-cell').val().length) {
+			let pronunciation = {
+				'syllables': preprocess($(this).find('.syllables-cell').val()),
+				'stressed': parseInt($(this).find('.stress-cell').val(), 10)
+			};
+			pronunciations.push(pronunciation);
+		}
+	});
+	if (pronunciations.length) {
+		word["pronunciation"] = pronunciations;
 	}
 
 	let translations = [];
