@@ -109,6 +109,7 @@ strings['en'] = {
 
 	'searching-error': 'Something went wrong while searching',
 	'searching-error-description': 'Please try again later. If the problem persists, please <a href="//wimiso.nl/contact">contact</a> me.',
+	'parsing-error': 'Something went wrong while analyzing your sentence',
 
 	'syllable': 'syllable',
 	'syllables': 'syllables',
@@ -478,7 +479,9 @@ function _(key) {
 	const lang = localStorage.getItem('reykunyu-language');
 	if (strings.hasOwnProperty(lang) && strings[lang].hasOwnProperty(key)) {
 		return strings[lang][key];
-	} else {
+	} else if (strings['en'].hasOwnProperty(key)) {
 		return strings['en'][key];
+	} else {
+		return '[' + key + ']';
 	}
 }
