@@ -118,9 +118,7 @@ function loadWordList() {
 			keys.sort(Intl.Collator().compare);
 			for (let i in keys) {
 				let word = dictionary[keys[i]];
-				if (word["type"].startsWith("aff:")) {
-					$results.append(createWordBlock(word));
-				}
+				$results.append(createWordBlock(word));
 			}
 		})
 		.fail(function() {
