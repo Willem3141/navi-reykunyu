@@ -166,6 +166,27 @@ app.get('/edit', function(req, res) {
 	});
 });
 
+app.get('/edit/raw', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	const word = req.query["word"];
+	const type = req.query["type"];
+	if (!word || !type) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const wordData = reykunyu.getWord(word, type);
+	res.render('leykatem-yrr', {
+		'user': req.user,
+		'post_url': '/edit',
+		'word': wordData
+	});
+});
+
 app.post('/edit', function(req, res) {
 
 	if (!req.user) {

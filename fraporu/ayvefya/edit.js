@@ -9,13 +9,23 @@ $(function() {
 	showHideInfixes();
 	$('#type-field').on('change', showHideInfixes);
 
-	$('.add-meaning-button').on('click', function () {
-		console.log('bla');
+	$('#definition-field').on('click', '.add-meaning-button', function () {
 		const $tr = $(this).closest('tr');
 		$tr.clone().insertAfter($tr);
+		if ($('#definition-field tbody tr').length >= 2) {
+			$('.delete-meaning-button').removeClass('disabled');
+		}
+		renumberMeanings();
 	});
-
-	$('.translation-button').on('click', function () {
+	$('#definition-field').on('click', '.delete-meaning-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.remove();
+		if ($('#definition-field tbody tr').length < 2) {
+			$('.delete-meaning-button').addClass('disabled');
+		}
+		renumberMeanings();
+	});
+	$('#definition-field').on('click', '.translation-button', function () {
 		const $tr = $(this).closest('tr');
 		const $field = $tr.find('input');
 		const english = $field.val();
@@ -30,8 +40,17 @@ $(function() {
 		$('#translations-modal').modal('show');
 	});
 
+	$('#source-field').on('click', '.add-source-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.clone().insertAfter($tr);
+	});
+	$('#source-field').on('click', '.delete-source-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.remove();
+	});
+
 	$('#save-button').on('click', function () {
-		try {
+		//try {
 			const wordData = generateWordData();
 			const url = $('body').data('url');
 			$.post(url, {
@@ -41,9 +60,9 @@ $(function() {
 			}, function () {
 				document.location.href = '/?q=' + wordData["na'vi"];
 			});
-		} catch (e) {
-			alert(e);
-		}
+		//} catch (e) {
+		//	alert(e);
+		//}
 	});
 
 	$('#translations-modal-cancel-button').on('click', function () {
@@ -128,6 +147,19 @@ function generateWordData() {
 			$('#source-date-field').val()
 		];
 	}
+	let sources = [];
+	const $sourceRows = $('#source-field tbody').find('tr');
+	$sourceRows.each(function() {
+		let source = [];
+		source.push($(this).find('.source-name-field').val());
+		source.push($(this).find('.source-url-field').val());
+		source.push($(this).find('.source-date-field').val());
+		if ($(this).find('.source-remarks-field').val().length) {
+			source.push($(this).find('.source-remarks-field').val());
+		}
+		sources.push(source);
+	});
+	word["source"] = sources;
 
 	// hidden fields
 	if ($('#image-field').val()) {
@@ -152,3 +184,8 @@ function preprocess(query) {
 	return query;
 }
 
+function renumberMeanings() {
+	$('#definition-field tbody tr').each(function (i, tr) {
+		$(tr).find('.id-cell').text((i + 1) + '.');
+	});
+}

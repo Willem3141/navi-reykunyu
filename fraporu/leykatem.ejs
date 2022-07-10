@@ -54,6 +54,9 @@ const types = [
 					Kaltxì ma <%= user.username %>!
 				</div>
 				<% } %>
+				<a href="/edit/raw?word=<%= word['na\'vi'] %>&type=<%= word['type'] %>" class="ui icon right floated top right basic button">
+					<i class="edit icon"></i> Edit raw JSON
+				</a>
 				<a href="/" class="ui icon right floated top right basic button">
 					<i class="arrow left icon"></i> Back to Reykunyu
 				</a>
@@ -134,7 +137,7 @@ const types = [
 							<% for (let i = 0; i < word['translations'].length; i++) {
 								const translation = word['translations'][i]; %>
 							<tr>
-								<td class="one wide"><%= i + 1 %>.</td>
+								<td class="one wide id-cell"><%= i + 1 %>.</td>
 								<td>
 									<input type="text" placeholder="hunt" value="<%= translation['en'] %>"<% for (let lang of Object.keys(translation)) { if (lang !== 'en') { %> data-<%= lang %>="<%= translation[lang] %>"<% } } %>>
 								</td>
@@ -144,7 +147,7 @@ const types = [
 									</div>
 								</td>
 								<td class="one wide">
-									<div class="ui disabled floated small icon button delete-meaning-button" data-tooltip="Delete this meaning">
+									<div class="ui <%= word['translations'].length <= 1 ? 'disabled' : '' %> floated small icon button delete-meaning-button" data-tooltip="Delete this meaning">
 										<i class="delete icon"></i>
 									</div>
 								</td>
@@ -173,7 +176,7 @@ const types = [
 
 				<div class="ui section divider"></div>
 
-				<h2>Status, etymology, and source</h2>
+				<h2>Status and etymology</h2>
 				<div class="fields">
 					<div class="four wide field">
 						<label>Status</label>
@@ -192,26 +195,54 @@ const types = [
 					<label>Etymology</label>
 					<textarea id="etymology-field" rows="2"><%= word['etymology'] %></textarea>
 				</div>
+
+				<div class="ui section divider"></div>
+
+				<h2>Source</h2>
 				<% if (!word.hasOwnProperty('source')) {
-					word['source'] = '';
-				}
-				if (typeof word['source'] === 'string') {
-					word['source'] = [word['source']];
+					word['source'] = [];
 				} %>
-				<div class="fields">
-					<div class="six wide field">
-						<label>Source name</label>
-						<input id="source-name-field" type="text" value="<%= word['source'][0] %>">
-					</div>
-					<div class="six wide field">
-						<label>Source URL</label>
-						<input id="source-url-field" type="url" value="<%= word['source'][1] %>">
-					</div>
-					<div class="four wide field">
-						<label>Source date</label>
-						<input id="source-date-field" type="date" value="<%= word['source'][2] %>">
-					</div>
-				</div>
+				<table id="source-field" class="ui compact table">
+					<thead>
+						<tr>
+							<th class="three wide">Name</th>
+							<th class="three wide">URL</th>
+							<th class="three wide">Date</th>
+							<th>Remarks (optional)</th>
+							<th class="one wide"></th>
+							<th class="one wide"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<% for (let i = 0; i < word['source'].length; i++) {
+							const source = word['source'][i]; %>
+						<tr>
+							<td>
+								<input class="source-name-field" type="text" value="<%= source[0] %>">
+							</td>
+							<td>
+								<input class="source-url-field" type="url" value="<%= source[1] %>">
+							</td>
+							<td>
+								<input class="source-date-field" type="date" value="<%= source[2] %>">
+							</td>
+							<td>
+								<input class="source-remarks-field" type="text" value="<%= source[3] %>">
+							</td>
+							<td class="one wide">
+								<div class="ui floated small icon button delete-source-button" data-tooltip="Delete this source">
+									<i class="delete icon"></i>
+								</div>
+							</td>
+							<td class="one wide">
+								<div class="ui floated small icon button add-source-button" data-tooltip="Add another source">
+									<i class="add icon"></i>
+								</div>
+							</td>
+						</tr>
+						<% } %>
+					</tbody>
+				</table>
 
 				<div class="ui section divider"></div>
 
