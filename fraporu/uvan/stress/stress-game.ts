@@ -22,7 +22,8 @@ class StressGame {
 		const self = this;
 		$.getJSON('/api/random', { 'holpxay': 1 }).done(function (data) {
 			if (!data[0].hasOwnProperty('pronunciation') ||
-				!(data[0]['pronunciation'][0].includes('-')) ||
+				data[0]['pronunciation'].length === 0 ||
+				!(data[0]['pronunciation'][0]['syllables'].includes('-')) ||
 				data[0]['type'] === 'n:si') {
 				self.fetchAndSetUp();
 				return;
@@ -42,13 +43,15 @@ class StressGame {
 
 		const $syllables = $('#syllables');
 		$syllables.empty();
-		const syllables = word.pronunciation[0].split('-');
+		// TODO take into account words with multiple pronunciations
+		// instead of just taking pronunciation[0]
+		const syllables = word.pronunciation[0]['syllables'].split('-');
 		for (let i = 0; i < syllables.length; i++) {
 			if (i > 0) {
 				$syllables.append(this.createSeparator());
 			}
 			const syllable = syllables[i];
-			$syllables.append(this.createSyllableBlock(syllable, i + 1, word.pronunciation[1]));
+			$syllables.append(this.createSyllableBlock(syllable, i + 1, word.pronunciation[0]['stressed']));
 		}
 	}
 
