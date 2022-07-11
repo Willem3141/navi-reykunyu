@@ -521,6 +521,39 @@ table.conjugation-table {
 	color: #888;
 }
 
+/* sentence analysis */
+.beta-notice-block,
+.error-block,
+.warning-block,
+.result-block {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	padding: 15px 20px;
+}
+.beta-notice-block {
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	margin-bottom: 40px;
+}
+.error-block {
+	background-color: #ffc4bb;
+	border-left: 2px solid #9a2210;
+}
+.warning-block {
+	background-color: #fcf2c3;
+	border-left: 2px solid #f2bd10;
+}
+.result-block .header,
+.error-block .header,
+.warning-block .header {
+	font-weight: 700;
+}
+.result-block .body,
+.error-block .body,
+.warning-block .body {
+	margin-left: 20px;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #000;
