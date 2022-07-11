@@ -576,6 +576,7 @@ table.conjugation-table {
 	.ui.checkbox label:hover,
 	.ui.checkbox + label:hover,
 	.ui.checkbox input:focus ~ label,
+	.ui.horizontal.divider,
 	.ui.vertical.divider {
 		color: #eee;
 	}
@@ -705,5 +706,17 @@ table.conjugation-table {
 	.ui.selection.dropdown:hover {
 		border-color: #777;
 	}
-}
 
+	.beta-notice-block {
+		border-top: 1px solid #555;
+		border-bottom: 1px solid #555;
+	}
+
+	.error-block {
+		background-color: #1a0906;
+	}
+
+	.warning-block {
+		background-color: #1a1606;
+	}
+}
