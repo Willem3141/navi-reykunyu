@@ -90,6 +90,7 @@ const types = [
 								<tr>
 									<td>
 										<input class="syllables-cell" type="text" placeholder="ta-ron" value="<%= pronunciation['syllables'] %>">
+										<input style="display: none;" class="audio-cell" type="text" value="<%= pronunciation.hasOwnProperty('audio') ? JSON.stringify(pronunciation['audio']) : '' %>">
 									</td>
 									<td class="three wide">
 										<input class="stress-cell" type="number" placeholder="1" value="<%= pronunciation['stressed'] %>">
