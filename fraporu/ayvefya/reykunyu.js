@@ -41,6 +41,9 @@ $(function () {
 		}
 	});
 
+	if (!localStorage.getItem('reykunyu-direction')) {
+		localStorage.setItem('reykunyu-direction', true);
+	}
 	if (!localStorage.getItem('reykunyu-ipa')) {
 		localStorage.setItem('reykunyu-ipa', false);
 	}
@@ -52,6 +55,8 @@ $(function () {
 	$('#infix-details-modal button').popup();
 	$('#settings-modal').modal({
 		onApprove: function () {
+			localStorage.setItem('reykunyu-direction',
+				$('#direction-checkbox').prop('checked') ? '1' : '0');
 			localStorage.setItem('reykunyu-ipa',
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
 		},
@@ -61,6 +66,8 @@ $(function () {
 		$('#api-modal').modal("show");
 	});
 	$('#settings-button').on("click", function () {
+		$('#direction-checkbox').prop('checked',
+			localStorage.getItem('reykunyu-direction') === '1');
 		$('#ipa-checkbox').prop('checked',
 			localStorage.getItem('reykunyu-ipa') === '1');
 		$('#settings-modal').modal("show");
@@ -583,7 +590,7 @@ function sourceSection(sources) {
 			$source.append(' (' + source[2] + ')');
 		}
 		if (source.length >= 4 && source[3]) {
-			$source.append(' (' + source[3] + ')');
+			$source.append(' [' + source[3] + ']');
 		}
 		$sourceSection.append($source);
 	}
@@ -1306,12 +1313,15 @@ function sngäiTìfwusew() {
 	$results = $('#results');
 	$results.empty();
 	$sentenceBar = $('#sentence-bar');
+	$sentenceBar.hide();
 	$sentenceBar.empty();
 	const mode = localStorage.getItem('reykunyu-mode');
 	if (mode === 'navi') {
 		doSearchNavi();
 	} else if (mode === 'english') {
 		doSearchEnglish();
+	} else if (mode === 'analyzer') {
+		doSearchAnalyzer();
 	} else if (mode === 'annotated') {
 		doSearchAnnotated();
 	} else if (mode === 'rhymes') {
@@ -1481,6 +1491,115 @@ function doSearchRhymes() {
 			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
+		});
+}
+
+function generateSentenceTree(tree, role) {
+	let $element = $('<li/>');
+
+	if (role) {
+		$element.append($('<span/>')
+			.addClass('sentence-tree-role')
+			.text(role + ':'));
+		$element.append(' ');
+	}
+	$element.append($('<span/>')
+		.addClass('sentence-tree-navi')
+		.text(tree['word']));
+	if (tree.hasOwnProperty('translation')) {
+		$element.append(' ');
+		$element.append($('<span/>')
+			.addClass('sentence-tree-translation')
+			.text('→ "' + tree['translation'] + '"'));
+	}
+
+	if (tree.hasOwnProperty('children')) {
+		let $subList = $('<ul/>');
+		for (let i = 0; i < tree['children'].length; i++) {
+			$subList.append(generateSentenceTree(
+				tree['children'][i], tree['roles'][i]));
+		}
+		$element.append($subList);
+	}
+
+	return $element;
+}
+
+function doSearchAnalyzer() {
+	let tìpawm = $('#search-box').val();
+	$.getJSON('/api/parse', { 'tìpawm': tìpawm })
+		.done(function (response) {
+			$sentenceBar.empty();
+			$results.empty();
+			let $betaNoticeBlock = $('<div/>')
+				.addClass('beta-notice-block')
+				.html('<b>Note:</b> Reykunyu\'s sentence analyzer is a work in progress. Right now, it is able to analyze very simple sentences only, and may give inaccurate results.')
+				.appendTo($results);
+			if (response.hasOwnProperty('lexingErrors') && response['lexingErrors'].length) {
+				let $lexingErrorsBlock = $('<div/>')
+					.addClass('error-block');
+				$('<div/>')
+					.addClass('header')
+					.text('Parse errors found:')
+					.appendTo($lexingErrorsBlock);
+				let $lexingErrorsBody = $('<div/>')
+					.addClass('body')
+					.appendTo($lexingErrorsBlock);
+				for (let e of response['lexingErrors']) {
+					$lexingErrorsBody.append($('<div/>').text(e));
+				}
+				$results.append($lexingErrorsBlock);
+			}
+			if (response.hasOwnProperty('results') && response['results'].length) {
+				for (let i = 0; i < response['results'].length; i++) {
+					const result = response['results'][i];
+					if (result['penalty'] > response['results'][0]['penalty']) {
+						continue;
+					}
+					if (i > 0) {
+						let $parseWarningsBlock = $('<div/>')
+							.addClass('ui horizontal divider')
+							.appendTo($results)
+							.text('or');
+					}
+					if (result.hasOwnProperty('errors') && result['errors'].length) {
+						let $parseWarningsBlock = $('<div/>')
+							.addClass('warning-block');
+						$('<div/>')
+							.addClass('header')
+							.text('Warnings found:')
+							.appendTo($parseWarningsBlock);
+						let $parseWarningsBody = $('<div/>')
+							.addClass('body')
+							.appendTo($parseWarningsBlock);
+						for (const error of result['errors']) {
+							$parseWarningsBody.append($('<div/>').text(error));
+						}
+						$results.append($parseWarningsBlock);
+					}
+					let $resultBlock = $('<div/>')
+						.addClass('result-block')
+						.appendTo($results);
+					$('<div/>')
+						.addClass('header')
+						.text('Sentence structure:')
+						.appendTo($resultBlock);
+					$resultBlock.append($('<ul/>').append(generateSentenceTree(result['parseTree'])));
+					$('<div/>')
+						.addClass('header')
+						.text('Approximate translation:')
+						.appendTo($resultBlock);
+					$('<div/>')
+						.addClass('body')
+						.text('→ "' + result['translation'] + '"')
+						.appendTo($resultBlock);
+				}
+			}
+		})
+		.fail(function () {
+			$sentenceBar.empty();
+			$results.empty();
+			$results.append(createErrorBlock(_('parsing-error'), _('searching-error-description')));
 		});
 }
 
