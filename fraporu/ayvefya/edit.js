@@ -127,6 +127,10 @@ function generateWordData() {
 				'syllables': preprocess($(this).find('.syllables-cell').val()),
 				'stressed': parseInt($(this).find('.stress-cell').val(), 10)
 			};
+			let audioJson = $(this).find('.audio-cell').val();
+			if (audioJson.length) {
+				pronunciation['audio'] = JSON.parse(audioJson);
+			}
 			pronunciations.push(pronunciation);
 		}
 	});
