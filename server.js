@@ -247,6 +247,19 @@ app.get('/etymology-editor', function(req, res) {
 	});
 });
 
+app.get('/sources-editor', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	res.render('sourcesEditor', {
+		'user': req.user,
+		'post_url': '/edit',
+		'words': reykunyu.getAll()
+	});
+});
+
 app.get('/corpus-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);

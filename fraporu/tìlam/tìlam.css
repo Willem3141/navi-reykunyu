@@ -495,11 +495,13 @@ table.conjugation-table {
 	font-style: italic;
 }
 
-.etymology-field {
+.etymology-field,
+.source-field {
 	transition: background-color .2s !important;
 }
 
-.etymology-field.edit-succeeded {
+.etymology-field.edit-succeeded,
+.source-field.edit-succeeded {
 	background-color: #bbface !important;
 }
 
