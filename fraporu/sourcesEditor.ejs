@@ -57,14 +57,6 @@
 						</tr>
 					</thead>
 					<tbody>
-						<% let keys = [];
-						for (let key in words) {
-							keys.push(key);
-						}
-						keys.sort(Intl.Collator().compare);
-						for (let w of keys) {
-							const word = words[w];
-						%>
 						<%
 						function getSourceString(source) {
 							if (!source) {
@@ -76,6 +68,17 @@
 							}
 							return sources.join('; ');
 						}
+						%>
+						<% let keys = [];
+						for (let key in words) {
+							keys.push(key);
+						}
+						keys.sort(Intl.Collator().compare);
+						keys.sort(function(a, b) {
+							return getSourceString(words[a]['source']).localeCompare(getSourceString(words[b]['source']));
+						});
+						for (let w of keys) {
+							const word = words[w];
 						%>
 						<tr>
 							<td>
