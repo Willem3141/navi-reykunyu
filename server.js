@@ -302,8 +302,23 @@ app.get('/untranslated', function(req, res) {
 	res.render('untranslated', { user: req.user, untranslated: untranslated });
 });
 
+app.get('/api/fwew-search', function(req, res) {
+	res.json({
+		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"]),
+		'toNa\'vi': reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"])
+	});
+});
+
 app.get('/api/fwew', function(req, res) {
 	res.json(reykunyu.getResponsesFor(req.query["tìpawm"]));
+});
+
+app.get('/api/mok-suggest', function (req, res) {
+	let suggestionsFrom = reykunyu.getSuggestionsFor(req.query["query"], req.query["language"]);
+	let suggestionsTo = reykunyu.getReverseSuggestionsFor(req.query["query"], req.query["language"]);
+	res.json({
+		'results': suggestionsFrom['results'].concat(suggestionsTo['results'])
+	});
 });
 
 app.get('/api/mok', function(req, res) {

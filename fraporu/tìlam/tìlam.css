@@ -91,6 +91,21 @@ h1::after {
 	text-overflow: ellipsis;
 }
 
+#tab-mode-bar {
+	margin-bottom: 40px;
+	justify-content: center;
+}
+
+#tab-mode-bar .item {
+	cursor: pointer;
+	flex-grow: 0.05;
+	justify-content: center;
+}
+
+#tab-mode-bar .gray {
+	color: #bbb;
+}
+
 #sentence-bar {
 	flex-wrap: wrap;
 }

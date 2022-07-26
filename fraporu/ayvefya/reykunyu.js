@@ -3,7 +3,7 @@ $(function () {
 		sngäiTìfwusew();
 	}
 
-	$('#search-form').submit(sngäiTìfwusew);
+	$('#search-form').on('submit', sngäiTìfwusew);
 
 	$('.ui.dropdown').dropdown();
 
@@ -11,7 +11,6 @@ $(function () {
 		localStorage.setItem('reykunyu-language', 'en');
 	}
 	$('.current-lang').text(_('language'));
-	$('.mode-english-item').toggle(localStorage.getItem('reykunyu-language') !== 'x-navi');  // for Na’vi it makes no sense to reverse search
 	$('#language-dropdown').dropdown('set selected',
 		localStorage.getItem('reykunyu-language'));
 	$('#language-dropdown').dropdown({
@@ -26,8 +25,10 @@ $(function () {
 		}
 	});
 
-	if (!localStorage.getItem('reykunyu-mode')) {
-		localStorage.setItem('reykunyu-mode', 'navi');
+	// temporary migration for "navi" and "english"
+	if (!localStorage.getItem('reykunyu-mode') ||
+		localStorage.getItem('reykunyu-mode') == "navi" || localStorage.getItem('reykunyu-mode') == "english") {
+		localStorage.setItem('reykunyu-mode', 'reykunyu');
 	}
 	$('#mode-direction').dropdown('set selected',
 		localStorage.getItem('reykunyu-mode'));
@@ -41,9 +42,6 @@ $(function () {
 		}
 	});
 
-	if (!localStorage.getItem('reykunyu-direction')) {
-		localStorage.setItem('reykunyu-direction', true);
-	}
 	if (!localStorage.getItem('reykunyu-ipa')) {
 		localStorage.setItem('reykunyu-ipa', false);
 	}
@@ -55,8 +53,6 @@ $(function () {
 	$('#infix-details-modal button').popup();
 	$('#settings-modal').modal({
 		onApprove: function () {
-			localStorage.setItem('reykunyu-direction',
-				$('#direction-checkbox').prop('checked') ? '1' : '0');
 			localStorage.setItem('reykunyu-ipa',
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
 		},
@@ -66,8 +62,6 @@ $(function () {
 		$('#api-modal').modal("show");
 	});
 	$('#settings-button').on("click", function () {
-		$('#direction-checkbox').prop('checked',
-			localStorage.getItem('reykunyu-direction') === '1');
 		$('#ipa-checkbox').prop('checked',
 			localStorage.getItem('reykunyu-ipa') === '1');
 		$('#settings-modal').modal("show");
@@ -85,8 +79,9 @@ $(function () {
 
 function setUpAutocomplete() {
 	let url = null;
-	if (localStorage.getItem('reykunyu-mode') === 'navi' ||
-		localStorage.getItem('reykunyu-mode') === 'rhymes') {
+	if (localStorage.getItem('reykunyu-mode') === 'reykunyu') {
+		url = 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}';
+	} else if (localStorage.getItem('reykunyu-mode') === 'rhymes') {
 		url = 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}';
 	} else if (localStorage.getItem('reykunyu-mode') === 'annotated') {
 		url = 'api/annotated/suggest?' + '&query={query}';
@@ -1240,16 +1235,16 @@ function createErrorBlock(text, subText) {
 	return $error;
 }
 
-function createResults(results) {
+function createResults(results, $block) {
 	if (results["sì'eyng"].length) {
 		for (let i = 0; i < results["sì'eyng"].length; i++) {
-			$results.append(createResultBlock(i, results["sì'eyng"][i]));
+			$block.append(createResultBlock(i, results["sì'eyng"][i]));
 		}
 	} else if (results["aysämok"].length) {
 		const suggestions = results["aysämok"].map(a => "<b>" + a + "</b>");
-		$results.append(createErrorBlock(_("no-results"), _("did-you-mean") + " " + suggestions.join(', ').replace(/, ([^,]*)$/, " " + _("or") + " $1") + "?"));
+		$block.append(createErrorBlock(_("no-results"), _("did-you-mean") + " " + suggestions.join(', ').replace(/, ([^,]*)$/, " " + _("or") + " $1") + "?"));
 	} else {
-		$results.append(createErrorBlock(_("no-results"), _("no-results-description-navi")));
+		$block.append(createErrorBlock(_("no-results"), _("no-results-description-navi")));
 	}
 }
 
@@ -1307,19 +1302,19 @@ function createSentenceBarItem(result) {
 	return $item;
 }
 
+// currently selected tab, fromNa'vi or toNa'vi
+let mode = 'fromNa\'vi';
+
 // fìvefyat sar fkol mawfwa saryu pamrel soli tìpawmur
 function sngäiTìfwusew() {
 	$('.ui.search').search('hide results');
 	$results = $('#results');
 	$results.empty();
-	$sentenceBar = $('#sentence-bar');
-	$sentenceBar.hide();
-	$sentenceBar.empty();
+	$modeTabs = $('#tab-mode-bar');
+	$modeTabs.hide();
 	const mode = localStorage.getItem('reykunyu-mode');
-	if (mode === 'navi') {
+	if (mode === 'reykunyu') {
 		doSearchNavi();
-	} else if (mode === 'english') {
-		doSearchEnglish();
 	} else if (mode === 'analyzer') {
 		doSearchAnalyzer();
 	} else if (mode === 'annotated') {
@@ -1332,54 +1327,101 @@ function sngäiTìfwusew() {
 
 function doSearchNavi() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/fwew', { 'tìpawm': tìpawm })
+	let lang = localStorage.getItem('reykunyu-language');
+	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': lang })
 		.done(function (tìeyng) {
+			const fromNaviResult = tìeyng['fromNa\'vi'];
+			const toNaviResult = tìeyng['toNa\'vi'];
 			$results.empty();
 
-			$results.append(createResults(tìeyng[0]));
-
-			// more than one word was found
-			if (tìeyng.length > 1) {
-				$sentenceBar.show();
-			} else {
-				$sentenceBar.hide();
+			// create from-Na'vi results
+			let $fromNaviResult = $('<div/>');
+			let fromNaviResultCount = 0;
+			for (let i = 0; i < fromNaviResult.length; i++) {
+				fromNaviResultCount += fromNaviResult[i]["sì'eyng"].length;
 			}
+			if (fromNaviResult.length > 1) {
+				let $sentenceBar = $('<div/>')
+					.addClass('ui pointing menu')
+					.attr('id', 'sentence-bar')
+					.appendTo($fromNaviResult);
 
-			for (let i = 0; i < tìeyng.length; i++) {
-				let $item = createSentenceBarItem(tìeyng[i]);
-				if (i === 0) {
-					$item.addClass("active");
+				for (let i = 0; i < fromNaviResult.length; i++) {
+					let $item = createSentenceBarItem(fromNaviResult[i]);
+					if (i === 0) {
+						$item.addClass("active");
+					}
+					$sentenceBar.append($item);
+					let result = fromNaviResult[i];
+					$item.on("click", function () {
+						$("#sentence-bar .item").removeClass("active");
+						$item.addClass("active");
+						$fromNaviResult.find('.result').remove();
+						createResults(result, $fromNaviResult);
+					});
 				}
-				$sentenceBar.append($item);
-				let result = tìeyng[i];
-				$item.on("click", function () {
-					$("#sentence-bar .item").removeClass("active");
-					$item.addClass("active");
-					$results.empty();
-					$results.append(createResults(result));
-				});
 			}
-		})
-		.fail(function () {
-			$sentenceBar.empty();
-			$results.empty();
-			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
-		});
-}
+			createResults(fromNaviResult[0], $fromNaviResult);
 
-function doSearchEnglish() {
-	let query = $('#search-box').val();
-	$.getJSON('/api/search', { 'query': query, 'language': localStorage.getItem('reykunyu-language') })
-		.done(function (tìeyng) {
-			$results.empty();
-
-			if (tìeyng.length) {
-				for (let i = 0; i < tìeyng.length; i++) {
-					const result = tìeyng[i];
-					$results.append(createResultBlock(i, result));
+			// create to-Na'vi results
+			let $toNaviResult = $('<div/>');
+			if (toNaviResult.length) {
+				for (let i = 0; i < toNaviResult.length; i++) {
+					const result = toNaviResult[i];
+					$toNaviResult.append(createResultBlock(i, result));
 				}
 			} else {
-				$results.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+				$toNaviResult.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+			}
+
+			// set up tabs
+			$results.append($fromNaviResult);
+			$results.append($toNaviResult);
+			$modeTabs.empty();
+			$modeTabs.show();
+			let $fromNaviTab = $('<div/>')
+				.addClass('item')
+				.html("Na'vi&nbsp;&rarr;&nbsp;" + _('language'))
+				.appendTo($modeTabs);
+			if (fromNaviResultCount === 0) {
+				$fromNaviTab.addClass('gray');
+			}
+			$fromNaviTab.on('click', function () {
+				mode = 'fromNa\'vi';
+				$fromNaviTab.addClass('active');
+				$toNaviTab.removeClass('active');
+				$fromNaviResult.show();
+				$toNaviResult.hide();
+			});
+			let $toNaviTab = $('<div/>')
+				.addClass('item')
+				.html(_('language') + "&nbsp;&rarr;&nbsp;Na'vi")
+				.appendTo($modeTabs);
+			if (toNaviResult.length === 0) {
+				$toNaviTab.addClass('gray');
+			}
+			$toNaviTab.on('click', function () {
+				mode = 'toNa\'vi';
+				$toNaviTab.addClass('active');
+				$fromNaviTab.removeClass('active');
+				$toNaviResult.show();
+				$fromNaviResult.hide();
+			});
+
+			if (mode === 'fromNa\'vi' &&
+					fromNaviResultCount === 0 && toNaviResult.length > 0) {
+				mode = 'toNa\'vi';
+			} else if (mode === 'toNa\'vi' &&
+					toNaviResult.length === 0 && fromNaviResultCount > 0) {
+				mode = 'fromNa\'vi';
+			}
+
+			if (mode === 'fromNa\'vi') {
+				$fromNaviTab.addClass('active');
+				$toNaviResult.hide();
+			} else {
+				$toNaviTab.addClass('active');
+				$fromNaviResult.hide();
 			}
 		})
 		.fail(function () {
@@ -1421,7 +1463,6 @@ function doSearchAnnotated() {
 			}
 		})
 		.fail(function () {
-			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
 		});
@@ -1488,7 +1529,6 @@ function doSearchRhymes() {
 			}
 		})
 		.fail(function () {
-			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
 		});
@@ -1529,7 +1569,6 @@ function doSearchAnalyzer() {
 	let tìpawm = $('#search-box').val();
 	$.getJSON('/api/parse', { 'tìpawm': tìpawm })
 		.done(function (response) {
-			$sentenceBar.empty();
 			$results.empty();
 			let $betaNoticeBlock = $('<div/>')
 				.addClass('beta-notice-block')
@@ -1597,7 +1636,6 @@ function doSearchAnalyzer() {
 			}
 		})
 		.fail(function () {
-			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('parsing-error'), _('searching-error-description')));
 		});
