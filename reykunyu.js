@@ -776,7 +776,7 @@ function getReverseSuggestionsFor(query, language) {
 		return { 'results': [] };
 	}
 
-	let results = new Set();
+	let results = [];
 
 	if (!language) {
 		language = "en";
@@ -784,6 +784,7 @@ function getReverseSuggestionsFor(query, language) {
 
 	query = query.toLowerCase();
 
+	wordLoop:
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
 			let translation = dictionary[word]['translations'][0][language];
@@ -793,21 +794,19 @@ function getReverseSuggestionsFor(query, language) {
 				translation = translation.split(' ');
 				for (const w of translation) {
 					if (w.toLowerCase().startsWith(query)) {
-						results.add(w);
+						results.push({
+							"title": dictionary[word]["na'vi"],
+							"description": '<div class="ui horizontal label">' + dictionary[word]['type'] + '</div> ' + simplifiedTranslation(dictionary[word]["translations"], language)
+						});
+						continue wordLoop;
 					}
 				}
 			}
 		}
 	}
 
-	resultsArray = Array.from(results);
-	resultsArray.sort(function (a, b) {
-		return a.localeCompare(b, language, { 'sensitivity': 'base' });
-	});
-	resultsArray = resultsArray.map(elem => ({ 'title': elem }));
-
 	return {
-		'results': resultsArray
+		'results': results
 	};
 }
 
