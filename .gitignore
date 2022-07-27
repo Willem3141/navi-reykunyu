@@ -1,2 +1,13 @@
-aylì'u
+annotated.json
+aysìkenong/
+corpus.json
+fam/
+fraporu/uvan/stress/*.js
+fraporu/uvan/stress/*.js.map
+history.json
 node_modules/
+package-lock.json
+sessions
+users.json
+words.json
+words*
