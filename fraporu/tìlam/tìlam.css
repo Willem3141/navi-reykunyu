@@ -594,7 +594,10 @@ table.conjugation-table {
 	.ui.checkbox + label:hover,
 	.ui.checkbox input:focus ~ label,
 	.ui.horizontal.divider,
-	.ui.vertical.divider {
+	.ui.vertical.divider,
+	.ui.tabular.menu .item,
+	.ui.tabular.menu .item:hover,
+	.ui.tabular.menu .active.item {
 		color: #eee;
 	}
 
@@ -635,6 +638,19 @@ table.conjugation-table {
 
 	h1 .logo {
 		background-image: url('/ayrel/reykunyu-dark.svg');
+	}
+
+	.ui.tabular.menu .active.item {
+		background-color: black;
+	}
+
+	.ui.tabular.menu,
+	.ui.tabular.menu .active.item {
+		border-color: #555;
+	}
+
+	#tab-mode-bar .gray {
+		color: #888;
 	}
 
 	.result .result-word {
