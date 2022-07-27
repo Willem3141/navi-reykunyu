@@ -991,14 +991,14 @@ function getRhymes(query) {
 			if (rhymes.rhymes(dictionary[word]["na'vi"], query)) {
 				let key = 0;
 				if (dictionary[word].hasOwnProperty('pronunciation')) {
-					key = dictionary[word]['pronunciation'][0].split('-').length;
+					key = dictionary[word]['pronunciation'][0]['syllables'].split('-').length;
 				}
 				if (!words.hasOwnProperty(key)) {
 					words[key] = [];
 				}
 				let subKey = 0;
 				if (dictionary[word].hasOwnProperty('pronunciation')) {
-					subKey = dictionary[word]['pronunciation'][1];
+					subKey = dictionary[word]['pronunciation'][0]['stressed'];
 				}
 				if (!words[key].hasOwnProperty(subKey)) {
 					words[key][subKey] = [];
