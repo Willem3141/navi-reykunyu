@@ -1383,6 +1383,9 @@ function doSearchNavi() {
 				.addClass('item')
 				.html("Na'vi&nbsp;&rarr;&nbsp;" + _('language'))
 				.appendTo($modeTabs);
+			$fromNaviTab.append($('<div/>')
+				.text(fromNaviResultCount)
+				.addClass('result-count-tag'));
 			if (fromNaviResultCount === 0) {
 				$fromNaviTab.addClass('gray');
 			}
@@ -1397,6 +1400,9 @@ function doSearchNavi() {
 				.addClass('item')
 				.html(_('language') + "&nbsp;&rarr;&nbsp;Na'vi")
 				.appendTo($modeTabs);
+			$toNaviTab.append($('<div/>')
+				.text(toNaviResult.length)
+				.addClass('result-count-tag'));
 			if (toNaviResult.length === 0) {
 				$toNaviTab.addClass('gray');
 			}

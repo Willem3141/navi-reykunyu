@@ -99,15 +99,26 @@ h1::after {
 	margin-bottom: 40px;
 	justify-content: center;
 }
-
 #tab-mode-bar .item {
 	cursor: pointer;
 	flex-grow: 0.05;
 	justify-content: center;
 }
-
 #tab-mode-bar .gray {
 	color: #bbb;
+}
+#tab-mode-bar .item .result-count-tag {
+	display: inline-block;
+	padding: 3px 6px;
+	margin-left: 15px;
+	background-color: black;
+	color: white;
+	font-size: 12px;
+	font-weight: 700;
+	border-radius: 20px;
+}
+#tab-mode-bar .item.gray .result-count-tag {
+	background-color: #ccc;
 }
 
 #sentence-bar {
@@ -656,6 +667,13 @@ table.conjugation-table {
 
 	#tab-mode-bar .gray {
 		color: #888;
+	}
+	#tab-mode-bar .item .result-count-tag {
+		background-color: #eee;
+		color: black;
+	}
+	#tab-mode-bar .item.gray .result-count-tag {
+		background-color: #666;
 	}
 
 	.result .result-word {
