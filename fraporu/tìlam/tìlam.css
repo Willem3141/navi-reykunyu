@@ -20,6 +20,10 @@ h1, h2, h3, h4, h5,
 	font-family: 'Recursive' !important;
 }
 
+a {
+	text-decoration: underline;
+}
+
 body {
 	font-size: 14px;
 	background-color: #fff;
@@ -448,6 +452,7 @@ table.conjugation-table {
 	content: '→ ';
 	font-weight: 700;
 	color: #222;
+	text-decoration: underline white;
 }
 
 /* word list */
@@ -751,5 +756,9 @@ table.conjugation-table {
 
 	.warning-block {
 		background-color: #1a1606;
+	}
+
+	.word-link:before {
+		text-decoration: underline black;
 	}
 }
