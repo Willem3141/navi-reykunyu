@@ -39,6 +39,11 @@ body {
 	padding: 20px 0px;
 }
 
+body.wide .container,
+.container.wide {
+	max-width: none;
+}
+
 h1 {
 	padding-bottom: 5px;
 	border-bottom: 1px solid #ddd;

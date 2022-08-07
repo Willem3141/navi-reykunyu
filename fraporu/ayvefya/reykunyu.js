@@ -1053,40 +1053,44 @@ function createSentence(sentence, lemma) {
 	let $original = $('<div/>').addClass("original").appendTo($sentence);
 	let $translation = $('<div/>').addClass("translation").appendTo($sentence);
 
-	let englishHighlights = [];
+	let translationHighlights = [];
+	const translation = getTranslation(sentence['translations']);
 
 	for (let i = 0; i < sentence["na'vi"].length; i++) {
 		if (i > 0) {
 			$original.append(" ");
 		}
 		if (sentence["na'vi"][i][1].includes(lemma)) {
-			//englishHighlights = sentence["mapping"][i].split(",");
+			if (translation && translation.hasOwnProperty('mapping')) {
+				translationHighlights = translationHighlights.concat(translation['mapping'][i]);
+			}
 			$original.append($("<span/>").addClass("highlight").text(sentence["na'vi"][i][0]));
 		} else {
 			$original.append(sentence["na'vi"][i][0]);
 		}
 	}
 
-	$translation.append(sentence["translations"]["en"].join(' '));
-
-	/*for (let i = 0; i < sentence["translations"].length; i++) {
+	for (let i = 0; i < translation['translation'].length; i++) {
 		if (i > 0) {
-			$translation.append(" ");
+			$translation.append(' ');
 		}
-		//if (englishHighlights.includes("" + (i + 1))) {
-			//$translation.append($("<span/>").addClass("highlight").text(sentence["english"][i]));
-		//} else {
-			$translation.append(sentence["english"][i]);
-		//}
-	}*/
+		if (translationHighlights.includes(i + 1)) {
+			$translation.append($("<span/>").addClass('highlight').text(translation['translation'][i]));
+		} else {
+			$translation.append(translation['translation'][i]);
+		}
+	}
 
 	if (sentence["source"]) {
 		$translation
-			.append('&nbsp;&nbsp;&ndash; ');
+			.append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ndash; ');
 		let $source = $('<a/>').addClass("source")
-			.attr('href', sentence['source']['url'])
-			.text(sentence['source']['name'])
+			.attr('href', sentence['source'][1])
+			.text(sentence['source'][0])
 			.appendTo($translation);
+		if (sentence['source'].length >= 3 && sentence['source'][2]) {
+			$translation.append(' (' + sentence['source'][2] + ')');
+		}
 	}
 
 	return $sentence;

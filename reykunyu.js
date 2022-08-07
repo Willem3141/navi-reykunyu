@@ -16,7 +16,10 @@ module.exports = {
 	'getAllSentences': getAllSentences,
 	'removeWord': removeWord,
 	'insertWord': insertWord,
-	'saveDictionary': saveDictionary
+	'saveDictionary': saveDictionary,
+	'removeSentence': removeSentence,
+	'insertSentence': insertSentence,
+	'saveCorpus': saveCorpus
 }
 
 const fs = require('fs');
@@ -1077,5 +1080,19 @@ function insertWord(data) {
 
 function saveDictionary() {
 	fs.writeFileSync(__dirname + "/words.json", JSON.stringify(dictionary));
+}
+
+function removeSentence(key) {
+	delete sentences[key];
+	reloadData();
+}
+
+function insertSentence(key, sentence) {
+	sentences[key] = sentence;
+	reloadData();
+}
+
+function saveCorpus() {
+	fs.writeFileSync(__dirname + "/corpus.json", JSON.stringify(sentences));
 }
 

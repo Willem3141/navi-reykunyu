@@ -108,7 +108,6 @@ app.get('/add', function(req, res) {
 });
 
 app.post('/add', function(req, res) {
-
 	if (!req.user) {
 		res.status(403);
 		res.send('403 Forbidden');
@@ -188,7 +187,6 @@ app.get('/edit/raw', function(req, res) {
 });
 
 app.post('/edit', function(req, res) {
-
 	if (!req.user) {
 		res.status(403);
 		res.send('403 Forbidden');
@@ -272,6 +270,18 @@ app.get('/corpus-editor', function(req, res) {
 	});
 });
 
+app.get('/corpus-editor/add', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	res.render('corpusEditorAdd', {
+		'user': req.user,
+		'post_url': '/corpus-editor/add'
+	});
+});
+
 app.get('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
@@ -287,9 +297,32 @@ app.get('/corpus-editor/edit', function(req, res) {
 	const sentence = reykunyu.getAllSentences()[key];
 	res.render('corpusEditorEdit', {
 		'user': req.user,
+		'post_url': '/corpus-editor/edit',
 		'key': key,
 		'sentence': sentence
 	});
+});
+
+app.post('/corpus-editor/edit', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	let word, type, data;
+	try {
+		key = req.body["key"];
+		sentence = JSON.parse(req.body["sentence"]);
+	} catch (e) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+
+	reykunyu.removeSentence(key);
+	reykunyu.insertSentence(key, sentence);
+	reykunyu.saveDictionary();
+	res.send();
 });
 
 app.get('/untranslated', function(req, res) {

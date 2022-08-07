@@ -8,7 +8,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="/tìlam/tìlam.css" rel="stylesheet">
 	</head>
-	<body>
+	<body data-url="<%= post_url %>">
 		<div class="container">
 			<h1>
 				<span class="muted">Reykunyu &rarr;</span> Corpus editor
@@ -27,21 +27,37 @@
 					<label>Sentence</label>
 					<input id="sentence-field" type="text" value="<%= sentence['na\'vi'].map(s => s[0]).join(' ') %>">
 				</div>
+				<h3>Source</h3>
+				<table id="source-field" class="ui compact table">
+					<thead>
+						<tr>
+							<th class="four wide">Name</th>
+							<th class="three wide">URL</th>
+							<th class="three wide">Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<input class="source-name-field" type="text" value="<%= sentence['source'][0] %>">
+							</td>
+							<td>
+								<input class="source-url-field" type="url" value="<%= sentence['source'][1] %>">
+							</td>
+							<td>
+								<input class="source-date-field" type="date" value="<%= sentence['source'][2] %>">
+							</td>
+						</tr>
+					</tbody>
+				</table>
 				<div class="field">
-					<label>Translation</label>
-					<input id="translation-field" type="text" value="<%= sentence['translations']['en'].join(' ') %>">
-				</div>
-				<div class="ui section divider"></div>
-				<h2>Grammatical analysis</h2>
-				<div class="field">
-					<p>
-						After pressing this button, Reykunyu will analyze the Na'vi sentence to figure out what root words are used in the sentence. The data will fill the table below. For some words Reykunyu may find no results or it may find more than one option. You can manually edit the table to fix these cases.
-					</p>
 					<a href="/" class="ui button">
 						Analyze sentence
 					</a>
 				</div>
-				<table class="ui table">
+				<div class="ui section divider"></div>
+				<h3>Grammatical analysis</h3>
+				<table id="grammatical-analysis-table" class="ui table">
 					<thead>
 						<tr>
 							<th>Na'vi word in sentence</th>
@@ -52,40 +68,45 @@
 						<% for (let word of sentence["na'vi"]) { %>
 							<tr>
 								<td style="width: 25%;">
-									<input value=<%= word[0] %>>
+									<input class="navi-field" value="<%= word[0] %>">
 								</td>
 								<td style="width: 25%;">
-									<input value=<%= word[1] %>>
+									<input class="root-field" value="<%= word[1].join(' / ') %>">
 								</td>
 							</tr>
 						<% } %>
 					</tbody>
 				</table>
 				<div class="ui section divider"></div>
-				<h2>Translation match</h2>
-				<p>Click a Na'vi word in the upper row, then select the English word(s), if any, that (roughly) translate that word. In unclear cases just use your best judgment.</p>
+				<h3>Translation</h3>
+				<div class="field">
+					<label>Translation</label>
+					<input id="translation-field" type="text" value="<%= sentence['translations']['en']['translation'].join(' ') %>">
+				</div>
+				<p>Click a Na'vi word in the upper row, then select the English word(s), if any, that (roughly) translate that word.</p>
 				<table class="ui table">
 					<tr>
-						<td>
+						<td id="mapping-navi-row">
 							<% for (let i = 0; i < sentence['na\'vi'].length; i++) { %>
-								<button class="compact ui button">
+								<button class="compact ui button mapping-navi-button" data-id="<%= i + 1 %>">
 									<sup class="muted"><%= i + 1 %></sup> <%= sentence['na\'vi'][i][0] %>
 								</button>
 							<% } %>
 						</td>
 					</tr>
 					<tr>
-						<td>
-							<% for (let i = 0; i < sentence['translations']['en'].length; i++) { %>
-								<button class="compact ui button">
-									<sup class="muted"><%= i + 1 %></sup> <%= sentence['translations']['en'][i] %>
+						<td id="mapping-translated-row">
+							<% for (let i = 0; i < sentence['translations']['en']['translation'].length; i++) { %>
+								<button class="compact ui button mapping-translated-button" data-id="<%= i + 1 %>">
+									<sup class="muted"><%= i + 1 %></sup> <%= sentence['translations']['en']['translation'][i] %>
 								</button>
 							<% } %>
 						</td>
 					</tr>
 				</table>
+				<input id="mapping-field" type="text" value="<%= JSON.stringify(sentence['translations']['en']['mapping']) %>">
 				<div class="ui section divider"></div>
-				<a href="/" class="ui floated right submit button">
+				<a href="/corpus-editor" class="ui floated right submit button">
 					Cancel
 				</a>
 				<div id="save-button" class="ui floated right primary submit icon labeled button">
