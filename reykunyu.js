@@ -200,20 +200,30 @@ function getResponsesFor(query) {
 
 	// first split query on spaces to get individual words
 	const spacesRegex = /\s+/g;
-	let queryWords = query.split(spacesRegex);
+	let originalQueryWords = query.split(spacesRegex);
 
 	// maintains if the previous word was a leniting adposition
 	let externalLenition = false;
 
-	for (let i = 0; i < queryWords.length; i++) {
-		queryWords[i] = queryWords[i].replace(/[ .,!?:;]+/g, "");
-		queryWords[i] = queryWords[i].toLowerCase();
+	let queryWords = [];
+	for (let i = 0; i < originalQueryWords.length; i++) {
+		let queryWord = originalQueryWords[i].replace(/[ .,!?:;]+/g, "");
+		queryWord = queryWord.toLowerCase();
+		queryWords.push(queryWord);
 	}
-
-	queryWords = queryWords.filter((i) => i !== '');
 
 	for (let i = 0; i < queryWords.length;) {
 		let queryWord = queryWords[i];
+		if (queryWord === '') {
+			results.push({
+				"tìpawm": originalQueryWords[i],
+				"sì'eyng": [],
+				"aysämok": []
+			});
+			i++;
+			continue;
+		}
+
 		let wordResults = [];
 		let wordCount = 1;
 
@@ -282,7 +292,7 @@ function getResponsesFor(query) {
 		}
 
 		results.push({
-			"tìpawm": queryWords.slice(i, i + wordCount).join(' '),
+			"tìpawm": originalQueryWords.slice(i, i + wordCount).join(' '),
 			"sì'eyng": wordResults,
 			"aysämok": suggestions
 		});
