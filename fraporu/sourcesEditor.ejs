@@ -43,9 +43,9 @@
 			<p>The source data is represented as follows:</p>
 			<ul>
 				<li>A source is represented by four elements: the <b>name</b> (e.g., &lsquo;Na'viteri&rsquo;, &lsquo;LN Forum&rsquo;, &lsquo;ASG&rsquo;), the <b>URL</b> (e.g., the link to the specific Na'viteri blog post), the <b>date</b> (when the source was published, in <i>yyyy-mm-dd</i> format, and optionally a short <b>remark</b> explaining what aspect of the word was clarified by this source (this is useful when a word has more than one source).</li>
-				<li>The elements are separated by commas, for example: <code>Na'viteri, https://..., 2022-07-10, clarified stress</code>.</li>
+				<li>The elements are separated by pipes, for example: <code>Na'viteri | https://... | 2022-07-10 | clarified stress</code>.</li>
 				<li>For words sourced from the ASG, the URL and date are unnecessary and you can just write <code>ASG</code>.</li>
-				<li>Words can have more than one source. These can be separated by semicolons (<code>;</code>).</li>
+				<li>Words can have more than one source. These can be separated by double pipes (<code>||</code>).</li>
 			</ul>
 			<div class="ui section divider"></div>
 			<div class="ui form">
@@ -64,9 +64,9 @@
 							}
 							let sources = [];
 							for (const s of source) {
-								sources.push(s.join(', '));
+								sources.push(s.join(' | '));
 							}
-							return sources.join('; ');
+							return sources.join(' || ');
 						}
 						%>
 						<% let keys = [];
