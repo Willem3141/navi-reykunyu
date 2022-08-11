@@ -5,11 +5,11 @@ $(function() {
 			if (!wordData.hasOwnProperty('source') && $(this).val() === "") {
 				return;
 			}
-			let sources = $(this).val().split(';');
+			let sources = $(this).val().split('||');
 			wordData['source'] = []
 			for (const s of sources) {
 				let source = [];
-				for (const sItem of s.split(',')) {
+				for (const sItem of s.split('|')) {
 					source.push(sItem.trim());
 				}
 				wordData['source'].push(source);
