@@ -1,9 +1,15 @@
 $(function () {
 	const getParams = new URLSearchParams(window.location.search);
-	const sentence = getParams.get('sentence');
+	const key = getParams.get('sentence');
 	const $mappingNaviRow = $('#mapping-navi-row');
 	const $mappingTranslatedRow = $('#mapping-translated-row');
 	const $mappingField = $('#mapping-field');
+
+	const json = JSON.parse($mappingField.val());
+	const naviWordCount = $('.mapping-navi-button').length;
+	if (json.length !== naviWordCount) {
+		$mappingField.val(JSON.stringify(new Array(naviWordCount).fill([])));
+	}
 
 	let naviId = -1;
 
@@ -34,15 +40,13 @@ $(function () {
 	$('#save-button').on('click', function () {
 		try {
 			const sentenceData = generateSentenceData();
-			console.log(sentenceData);
-			/*const url = $('body').data('url');
+			const url = $('body').data('url');
 			$.post(url, {
-				'word': word,
-				'type': type,
-				'data': JSON.stringify(wordData)
+				'key': key,
+				'sentence': JSON.stringify(sentenceData)
 			}, function () {
 				document.location.href = '/corpus-editor'
-			});*/
+			});
 		} catch (e) {
 			alert(e);
 		}
@@ -60,7 +64,20 @@ function generateSentenceData() {
 		}
 		navi.push([naviWord, rootWords]);
 	});
-	sentence["na'vi"] = navi;
+	sentence['na\'vi'] = navi;
+
+	sentence['translations'] = {
+		'en': {
+			'translation': $('#translation-field').val().split(' '),
+			'mapping': JSON.parse($('#mapping-field').val())
+		}
+	};
+
+	sentence['source'] = [
+		$('#source-name-field').val(),
+		$('#source-url-field').val(),
+		$('#source-date-field').val()
+	];
 
 	return sentence;
 }

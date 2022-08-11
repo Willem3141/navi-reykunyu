@@ -303,13 +303,56 @@ app.get('/corpus-editor/edit', function(req, res) {
 	});
 });
 
+app.post('/corpus-editor/add', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	let key, sentence;
+	try {
+		key = req.body['key'];
+		sentence = req.body['sentence'];
+	} catch (e) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	let existing = reykunyu.hasSentence(key);
+	if (existing) {
+		res.status(400);
+		res.json({'message': 'Sentence with this key already exists'});
+		return;
+	}
+
+	const result = reykunyu.getResponsesFor(sentence);
+	let words = [];
+	for (let word of result) {
+		let roots = [];
+		for (let root of word['sì\'eyng']) {
+			roots.push(root['na\'vi'] + ':' + root['type']);
+		}
+		words.push([word['tìpawm'], roots]);
+	}
+
+	const sentenceData = {
+		"na'vi": words,
+		"translations": { 'en': { 'translation': [], 'mapping': [] } },
+		"source": []
+	};
+
+	reykunyu.insertSentence(key, sentenceData);
+	reykunyu.saveCorpus();
+	res.send();
+});
+
 app.post('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		res.send('403 Forbidden');
 		return;
 	}
-	let word, type, data;
+	let key, sentence;
 	try {
 		key = req.body["key"];
 		sentence = JSON.parse(req.body["sentence"]);
@@ -321,7 +364,7 @@ app.post('/corpus-editor/edit', function(req, res) {
 
 	reykunyu.removeSentence(key);
 	reykunyu.insertSentence(key, sentence);
-	reykunyu.saveDictionary();
+	reykunyu.saveCorpus();
 	res.send();
 });
 

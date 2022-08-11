@@ -39,22 +39,17 @@
 					<tbody>
 						<tr>
 							<td>
-								<input class="source-name-field" type="text" value="<%= sentence['source'][0] %>">
+								<input id="source-name-field" type="text" value="<%= sentence['source'][0] %>">
 							</td>
 							<td>
-								<input class="source-url-field" type="url" value="<%= sentence['source'][1] %>">
+								<input id="source-url-field" type="url" value="<%= sentence['source'][1] %>">
 							</td>
 							<td>
-								<input class="source-date-field" type="date" value="<%= sentence['source'][2] %>">
+								<input id="source-date-field" type="date" value="<%= sentence['source'][2] %>">
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<div class="field">
-					<a href="/" class="ui button">
-						Analyze sentence
-					</a>
-				</div>
 				<div class="ui section divider"></div>
 				<h3>Grammatical analysis</h3>
 				<table id="grammatical-analysis-table" class="ui table">

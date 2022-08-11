@@ -19,6 +19,7 @@ module.exports = {
 	'saveDictionary': saveDictionary,
 	'removeSentence': removeSentence,
 	'insertSentence': insertSentence,
+	'hasSentence': hasSentence,
 	'saveCorpus': saveCorpus
 }
 
@@ -1100,6 +1101,10 @@ function removeSentence(key) {
 function insertSentence(key, sentence) {
 	sentences[key] = sentence;
 	reloadData();
+}
+
+function hasSentence(key) {
+	return sentences.hasOwnProperty(key);
 }
 
 function saveCorpus() {
