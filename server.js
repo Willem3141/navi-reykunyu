@@ -5,6 +5,7 @@
 var fs = require('fs');
 
 var express = require('express');
+var compression = require('compression');
 var session = require('express-session');
 var sqliteSession = require('connect-sqlite3')(session);
 
@@ -23,6 +24,7 @@ passport.use(new LocalStrategy(
 ));
 
 var app = express();
+app.use(compression());
 var http = require('http').Server(app);
 
 var config = JSON.parse(fs.readFileSync('config.json'));
