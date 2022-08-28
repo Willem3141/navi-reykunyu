@@ -5,7 +5,7 @@
  * except of course the stem):
  *
  *  0. determiner prefix: "fì", "tsa", "pe", "fra"
- *  1. plural prefix: "me", "pxe", "ay"
+ *  1. plural prefix: "me", "pxe", "ay", "(ay)"
  *  2. stem prefix: "fne"
  *     stem
  *  3. stem suffix: "tsyìp", "fkeyk"
@@ -49,8 +49,8 @@
  */
 
 const conjugationString = require("./conjugationString");
-var convert = require("./convert");
-var phonology = require("./phonology");
+const convert = require("./convert");
+const phonology = require("./phonology");
 
 module.exports = {
 	conjugate: conjugate,
@@ -103,7 +103,11 @@ function conjugate(noun, affixes, simple) {
 	let determinerPrefix = convert.compress(affixes[0]);
 	if (determinerPrefix !== "" && plural === "2") {  // ay
 		// special case: fì- + ay- -> fay-, etc.
-		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
+		if (determinerPrefix === "fì") {
+			determinerPrefix = "fì/f";  // Horen §3.3.1
+		} else {
+			determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
+		}
 
 	} else if (determinerPrefix[determinerPrefix.length - 1] === convert.decompress(noun)[0] &&
 			plural === "" && stemPrefix === "") {
@@ -123,8 +127,13 @@ function conjugate(noun, affixes, simple) {
 			stemPrefix + noun, determinerPrefix);
 
 		// special case: pe- can lenite pxe-
-		if (determinerPrefix === "pe" && pluralPrefix[0] === "Pe") {
-			pluralPrefix[0] = "pe";
+		if (determinerPrefix === "pe" && pluralPrefix === "pxe") {
+			pluralPrefix = "pe";
+		}
+		// special case: pe- + me- maybe becomes pem-?
+		// (https://naviteri.org/2011/07/number-in-na%e2%80%99vi/)
+		if (determinerPrefix === "pe" && pluralPrefix[1] === "e") {
+			pluralPrefix = pluralPrefix[0] + "(e)";
 		}
 	}
 
@@ -350,9 +359,16 @@ function parse(word) {
 	// step 2: for each candidate, check if it is indeed correct
 	let result = [];
 	for (let i = 0; i < candidates.length; i++) {
-		if (checkCandidate(candidates[i])) {
-			result.push(candidates[i]);
+		const candidate = candidates[i];
+		if (!candidatePossible(candidate)) {
+			continue;
 		}
+		let conjugation = conjugate(candidate["root"], candidate["affixes"]);
+		if (!conjugationString.stringAdmits(conjugation, candidate["result"])) {
+			candidate["correction"] = candidate["result"];
+		}
+		candidate["result"] = conjugationString.formsFromString(conjugation);
+		result.push(candidates[i]);
 	}
 
 	return result;
@@ -618,10 +634,10 @@ function getCandidates(word) {
 	return candidates;
 }
 
-/**
- * Tests if a given word is a correct conjugation for the given form.
- */
-function checkCandidate(candidate) {
-	let conjugation = conjugate(candidate["root"], candidate["affixes"]);
-	return conjugationString.stringAdmits(conjugation, candidate["result"]);
+function candidatePossible(candidate) {
+	const affixes = candidate["affixes"];
+	if (affixes[0] !== "" && affixes[1] === "(ay)") {
+		return false;
+	}
+	return true;
 }

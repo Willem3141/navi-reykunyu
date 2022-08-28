@@ -29,6 +29,7 @@ const levenshtein = require('js-levenshtein');
 
 const adjectives = require('./adjectives');
 const conjugationString = require('./conjugationString');
+const convert = require('./convert');
 const nouns = require('./nouns');
 const numbers = require('./numbers');
 const pronouns = require('./pronouns');
@@ -258,21 +259,13 @@ function getResponsesFor(query) {
 
 		// sort on result relevancy
 		// higher scores result in being sorted lower
-		let resultScore = function (result) {
-			if (result["na'vi"].toLowerCase() !== queryWord) {
-				// the longer the root word, the higher it should be sorted
-				// because it likely has a more specialized meaning
-				// (e.g. utraltsyìp vs. utral)
-				return 100 - result["na'vi"].length;
-			}
-			return 0;
-		}
-
 		wordResults.sort((a, b) => {
 			scoreA = resultScore(a);
 			scoreB = resultScore(b);
 			return scoreA - scoreB;
 		});
+
+		deduplicateResults(wordResults);
 
 		// the next word will be externally lenited if this word is an adp:len
 		// note that there are no adp:lens with several meanings, so we just
@@ -384,8 +377,16 @@ function lookUpWordOrPhrase(queryWord) {
 // safely change it without changing the dictionary data itself).
 function lookUpWord(queryWord) {
 	let wordResults = [];
+	lookUpNoun(queryWord, wordResults);
+	lookUpVerb(queryWord, wordResults);
+	lookUpAdjective(queryWord, wordResults);
+	lookUpProductiveAdverb(queryWord, wordResults);
+	lookUpOtherType(queryWord, wordResults);
+	return wordResults;
+}
 
-	// handle conjugated nouns and pronouns
+function lookUpNoun(queryWord, wordResults) {
+	// handles conjugated nouns and pronouns
 	let nounResults = nouns.parse(queryWord);
 	nounResults.forEach(function (nounResult) {
 		let noun = findNoun(nounResult["root"]);
@@ -408,7 +409,7 @@ function lookUpWord(queryWord) {
 					}, {
 						"type": "v_to_n",
 						"conjugation": {
-							"result": nounResult["root"],
+							"result": [nounResult["root"]],
 							"root": possibleVerb,
 							"affixes": ["yu"]
 						}
@@ -469,26 +470,32 @@ function lookUpWord(queryWord) {
 			}
 		}
 	});
+}
 
-	// handle conjugated verbs
+function lookUpVerb(queryWord, wordResults) {
+	// handles conjugated verbs
 	let verbResults = verbs.parse(queryWord);
 	verbResults.forEach(function (result) {
 		let results = findVerb(result["root"]);
 		for (let verb of results) {
-			verb["conjugated"] = [{
-				"type": "v",
-				"conjugation": result
-			}];
-			verb["affixes"] = makeAffixList(verb["conjugated"]);
 			let conjugation = conjugationString.formsFromString(
 				verbs.conjugate(verb["infixes"], result["infixes"]));
 			if (conjugation.indexOf(queryWord) !== -1) {
+				let resultCopy = JSON.parse(JSON.stringify(result));
+				resultCopy["result"] = conjugation;
+				verb["conjugated"] = [{
+					"type": "v",
+					"conjugation": resultCopy
+				}];
+				verb["affixes"] = makeAffixList(verb["conjugated"]);
 				wordResults.push(verb);
 			}
 		}
 	});
+}
 
-	// handle conjugated adjectives
+function lookUpAdjective(queryWord, wordResults) {
+	// handles conjugated adjectives
 	let adjectiveResults = adjectives.parse(queryWord);
 	adjectiveResults.forEach(function (adjResult) {
 		if (dictionary.hasOwnProperty(adjResult["root"] + ":adj")) {
@@ -517,7 +524,7 @@ function lookUpWord(queryWord) {
 						}, {
 							"type": "v_to_adj",
 							"conjugation": {
-								"result": adjResult["root"],
+								"result": [adjResult["root"]],
 								"root": possibleVerb,
 								"affixes": [prefix]
 							}
@@ -536,8 +543,10 @@ function lookUpWord(queryWord) {
 			}
 		}
 	});
+}
 
-	// adverbs made from nì- + adjectives
+function lookUpProductiveAdverb(queryWord, wordResults) {
+	// handles adverbs made from nì- + adjectives
 	if (queryWord.startsWith('nì')) {
 		const possibleAdjective = queryWord.substring(2);
 		if (dictionary.hasOwnProperty(possibleAdjective + ':adj')) {
@@ -545,7 +554,7 @@ function lookUpWord(queryWord) {
 			adjective["conjugated"] = [{
 				"type": "adj_to_adv",
 				"conjugation": {
-					"result": 'nì' + possibleAdjective,
+					"result": ['nì' + possibleAdjective],
 					"root": possibleAdjective,
 					"affixes": ['nì']
 				}
@@ -554,8 +563,10 @@ function lookUpWord(queryWord) {
 			wordResults.push(adjective);
 		}
 	}
+}
 
-	// then other word types
+function lookUpOtherType(queryWord, wordResults) {
+	// handles other word types
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
 			let type = dictionary[word]['type'];
@@ -568,8 +579,6 @@ function lookUpWord(queryWord) {
 			}
 		}
 	}
-
-	return wordResults;
 }
 
 // fwew frafnetstxolì'ut lì'upukmì
@@ -661,6 +670,49 @@ function addAffix(list, affixType, affixString, types) {
 			'type': affixType,
 			'affix': affix
 		});
+	}
+}
+
+function resultScore(result, queryWord) {
+	let score = 0;
+
+	if (result["na'vi"].toLowerCase() !== queryWord) {
+		// if this was an incorrect conjugation, sort it further down
+		if (result.hasOwnProperty("conjugated")) {
+			for (let conjugation of result["conjugated"]) {
+				if (conjugation.hasOwnProperty("conjugation") &&
+					conjugation["conjugation"].hasOwnProperty("correction")) {
+					score += 10;
+					let distance = 10;
+					for (let result of conjugation["conjugation"]["result"]) {
+						const d = levenshtein(convert.compress(conjugation["conjugation"]["correction"]), convert.compress(result));
+						distance = Math.min(distance, d);
+					}
+					score += distance;
+				}
+			}
+		}
+		// the longer the root word, the higher it should be sorted
+		// because it likely has a more specialized meaning
+		// (e.g. utraltsyìp vs. utral)
+		score += 100 - result["na'vi"].length;
+	}
+	return score;
+}
+
+/**
+ * Removes any duplicated results from the results array. If duplicates occur,
+ * the first one is retained and the others are removed.
+ */
+function deduplicateResults(results) {
+	let seenKeys = new Set();
+	for (let i = 0; i < results.length; i++) {
+		const key = results[i]["na'vi"] + ':' + results[i]['type'];
+		if (seenKeys.has(key)) {
+			results.splice(i, 1);
+			i--;
+		}
+		seenKeys.add(key);
 	}
 }
 

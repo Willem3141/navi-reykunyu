@@ -164,7 +164,7 @@ h1::after {
 	top: -1px;
 	background-color: white;
 	padding: 10px 0;
-	box-shadow: 0 0 7px 7px white;
+	box-shadow: 0 0 4px 4px white;
 }
 
 .result .result-word .id {
@@ -182,8 +182,10 @@ h1::after {
 	font-weight: 700;
 }
 
-.result .result-word .type.lemma-type {
+.type.ui.type-badge {
 	margin-left: 16px;
+}
+.result .result-word .type-badge {
 	position: relative;
 	top: -5px;
 }
@@ -239,23 +241,31 @@ h1::after {
 	top: -5px;
 }
 
-.result .result-word .conjugation-explanation,
-.result .result-word .lenition-explanation {
+.conjugation-explanation,
+.lenition-explanation {
 	margin-top: 3px;
 	margin-left: 20px;
 	font-size: 18px;
 }
 
-.result .result-word .conjugation-explanation .operator,
-.result .result-word .lenition-explanation .operator {
+.conjugation-explanation .operator,
+.lenition-explanation .operator {
 	margin-left: 10px;
 	margin-right: 10px;
 	color: #888;
 }
 
-.result .result-word .conjugation-explanation .word,
-.result .result-word .lenition-explanation .word {
+.conjugation-explanation .word,
+.lenition-explanation .word {
 	font-weight: 700;
+}
+
+.conjugation-explanation .correction,
+.lenition-explanation .correction {
+	margin-right: 10px;
+	color: #dd2255;
+	font-weight: 700;
+	text-decoration: line-through;
 }
 
 .result .definition-image {

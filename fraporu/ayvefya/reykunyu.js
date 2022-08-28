@@ -121,7 +121,7 @@ function tstxoFnelä(fnel, traditional) {
 // fnel - fnelä tstxo apup (natkenong "n", "v:tr")
 function typeBadge(fnel, small) {
 	fnel = tstxoFnelä(fnel, small).split('/');
-	let $pätsì = $('<span/>').addClass('type ui tag label').text(fnel[0]);
+	let $pätsì = $('<span/>').addClass('type ui tag label type-badge').text(fnel[0]);
 	if (small) {
 		$pätsì.addClass('horizontal');
 		$pätsì.removeClass('tag');
@@ -152,7 +152,7 @@ function conjugationExplanation(conjugation) {
 	for (let i = 0; i < conjugation.length; i++) {
 		let type = conjugation[i]["type"];
 		let c = conjugation[i]["conjugation"];
-		if (c["result"].toLowerCase() == c["root"].toLowerCase()) {
+		if (c["result"].length == 1 && c["result"][0].toLowerCase() == c["root"].toLowerCase()) {
 			continue;
 		}
 
@@ -203,7 +203,10 @@ function nounConjugationExplanation(conjugation) {
 	}
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
+	if (conjugation["correction"]) {
+		$('<span/>').addClass('correction').text(conjugation["correction"]).appendTo($conjugation);
+	}
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -223,7 +226,7 @@ function verbConjugationExplanation(conjugation) {
 	}
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -246,7 +249,7 @@ function adjectiveConjugationExplanation(conjugation) {
 	}
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -262,8 +265,8 @@ function verbToNounConjugationExplanation(conjugation) {
 	$('<span/>').addClass('suffix').text(conjugation["affixes"][0]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 	typeBadge('n', true).appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -279,8 +282,8 @@ function verbToAdjectiveConjugationExplanation(conjugation) {
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 	typeBadge('adj', true).appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -296,8 +299,8 @@ function adjectiveToAdverbConjugationExplanation(conjugation) {
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 	typeBadge('adv', true).appendTo($conjugation);
-	$('<span/>').addClass('word').text(conjugation["result"]).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -543,7 +546,6 @@ function noteSection(note) {
 
 function affixesSection(affixes) {
 	let $affixesSection = $('<div/>').addClass('result-item affixes');
-	$affixesSection.append($('<div/>').addClass('header').text('Affixes'));
 	let $affixes = $('<div/>').addClass('body');
 
 	let $table = $('<table/>').appendTo($affixes);
@@ -556,9 +558,10 @@ function affixesSection(affixes) {
 			//.addClass(a['type'])
 			.attr('href', '/?q=' + affix["na'vi"]);
 		addLemmaClass($affixLink, affix['type']);
-		$('<td/>').append($affixLink).appendTo($tr);
+		$('<td/>').append($affixLink)
+			.append(typeBadge(affix['type'], true))
+			.appendTo($tr);
 		$meaningCell = $('<td/>').appendTo($tr);
-		$meaningCell.append(typeBadge(affix['type'], true));
 		$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
 	}
 
@@ -1149,7 +1152,7 @@ function createResultBlock(i, r) {
 	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
 	addLemmaClass($lemma, r['type']);
 	$lemma.html(lemmaForm(r["na'vi"], r['type']));
-	$resultWord.append(typeBadge(r["type"], true).addClass('lemma-type'));
+	$resultWord.append(typeBadge(r["type"], true));
 
 	if (r["status"]) {
 		$resultWord.append(statusBadge(r["status"]));
@@ -1166,16 +1169,20 @@ function createResultBlock(i, r) {
 		$resultWord.append(editButton(r["na'vi"], r["type"]));
 	}
 
+	$resultWord.appendTo($result);
+
 	if (r.hasOwnProperty("conjugated")) {
 		$explanation = conjugationExplanation(r["conjugated"]);
-		$resultWord.append($explanation);
+		$result.append($explanation);
 	}
 
 	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
-		$resultWord.append(externalLenitionExplanation(r["externalLenition"]));
+		$result.append(externalLenitionExplanation(r["externalLenition"]));
 	}
 
-	$resultWord.appendTo($result);
+	if (r["affixes"] && r["affixes"].length) {
+		$result.append(affixesSection(r["affixes"]));
+	}
 
 	if (r["image"]) {
 		$result.append(imageSection(r["na'vi"], r["image"]));
@@ -1185,10 +1192,6 @@ function createResultBlock(i, r) {
 
 	if (r["meaning_note"]) {
 		$result.append(noteSection(r["meaning_note"]));
-	}
-
-	if (r["affixes"] && r["affixes"].length) {
-		$result.append(affixesSection(r["affixes"]));
 	}
 
 	if (r["status"]) {
@@ -1220,7 +1223,7 @@ function createResultBlock(i, r) {
 		$result.append(sentencesSection(r["sentences"], r["na'vi"] + ":" + r["type"]));
 	}
 
-	if (r["source"]) {
+	if (r["source"] && r["source"].length > 0 && r["source"][0].length > 0 && r["source"][0][0].length > 0) {
 		$result.append(sourceSection(r["source"]));
 	}
 
@@ -1435,7 +1438,6 @@ function doSearchNavi() {
 			}
 		})
 		.fail(function () {
-			$sentenceBar.empty();
 			$results.empty();
 			$results.append(createErrorBlock(_('searching-error'), _('searching-error-description')));
 		});

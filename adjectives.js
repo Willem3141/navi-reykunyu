@@ -1,10 +1,12 @@
 /**
  * Functions to conjugate and parse Na'vi adjectives.
- * 
+ *
  * Na'vi adjectives are very simple: they can have three forms, the predicative
  * (= dictionary) form, the prenoun form (with the suffix -a), and the postnoun
  * form (with the prefix a-).
  */
+
+const conjugationString = require("./conjugationString");
 
 module.exports = {
 	conjugate: conjugate,
@@ -13,7 +15,7 @@ module.exports = {
 
 /**
  * Conjugates an adjective.
- * 
+ *
  * adjective - the adjective stem
  * form - the form to conjugate into: "predicative", "prenoun", or "postnoun"
  */
@@ -24,7 +26,7 @@ function conjugate(adjective, form) {
 		if (adjective.charAt(0) === "a") {
 			return "a-" + adjective.substring(1) + "-";
 		} else if (adjective.substring(0, 2) === "le" && adjective.length >= 4) {
-			return "(a-)" + adjective + "-";
+			return "(a)-" + adjective + "-";
 		} else {
 			return "a-" + adjective + "-";
 		}
@@ -43,25 +45,25 @@ function conjugate(adjective, form) {
  */
 function parse(word) {
 
-	let result = [{
+	let candidates = [{
 		"result": word,
 		"root": word,
 		"form": 'predicative'
 	}];
 
 	if (word.charAt(0) === "a") {
-		result.push({
+		candidates.push({
 			"result": word,
 			"root": word.substring(1),
 			"form": 'postnoun'
 		});
-		result.push({
+		candidates.push({
 			"result": word,
 			"root": word,
 			"form": 'postnoun'
 		});
 	} else if (word.substring(0, 2) === "le") {
-		result.push({
+		candidates.push({
 			"result": word,
 			"root": word,
 			"form": 'postnoun'
@@ -69,16 +71,27 @@ function parse(word) {
 	}
 
 	if (word.charAt(word.length - 1) === "a") {
-		result.push({
+		candidates.push({
 			"result": word,
 			"root": word.slice(0, -1),
 			"form": 'prenoun'
 		});
-		result.push({
+		candidates.push({
 			"result": word,
 			"root": word,
 			"form": 'prenoun'
 		});
+	}
+
+	let result = [];
+	for (let i = 0; i < candidates.length; i++) {
+		const candidate = candidates[i];
+		let conjugation = conjugate(candidate["root"], candidate["form"]);
+		if (!conjugationString.stringAdmits(conjugation, candidate["result"])) {
+			candidate["correction"] = candidate["result"];
+		}
+		candidate["result"] = conjugationString.formsFromString(conjugation);
+		result.push(candidates[i]);
 	}
 
 	return result;

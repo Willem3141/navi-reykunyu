@@ -1,6 +1,6 @@
 /**
  * Functions to conjugate and parse Na'vi verbs.
- * 
+ *
  * Na'vi verbs have three infix locations.
  *
  * tolängul
@@ -13,7 +13,7 @@ module.exports = {
 }
 
 /**
- * Conjugates a verb and returns a conjugation string with five parts:
+ * Conjugates a verb and returns a conjugation string with six parts:
  *
  * * the part before the prefirst-position infix;
  * * the prefirst-position infix;
@@ -214,7 +214,7 @@ function getCandidates(word) {
 		}
 		candidates = newCandidates;
 	}
-	
+
 	return candidates;
 }
 
@@ -223,11 +223,11 @@ function getCandidates(word) {
  */
 function checkCandidate(word, verb, infixes) {
 	let conjugation = conjugate(verb, infixes);
-	
+
 	let possibility = conjugation.join('');
 	if (word === possibility) {
 		return true;
 	}
-	
+
 	return false;
 }
