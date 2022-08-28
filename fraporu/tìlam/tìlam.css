@@ -185,6 +185,9 @@ h1::after {
 .type.ui.type-badge {
 	margin-left: 16px;
 }
+#sentence-bar .type.ui.type-badge {
+	margin-left: 0px;
+}
 .result .result-word .type-badge {
 	position: relative;
 	top: -5px;

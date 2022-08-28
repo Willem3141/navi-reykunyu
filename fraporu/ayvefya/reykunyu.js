@@ -1329,6 +1329,7 @@ function sngäiTìfwusew() {
 	} else if (mode === 'rhymes') {
 		doSearchRhymes();
 	}
+	$('#search-box').trigger('select');
 	return false;
 }
 

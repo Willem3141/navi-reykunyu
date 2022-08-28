@@ -351,7 +351,7 @@ function forbiddenByExternalLenition(result) {
 	const determinerPrefix = outerConjugated["conjugation"]["affixes"][0];
 	const pluralPrefix = outerConjugated["conjugation"]["affixes"][1];
 	let isShortPlural = pluralPrefix === "(ay)" ||
-		(pluralPrefix === "ay" && !outerConjugated["conjugation"]["result"].startsWith("ay"));
+		(pluralPrefix === "ay" && !outerConjugated["conjugation"]["result"][0].startsWith("ay"));
 	if (!isShortPlural) {
 		return false;
 	}
@@ -400,30 +400,23 @@ function lookUpNoun(queryWord, wordResults) {
 		}
 		if (nounResult["root"].endsWith("yu")) {
 			let possibleVerb = nounResult["root"].slice(0, -2);
-			let verbResults = verbs.parse(possibleVerb);
-			verbResults.forEach(function (verbResult) {
-				for (let verb of findVerb(verbResult["root"])) {
-					verb["conjugated"] = [{
-						"type": "v",
-						"conjugation": verbResult
-					}, {
-						"type": "v_to_n",
-						"conjugation": {
-							"result": [nounResult["root"]],
-							"root": possibleVerb,
-							"affixes": ["yu"]
-						}
-					}, {
-						"type": "n",
-						"conjugation": nounResult
-					}];
-					verb["affixes"] = makeAffixList(verb["conjugated"]);
-					let conjugation = conjugationString.formsFromString(
-						verbs.conjugate(verb["infixes"], verbResult["infixes"]));
-					if (conjugation.indexOf(possibleVerb) !== -1) {
-						wordResults.push(verb);
+			let verbResults = [];
+			lookUpVerb(possibleVerb, verbResults);
+			verbResults.forEach(function (verb) {
+				verb["conjugated"].push({
+					"type": "v_to_n",
+					"conjugation": {
+						"result": [nounResult["root"]],
+						"root": possibleVerb,
+						"affixes": ["yu"]
 					}
-				}
+				});
+				verb["conjugated"].push({
+					"type": "n",
+					"conjugation": nounResult
+				});
+				verb["affixes"] = makeAffixList(verb["conjugated"]);
+				wordResults.push(verb);
 			});
 		}
 
