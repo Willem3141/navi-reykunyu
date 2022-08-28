@@ -228,6 +228,9 @@ function verbConjugationExplanation(conjugation) {
 	}
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	if (conjugation["correction"]) {
+		$('<span/>').addClass('correction').text(conjugation["correction"]).appendTo($conjugation);
+	}
 	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 
 	return $conjugation;

@@ -473,16 +473,17 @@ function lookUpVerb(queryWord, wordResults) {
 		for (let verb of results) {
 			let conjugation = conjugationString.formsFromString(
 				verbs.conjugate(verb["infixes"], result["infixes"]));
-			if (conjugation.indexOf(queryWord) !== -1) {
-				let resultCopy = JSON.parse(JSON.stringify(result));
-				resultCopy["result"] = conjugation;
-				verb["conjugated"] = [{
-					"type": "v",
-					"conjugation": resultCopy
-				}];
-				verb["affixes"] = makeAffixList(verb["conjugated"]);
-				wordResults.push(verb);
+			let resultCopy = JSON.parse(JSON.stringify(result));
+			if (conjugation.indexOf(queryWord) === -1) {
+				resultCopy["correction"] = queryWord;
 			}
+			resultCopy["result"] = conjugation;
+			verb["conjugated"] = [{
+				"type": "v",
+				"conjugation": resultCopy
+			}];
+			verb["affixes"] = makeAffixList(verb["conjugated"]);
+			wordResults.push(verb);
 		}
 	});
 }
