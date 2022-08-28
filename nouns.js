@@ -137,6 +137,11 @@ function conjugate(noun, affixes, simple) {
 		}
 	}
 
+	if (stemPrefix[stemPrefix.length - 1] === convert.decompress(noun)[0]) {
+		// special case: fne- + ekxan -> fnekxan, etc.
+		stemPrefix = stemPrefix.substring(0, stemPrefix.length - 1);
+	}
+
 	// suffixes
 	let caseSuffix = "";
 	if (caseFunctions.hasOwnProperty(affixes[5])) {
@@ -486,6 +491,7 @@ function tryStemPrefixes(candidate) {
 		}
 	};
 	tryPrefix("fne", "fne");
+	tryPrefix("fn", "fne");
 
 	return candidates;
 }
