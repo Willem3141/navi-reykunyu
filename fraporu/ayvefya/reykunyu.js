@@ -152,7 +152,9 @@ function conjugationExplanation(conjugation) {
 	for (let i = 0; i < conjugation.length; i++) {
 		let type = conjugation[i]["type"];
 		let c = conjugation[i]["conjugation"];
-		if (c["result"].length == 1 && c["result"][0].toLowerCase() == c["root"].toLowerCase()) {
+		if (c["result"].length == 1
+			&& c["result"][0].toLowerCase() == c["root"].toLowerCase()
+			&& !c.hasOwnProperty("correction")) {
 			continue;
 		}
 
@@ -249,6 +251,9 @@ function adjectiveConjugationExplanation(conjugation) {
 	}
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	if (conjugation["correction"]) {
+		$('<span/>').addClass('correction').text(conjugation["correction"]).appendTo($conjugation);
+	}
 	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 
 	return $conjugation;
@@ -1521,10 +1526,6 @@ function doSearchRhymes() {
 	$.getJSON('/api/rhymes', { 'tìpawm': tìpawm })
 		.done(function (response) {
 			$results.empty();
-
-			//let $resultWord = $('<div/>').addClass('result-word');
-
-			console.log(response);
 
 			if (response.length === 0) {
 				$results.append(createErrorBlock(_("no-results"), _("no-results-description")));

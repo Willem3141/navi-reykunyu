@@ -497,41 +497,30 @@ function lookUpAdjective(queryWord, wordResults) {
 				"type": "adj",
 				"conjugation": adjResult
 			}];
-			let conjugation = conjugationString.formsFromString(
-				adjectives.conjugate(adjective["na'vi"].toLowerCase(), adjResult["form"]));
-			if (conjugation.indexOf(queryWord) !== -1) {
-				wordResults.push(adjective);
-			}
+			wordResults.push(adjective);
 		}
 
 		const prefixes = ['tsuk', 'ketsuk'];
 		for (const prefix of prefixes) {
 			if (adjResult["root"].startsWith(prefix)) {
 				let possibleVerb = adjResult["root"].substring(prefix.length);
-				let verbResults = verbs.parse(possibleVerb);
-				verbResults.forEach(function (verbResult) {
-					for (let verb of findVerb(verbResult["root"])) {
-						verb["conjugated"] = [{
-							"type": "v",
-							"conjugation": verbResult
-						}, {
-							"type": "v_to_adj",
-							"conjugation": {
-								"result": [adjResult["root"]],
-								"root": possibleVerb,
-								"affixes": [prefix]
-							}
-						}, {
-							"type": "adj",
-							"conjugation": adjResult
-						}];
-						verb["affixes"] = makeAffixList(verb["conjugated"]);
-						let conjugation = conjugationString.formsFromString(
-							verbs.conjugate(verb["infixes"], verbResult["infixes"]));
-						if (conjugation.indexOf(possibleVerb) !== -1) {
-							wordResults.push(verb);
+				let verbResults = [];
+				lookUpVerb(possibleVerb, verbResults);
+				verbResults.forEach(function (verb) {
+					verb["conjugated"].push({
+						"type": "v_to_adj",
+						"conjugation": {
+							"result": [adjResult["root"]],
+							"root": possibleVerb,
+							"affixes": [prefix]
 						}
-					}
+					});
+					verb["conjugated"].push({
+						"type": "adj",
+						"conjugation": adjResult
+					});
+					verb["affixes"] = makeAffixList(verb["conjugated"]);
+					wordResults.push(verb);
 				});
 			}
 		}
