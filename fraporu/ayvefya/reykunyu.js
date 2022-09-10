@@ -780,34 +780,15 @@ function nounConjugationString(c) {
 	return formatted;
 }
 
-function createNounConjugation(word, type, uncountable) {
-
-	let conjugation = [];
-	let caseFunctions = [subjective, agentive, patientive, dative, genitive, topical]
-	let plurals = [singular(word), dual(word), trial(word), plural(word)]
-
-	for (let j = 0; j < 4; j++) {
-		let row = [];
-		if (!uncountable || j === 0) {
-			for (let i = 0; i < 6; i++) {
-				row.push(caseFunctions[i](plurals[j]));
-			}
-		}
-		conjugation.push(row);
-	}
-
-	return conjugation;
-}
-
 // ngop hapxìt a wìntxu fya'ot a leykatem syonlì'uti
-function adjectiveConjugationSection(word, type, note) {
+function adjectiveConjugationSection(conjugation, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text(_('attributive-forms')).appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
 
-	let html = "&lt;" + _('type-n') + "&gt; " + prefixed(word);
+	let html = "&lt;" + _('type-n') + "&gt; " + nounConjugationString(conjugation["prefixed"]);
 	html += "&nbsp;&nbsp;<span class='muted'>" + _('or') + "</span>&nbsp;&nbsp;";
-	html += suffixed(word) + " &lt;" + _('type-n') + "&gt;";
+	html += nounConjugationString(conjugation["suffixed"]) + " &lt;" + _('type-n') + "&gt;";
 	$body.html(html);
 
 	if (note) {
@@ -1211,13 +1192,11 @@ function createResultBlock(i, r) {
 	}
 
 	if (r["conjugation"]) {
-		$result.append(nounConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
-	} else if (r["type"] === "n") {
-		$result.append(nounConjugationSection(createNounConjugation(r["na'vi"], r["type"], false), r["conjugation_note"]));
-	} else if (r["type"] === "n:pr") {
-		$result.append(nounConjugationSection(createNounConjugation(r["na'vi"], r["type"], true), r["conjugation_note"]));
-	} else if (r["type"] === "adj") {
-		$result.append(adjectiveConjugationSection(r["na'vi"], r["type"], r["conjugation_note"]));
+		if (r["type"] === "n") {
+			$result.append(nounConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
+		} else if (r["type"] === "adj") {
+			$result.append(adjectiveConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
+		}
 	}
 
 	if (r["infixes"]) {

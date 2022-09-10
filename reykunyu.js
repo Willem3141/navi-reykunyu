@@ -718,6 +718,16 @@ function postprocessResults(results) {
 }
 
 function postprocessResult(result) {
+	if (result['type'] === 'n' || result['type'] === 'n:pr') {
+		result['conjugation'] = {
+			'forms': createNounConjugation(result['na\'vi'], result['type'])
+		};
+	}
+	if (result['type'] === 'adj') {
+		result['conjugation'] = {
+			'forms': createAdjectiveConjugation(result)
+		};
+	}
 	if (result.hasOwnProperty('etymology')) {
 		result['etymology'] = addWordLinks(result['etymology']);
 	}
@@ -730,11 +740,6 @@ function postprocessResult(result) {
 	}
 	if (sentencesForWord.hasOwnProperty(key)) {
 		result['sentences'] = sentencesForWord[key];
-	}
-	if (result['type'] === 'n' || result['type'] === 'n:pr') {
-		result['conjugation'] = {
-			'forms': createNounConjugation(result['na\'vi'], result['type'])
-		};
 	}
 }
 
@@ -756,6 +761,14 @@ function createNounConjugation(word, type) {
 		conjugation.push(row);
 	}
 
+	return conjugation;
+}
+
+function createAdjectiveConjugation(word) {
+	const conjugation = {
+		"prefixed": adjectives.conjugate(word["na'vi"], 'postnoun'),
+		"suffixed": adjectives.conjugate(word["na'vi"], 'prenoun')
+	};
 	return conjugation;
 }
 
