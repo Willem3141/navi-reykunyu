@@ -58,9 +58,6 @@ $(function () {
 		},
 	});
 
-	$('#api-button').on("click", function () {
-		$('#api-modal').modal("show");
-	});
 	$('#settings-button').on("click", function () {
 		$('#ipa-checkbox').prop('checked',
 			localStorage.getItem('reykunyu-ipa') === '1');
