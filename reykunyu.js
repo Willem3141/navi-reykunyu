@@ -143,15 +143,19 @@ function reloadData() {
 	}
 
 	allWordsOfType = {};
-	for (const type of ['n', 'adj', 'v:', 'v:in', 'v:tr', 'adv', 'adp', 'aff:in']) {
-		allWordsOfType[type] = getAllWordsOfType(type);
+	for (const type of ['n', 'adj', 'v:in', 'v:tr', 'adv', 'adp', 'aff:in']) {
+		allWordsOfType[type] = getAllWordsOfType(type, false);
+	}
+	for (const type of ['v:']) {
+		allWordsOfType[type] = getAllWordsOfType(type, true);
 	}
 }
 
-function getAllWordsOfType(type) {
+function getAllWordsOfType(type, allowSubtype) {
 	let result = [];
 	for (let word of Object.keys(dictionary)) {
-		if (dictionary[word]['type'].startsWith(type)) {
+		if (dictionary[word]['type'] == type ||
+				(allowSubtype && dictionary[word]['type'].startsWith(type))) {
 			result.push(dictionary[word]);
 		}
 	}
