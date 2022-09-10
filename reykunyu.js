@@ -813,7 +813,7 @@ function getSuggestionsFor(query, language) {
 			let word = dictionary[w];
 			if (word["na'vi"].toLowerCase().startsWith(query)) {
 				results.push({
-					"title": word["na'vi"],
+					"title": word["na'vi"] + (word['type'] === 'n:si' ? ' si' : ''),
 					"description": '<div class="ui horizontal label">' + typeName(word['type'], language) + '</div> ' + simplifiedTranslation(word["translations"], language)
 				});
 			}
@@ -848,7 +848,7 @@ function getReverseSuggestionsFor(query, language) {
 				for (const w of translation) {
 					if (w.toLowerCase().startsWith(query)) {
 						results.push({
-							"title": dictionary[word]["na'vi"],
+							"title": dictionary[word]["na'vi"] + (word['type'] === 'n:si' ? ' si' : ''),
 							"description": '<div class="ui horizontal label">' + typeName(dictionary[word]['type'], language) + '</div> ' + simplifiedTranslation(dictionary[word]["translations"], language)
 						});
 						continue wordLoop;
