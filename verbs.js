@@ -151,6 +151,9 @@ function tryFirstInfixes(candidate) {
 
 	candidates.push({...candidate});
 	let tryInfix = function (infix, name, replacement) {
+		if (!replacement) {
+			replacement = '';
+		}
 		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
 			let index = match.index;
