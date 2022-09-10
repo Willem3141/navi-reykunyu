@@ -814,7 +814,7 @@ function getSuggestionsFor(query, language) {
 			if (word["na'vi"].toLowerCase().startsWith(query)) {
 				results.push({
 					"title": word["na'vi"],
-					"description": '<div class="ui horizontal label">' + word['type'] + '</div> ' + simplifiedTranslation(word["translations"], language)
+					"description": '<div class="ui horizontal label">' + typeName(word['type'], language) + '</div> ' + simplifiedTranslation(word["translations"], language)
 				});
 			}
 		}
@@ -849,7 +849,7 @@ function getReverseSuggestionsFor(query, language) {
 					if (w.toLowerCase().startsWith(query)) {
 						results.push({
 							"title": dictionary[word]["na'vi"],
-							"description": '<div class="ui horizontal label">' + dictionary[word]['type'] + '</div> ' + simplifiedTranslation(dictionary[word]["translations"], language)
+							"description": '<div class="ui horizontal label">' + typeName(dictionary[word]['type'], language) + '</div> ' + simplifiedTranslation(dictionary[word]["translations"], language)
 						});
 						continue wordLoop;
 					}
@@ -861,6 +861,39 @@ function getReverseSuggestionsFor(query, language) {
 	return {
 		'results': results
 	};
+}
+
+function typeName(type, language) {
+	const types = {
+		'n': 'n.',
+		'n:unc': 'n.',
+		'n:si': 'vin.',
+		'n:pr': 'npr.',
+		'pn': 'pn.',
+		'adj': 'adj.',
+		'num': 'num.',
+		'adv': 'adv.',
+		'adp': 'adp.',
+		'adp:len': 'adp+',
+		'intj': 'intj.',
+		'part': 'part.',
+		'conj': 'conj.',
+		'ctr': 'sbd.',
+		'v:?': 'v.',
+		'v:in': 'vin.',
+		'v:tr': 'vtr.',
+		'v:m': 'vm.',
+		'v:si': 'vin.',
+		'v:cp': 'vcp.',
+		'phr': 'phr.',
+		'inter': 'inter.',
+		'aff:pre': 'pref.',
+		'aff:in': 'inf.',
+		'aff:suf': 'suff.',
+		'nv:si': 'vin.',
+	};
+
+	return types[type];
 }
 
 // normalizes a query by replacing weird Unicode tìftang variations by
