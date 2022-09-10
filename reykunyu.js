@@ -766,8 +766,8 @@ function createNounConjugation(word, type) {
 
 function createAdjectiveConjugation(word) {
 	const conjugation = {
-		"prefixed": adjectives.conjugate(word["na'vi"], 'postnoun'),
-		"suffixed": adjectives.conjugate(word["na'vi"], 'prenoun')
+		"prefixed": adjectives.conjugate(word["na'vi"], 'postnoun', word["etymology"]),
+		"suffixed": adjectives.conjugate(word["na'vi"], 'prenoun', word["etymology"])
 	};
 	return conjugation;
 }

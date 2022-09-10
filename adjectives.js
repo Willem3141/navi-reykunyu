@@ -18,14 +18,17 @@ module.exports = {
  *
  * adjective - the adjective stem
  * form - the form to conjugate into: "predicative", "prenoun", or "postnoun"
+ * etymology - (optional) the etymology string, used to determine if the
+ * adjective starts with the le- prefix
  */
-function conjugate(adjective, form) {
+function conjugate(adjective, form, etymology) {
 	if (form === "predicative") {
 		return "-" + adjective + "-";
 	} else if (form === "postnoun") {
 		if (adjective.charAt(0) === "a") {
 			return "a-" + adjective.substring(1) + "-";
-		} else if (adjective.substring(0, 2) === "le" && adjective.length >= 4) {
+		} else if (adjective.substring(0, 2) === "le"
+				&& etymology && etymology.indexOf('[le:aff:pre]') !== -1) {
 			return "(a)-" + adjective + "-";
 		} else {
 			return "a-" + adjective + "-";
