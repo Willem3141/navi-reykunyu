@@ -64,10 +64,6 @@ h1 .logo {
 	vertical-align: middle;
 }
 
-#main-menu {
-	overflow-x: scroll;
-}
-
 #language-dropdown {
 	margin-left: 10px;
 }
