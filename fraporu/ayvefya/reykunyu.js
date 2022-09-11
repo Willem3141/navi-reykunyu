@@ -834,8 +834,8 @@ function infixesSection(word, infixes, note) {
 	let $section = $('<div/>').addClass('result-item conjugation');
 	let $header = $('<div/>').addClass('header').text(_('infix-positions')).appendTo($section);
 	let $body = $('<div/>').addClass('body').appendTo($section);
-	let infixesHtml = infixes.replace(".", "<span class='root-infix'>&#x2039;1&#x203a;</span>");
-	infixesHtml = infixesHtml.replace(".", "<span class='root-infix'>&#x2039;2&#x203a;</span>");
+	let infixesHtml = infixes.replace(".", "<span class='root-infix'>·</span>");
+	infixesHtml = infixesHtml.replace(".", "<span class='root-infix'>·</span>");
 	$body.html(infixesHtml + '&nbsp;&nbsp;');
 	let $infixDetailsButton = $('<button/>')
 		.addClass('ui circular basic icon button')

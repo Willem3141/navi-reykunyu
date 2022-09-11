@@ -11,13 +11,12 @@ function createErrorBlock(text, subText) {
 }
 
 function pronunciationSection(lìupam, fnel) {
-	let $tìlam = $('<span/>').addClass('stress');
 	if (!lìupam || lìupam.length === 0) {
-		$tìlam.append(_("stress-unknown"));
-		return $tìlam;
+		return false;
 	}
 
-	$tìlam.append("(");
+	let $tìlam = $('<span/>').addClass('stress');
+
 	for (let i = 0; i < lìupam.length; i++) {
 		if (i > 0) {
 			$tìlam.append(' ' + _('or') + ' ');
@@ -38,12 +37,7 @@ function pronunciationSection(lìupam, fnel) {
 		if (fnel === "n:si" || fnel === "nv:si") {
 			$tìlam.append(" si");
 		}
-		if (lìupam[i].hasOwnProperty('audio')) {
-			$tìlam.append(pronunciationAudioButtons(lìupam[i]['audio']));
-		}
 	}
-
-	$tìlam.append(")");
 
 	return $tìlam;
 }
@@ -80,17 +74,52 @@ function addLemmaClass($element, type) {
 	}
 }
 
+function statusBadge(wordStatus) {
+	let $pätsì = $('<span/>').addClass('status-badge');
+	if (wordStatus === "unconfirmed") {
+		$pätsì.text(_("status-unconfirmed"));
+		$pätsì.addClass("unconfirmed");
+	} else if (wordStatus === "unofficial") {
+		$pätsì.text(_("status-unofficial"));
+		$pätsì.addClass("unofficial");
+	} else if (wordStatus === "loan") {
+		$pätsì.text(_("status-loan"));
+		$pätsì.addClass("loan");
+	}
+	return $pätsì;
+}
+
 function createWordBlock(word) {
-	let $block = $("<div/>");
+	let $block = $("<div/>")
+		.addClass('entry');
 	const $word = $('<span/>').addClass('word').html(lemmaForm(word["na'vi"], word["type"]));
 	addLemmaClass($word, word["type"]);
 	$block.append($word);
-	$block.append(' ');
-	//$block.append(pronunciationSection(word["pronunciation"]));
-	$block.append(' ');
-	$block.append($('<div/>').addClass("ui horizontal label").text(tstxoFnelä(word["type"])));
-	$block.append(' ');
-	$block.append($('<span/>').addClass('translation').html(getTranslation(word["translations"][0])));
+	$block.append(' (');
+	$block.append($('<span/>').addClass("word-type").text(tstxoFnelä(word["type"], true)));
+	const $pronunciation = pronunciationSection(word["pronunciation"]);
+	if ($pronunciation) {
+		$block.append(', ');
+		$block.append(pronunciationSection(word["pronunciation"]));
+	}
+	if (word.hasOwnProperty('infixes')) {
+		const infixes = word['infixes'];
+		let infixesHtml = infixes.replace(".", "<span class='root-infix'>·</span>");
+		infixesHtml = infixesHtml.replace(".", "<span class='root-infix'>·</span>");
+		$block.append(', ');
+		$block.append(infixesHtml);
+	}
+	$block.append(') ');
+	if (word.hasOwnProperty('status')) {
+		$block.append(statusBadge(word['status']));
+		$block.append(' ');
+	}
+	for (const i in word["translations"]) {
+		if (word["translations"].length > 1) {
+			$block.append($('<span/>').addClass('number').html(' ' + (parseInt(i, 10) + 1) + '. '));
+		}
+		$block.append($('<span/>').addClass('translation').html(getTranslation(word["translations"][i])));
+	}
 	return $block;
 }
 
@@ -105,6 +134,25 @@ function tstxoFnelä(fnel, traditional) {
 	return "no idea.../ngaytxoa";
 }
 
+const naviAlphabet = " 'aäeéfghiìklmnoprstuvwxyz";
+
+// Compares Na'vi words a and b according to Na'vi ‘sorting rules’ (ä after a, ì
+// after i, digraphs sorted as if they were two letters using English spelling,
+// tìftang is sorted before everything else). A non-zero i specifies that the
+// first i characters of both strings are to be ignored. Returns a negative
+// value if a < b, a positive value if a > b, or 0 if a == b.
+function compareNaviWords(a, b, i) {
+	if (a.length <= i || b.length <= i) {
+		return a.length - b.length;
+	}
+	const first = a[i].toLowerCase();
+	const second = b[i].toLowerCase();
+	if (first == second) {
+		return compareNaviWords(a, b, i + 1);
+	}
+	return naviAlphabet.indexOf(first) - naviAlphabet.indexOf(second);
+}
+
 function loadWordList() {
 	let $results = $('#word-list');
 	$.getJSON('/api/frau')
@@ -115,10 +163,28 @@ function loadWordList() {
 			for (let key in dictionary) {
 				keys.push(key);
 			}
-			keys.sort(Intl.Collator().compare);
+			keys.sort(function (a, b) {
+				return compareNaviWords(a, b, 0);
+			});
+			let section = '';
+			let block = null;
 			for (let i in keys) {
+				const initial = keys[i][0];
+				if (initial !== section) {
+					let $header = $('<h2/>')
+						.append(initial)
+						.attr('id', initial);
+					if (initial === "'") {
+						$header.append($('<span/>').addClass('muted').text(' (tìftang)'));
+					}
+					$results.append($header);
+					$block = $('<div/>')
+						.addClass('letter-block');
+					$results.append($block);
+					section = initial;
+				}
 				let word = dictionary[keys[i]];
-				$results.append(createWordBlock(word));
+				$block.append(createWordBlock(word));
 			}
 		})
 		.fail(function() {

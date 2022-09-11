@@ -485,20 +485,49 @@ table.conjugation-table {
 }
 
 /* word list */
-#word-list > div {
+#word-list .letter-block {
+	column-count: 2;
+	column-gap: 40px;
+	column-rule: 1px solid #ddd;
+}
+
+@media (max-width: 768px) {
+	#word-list .letter-block {
+		column-count: 1;
+	}
+}
+
+#word-list .entry {
 	padding-bottom: 5px;
+	break-inside: avoid-column;
+	padding-left: 1.5em;
+	text-indent: -1.5em;
 }
 
-#word-list > div > span {
-	padding-right: 5px;
-}
-
-#word-list .word {
+#word-list .word,
+#word-list .number {
 	font-weight: 700;
+}
+
+#word-list .word-type {
+	font-style: italic;
 }
 
 #word-list .stressed {
 	text-decoration: underline;
+}
+#word-list .status-badge.loan,
+#word-list .status-badge.unconfirmed,
+#word-list .status-badge.unofficial {
+	background-image: url('/ayrel/tsahey.svg');
+	background-repeat: no-repeat;
+	background-size: 1em;
+	background-position: 5px 5px;
+	background-color: #fcf2c3;
+	border-radius: 10px;
+	padding: 4px 6px;
+	padding-left: 22px;
+	margin: 0 2px;
 }
 
 .warning {
