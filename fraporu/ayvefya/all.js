@@ -89,6 +89,18 @@ function statusBadge(wordStatus) {
 	return $pätsì;
 }
 
+function sourceAbbreviation(source) {
+	if (source[1].includes('naviteri.org')) {
+		return 'nt';
+	} else if (source[1].includes('forum.learnnavi.org')) {
+		return 'ln';
+	} else if (source[1].includes('wiki.learnnavi.org')) {
+		return 'wiki';
+	} else {
+		return 'o';
+	}
+}
+
 function createWordBlock(word) {
 	let $block = $("<div/>")
 		.addClass('entry');
@@ -120,6 +132,19 @@ function createWordBlock(word) {
 		}
 		$block.append($('<span/>').addClass('translation').html(getTranslation(word["translations"][i])));
 	}
+	if (word.hasOwnProperty('source')) {
+		for (const s of word['source']) {
+			if (s.length < 3 || s[1].length == 0) {
+				continue;
+			}
+			$block.append(' ');
+			$block.append($('<a/>')
+				.addClass('source-link')
+				.html(sourceAbbreviation(s))
+				.attr('title', s[0] + (s[2].length > 0 ? ' (' + s[2] + ')' : ''))
+				.attr('href', s[1]));
+		}
+	}
 	return $block;
 }
 
@@ -134,7 +159,7 @@ function tstxoFnelä(fnel, traditional) {
 	return "no idea.../ngaytxoa";
 }
 
-const naviAlphabet = " 'aäeéfghiìklmnoprstuvwxyz";
+const naviSortAlphabet = " 'aäeéfghiìklmnoprstuvwxyz";
 
 // Compares Na'vi words a and b according to Na'vi ‘sorting rules’ (ä after a, ì
 // after i, digraphs sorted as if they were two letters using English spelling,
@@ -150,14 +175,26 @@ function compareNaviWords(a, b, i) {
 	if (first == second) {
 		return compareNaviWords(a, b, i + 1);
 	}
-	return naviAlphabet.indexOf(first) - naviAlphabet.indexOf(second);
+	return naviSortAlphabet.indexOf(first) - naviSortAlphabet.indexOf(second);
 }
+
+const sections = "'aäefhiìklmnoprstuvwyz".split('');
 
 function loadWordList() {
 	let $results = $('#word-list');
 	$.getJSON('/api/frau')
 		.done(function(dictionary) {
 			$results.empty();
+
+			const $tocBar = $('#toc-bar');
+			for (const section of sections) {
+				$('<a/>')
+					.addClass('ui compact button')
+					.text(section)
+					.attr('href', '#' + section)
+					.attr('id', 'button-' + section)
+					.appendTo($tocBar);
+			}
 
 			let keys = []
 			for (let key in dictionary) {
@@ -169,7 +206,7 @@ function loadWordList() {
 			let section = '';
 			let block = null;
 			for (let i in keys) {
-				const initial = keys[i][0];
+				const initial = keys[i][0].toLowerCase();
 				if (initial !== section) {
 					let $header = $('<h2/>')
 						.append(initial)
@@ -179,7 +216,8 @@ function loadWordList() {
 					}
 					$results.append($header);
 					$block = $('<div/>')
-						.addClass('letter-block');
+						.addClass('letter-block')
+						.attr('id', 'block-' + initial);
 					$results.append($block);
 					section = initial;
 				}
@@ -194,3 +232,18 @@ function loadWordList() {
 	return false;
 }
 
+function updateToC() {
+	for (const section of sections) {
+		let $block = $('#block-' + $.escapeSelector(section));
+		let $button = $('#button-' + $.escapeSelector(section));
+
+		if ($(window).scrollTop() + $('.word-list-toc').outerHeight() < $block.offset().top + $block.outerHeight()
+				&& $(window).scrollTop() + $(window).height() > $block.offset().top) {
+			$button.addClass('active')
+		} else {
+			$button.removeClass('active')
+		}
+	}
+}
+
+$(window).on('resize scroll', updateToC);

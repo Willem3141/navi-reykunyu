@@ -31,6 +31,7 @@ body {
 	padding: 0 15px;
 	width: 100%;
 	line-height: 1.5;
+	height: auto;
 }
 
 .container {
@@ -485,6 +486,48 @@ table.conjugation-table {
 }
 
 /* word list */
+.word-list-toc {
+	position: sticky;
+	top: 0px;
+	background-color: white;
+	box-shadow: 0 0 4px 4px white;
+	text-align: center;
+}
+
+.word-list-toc #toc-bar > a.ui.button {
+	width: 2em;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+h2[id]::before {
+	content: '';
+	display: block;
+	height: 75px;
+	margin-top: -75px;
+	visibility: hidden;
+}
+
+@media (max-width: 768px) {
+	.word-list-toc #toc-bar {
+		display: flex;
+		flex-flow: row wrap;
+	}
+
+	.word-list-toc #toc-bar > a.ui.button {
+		width: 9.09090909%;
+		flex-grow: 0;
+	}
+
+	h2[id]::before {
+		content: '';
+		display: block;
+		height: 105px;
+		margin-top: -105px;
+		visibility: hidden;
+	}
+}
+
 #word-list .letter-block {
 	column-count: 2;
 	column-gap: 40px;
@@ -528,6 +571,11 @@ table.conjugation-table {
 	padding: 4px 6px;
 	padding-left: 22px;
 	margin: 0 2px;
+}
+
+#word-list .source-link {
+	font-variant: small-caps;
+	text-decoration: none;
 }
 
 .warning {
