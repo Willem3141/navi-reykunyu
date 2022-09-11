@@ -874,4 +874,19 @@ h2[id]::before {
 	.word-link:before {
 		text-decoration: underline black;
 	}
+
+	.word-list-toc {
+		background-color: black;
+		box-shadow: 0 0 4px 4px black;
+	}
+
+	#word-list .letter-block {
+		column-rule: 1px solid #555;
+	}
+
+	#word-list .status-badge.loan,
+	#word-list .status-badge.unconfirmed,
+	#word-list .status-badge.unofficial {
+		background-color: #493c00;
+	}
 }
