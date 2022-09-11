@@ -629,8 +629,8 @@ function makeAffixList(conjugated) {
 
 		} else if (conjugation['type'] === 'v') {
 			let infixes = conjugation['conjugation']['infixes'];
-			addAffix(list, 'infix', infixes[0], ['aff:in']);
-			addAffix(list, 'infix', infixes[1], ['aff:in']);
+			addPrefirstVerbInfix(list, infixes[0]);
+			addFirstVerbInfix(list, infixes[1]);
 			addAffix(list, 'infix', infixes[2], ['aff:in']);
 
 		} else if (conjugation['type'] === 'adj_to_adv') {
@@ -657,6 +657,60 @@ function addAffix(list, affixType, affixString, types) {
 			'type': affixType,
 			'affix': affix
 		});
+	}
+}
+
+function addCombinedAffix(list, affixType, combined, affixStrings, types) {
+	let combinedList = [];
+	for (const affixString of affixStrings) {
+		addAffix(combinedList, affixType, affixString, types);
+	}
+	list.push({
+		'type': affixType,
+		'affix': combined,
+		'combinedFrom': combinedList
+	});
+}
+
+function addPrefirstVerbInfix(list, affixString) {
+	if (affixString === "äpeyk") {
+		addCombinedAffix(list, 'infix', affixString, ['äp', 'eyk'], ['aff:in']);
+	} else {
+		addAffix(list, 'infix', affixString, ['aff:in']);
+	}
+}
+
+function addFirstVerbInfix(list, affixString) {
+	if (affixString === "ìsy") {
+		addCombinedAffix(list, 'infix', affixString, ['ìy', 's'], ['aff:in']);
+	} else if (affixString === "asy") {
+		addCombinedAffix(list, 'infix', affixString, ['ay', 's'], ['aff:in']);
+	} else if (affixString === "alm") {
+		addCombinedAffix(list, 'infix', affixString, ['am', 'ol'], ['aff:in']);
+	} else if (affixString === "ìlm") {
+		addCombinedAffix(list, 'infix', affixString, ['ìm', 'ol'], ['aff:in']);
+	} else if (affixString === "ìly") {
+		addCombinedAffix(list, 'infix', affixString, ['ìy', 'ol'], ['aff:in']);
+	} else if (affixString === "aly") {
+		addCombinedAffix(list, 'infix', affixString, ['ay', 'ol'], ['aff:in']);
+	} else if (affixString === "arm") {
+		addCombinedAffix(list, 'infix', affixString, ['am', 'em'], ['aff:in']);
+	} else if (affixString === "ìrm") {
+		addCombinedAffix(list, 'infix', affixString, ['ìm', 'em'], ['aff:in']);
+	} else if (affixString === "ìry") {
+		addCombinedAffix(list, 'infix', affixString, ['ìy', 'em'], ['aff:in']);
+	} else if (affixString === "ary") {
+		addCombinedAffix(list, 'infix', affixString, ['ay', 'em'], ['aff:in']);
+	} else if (affixString === "imv") {
+		addCombinedAffix(list, 'infix', affixString, ['am', 'iv'], ['aff:in']);
+	} else if (affixString === "ìyev") {
+		addCombinedAffix(list, 'infix', affixString, ['ay', 'iv'], ['aff:in']);
+	} else if (affixString === "ilv") {
+		addCombinedAffix(list, 'infix', affixString, ['ol', 'iv'], ['aff:in']);
+	} else if (affixString === "irv") {
+		addCombinedAffix(list, 'infix', affixString, ['er', 'iv'], ['aff:in']);
+	} else {
+		addAffix(list, 'infix', affixString, ['aff:in']);
 	}
 }
 

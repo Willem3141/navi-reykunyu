@@ -556,18 +556,49 @@ function affixesSection(affixes) {
 	let $table = $('<table/>').appendTo($affixes);
 	for (let a of affixes) {
 		const affix = a['affix'];
-		let $tr = $('<tr/>').appendTo($table);
-		let $affixLink = $('<a/>')
-			.addClass('word-link')
-			.html(lemmaForm(affix["na'vi"], affix['type']))
-			//.addClass(a['type'])
-			.attr('href', '/?q=' + affix["na'vi"]);
-		addLemmaClass($affixLink, affix['type']);
-		$('<td/>').append($affixLink)
-			.append(typeBadge(affix['type'], true))
-			.appendTo($tr);
-		$meaningCell = $('<td/>').appendTo($tr);
-		$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
+		if (a.hasOwnProperty('combinedFrom')) {
+			let $tr = $('<tr/>').appendTo($table);
+			let $affixSpan = $('<span/>')
+				.html(lemmaForm(affix, 'aff:in'));
+			addLemmaClass($affixSpan, 'aff:in');
+			$('<td/>')
+				.append($affixSpan)
+				.append(typeBadge('aff:in', true))
+				.appendTo($tr);
+			let $componentsCell = $('<td/>').appendTo($tr);
+			let $meaningCell = $('<td/>').appendTo($tr);
+			let first = true;
+			for (const c of a['combinedFrom']) {
+				if (first) {
+					$componentsCell.append('= ');
+					first = false;
+				} else {
+					$componentsCell.append(' + ');
+					$meaningCell.append(' + ');
+				}
+				let $affixLink = $('<a/>')
+					.addClass('word-link')
+					.html(lemmaForm(c['affix']["na'vi"], c['affix']['type']))
+					.attr('href', '/?q=' + affix["na'vi"]);
+				addLemmaClass($affixLink, c['affix']['type']);
+				$componentsCell.append($affixLink);
+				$meaningCell.append($('<span/>').text(getTranslation(c['affix']["translations"][0])));
+			}
+		} else {
+			let $tr = $('<tr/>').appendTo($table);
+			let $affixLink = $('<a/>')
+				.addClass('word-link')
+				.html(lemmaForm(affix["na'vi"], affix['type']))
+				//.addClass(a['type'])
+				.attr('href', '/?q=' + affix["na'vi"]);
+			addLemmaClass($affixLink, affix['type']);
+			$('<td/>').append($affixLink)
+				.append(typeBadge(affix['type'], true))
+				.attr('colspan', 2)
+				.appendTo($tr);
+			let $meaningCell = $('<td/>').appendTo($tr);
+			$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
+		}
 	}
 
 	$affixesSection.append($affixes);
