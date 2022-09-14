@@ -181,7 +181,7 @@ function compareNaviWords(a, b, i) {
 const sections = "'aäefhiìklmnoprstuvwyz".split('');
 
 function loadWordList() {
-	let $results = $('#word-list');
+	let $results = $('#word-list-result');
 	$.getJSON('/api/frau')
 		.done(function(dictionary) {
 			$results.empty();
