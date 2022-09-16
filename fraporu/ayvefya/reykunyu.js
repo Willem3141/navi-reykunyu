@@ -239,7 +239,7 @@ function adjectiveConjugationExplanation(conjugation) {
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	if (conjugation["form"] === "postnoun") {
-		$('<span/>').addClass('suffix').html("a").appendTo($conjugation);
+		$('<span/>').addClass('prefix').html("a").appendTo($conjugation);
 		$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 	}
 
