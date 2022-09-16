@@ -638,6 +638,14 @@ function makeAffixList(conjugated) {
 			addFirstVerbInfix(list, infixes[1]);
 			addAffix(list, 'infix', infixes[2], ['aff:in']);
 
+		} else if (conjugation['type'] === 'adj') {
+			let form = conjugation['conjugation']['form'];
+			if (form === 'postnoun') {
+				addAffix(list, 'prefix', 'a', ['aff:pre']);
+			} else if (form === 'prenoun') {
+				addAffix(list, 'suffix', 'a', ['aff:suf']);
+			}
+
 		} else if (conjugation['type'] === 'adj_to_adv') {
 			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
 		}
