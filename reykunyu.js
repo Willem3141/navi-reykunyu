@@ -498,10 +498,15 @@ function lookUpAdjective(queryWord, wordResults) {
 	adjectiveResults.forEach(function (adjResult) {
 		if (dictionary.hasOwnProperty(adjResult["root"] + ":adj")) {
 			adjective = JSON.parse(JSON.stringify(dictionary[adjResult["root"] + ":adj"]));
+			let conjugation = conjugationString.formsFromString(
+				adjectives.conjugate(adjResult["root"], adjResult["form"], adjective["etymology"]));
+			let adjResultCopy = JSON.parse(JSON.stringify(adjResult));
+			adjResultCopy["result"] = conjugation;
 			adjective["conjugated"] = [{
 				"type": "adj",
-				"conjugation": adjResult
+				"conjugation": adjResultCopy
 			}];
+			adjective["affixes"] = makeAffixList(adjective["conjugated"]);
 			wordResults.push(adjective);
 		}
 
