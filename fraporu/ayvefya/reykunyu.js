@@ -171,6 +171,9 @@ function conjugationExplanation(conjugation) {
 			case "v_to_adj":
 				$explanation.append(verbToAdjectiveConjugationExplanation(c));
 				break;
+			case "v_to_part":
+				$explanation.append(verbToParticipleConjugationExplanation(c));
+				break;
 			case "adj_to_adv":
 				$explanation.append(adjectiveToAdverbConjugationExplanation(c));
 				break;
@@ -285,6 +288,23 @@ function verbToAdjectiveConjugationExplanation(conjugation) {
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
+
+	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
+	typeBadge('adj', true).appendTo($conjugation);
+
+	return $conjugation;
+}
+
+function verbToParticipleConjugationExplanation(conjugation) {
+	let $conjugation = $('<div/>').addClass('conjugation-explanation');
+
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
+
+	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+	$('<span/>').addClass('infix').html("&#x2039;" + conjugation["affixes"][0] + "&#x203a;").appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);

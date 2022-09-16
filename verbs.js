@@ -167,6 +167,9 @@ function tryFirstInfixes(candidate) {
 		}
 	};
 
+	tryInfix("us", "us");
+	tryInfix("awn", "awn");
+
 	tryInfix("am", "am");
 	tryInfix("ìm", "ìm");
 	tryInfix("ìy", "ìy");

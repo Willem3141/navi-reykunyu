@@ -469,10 +469,15 @@ function lookUpNoun(queryWord, wordResults) {
 	});
 }
 
-function lookUpVerb(queryWord, wordResults) {
+function lookUpVerb(queryWord, wordResults, allowParticiples) {
 	// handles conjugated verbs
 	let verbResults = verbs.parse(queryWord);
 	verbResults.forEach(function (result) {
+		const infixes = result['infixes'];
+		if (!allowParticiples && (infixes[1] === 'us' || infixes[1] === 'awn')) {
+			// these are handled as adjectives; see lookUpAdjective()
+			return;
+		}
 		let results = findVerb(result["root"]);
 		for (let verb of results) {
 			let conjugation = conjugationString.formsFromString(
@@ -510,6 +515,35 @@ function lookUpAdjective(queryWord, wordResults) {
 			wordResults.push(adjective);
 		}
 
+		// verb participles (somewhat hacky as the <us>/<awn> is parsed by the
+		// verb parser, so we have to take that out again...)
+		let verbResults = [];
+		lookUpVerb(adjResult["root"], verbResults, true);
+		verbResults.forEach(function (verb) {
+			const infixes = verb['conjugated'][0]['conjugation']['infixes'];
+			if (infixes[1] === 'us' || infixes[1] === 'awn') {
+				let infixesWithoutFirst = [infixes[0], '', infixes[2]];
+				let conjugatedWithoutFirst = conjugationString.formsFromString(verbs.conjugate(verb["infixes"], infixesWithoutFirst));
+				verb['conjugated'][0]['conjugation']['result'] = conjugatedWithoutFirst;
+				verb['conjugated'][0]['conjugation']['infixes'] = infixesWithoutFirst;
+				verb["conjugated"].push({
+					"type": "v_to_part",
+					"conjugation": {
+						"result": [adjResult["root"]],
+						"root": conjugatedWithoutFirst[0],
+						"affixes": [infixes[1]]
+					}
+				});
+				verb["conjugated"].push({
+					"type": "adj",
+					"conjugation": adjResult
+				});
+				verb["affixes"] = makeAffixList(verb["conjugated"]);
+				wordResults.push(verb);
+			}
+		});
+
+		// (ke)tsuk- + <verb>
 		const prefixes = ['tsuk', 'ketsuk'];
 		for (const prefix of prefixes) {
 			if (adjResult["root"].startsWith(prefix)) {
@@ -631,6 +665,9 @@ function makeAffixList(conjugated) {
 
 		} else if (conjugation['type'] === 'v_to_adj') {
 			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
+
+		} else if (conjugation['type'] === 'v_to_part') {
+			addAffix(list, 'infix', affixes[0], ['aff:in']);
 
 		} else if (conjugation['type'] === 'v') {
 			let infixes = conjugation['conjugation']['infixes'];
