@@ -591,16 +591,16 @@ h2[id]::before {
 	top: 20px;
 }
 
-.columns {
+.two-columns {
 	display: flex;
 	flex-flow: row wrap;
 }
-.column {
+.two-columns .column {
 	width: 50%;
 	flex-grow: 0;
 }
 @media (max-width: 768px) {
-	.column {
+	.two-columns .column {
 		width: 100%;
 	}
 }
