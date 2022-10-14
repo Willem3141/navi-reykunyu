@@ -40,6 +40,8 @@ try {
 	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
 }
 
+var zeykerokyu = require('./zeykerokyu');
+
 const ejs = require('ejs');
 
 app.use(require('body-parser').urlencoded({ extended: true }));
@@ -380,6 +382,12 @@ app.get('/untranslated', function(req, res) {
 	res.render('untranslated', { user: req.user, untranslated: untranslated });
 });
 
+app.get('/study', function(req, res) {
+	zeykerokyu.getLessons(req.user, (lessonData) => {
+		res.render('study', { user: req.user, lessons: lessonData });
+	});
+});
+
 app.get('/api/fwew-search', function(req, res) {
 	res.json({
 		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"]),
@@ -473,6 +481,17 @@ app.get('/api/random', function(req, res) {
 
 app.get('/api/rhymes', function(req, res) {
 	res.json(reykunyu.getRhymes(req.query["tìpawm"]));
+});
+
+app.get('/api/srs/lessons', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.getLessons(req.user, (lessons) => {
+		res.json(lessons);
+	});
 });
 
 app.use('/ayrel', express.static('ayrel'));

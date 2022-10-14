@@ -8,6 +8,7 @@ module.exports = {
 	'getRandomWords': getRandomWords,
 	'getUntranslated': getUntranslated,
 	'getAll': getAll,
+	'getAllKeys': getAllKeys,
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
 	'getRhymes': getRhymes,
@@ -1138,6 +1139,14 @@ function getUntranslated(language) {
 
 function getAll() {
 	return dictionary;
+}
+
+function getAllKeys() {
+	let result = [];
+	for (let key in dictionary) {
+		result.push(key);
+	}
+	return result;
 }
 
 function getVerbs() {
