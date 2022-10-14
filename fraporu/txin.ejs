@@ -35,6 +35,7 @@
 				</div>
 				<div class="ui buttons right floated">
 					<a class="ui icon basic button" href="/all"><i class="book icon"></i> All words</a>
+					<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i> Study</a>
 					<% if (user) { %>
 					<div class="ui icon top right pointing dropdown basic button">
 						<i class="wrench icon"></i> Administration
@@ -52,7 +53,6 @@
 					<% } else { %>
 					<a class="ui icon basic button" href="/login"><i class="user icon"></i> Login</a>
 					<% } %>
-					<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i> Study</a>
 					<div id="settings-button" class="ui icon basic button" href="/all"><i class="cogs icon"></i> Settings</div>
 					<div id="credits-button" class="ui icon basic button" href="/all"><i class="question icon"></i> Help</div>
 			</div>

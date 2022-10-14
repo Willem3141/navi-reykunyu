@@ -494,6 +494,28 @@ app.get('/api/srs/lessons', function(req, res) {
 	});
 });
 
+app.get('/api/srs/learnable', function(req, res) {
+	if (!req.user || !req.query.hasOwnProperty('lessonId')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.getLearnableItemsForLesson(req.query['lessonId'], req.user, (items) => {
+		res.json(items);
+	});
+});
+
+app.get('/api/srs/reviewable', function(req, res) {
+	if (!req.user || !req.query.hasOwnProperty('lessonId')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.getReviewableItemsForLesson(req.query['lessonId'], req.user, (items) => {
+		res.json(items);
+	});
+});
+
 app.use('/ayrel', express.static('ayrel'));
 
 app.use('/fam', express.static('fam'));

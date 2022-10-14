@@ -50,10 +50,50 @@ function getLessons(user, cb) {
 }
 
 function getLessonItems() {
+	// TODO
 }
 
-function getLearnableItemsForLesson() {
+function getLearnableItemsForLesson(lessonId, user, cb) {
+	if (!user) {
+		cb([]);
+	}
+	db.all(`select v.vocab from vocab_in_lesson v
+		where v.lesson_id == ?
+			and v.vocab not in (
+				select vocab
+				from vocab_status
+				where user == ?
+			)
+		limit 10
+		`, lessonId, user.username, (err, lessons) => {
+			if (err) {
+				cb([]);
+				console.log(err);
+			} else {
+				cb(lessons);
+			}
+		}
+	);
 }
 
-function getReviewableItemsForLesson() {
+function getReviewableItemsForLesson(lessonId, user, cb) {
+	if (!user) {
+		cb([]);
+	}
+	db.all(`select v.vocab
+		from vocab_status s, vocab_in_lesson v
+		where s.user == ?
+			and s.next_review <= current_timestamp
+			and v.vocab == s.vocab
+			and v.lesson_id == ?
+		limit 50
+		`, user.username, lessonId, (err, lessons) => {
+			if (err) {
+				cb([]);
+				console.log(err);
+			} else {
+				cb(lessons);
+			}
+		}
+	);
 }
