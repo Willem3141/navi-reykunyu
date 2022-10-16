@@ -137,5 +137,20 @@
 			"tsurak:n",
 			"nìtrea:adv"
 		]
+	},
+	{
+		"name": "Pandoran Animals",
+		"description": "Learn all the Na'vi names for animals found on Pandora.",
+		"words": [
+			"toruk:n",
+			"nantang:n",
+			"yerik:n",
+			"talioang:n",
+			"syaksyuk:n",
+			"riti:n",
+			"fwampop:n",
+			"'angtsìk:n",
+			"pa'li:n"
+		]
 	}
 ]

@@ -34,19 +34,20 @@
 		<div class="container">
 			<h2>Available lessons</h2>
 			<div class="lessons-container">
-				<% for (const lesson of lessons) { %>
-				<div class="lesson-container">
+				<% for (const i in lessons) {
+					const lesson = lessons[i]; %>
+				<a class="lesson-container" href="/study/<%= lesson['reviewable_count'] > 0 ? 'review' : 'learn' %>?lesson=<%= i %>">
 					<div class="lesson-name"><%= lesson['name'] %></div>
 					<div class="lesson-description"><%= lesson['description'] %></div>
 					<div class="lesson-progress"><b><%= lesson['total_count'] %></b> items
 						<% if (lesson['known_count'] > 0) { %>
-						&bull; <b><%= lesson['known_count'] %></b> known
+						&bull; <b><%= lesson['known_count'] %></b> learned
 						<% } %>
 						<% if (lesson['reviewable_count'] > 0) { %>
 						&bull; <b><%= lesson['reviewable_count'] %></b> now up for review
 						<% } %>
 					</div>
-				</div>
+				</a>
 				<% } %>
 			</div>
 		</div>

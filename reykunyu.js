@@ -1,5 +1,6 @@
 module.exports = {
 	'getWord': getWord,
+	'getWordPostprocessed': getWordPostprocessed,
 	'hasWord': hasWord,
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
@@ -198,6 +199,12 @@ function simplifiedTranslation(translation, language) {
 
 function getWord(word, type) {
 	return dictionary[word.toLowerCase() + ':' + type];
+}
+
+function getWordPostprocessed(word, type) {
+	let result = JSON.parse(JSON.stringify(getWord(word, type)));
+	postprocessResult(result);
+	return result;
 }
 
 function hasWord(word, type) {

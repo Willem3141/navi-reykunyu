@@ -388,6 +388,10 @@ app.get('/study', function(req, res) {
 	});
 });
 
+app.get('/api/word', function(req, res) {
+	res.json(reykunyu.getWordPostprocessed(req.query['word'], req.query['type']));
+});
+
 app.get('/api/fwew-search', function(req, res) {
 	res.json({
 		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"]),
@@ -513,6 +517,39 @@ app.get('/api/srs/reviewable', function(req, res) {
 	}
 	zeykerokyu.getReviewableItemsForLesson(req.query['lessonId'], req.user, (items) => {
 		res.json(items);
+	});
+});
+
+app.post('/api/srs/mark-correct', function(req, res) {
+	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.processCorrectAnswer(req.user, req.body['vocab'], (items) => {
+		res.send();
+	});
+});
+
+app.post('/api/srs/mark-incorrect', function(req, res) {
+	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.processIncorrectAnswer(req.user, req.body['vocab'], (items) => {
+		res.send();
+	});
+});
+
+app.post('/api/srs/mark-known', function(req, res) {
+	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.processKnownAnswer(req.user, req.body['vocab'], (items) => {
+		res.send();
 	});
 });
 

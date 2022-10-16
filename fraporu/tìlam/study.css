@@ -4,6 +4,9 @@
 }
 
 .lesson-container {
+	display: block;
+	color: black;
+	text-decoration: none;
 	border-top: 1px solid #ddd;
 	position: relative;
 	padding: 20px;
@@ -13,6 +16,7 @@
 	transition: background-color 0.2s;
 }
 .lesson-container:hover {
+	color: black;
 	background-color: #fafafa;
 }
 .lesson-container:before {
