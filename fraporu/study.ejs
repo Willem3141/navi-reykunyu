@@ -35,8 +35,9 @@
 			<h2>Available lessons</h2>
 			<div class="lessons-container">
 				<% for (const i in lessons) {
-					const lesson = lessons[i]; %>
-				<a class="lesson-container" href="/study/<%= lesson['reviewable_count'] > 0 ? 'review' : 'learn' %>?lesson=<%= i %>">
+					const lesson = lessons[i];
+					const reviewOrLearn = lesson['reviewable_count'] > 0 ? 'review' : 'learn'; %>
+				<a class="lesson-container <%= reviewOrLearn %>-link" href="/study/<%= reviewOrLearn %>?lesson=<%= i %>">
 					<div class="lesson-name"><%= lesson['name'] %></div>
 					<div class="lesson-description"><%= lesson['description'] %></div>
 					<div class="lesson-progress"><b><%= lesson['total_count'] %></b> items

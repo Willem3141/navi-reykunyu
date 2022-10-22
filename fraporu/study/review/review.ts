@@ -4,6 +4,7 @@ class ReviewPage {
 	currentItemIndex = 0;
 	currentItem: any = null;
 	correctAnswer = '';
+	correctStress: number | null = null;
 	correctCount = 0;
 
 	constructor() {
@@ -45,11 +46,16 @@ class ReviewPage {
 	setUpQuestion(): void {
 		const word = this.currentItem;
 		let navi = word["na'vi"];
-		let pronunciation = '';
 		if (word['type'] == 'n:si') {
 			navi += ' si';
 		}
 		this.correctAnswer = navi;
+		if (word.hasOwnProperty('pronunciation') && word['pronunciation'].length === 1
+				&& word['pronunciation'][0]['syllables'].indexOf('-') !== -1) {
+			this.correctStress = word['pronunciation'][0]['stressed'];
+		} else {
+			this.correctStress = null;
+		}
 
 		let english = '';
 		if (word['translations'].length > 1) {
@@ -104,22 +110,33 @@ class ReviewPage {
 		}
 		return mapping[type];
 	}
-	  
-	checkAnswer(): void {
-		const answer = ('' + $('#navi-card').val()!).trim().toLowerCase();
 
-		if (answer === this.correctAnswer.toLowerCase()) {
-			$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
-			this.correctCount++;
-		} else {
-			$.post('/api/srs/mark-incorrect', { 'vocab': this.items[this.currentItemIndex] });
+	checkAnswer(): void {
+		let answer = ('' + $('#navi-card').val()!).trim().toLowerCase();
+		const lastCharacter = parseInt(answer.charAt(answer.length - 1), 10);
+		let stress: number | null = null;
+		if (!isNaN(lastCharacter)) {
+			stress = lastCharacter;
 		}
 
-		this.currentItemIndex++;
-		if (this.currentItemIndex >= this.items.length) {
-			this.showResults();
+		if (isNaN(lastCharacter) && this.correctStress !== null) {
+			// ask for stress
+
 		} else {
-			this.fetchAndSetUp();
+
+			if (answer === this.correctAnswer.toLowerCase()) {
+				$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
+				this.correctCount++;
+			} else {
+				$.post('/api/srs/mark-incorrect', { 'vocab': this.items[this.currentItemIndex] });
+			}
+
+			this.currentItemIndex++;
+			if (this.currentItemIndex >= this.items.length) {
+				this.showResults();
+			} else {
+				this.fetchAndSetUp();
+			}
 		}
 	}
 

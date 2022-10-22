@@ -188,6 +188,12 @@ input.card:focus {
 	border-top: 1px solid #ddd;
 }
 
+.speed-tip {
+	font-size: 70%;
+	color: #888;
+	display: none;
+}
+
 #definition .lemma {
 	font-weight: bold;
 }

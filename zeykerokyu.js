@@ -102,6 +102,8 @@ function getReviewableItemsForLesson(lessonId, user, cb) {
 	);
 }
 
+/// If an item is put into stage i, then its next review should be scheduled
+/// after time intervalDuration[i].
 const intervalDuration = [
 	'0 hours',
 	'0 hours',
@@ -145,12 +147,13 @@ function processCorrectAnswer(user, vocab, cb) {
 			} else {
 				// otherwise update the SRS stage and next review time in the
 				// database
-				let stage = result['srs_stage'];
+				const stage = result['srs_stage'];
+				const newStage = Math.min(stage + 1, 6);
 				db.run(`update vocab_status
-					set (srs_stage, next_review) = (?, datetime(current_timestamp || " + " || ?))
+					set (srs_stage, next_review) = (?, datetime(current_timestamp, "+" || ?))
 					where user == ?
 						and vocab == ?`,
-					Math.min(stage + 1, 6), intervalDuration[stage], user.username, vocab, (err) => {
+					newStage, intervalDuration[newStage], user.username, vocab, (err) => {
 						if (err) {
 							cb();
 							console.log(err);
@@ -187,11 +190,12 @@ function processIncorrectAnswer(user, vocab, cb) {
 				// otherwise update the SRS stage and next review time in the
 				// database
 				let stage = result['srs_stage'];
+				const newStage = 2;
 				db.run(`update vocab_status
-					set (srs_stage, next_review) = (?, datetime(current_timestamp || " + " || ?))
+					set (srs_stage, next_review) = (?, datetime(current_timestamp, "+" || ?))
 					where user == ?
 						and vocab == ?`,
-					2, intervalDuration[stage], user.username, vocab, (err) => {
+					newStage, intervalDuration[newStage], user.username, vocab, (err) => {
 						if (err) {
 							cb();
 							console.log(err);
