@@ -40,6 +40,9 @@ a {
 .card {
 	background-color: white;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+	border: none;
+	width: 100%;
+	box-sizing: border-box;
 	border-radius: 4px;
 	font-size: 25px;
 	margin: auto;
@@ -59,6 +62,11 @@ a {
 
 .card .type {
 	color: #888;
+}
+
+input.card:focus {
+	outline: none;
+	border: 2px solid #4ca6ff;
 }
 
 .semicard {

@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Review</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/tìlam/study-session.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="main-container">
+			<div id="english-card" class="card">
+				<div id="english">
+				</div>
+			</div>
+			<input id="navi-card" class="card">
+			</input>
+			<div id="buttons-card" class="semicard">
+				<button class="button primary-button" id="check-button">Check &rarr;</button>
+				<button class="button secondary-button" id="exit-button" data-text="This button exits your reviewing session. Your progress so far will still be saved.">Exit session &rarr;</button>
+			</div>
+		</div>
+		<div class="progress-bar">
+			<div class="filled-part" style="width: 0%;">
+			</div>
+		</div>
+		<div id="dialog-layer" style="display: none;">
+			<div id="done-dialog" class="dialog">
+				<div class="dialog-header">
+					Congratulations, you've reviewed <span id="done-dialog-item-count">?</span> words!
+				</div>
+				<div class="dialog-body">
+					Click the button below to go back to the overview. There may be more reviews for this lesson!
+				</div>
+				<div class="dialog-buttons">
+					<a class="button primary-button" id="back-button" href="/study">Back &rarr;</a>
+				</div>
+			</div>
+		</div>
+		<script src="/aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="review.js"></script>
+	</body>
+</html>
+

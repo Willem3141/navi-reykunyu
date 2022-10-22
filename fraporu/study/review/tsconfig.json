@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"module": "none",
+		"moduleResolution": "node",
+		"outDir": ".",
+		"sourceMap": true,
+		"strict": true,
+		"target": "es5"
+	},
+	"files": [
+		"review.ts"
+	]
+}
+
