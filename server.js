@@ -225,11 +225,6 @@ app.post('/edit', function(req, res) {
 });
 
 app.get('/history', function(req, res) {
-	if (!req.user) {
-		res.status(403);
-		res.send('403 Forbidden');
-		return;
-	}
 	let historyData = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
 	historyData = historyData.slice(Math.max(1, historyData.length - 50));  // 50 last elements
 	historyData.reverse();
