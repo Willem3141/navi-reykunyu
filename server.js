@@ -431,6 +431,33 @@ app.get('/api/conjugate/verb', function(req, res) {
 		req.query["verb"], [req.query["prefirst"], req.query["first"], req.query["second"]])));
 });
 
+app.get('/api/history/all', function(req, res) {
+	let historyData = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	res.json(historyData);
+});
+
+app.get('/api/history/major-changes', function(req, res) {
+	let historyData = [];
+	for (let entry of JSON.parse(fs.readFileSync(__dirname + "/history.json"))) {
+		if (!entry.hasOwnProperty('old')) {
+			historyData.push({
+				'date': entry['date'],
+				'new': [entry['data']["na'vi"], entry['data']['type']]
+			});
+		} else {
+			if (entry['old']["na'vi"] !== entry['data']["na'vi"] ||
+				entry['old']['type'] !== entry['data']['type']) {
+				historyData.push({
+					'date': entry['date'],
+					'old': [entry['old']["na'vi"], entry['old']['type']],
+					'new': [entry['data']["na'vi"], entry['data']['type']]
+				});
+			}
+		}
+	}
+	res.json(historyData);
+});
+
 app.get('/api/frau', function(req, res) {
 	res.json(reykunyu.getAll());
 });
