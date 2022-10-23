@@ -67,6 +67,7 @@ function getLearnableItemsForLesson(lessonId, user, cb) {
 				from vocab_status
 				where user == ?
 			)
+		` + ((lessonId == 0) ? `order by random()` : ``) + `
 		limit 10
 		`, lessonId, user.username, (err, lessons) => {
 			if (err) {
