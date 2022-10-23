@@ -40,6 +40,8 @@ try {
 	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
 }
 
+var zeykerokyu = require('./zeykerokyu');
+
 const ejs = require('ejs');
 
 app.use(require('body-parser').urlencoded({ extended: true }));
@@ -223,11 +225,6 @@ app.post('/edit', function(req, res) {
 });
 
 app.get('/history', function(req, res) {
-	if (!req.user) {
-		res.status(403);
-		res.send('403 Forbidden');
-		return;
-	}
 	let historyData = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
 	historyData = historyData.slice(Math.max(1, historyData.length - 50));  // 50 last elements
 	historyData.reverse();
@@ -380,6 +377,16 @@ app.get('/untranslated', function(req, res) {
 	res.render('untranslated', { user: req.user, untranslated: untranslated });
 });
 
+app.get('/study', function(req, res) {
+	zeykerokyu.getLessons(req.user, (lessonData) => {
+		res.render('study', { user: req.user, lessons: lessonData });
+	});
+});
+
+app.get('/api/word', function(req, res) {
+	res.json(reykunyu.getWordPostprocessed(req.query['word'], req.query['type']));
+});
+
 app.get('/api/fwew-search', function(req, res) {
 	res.json({
 		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"]),
@@ -422,6 +429,33 @@ app.get('/api/annotated/suggest', function(req, res) {
 app.get('/api/conjugate/verb', function(req, res) {
 	res.json(conjugationString.formsFromString(verbs.conjugate(
 		req.query["verb"], [req.query["prefirst"], req.query["first"], req.query["second"]])));
+});
+
+app.get('/api/history/all', function(req, res) {
+	let historyData = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	res.json(historyData);
+});
+
+app.get('/api/history/major-changes', function(req, res) {
+	let historyData = [];
+	for (let entry of JSON.parse(fs.readFileSync(__dirname + "/history.json"))) {
+		if (!entry.hasOwnProperty('old')) {
+			historyData.push({
+				'date': entry['date'],
+				'new': [entry['data']["na'vi"], entry['data']['type']]
+			});
+		} else {
+			if (entry['old']["na'vi"] !== entry['data']["na'vi"] ||
+				entry['old']['type'] !== entry['data']['type']) {
+				historyData.push({
+					'date': entry['date'],
+					'old': [entry['old']["na'vi"], entry['old']['type']],
+					'new': [entry['data']["na'vi"], entry['data']['type']]
+				});
+			}
+		}
+	}
+	res.json(historyData);
 });
 
 app.get('/api/frau', function(req, res) {
@@ -473,6 +507,72 @@ app.get('/api/random', function(req, res) {
 
 app.get('/api/rhymes', function(req, res) {
 	res.json(reykunyu.getRhymes(req.query["tìpawm"]));
+});
+
+app.get('/api/srs/lessons', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.getLessons(req.user, (lessons) => {
+		res.json(lessons);
+	});
+});
+
+app.get('/api/srs/learnable', function(req, res) {
+	if (!req.user || !req.query.hasOwnProperty('lessonId')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.getLearnableItemsForLesson(req.query['lessonId'], req.user, (items) => {
+		res.json(items);
+	});
+});
+
+app.get('/api/srs/reviewable', function(req, res) {
+	if (!req.user || !req.query.hasOwnProperty('lessonId')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.getReviewableItemsForLesson(req.query['lessonId'], req.user, (items) => {
+		res.json(items);
+	});
+});
+
+app.post('/api/srs/mark-correct', function(req, res) {
+	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.processCorrectAnswer(req.user, req.body['vocab'], (items) => {
+		res.send();
+	});
+});
+
+app.post('/api/srs/mark-incorrect', function(req, res) {
+	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.processIncorrectAnswer(req.user, req.body['vocab'], (items) => {
+		res.send();
+	});
+});
+
+app.post('/api/srs/mark-known', function(req, res) {
+	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+		res.status(403);
+		res.send('403 Forbidden');
+		return;
+	}
+	zeykerokyu.processKnownAnswer(req.user, req.body['vocab'], (items) => {
+		res.send();
+	});
 });
 
 app.use('/ayrel', express.static('ayrel'));

@@ -1,0 +1,59 @@
+.lessons-container {
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+.lesson-container {
+	display: block;
+	color: black;
+	text-decoration: none;
+	border-top: 1px solid #ddd;
+	position: relative;
+	padding: 20px;
+	padding-right: 120px;
+	cursor: pointer;
+	background-color: #fff;
+	transition: background-color 0.2s;
+}
+.lesson-container:hover {
+	color: black;
+	background-color: #fafafa;
+}
+.lesson-container:before {
+	font-size: 25px;
+	font-weight: 700;
+	color: #888;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 35px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	opacity: 0;
+	transition: opacity 0.2s, right 0.2s;
+}
+.lesson-container:hover:before {
+	opacity: 1;
+	right: 25px;
+}
+
+.lesson-container.learn-link:before {
+	content: "Learn →";
+}
+.lesson-container.review-link:before {
+	content: "Review →";
+}
+
+.lesson-container:first-child {
+	border: none;
+}
+
+.lesson-name {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.lesson-progress {
+	/*text-align: center;*/
+}

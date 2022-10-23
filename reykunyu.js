@@ -1,5 +1,6 @@
 module.exports = {
 	'getWord': getWord,
+	'getWordPostprocessed': getWordPostprocessed,
 	'hasWord': hasWord,
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
@@ -8,6 +9,7 @@ module.exports = {
 	'getRandomWords': getRandomWords,
 	'getUntranslated': getUntranslated,
 	'getAll': getAll,
+	'getAllKeys': getAllKeys,
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
 	'getRhymes': getRhymes,
@@ -197,6 +199,12 @@ function simplifiedTranslation(translation, language) {
 
 function getWord(word, type) {
 	return dictionary[word.toLowerCase() + ':' + type];
+}
+
+function getWordPostprocessed(word, type) {
+	let result = JSON.parse(JSON.stringify(getWord(word, type)));
+	postprocessResult(result);
+	return result;
 }
 
 function hasWord(word, type) {
@@ -1138,6 +1146,14 @@ function getUntranslated(language) {
 
 function getAll() {
 	return dictionary;
+}
+
+function getAllKeys() {
+	let result = [];
+	for (let key in dictionary) {
+		result.push(key);
+	}
+	return result;
 }
 
 function getVerbs() {
