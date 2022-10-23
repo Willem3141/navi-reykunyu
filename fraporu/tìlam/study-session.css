@@ -69,6 +69,19 @@ input.card:focus {
 	border: 2px solid #4ca6ff;
 }
 
+input.card.correct,
+.syllable.correct {
+	border: 2px solid #3a9550;
+	color: #3a9550;
+}
+
+input.card.incorrect,
+.syllable.incorrect {
+	border: 2px solid #d6443f;
+	color: #d6443f;
+	text-decoration: line-through;
+}
+
 .semicard {
 	font-size: 18px;
 	margin: auto;
@@ -82,6 +95,10 @@ input.card:focus {
 .semicard-header {
 	font-weight: 700;
 	margin-bottom: 4px;
+}
+
+#correction {
+	font-size: 25px;
 }
 
 #word-image {
@@ -203,7 +220,7 @@ input.card:focus {
 }
 
 #syllables {
-	padding: 20px;
+	padding: 5px;
 }
 
 .syllable, .separator {
@@ -213,45 +230,20 @@ input.card:focus {
 }
 
 .syllable {
-	background-color: rgba(255, 255, 255, 0.25);
-	transition: background-color 0.1s, border 0.1s, box-shadow 0.1s;
-	border-radius: 10px;
-	border: 1px solid rgba(255, 255, 255, 0.0);
+	background-color: white;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+	border: 2px solid white;
+	border-radius: 4px;
 	cursor: pointer;
 }
-.syllable:hover {
-	background-color: rgba(255, 255, 255, 0.5);
-}
-.syllable.correct.chosen {
-	border: 1px solid #116633;
-	box-shadow: 0px 0px 10px #116633;
-}
-.syllable.incorrect.chosen {
-	border: 1px solid #661133;
-	box-shadow: 0px 0px 10px #661133;
+
+.syllable .navi, .separator {
+	font-size: 25px;
 }
 
-.navi, .separator {
-	font-size: 32px;
-}
-
-.index {
-	opacity: 0.5;
+.syllable .index {
+	font-size: 18px;
+	color: #888;
 	padding-top: 5px;
 	margin-bottom: -5px;
-	transition: color 0.1s, font-size 0.1s;
 }
-.syllable.correct.chosen .index,
-.syllable.correct.correction .index {
-	color: #116633;
-	font-weight: bold;
-	opacity: 1;
-	font-size: 30px;
-}
-.syllable.incorrect.chosen .index {
-	color: #661133;
-	font-weight: bold;
-	opacity: 1;
-	font-size: 30px;
-}
-

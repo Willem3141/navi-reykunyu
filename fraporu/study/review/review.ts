@@ -7,6 +7,9 @@ class ReviewPage {
 	correctStress: number | null = null;
 	correctCount = 0;
 
+	static readonly CORRECT_WAITING_TIME = 0;
+	static readonly INCORRECT_WAITING_TIME = 4000;
+
 	constructor() {
 		const url = new URL(window.location.href);
 		if (!url.searchParams.has('lesson')) {
@@ -77,6 +80,12 @@ class ReviewPage {
 
 		const $navi = $('#navi-card');
 		$navi.val('');
+
+		$('#navi-card').removeClass('incorrect correct')
+			.prop('disabled', false)
+			.trigger('focus');
+		$('#correction-card').hide();
+		$('#stress-card').hide();
 	}
 
 	toReadableType(type: string): string {
@@ -110,34 +119,149 @@ class ReviewPage {
 		}
 		return mapping[type];
 	}
+	 
+	correctAnswerDisplay(word: any): string {
+		let navi = word["na'vi"];
+		let pronunciation = '';
+		if (word.hasOwnProperty('pronunciation')) {
+			for (let i = 0; i < word['pronunciation'].length; i++) {
+				if (i > 0) {
+					pronunciation += ' or ';
+				}
+				const syllables = word['pronunciation'][i]['syllables'].split('-');
+				for (let j = 0; j < syllables.length; j++) {
+					if (syllables.length > 1 && j + 1 == word['pronunciation'][i]['stressed']) {
+						pronunciation += '<u>' + syllables[j] + '</u>';
+					} else {
+						pronunciation += syllables[j];
+					}
+				}
+			}
+		}
+		if (word['type'] == 'n:si') {
+			navi += ' si';
+			pronunciation += ' si';
+		}
+		if (word.hasOwnProperty('pronunciation')) {
+			if (word['pronunciation'].length === 1 &&
+				word['pronunciation'][0]['syllables'].split('-').join('') === word["na'vi"]) {
+				navi = pronunciation;
+			} else {
+				navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
+			}
+		}
+
+		return navi;
+	}
 
 	checkAnswer(): void {
-		let answer = ('' + $('#navi-card').val()!).trim().toLowerCase();
-		const lastCharacter = parseInt(answer.charAt(answer.length - 1), 10);
-		let stress: number | null = null;
+		let givenAnswer = ('' + $('#navi-card').val()!).trim().toLowerCase();
+		const lastCharacter = parseInt(givenAnswer.charAt(givenAnswer.length - 1), 10);
+		let givenStress: number | null = null;
 		if (!isNaN(lastCharacter)) {
-			stress = lastCharacter;
+			givenAnswer = givenAnswer.substring(0, givenAnswer.length - 1).trim();
+			givenStress = lastCharacter;
+		}
+		$('#navi-card').val(givenAnswer);
+
+		if (givenAnswer !== this.correctAnswer.toLowerCase()) {
+			$('#navi-card').addClass('incorrect')
+				.prop('disabled', true);
+			$('#correction-card').slideDown();
+			$('#correction').html(this.correctAnswerDisplay(this.currentItem));
+			$.post('/api/srs/mark-incorrect', { 'vocab': this.items[this.currentItemIndex] });
+			setTimeout(() => {
+				this.nextOrResults();
+			}, ReviewPage.INCORRECT_WAITING_TIME);
+			return;
 		}
 
-		if (isNaN(lastCharacter) && this.correctStress !== null) {
+		$('#navi-card').addClass('correct')
+			.prop('disabled', true);
+
+		if (this.correctStress !== null) {
 			// ask for stress
+			$('#stress-card').show();
+
+			const $syllables = $('#syllables');
+			$syllables.empty();
+
+			const syllables = this.currentItem['pronunciation'][0]['syllables'].split('-');
+			for (let i = 0; i < syllables.length; i++) {
+				if (i > 0) {
+					$syllables.append(this.createSeparator());
+				}
+				const syllable = syllables[i];
+				$syllables.append(this.createSyllableBlock(syllable, i + 1, this.correctStress));
+			}
+
+			if (givenStress !== null) {
+				// if stress was already provided by the user in the input
+				// field, apply it now by immediately clicking the corresponding
+				// stress button
+				const $syllables = $('#syllables .syllable');
+				if (givenStress >= 1 && givenStress <= $syllables.length) {
+					$($syllables[givenStress - 1]).trigger('click');
+				}
+			}
 
 		} else {
+			// don't need to ask for stress
+			$('#navi-card').addClass('correct')
+				.prop('disabled', true);
+			$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
+			this.correctCount++;
+			setTimeout(() => {
+				this.nextOrResults();
+			}, ReviewPage.CORRECT_WAITING_TIME);
+		}
+	}
 
-			if (answer === this.correctAnswer.toLowerCase()) {
+	nextOrResults(): void {
+		this.currentItemIndex++;
+		if (this.currentItemIndex >= this.items.length) {
+			this.showResults();
+		} else {
+			this.fetchAndSetUp();
+		}
+	}
+	
+	createSyllableBlock(syllable: string, i: number, correct: number): JQuery<HTMLElement> {
+		const $syllable = $('<div/>').addClass('syllable');
+		$('<div/>')
+			.addClass('navi')
+			.text(syllable)
+			.appendTo($syllable);
+		$('<div/>')
+			.addClass('index')
+			.text('' + i)
+			.appendTo($syllable);
+
+		$syllable.on('click', () => {
+			const $syllables = $('#syllables');
+			if (i === correct) {
+				$syllable.addClass('correct');
 				$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
 				this.correctCount++;
+				setTimeout(() => {
+					this.nextOrResults();
+				}, ReviewPage.CORRECT_WAITING_TIME);
 			} else {
+				$syllable.addClass('incorrect');
+				const $correctSyllable = $($syllables.children('.syllable')[correct - 1]);
+				$correctSyllable.addClass('correct');
 				$.post('/api/srs/mark-incorrect', { 'vocab': this.items[this.currentItemIndex] });
+				setTimeout(() => {
+					this.nextOrResults();
+				}, ReviewPage.INCORRECT_WAITING_TIME);
 			}
+			this.updateScore();
+		});
+		return $syllable;
+	}
 
-			this.currentItemIndex++;
-			if (this.currentItemIndex >= this.items.length) {
-				this.showResults();
-			} else {
-				this.fetchAndSetUp();
-			}
-		}
+	createSeparator(): JQuery<HTMLElement> {
+		return $('<div/>').addClass('separator').text('-');
 	}
 
 	updateScore(): void {
