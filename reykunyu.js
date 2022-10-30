@@ -34,6 +34,7 @@ const conjugationString = require('./conjugationString');
 const convert = require('./convert');
 const nouns = require('./nouns');
 const numbers = require('./numbers');
+const output = require('./output');
 const pronouns = require('./pronouns');
 const rhymes = require('./rhymes');
 const verbs = require('./verbs');
@@ -41,12 +42,46 @@ const verbs = require('./verbs');
 const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
-var dictionary = JSON.parse(fs.readFileSync(__dirname + "/words.json"));
-var annotated = JSON.parse(fs.readFileSync(__dirname + "/annotated.json"));
-var derivedWords = {};
-var sentences = JSON.parse(fs.readFileSync(__dirname + "/corpus.json"));
-var sentencesForWord = {};
+try {
+	var dictionary = JSON.parse(fs.readFileSync(__dirname + "/words.json"));
+} catch (e) {
+	output.error('words.json not found, exiting');
+	output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
+This file does not seem to be present. If you want to run a local mirror
+of the instance at https://reykunyu.lu, you can copy the dictionary data
+from there:
 
+$ wget -O words.json https://reykunyu.lu/api/list/all
+
+Alternatively, you can start with an empty database:
+
+$ echo "{}" > words.json`);
+	process.exit(1);
+}
+
+try {
+	var annotated = JSON.parse(fs.readFileSync(__dirname + "/annotated.json"));
+} catch (e) {
+	output.warning('Annotated Dictionary data not found');
+	output.hint(`Reykunyu uses a JSON file called annotated.json containing the source
+of the Annotated Dictionary by Plumps. This file does not seem to be
+present. This warning is harmless, but searching in the Annotated
+Dictionary will not work.`);
+	var annotated = {};
+}
+
+try {
+	var sentences = JSON.parse(fs.readFileSync(__dirname + "/corpus.json"));
+} catch (e) {
+	output.warning('Corpus data not found');
+	output.hint(`Reykunyu uses a JSON file called corpus.json containing the example
+sentences. This file does not seem to be present. This warning is
+harmless, but Reykunyu won't find any example sentences.`);
+	var sentences = {};
+}
+
+var sentencesForWord = {};
+var derivedWords = {};
 var pronounForms = {};
 
 // list of all words, for randomization
