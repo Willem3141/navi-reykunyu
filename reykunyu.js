@@ -787,13 +787,13 @@ function addFirstVerbInfix(list, affixString) {
 	} else if (affixString === "aly") {
 		addCombinedAffix(list, 'infix', affixString, ['ay', 'ol'], ['aff:in']);
 	} else if (affixString === "arm") {
-		addCombinedAffix(list, 'infix', affixString, ['am', 'em'], ['aff:in']);
+		addCombinedAffix(list, 'infix', affixString, ['am', 'er'], ['aff:in']);
 	} else if (affixString === "ìrm") {
-		addCombinedAffix(list, 'infix', affixString, ['ìm', 'em'], ['aff:in']);
+		addCombinedAffix(list, 'infix', affixString, ['ìm', 'er'], ['aff:in']);
 	} else if (affixString === "ìry") {
-		addCombinedAffix(list, 'infix', affixString, ['ìy', 'em'], ['aff:in']);
+		addCombinedAffix(list, 'infix', affixString, ['ìy', 'er'], ['aff:in']);
 	} else if (affixString === "ary") {
-		addCombinedAffix(list, 'infix', affixString, ['ay', 'em'], ['aff:in']);
+		addCombinedAffix(list, 'infix', affixString, ['ay', 'er'], ['aff:in']);
 	} else if (affixString === "imv") {
 		addCombinedAffix(list, 'infix', affixString, ['am', 'iv'], ['aff:in']);
 	} else if (affixString === "ìyev") {
