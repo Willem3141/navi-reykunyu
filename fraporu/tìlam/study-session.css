@@ -64,6 +64,9 @@ a {
 	color: #888;
 }
 
+input {
+	font-family: 'Recursive' !important;
+}
 input.card:focus {
 	outline: none;
 	border: 2px solid #4ca6ff;
@@ -115,6 +118,10 @@ input.card.incorrect,
 #buttons-card {
 	border-top: 1px solid #ddd;
 	padding-top: 50px;
+}
+
+button {
+	font-family: 'Recursive' !important;
 }
 
 .button {
