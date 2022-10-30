@@ -191,7 +191,7 @@ function processIncorrectAnswer(user, vocab, cb) {
 				// otherwise update the SRS stage and next review time in the
 				// database
 				let stage = result['srs_stage'];
-				const newStage = 2;
+				const newStage = 1;
 				db.run(`update vocab_status
 					set (srs_stage, next_review) = (?, datetime(current_timestamp, "+" || ?))
 					where user == ?
