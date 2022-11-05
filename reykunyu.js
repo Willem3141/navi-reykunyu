@@ -445,26 +445,29 @@ function lookUpNoun(queryWord, wordResults) {
 			noun["affixes"] = makeAffixList(noun["conjugated"]);
 			wordResults.push(noun);
 		}
-		if (nounResult["root"].endsWith("yu")) {
-			let possibleVerb = nounResult["root"].slice(0, -2);
-			let verbResults = [];
-			lookUpVerb(possibleVerb, verbResults);
-			verbResults.forEach(function (verb) {
-				verb["conjugated"].push({
-					"type": "v_to_n",
-					"conjugation": {
-						"result": [nounResult["root"]],
-						"root": possibleVerb,
-						"affixes": ["yu"]
-					}
+		const suffixes = ['yu', 'tswo'];
+		for (const suffix of suffixes) {
+			if (nounResult["root"].endsWith(suffix)) {
+				let possibleVerb = nounResult["root"].slice(0, -suffix.length);
+				let verbResults = [];
+				lookUpVerb(possibleVerb, verbResults);
+				verbResults.forEach(function (verb) {
+					verb["conjugated"].push({
+						"type": "v_to_n",
+						"conjugation": {
+							"result": [nounResult["root"]],
+							"root": possibleVerb,
+							"affixes": [suffix]
+						}
+					});
+					verb["conjugated"].push({
+						"type": "n",
+						"conjugation": nounResult
+					});
+					verb["affixes"] = makeAffixList(verb["conjugated"]);
+					wordResults.push(verb);
 				});
-				verb["conjugated"].push({
-					"type": "n",
-					"conjugation": nounResult
-				});
-				verb["affixes"] = makeAffixList(verb["conjugated"]);
-				wordResults.push(verb);
-			});
+			}
 		}
 
 		if (pronounForms.hasOwnProperty(nounResult["root"])) {
