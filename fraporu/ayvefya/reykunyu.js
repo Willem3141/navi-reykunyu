@@ -988,7 +988,7 @@ function updateInfixResults() {
 				}
 
 			} else if ($('#am-button').hasClass('active')) {
-				return 'ìmv';
+				return 'imv';
 			}
 
 		} else {
