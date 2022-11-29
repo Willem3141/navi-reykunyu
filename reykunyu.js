@@ -499,7 +499,7 @@ function lookUpNoun(queryWord, wordResults) {
 
 			} else {
 				// for non-pronouns, we allow no pre- and suffixes whatsoever
-				if (nounResult[0] === nounResult[1]) {
+				if (queryWord === nounResult["root"]) {
 					nounResult["root"] = word["na'vi"];
 					nounResult["affixes"][1] = foundForm["plural"];
 					nounResult["affixes"][5] = foundForm["case"];
