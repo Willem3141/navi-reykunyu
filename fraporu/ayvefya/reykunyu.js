@@ -427,32 +427,25 @@ function pronunciationSectionIpa(pronunciation, fnel) {
 		return $result;
 	}
 
-	$result.addClass('ipa');
+	//$result.addClass('ipa');
 	$result.text("(");
 	for (let i = 0; i < pronunciation.length; i++) {
 		if (i > 0) {
 			$result.append(' ' + _('or') + ' ');
 		}
-		const syllables = pronunciation[i]['syllables'].split("-");
-		let ipa = '';
-		for (let j = 0; j < syllables.length; j++) {
-			if (j > 0) {
-				ipa += '.';
-			}
-			if (syllables.length > 1 && j + 1 === pronunciation[i]['stressed']) {
-				ipa += 'ˈ';
-			}
-			ipa += syllableToIpa(syllables[j]);
+		const fnIpa = pronunciation[i]['ipa']['FN'];
+		const rnIpa = pronunciation[i]['ipa']['RN'];
+		if (fnIpa === rnIpa) {
+			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
+		} else {
+			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
+			$result.append(' ');
+			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
+			$result.append(' / ');
+			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
+			$result.append(' ');
+			$result.append($('<span/>').text(rnIpa).addClass('ipa'));
 		}
-
-		if (['p', 't', 'k'].includes(ipa[ipa.length - 1])) {
-			ipa += '\u031A';  // unreleased mark
-		}
-
-		if (fnel === "n:si" || fnel === "nv:si") {
-			ipa += " si";
-		}
-		$result.append(ipa);
 		if (pronunciation[i].hasOwnProperty('audio')) {
 			$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
 		}
@@ -460,47 +453,6 @@ function pronunciationSectionIpa(pronunciation, fnel) {
 	$result.append(")");
 
 	return $result;
-}
-
-function syllableToIpa(text) {
-	let ipa = '';
-	text = text.toLowerCase();
-
-	const ipaMapping = {
-		'px': 'p’',
-		'tx': 't’',
-		'kx': 'k’',
-		'\'': 'ʔ',
-		'ts': 't͡s',
-		'ng': 'ŋ',
-		'r': 'ɾ',
-		'y': 'j',
-		'ì': 'ɪ',
-		'e': 'ɛ',
-		'ä': 'æ',
-		'a': 'ɑ',
-		'rr': 'r̩ː',
-		'll': 'l̩ː',
-	};
-
-	for (let i = 0; i < text.length; i++) {
-		if (i < text.length - 1) {
-			const nextTwo = text[i] + text[i + 1];
-			if (ipaMapping.hasOwnProperty(nextTwo)) {
-				ipa += ipaMapping[nextTwo];
-				i++;
-				continue;
-			}
-		}
-		const next = text[i];
-		if (ipaMapping.hasOwnProperty(next)) {
-			ipa += ipaMapping[next];
-			continue;
-		}
-		ipa += next;
-	}
-
-	return ipa;
 }
 
 function pronunciationAudioButtons(audioData) {
