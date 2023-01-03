@@ -1075,6 +1075,8 @@ function preprocessQuery(query) {
 	query = query.replace(/‘/g, "'");
 	query = query.replace(/c/g, "ts");
 	query = query.replace(/C/g, "Ts");
+	query = query.replace(/sh/g, "sy");
+	query = query.replace(/Sh/g, "Sy");
 	query = query.replace(/(?<![Nn])g/g, "ng");
 	query = query.replace(/(?<![Nn])G/g, "Ng");
 	return query;
