@@ -32,6 +32,7 @@ const levenshtein = require('js-levenshtein');
 const adjectives = require('./adjectives');
 const conjugationString = require('./conjugationString');
 const convert = require('./convert');
+const ipa = require('./ipa');
 const nouns = require('./nouns');
 const numbers = require('./numbers');
 const output = require('./output');
@@ -883,6 +884,14 @@ function postprocessResult(result) {
 	}
 	if (result.hasOwnProperty('meaning_note')) {
 		result['meaning_note'] = addWordLinks(result['meaning_note']);
+	}
+	if (result.hasOwnProperty('pronunciation')) {
+		for (let pronunciation of result['pronunciation']) {
+			pronunciation['ipa'] = {
+				'FN': ipa.generateIpa(pronunciation, result['type'], 'FN'),
+				'RN': ipa.generateIpa(pronunciation, result['type'], 'RN')
+			};
+		}
 	}
 	const key = result['na\'vi'] + ':' + result['type'];
 	if (derivedWords.hasOwnProperty(key)) {
