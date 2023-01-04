@@ -57,3 +57,24 @@
 .lesson-progress {
 	/*text-align: center;*/
 }
+
+@media (prefers-color-scheme: dark) {
+	.lessons-container {
+		border-color: #555;
+	}
+
+	.lesson-container {
+		color: white;
+		border-top-color: #555;
+		background-color: black;
+	}
+
+	.lesson-container:hover {
+		color: white;
+		background-color: #222;
+	}
+
+	.lesson-container:before {
+		color: #888;
+	}
+}

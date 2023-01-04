@@ -254,3 +254,71 @@ button {
 	padding-top: 5px;
 	margin-bottom: -5px;
 }
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #222;
+		color: #fff;
+	}
+
+	input {
+		color: #fff;
+	}
+
+	.card {
+		background-color: #444;
+	}
+
+	.card .type {
+		color: #888;
+	}
+
+	input.card:focus {
+		border-color: #4ca6ff;
+	}
+
+	input.card.correct,
+	.syllable.correct {
+		border-color: #3a9550;
+		color: #3a9550;
+	}
+
+	input.card.incorrect,
+	.syllable.incorrect {
+		border-color: #d6443f;
+		color: #d6443f;
+	}
+
+	.semicard {
+		color: #ddd;
+	}
+
+	.word-reference {
+		background-color: #444;
+	}
+
+	#buttons-card {
+		border-top: 1px solid #444;
+	}
+
+	.dialog {
+		background-color: #222;
+	}
+
+	.dialog-buttons {
+		border-top-color: #444;
+	}
+
+	.speed-tip {
+		color: #888;
+	}
+
+	.syllable {
+		background-color: #444;
+		border-color: #444;
+	}
+
+	.syllable .index {
+		color: #888;
+	}
+}
