@@ -59,7 +59,7 @@ function syllableToIpa(text, dialect) {
 	ipaLoop:
 	for (let i = 0; i < text.length; i++) {
 		for (let length = Math.min(3, text.length - i); length >= 1; length--) {
-			if (i < text.length - 1) {
+			if (i <= text.length - length) {
 				const next = text.substring(i, i + length);
 				if (ipaMapping.hasOwnProperty(next)) {
 					ipa += ipaMapping[next];
