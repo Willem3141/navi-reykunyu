@@ -84,6 +84,7 @@ class ReviewPage {
 		$('#navi-card').removeClass('incorrect correct')
 			.prop('disabled', false)
 			.trigger('focus');
+		$('#check-button').prop('disabled', false);
 		$('#correction-card').hide();
 		$('#stress-card').hide();
 	}
@@ -167,6 +168,7 @@ class ReviewPage {
 		if (givenAnswer !== this.correctAnswer.toLowerCase()) {
 			$('#navi-card').addClass('incorrect')
 				.prop('disabled', true);
+			$('#check-button').prop('disabled', true);
 			$('#correction-card').slideDown();
 			$('#correction').html(this.correctAnswerDisplay(this.currentItem));
 			$.post('/api/srs/mark-incorrect', { 'vocab': this.items[this.currentItemIndex] });
@@ -178,6 +180,7 @@ class ReviewPage {
 
 		$('#navi-card').addClass('correct')
 			.prop('disabled', true);
+		$('#check-button').prop('disabled', true);
 
 		if (this.correctStress !== null) {
 			// ask for stress
@@ -209,6 +212,7 @@ class ReviewPage {
 			// don't need to ask for stress
 			$('#navi-card').addClass('correct')
 				.prop('disabled', true);
+			$('#check-button').prop('disabled', true);
 			$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
 			this.correctCount++;
 			setTimeout(() => {
