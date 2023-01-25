@@ -12,7 +12,7 @@ module.exports = {
 	endsInConsonant: endsInConsonant
 }
 
-let vowels = ["a", "ä", "e", "i", "ì", "o", "u"];
+let vowels = ["a", "ä", "e", "i", "ì", "o", "u", "ù"];
 
 function isVowel(char) {
 	return vowels.includes(char);

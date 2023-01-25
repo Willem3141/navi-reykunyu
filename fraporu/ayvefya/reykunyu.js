@@ -436,18 +436,25 @@ function pronunciationSectionIpa(pronunciation, fnel) {
 		const fnIpa = pronunciation[i]['ipa']['FN'];
 		const rnIpa = pronunciation[i]['ipa']['RN'];
 		if (fnIpa === rnIpa) {
+			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
+			$result.append('/');
+			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
+			$result.append(' ');
 			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
+			if (pronunciation[i].hasOwnProperty('audio')) {
+				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+			}
 		} else {
 			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
 			$result.append(' ');
 			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
+			if (pronunciation[i].hasOwnProperty('audio')) {
+				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+			}
 			$result.append(' / ');
 			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
 			$result.append(' ');
 			$result.append($('<span/>').text(rnIpa).addClass('ipa'));
-		}
-		if (pronunciation[i].hasOwnProperty('audio')) {
-			$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
 		}
 	}
 	$result.append(")");
