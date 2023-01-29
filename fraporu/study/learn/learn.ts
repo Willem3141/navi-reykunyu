@@ -19,6 +19,7 @@ class LearnPage {
 		});
 		$('#next-button').on('click', () => {
 			$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
+			this.addToLearnedList();
 			this.currentItemIndex++;
 			if (this.currentItemIndex >= this.items.length) {
 				this.showResults();
@@ -28,6 +29,7 @@ class LearnPage {
 		});
 		$('#known-button').on('click', () => {
 			$.post('/api/srs/mark-known', { 'vocab': this.items[this.currentItemIndex] });
+			this.addToLearnedList();
 			this.currentItemIndex++;
 			if (this.currentItemIndex >= this.items.length) {
 				this.showResults();
@@ -213,6 +215,19 @@ class LearnPage {
 		$('#done-dialog-item-count').text(this.currentItemIndex);
 		$('#dialog-layer').show();
 		$('#to-review-button').attr('href', '/study/review/?lesson=' + this.lessonId);
+	}
+
+	addToLearnedList(): void {
+		const $word = $('<div/>').addClass('learned-word');
+		$('<span/>')
+			.addClass('navi')
+			.html($('#navi').html())
+			.appendTo($word);
+		$('<span/>')
+			.addClass('meaning')
+			.html($('#english').html())
+			.appendTo($word);
+		$('#learned-words').append($word);
 	}
 }
 
