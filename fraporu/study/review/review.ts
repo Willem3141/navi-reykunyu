@@ -172,6 +172,7 @@ class ReviewPage {
 			$('#correction-card').slideDown();
 			$('#correction').html(this.correctAnswerDisplay(this.currentItem));
 			$.post('/api/srs/mark-incorrect', { 'vocab': this.items[this.currentItemIndex] });
+			this.addToLearnedList(false);
 			setTimeout(() => {
 				this.nextOrResults();
 			}, ReviewPage.INCORRECT_WAITING_TIME);
@@ -214,6 +215,7 @@ class ReviewPage {
 				.prop('disabled', true);
 			$('#check-button').prop('disabled', true);
 			$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
+			this.addToLearnedList(true);
 			this.correctCount++;
 			setTimeout(() => {
 				this.nextOrResults();
@@ -246,6 +248,7 @@ class ReviewPage {
 			if (i === correct) {
 				$syllable.addClass('correct');
 				$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
+				this.addToLearnedList(true);
 				this.correctCount++;
 				setTimeout(() => {
 					this.nextOrResults();
@@ -255,6 +258,7 @@ class ReviewPage {
 				const $correctSyllable = $($syllables.children('.syllable')[correct - 1]);
 				$correctSyllable.addClass('correct');
 				$.post('/api/srs/mark-incorrect', { 'vocab': this.items[this.currentItemIndex] });
+				this.addToLearnedList(false);
 				setTimeout(() => {
 					this.nextOrResults();
 				}, ReviewPage.INCORRECT_WAITING_TIME);
@@ -319,6 +323,21 @@ class ReviewPage {
 		$('#done-dialog-item-count').text(this.currentItemIndex);
 		$('#dialog-layer').show();
 		$('#to-review-button').attr('href', '/study/review/?lesson=' + this.lessonId);
+	}
+
+	addToLearnedList(correct: boolean): void {
+		const $word = $('<div/>')
+			.addClass('learned-word')
+			.addClass(correct ? 'correct' : 'incorrect');
+		$('<span/>')
+			.addClass('navi')
+			.html(this.correctAnswerDisplay(this.currentItem))
+			.appendTo($word);
+		$('<span/>')
+			.addClass('english')
+			.html($('#english').html())
+			.appendTo($word);
+		$('#learned-words').append($word);
 	}
 }
 

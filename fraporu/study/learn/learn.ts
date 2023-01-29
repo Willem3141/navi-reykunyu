@@ -224,7 +224,7 @@ class LearnPage {
 			.html($('#navi').html())
 			.appendTo($word);
 		$('<span/>')
-			.addClass('meaning')
+			.addClass('english')
 			.html($('#english').html())
 			.appendTo($word);
 		$('#learned-words').append($word);

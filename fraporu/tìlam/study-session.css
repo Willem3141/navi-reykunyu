@@ -268,6 +268,20 @@ button {
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
 	border-radius: 4px;
 	text-align: center;
+	position: relative;
+}
+
+.learned-word.incorrect {
+	border: 2px solid #d6443f;
+	padding-left: 45px;
+}
+.learned-word.incorrect:before {
+	content: 'x';
+	color: #d6443f;
+	font-size: 150%;
+	position: absolute;
+	top: 19px;
+	left: 14px;
 }
 
 .learned-word .navi {
@@ -281,13 +295,14 @@ button {
 	color: #888;
 }
 
-.learned-word .meaning {
+.learned-word .english {
 	display: block;
 	max-width: 400px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
+
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #222;
@@ -354,7 +369,8 @@ button {
 	.syllable .index {
 		color: #888;
 	}
-																																.learned-word {
-																																	background-color: #444;
-																																}
+	
+	.learned-word {
+		background-color: #444;
+	}
 }
