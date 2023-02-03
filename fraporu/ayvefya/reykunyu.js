@@ -1359,6 +1359,7 @@ function doSearchNavi() {
 						$("#sentence-bar .item").removeClass("active");
 						$item.addClass("active");
 						$fromNaviResult.find('.result').remove();
+						$fromNaviResult.find('.error').remove();
 						createResults(result, $fromNaviResult);
 					});
 				}
