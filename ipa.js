@@ -65,7 +65,6 @@ function syllableToIpa(text, dialect, lastOfPrevious, stressed) {
 		'e': 'ɛ',
 		'ä': 'æ',
 		'ä': (d) => (d.dialect === 'RN' && !d.stressed) ? '(æ~ɛ)' : 'æ',
-		'a': 'ɑ',
 		'u': (d) => d.dialect === 'FN' ? (d.last ? 'u' : '(u~ʊ)') : 'u',
 		'ù': (d) => d.dialect === 'FN' ? (d.last ? 'u' : '(u~ʊ)') : 'ʊ',
 		'rr': 'r̩ː',
