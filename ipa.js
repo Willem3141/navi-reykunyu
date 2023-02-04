@@ -6,6 +6,7 @@ module.exports = {
 	generateIpa: generateIpa
 }
 
+const convert = require("./convert");
 const phonology = require("./phonology");
 
 function generateIpa(pronunciation, type, dialect) {
@@ -20,7 +21,12 @@ function generateIpa(pronunciation, type, dialect) {
 		if (stressed && syllables.length > 1) {
 			ipa += 'ˈ';
 		}
-		ipa += syllableToIpa(syllables[j], dialect, lastOfPrevious, stressed);
+		let nextStartsWithEjective = false;
+		if (j + 1 < syllables.length) {
+			const nextSyllable = syllables[j + 1];
+			nextStartsWithEjective = nextSyllable.length > 1 && nextSyllable[1] === 'x';
+		}
+		ipa += syllableToIpa(syllables[j], dialect, lastOfPrevious, nextStartsWithEjective, stressed);
 		lastOfPrevious = syllables[j][syllables[j].length - 1];
 	}
 
@@ -35,13 +41,13 @@ function generateIpa(pronunciation, type, dialect) {
 	return '[' + ipa + ']';
 }
 
-function syllableToIpa(text, dialect, lastOfPrevious, stressed) {
+function syllableToIpa(text, dialect, lastOfPrevious, nextStartsWithEjective, stressed) {
 	let ipa = '';
-	text = text.toLowerCase();
+	text = convert.compress(text.toLowerCase());
 
 	const ipaMapping = {
-		'tsy': (d) => d.dialect === 'RN' ? 't͡ʃ' : 't͡sj',
-		'ts': 't͡s',
+		'cy': (d) => d.dialect === 'RN' ? 't͡ʃ' : 't͡sj',
+		'c': 't͡s',
 		'sy': (d) => d.dialect === 'RN' ? 'ʃ' : 'sj',
 		'\'': (d) => {
 			if (d.dialect === 'FN' || !d.first
@@ -57,8 +63,8 @@ function syllableToIpa(text, dialect, lastOfPrevious, stressed) {
 				return '';
 			}
 		},
-		'ts': 't͡s',
-		'ng': 'ŋ',
+		'c': 't͡s',
+		'g': 'ŋ',
 		'r': 'ɾ',
 		'y': 'j',
 		'ì': 'ɪ',
@@ -67,11 +73,15 @@ function syllableToIpa(text, dialect, lastOfPrevious, stressed) {
 		'ä': (d) => (d.dialect === 'RN' && !d.stressed) ? '(æ~ɛ)' : 'æ',
 		'u': (d) => d.dialect === 'FN' ? (d.last ? 'u' : '(u~ʊ)') : 'u',
 		'ù': (d) => d.dialect === 'FN' ? (d.last ? 'u' : '(u~ʊ)') : 'ʊ',
-		'rr': 'r̩ː',
-		'll': 'l̩ː',
-		'px': (d) => (d.dialect === 'RN' && d.first) ? 'b' : 'p’',
-		'tx': (d) => (d.dialect === 'RN' && d.first) ? 'd' : 't’',
-		'kx': (d) => (d.dialect === 'RN' && d.first) ? 'ɡ' : 'k’',
+		'R': 'r̩ː',
+		'L': 'l̩ː',
+		'P': (d) => (d.dialect === 'RN' && (d.first || (d.last && d.nextStartsWithEjective))) ? 'b' : 'p’',
+		'T': (d) => (d.dialect === 'RN' && (d.first || (d.last && d.nextStartsWithEjective))) ? 'd' : 't’',
+		'K': (d) => (d.dialect === 'RN' && (d.first || (d.last && d.nextStartsWithEjective))) ? 'ɡ' : 'k’',
+		'1': 'aw',
+		'2': 'aj',
+		'3': 'ɛw',
+		'4': 'ɛj',
 	};
 
 	ipaLoop:
@@ -90,7 +100,8 @@ function syllableToIpa(text, dialect, lastOfPrevious, stressed) {
 							'last': i === text.length - 1,
 							'previous': lastOfPrevious,
 							'next': i + 1 < text.length ? text[i + 1] : '',
-							'stressed': stressed
+							'stressed': stressed,
+							'nextStartsWithEjective': nextStartsWithEjective
 						});
 					}
 					i += length - 1;
