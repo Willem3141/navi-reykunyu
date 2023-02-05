@@ -117,15 +117,14 @@ function tstxoFnelä(fnel, traditional) {
 // ngop pätsìt a oeyktìng fnelit lì'uä
 // fnel - fnelä tstxo apup (natkenong "n", "v:tr")
 function typeBadge(fnel, small) {
-	fnel = tstxoFnelä(fnel, small).split('/');
-	let $pätsì = $('<span/>').addClass('type ui tag label type-badge').text(fnel[0]);
-	if (small) {
-		$pätsì.addClass('horizontal');
-		$pätsì.removeClass('tag');
-	}
-	if (fnel.length > 1) {
-		$pätsì.append($('<div/>').addClass('detail').text(fnel[1]));
-	}
+	const abbreviatedType = tstxoFnelä(fnel, true);
+	const fullType = tstxoFnelä(fnel, false);
+	let $pätsì = $('<span/>')
+		.addClass('type ui tag label type-badge')
+		.attr('data-tooltip', fullType)
+		.text(abbreviatedType);
+	$pätsì.addClass('horizontal');
+	$pätsì.removeClass('tag');
 	return $pätsì;
 }
 
