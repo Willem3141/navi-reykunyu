@@ -962,6 +962,7 @@ function mergeSiVerbs(results) {
 				let newAnswer = JSON.parse(JSON.stringify(answer));
 				newAnswer["type"] = "nv:si";
 				newAnswer["conjugated"] = secondAnswer["conjugated"];
+				newAnswer["affixes"] = secondAnswer["affixes"];
 				newResult["sì'eyng"].push(newAnswer);
 			}
 		}
