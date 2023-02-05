@@ -1282,7 +1282,7 @@ function createSentenceBarItem(result) {
 	let definitionCount = result["sì'eyng"].length;
 	if (definitionCount === 0) {
 		$('<div/>').addClass('more')
-			.text(_("not-found)"))
+			.text(_("not-found"))
 			.appendTo($itemContainer);
 		return $item;
 	}
@@ -1467,7 +1467,7 @@ function doSearchAnnotated() {
 				}
 				$results.append(createAnnotatedFooter());
 			} else {
-				$results.append(createErrorBlock(_("no-results"), _("no-results-description")));
+				$results.append(createErrorBlock(_("no-results"), _("no-results-description-annotated")));
 			}
 		})
 		.fail(function () {
@@ -1518,7 +1518,7 @@ function doSearchRhymes() {
 			$results.empty();
 
 			if (response.length === 0) {
-				$results.append(createErrorBlock(_("no-results"), _("no-results-description")));
+				$results.append(createErrorBlock(_("no-results"), ''));
 			} else {
 				let $result = $('<div/>').addClass('result');
 				$results.append($result);
