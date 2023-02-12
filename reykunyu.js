@@ -885,6 +885,13 @@ function postprocessResult(result) {
 	if (result.hasOwnProperty('meaning_note')) {
 		result['meaning_note'] = addWordLinks(result['meaning_note']);
 	}
+	if (result.hasOwnProperty('seeAlso')) {
+		for (let i = 0; i < result['seeAlso'].length; i++) {
+			if (dictionary.hasOwnProperty(result['seeAlso'][i])) {
+				result['seeAlso'][i] = stripToLinkData(dictionary[result['seeAlso'][i]]);
+			}
+		}
+	}
 	if (result.hasOwnProperty('pronunciation')) {
 		for (let pronunciation of result['pronunciation']) {
 			pronunciation['ipa'] = {
