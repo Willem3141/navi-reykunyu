@@ -21,6 +21,7 @@ class LearnPage {
 			$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
 			this.addToLearnedList();
 			this.currentItemIndex++;
+			this.updateScore();
 			if (this.currentItemIndex >= this.items.length) {
 				this.showResults();
 			} else {
@@ -31,6 +32,7 @@ class LearnPage {
 			$.post('/api/srs/mark-known', { 'vocab': this.items[this.currentItemIndex] });
 			this.addToLearnedList();
 			this.currentItemIndex++;
+			this.updateScore();
 			if (this.currentItemIndex >= this.items.length) {
 				this.showResults();
 			} else {
@@ -165,18 +167,9 @@ class LearnPage {
 	}
 
 	updateScore(): void {
-		const scoreString = '<b>' + this.currentItemIndex + '</b> items learned';
-		const $scoreField = $('#score-field');
-		$scoreField
-			.addClass('just-changed')
-			.html(scoreString);
-		setTimeout(function () {
-			$scoreField.removeClass('just-changed');
-			$scoreField.addClass('in-transition')
-		});
-		setTimeout(function () {
-			$scoreField.removeClass('in-transition');
-		}, 250);
+		const $progressBar = $('.progress-bar .filled-part');
+		$progressBar
+			.css('width', (100.0 * this.currentItemIndex / this.items.length) + '%');
 	}
 
 	appendLinkString(linkString: any[], $div: JQuery): void {

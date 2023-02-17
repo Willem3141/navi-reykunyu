@@ -303,6 +303,22 @@ button {
 	text-overflow: ellipsis;
 }
 
+.progress-bar {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 5px;
+	background-color: black;
+}
+
+.progress-bar .filled-part {
+	background-color: #3a9550;
+	width: 0%;
+	height: 100%;
+	transition: width .5s;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #222;
