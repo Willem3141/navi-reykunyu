@@ -1116,14 +1116,15 @@ function getReverseResponsesFor(query, language) {
 
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
-			let translation = dictionary[word]['translations'][0][language];
-			if (translation) {
-				// split translation into words
-				translation = translation.replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
-				translation = translation.split(' ').map((v) => v.toLowerCase());
-				if (translation.includes(query)) {
-					let result = JSON.parse(JSON.stringify(dictionary[word]));
-					results.push(result);
+			for (let translation of dictionary[word]['translations']) {
+				if (translation[language]) {
+					// split translation into words
+					let t = translation[language].replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
+					t = t.split(' ').map((v) => v.toLowerCase());
+					if (t.includes(query)) {
+						let result = JSON.parse(JSON.stringify(dictionary[word]));
+						results.push(result);
+					}
 				}
 			}
 		}
