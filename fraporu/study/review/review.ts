@@ -225,6 +225,7 @@ class ReviewPage {
 
 	nextOrResults(): void {
 		this.currentItemIndex++;
+		this.updateScore();
 		if (this.currentItemIndex >= this.items.length) {
 			this.showResults();
 		} else {
@@ -263,7 +264,6 @@ class ReviewPage {
 					this.nextOrResults();
 				}, ReviewPage.INCORRECT_WAITING_TIME);
 			}
-			this.updateScore();
 		});
 		return $syllable;
 	}
@@ -273,18 +273,9 @@ class ReviewPage {
 	}
 
 	updateScore(): void {
-		const scoreString = '<b>' + this.currentItemIndex + '</b> items learned';
-		const $scoreField = $('#score-field');
-		$scoreField
-			.addClass('just-changed')
-			.html(scoreString);
-		setTimeout(function () {
-			$scoreField.removeClass('just-changed');
-			$scoreField.addClass('in-transition')
-		});
-		setTimeout(function () {
-			$scoreField.removeClass('in-transition');
-		}, 250);
+		const $progressBar = $('.progress-bar .filled-part');
+		$progressBar
+			.css('width', (100.0 * this.currentItemIndex / this.items.length) + '%');
 	}
 
 	appendLinkString(linkString: any[], $div: JQuery): void {
@@ -338,6 +329,8 @@ class ReviewPage {
 			.html($('#english').html())
 			.appendTo($word);
 		$('#learned-words').append($word);
+		$('.progress-bar .filled-part')
+			.toggleClass('incorrect', !correct);
 	}
 }
 

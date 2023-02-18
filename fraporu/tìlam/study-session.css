@@ -304,7 +304,7 @@ button {
 }
 
 .progress-bar {
-	position: absolute;
+	position: fixed;
 	left: 0;
 	right: 0;
 	bottom: 0;
@@ -317,6 +317,10 @@ button {
 	width: 0%;
 	height: 100%;
 	transition: width .5s;
+}
+
+.progress-bar .filled-part.incorrect {
+	background-color: #d6443f;
 }
 
 @media (prefers-color-scheme: dark) {
