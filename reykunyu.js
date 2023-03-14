@@ -891,6 +891,13 @@ function postprocessResult(result) {
 	if (result.hasOwnProperty('meaning_note')) {
 		result['meaning_note'] = addWordLinks(result['meaning_note']);
 	}
+	if (result.hasOwnProperty('seeAlso')) {
+		for (let i = 0; i < result['seeAlso'].length; i++) {
+			if (dictionary.hasOwnProperty(result['seeAlso'][i])) {
+				result['seeAlso'][i] = stripToLinkData(dictionary[result['seeAlso'][i]]);
+			}
+		}
+	}
 	if (result.hasOwnProperty('pronunciation')) {
 		for (let pronunciation of result['pronunciation']) {
 			pronunciation['ipa'] = {
@@ -1115,14 +1122,15 @@ function getReverseResponsesFor(query, language) {
 
 	for (word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
-			let translation = dictionary[word]['translations'][0][language];
-			if (translation) {
-				// split translation into words
-				translation = translation.replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
-				translation = translation.split(' ').map((v) => v.toLowerCase());
-				if (translation.includes(query)) {
-					let result = JSON.parse(JSON.stringify(dictionary[word]));
-					results.push(result);
+			for (let translation of dictionary[word]['translations']) {
+				if (translation[language]) {
+					// split translation into words
+					let t = translation[language].replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
+					t = t.split(' ').map((v) => v.toLowerCase());
+					if (t.includes(query)) {
+						let result = JSON.parse(JSON.stringify(dictionary[word]));
+						results.push(result);
+					}
 				}
 			}
 		}
