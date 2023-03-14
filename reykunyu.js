@@ -453,20 +453,26 @@ function lookUpNoun(queryWord, wordResults) {
 				let verbResults = [];
 				lookUpVerb(possibleVerb, verbResults);
 				verbResults.forEach(function (verb) {
-					verb["conjugated"].push({
-						"type": "v_to_n",
-						"conjugation": {
-							"result": [nounResult["root"]],
-							"root": possibleVerb,
-							"affixes": [suffix]
-						}
-					});
-					verb["conjugated"].push({
-						"type": "n",
-						"conjugation": nounResult
-					});
-					verb["affixes"] = makeAffixList(verb["conjugated"]);
-					wordResults.push(verb);
+					const conjugated = verb["conjugated"];
+					const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
+					// allow these affixes only if there are no infixes in the verb
+					// (see https://naviteri.org/2011/09/%e2%80%9cby-the-way-what-are-you-reading%e2%80%9d/#comment-1117)
+					if (infixes[0] === '' && infixes[1] === '' && infixes[2] === '') {
+						conjugated.push({
+							"type": "v_to_n",
+							"conjugation": {
+								"result": [nounResult["root"]],
+								"root": possibleVerb,
+								"affixes": [suffix]
+							}
+						});
+						conjugated.push({
+							"type": "n",
+							"conjugation": nounResult
+						});
+						verb["affixes"] = makeAffixList(conjugated);
+						wordResults.push(verb);
+					}
 				});
 			}
 		}
