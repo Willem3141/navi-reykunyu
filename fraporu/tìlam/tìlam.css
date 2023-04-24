@@ -337,6 +337,15 @@ h1::after {
 	overflow-x: auto;
 }
 
+.result .result-item.affixes .body {
+	overflow-x: visible;
+	padding-top: 8px;
+}
+
+.result .result-item.affixes table {
+	margin: 0;
+}
+
 .result .result-item.affixes table tr td:first-child {
 	font-weight: 700;
 }
