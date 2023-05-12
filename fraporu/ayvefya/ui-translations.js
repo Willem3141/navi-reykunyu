@@ -479,7 +479,7 @@ strings['hu'] = {
 	'type-v:?': 'ige, ismeretlen típus',
 	'type-v:in': 'tárgyatlan ige',
 	'type-v:tr': 'tárgyas ige',
-	'type-v:m': 'Módbeli segédige',
+	'type-v:m': 'módbeli segédige',
 	'type-v:si': 'tárgyatlan ige',
 	'type-v:cp': 'kapcsolószavas ige',
 	'type-phr': 'kifejezés',
@@ -516,20 +516,20 @@ strings['hu'] = {
 	'type-traditional-aff:suf': 'uk.',
 	'type-traditional-nv:si': 'i.(tn)',
 
-	'stress-unknown': '(A hangsúly mintázat ismeretlen)',
+	'stress-unknown': '(a hangsúly mintázat ismeretlen)',
 
-	'status-unconfirmed': 'Nem megerősített szó',
+	'status-unconfirmed': 'nem megerősített szó',
 	'status-unconfirmed-header': 'Nincs megerősítve:',
-	'status-unofficial': 'Nem hivatalos szó',
+	'status-unofficial': 'nem hivatalos szó',
 	'status-unofficial-header': 'Nem hivatalos:',
 	'status-loan': 'jövevényszó',
-	'status-loan-header': 'jövevényszó:',
+	'status-loan-header': 'Jövevényszó:',
 	'status-unconfirmed-explanation': 'Ez a szó sosem lett hivatalosan megerősítve Paul Frommer által. Ezt tartsd észben ha úgy döntöd, hogy használod.',
 	'status-loan-explanation': 'Ezt a szót egy másik földi nyelvből kölcsönöztük. Csak akkor használunk kölcsönszavakat, ha Paul Frommer használta azokat írásaiban. Viszont mivel bármilyen szó használható a Na\'vi-ban, ha földi koncepciókról beszélünk, ezért az ilyenfajta megkülönböztetés nem szükséges, de választható.',
 
-	'image-drawn-by': 'Rajzolta',
+	'image-drawn-by': 'rajzolta',
 
-	'etymology': 'etimológia szófejtés',
+	'etymology': 'Etimológia szófejtés',
 	'etymology-from': 'Ebből',
 	'derived': 'Származtatott szavak',
 
@@ -537,7 +537,7 @@ strings['hu'] = {
 
 	'see-also': 'Lásd még',
 
-	'conjugated-forms': 'ragszavak',
+	'conjugated-forms': 'Ragszavak',
 	'singular': 'egyes szám',
 	'dual': 'Kettes szám',
 	'trial': 'hármas szám',
@@ -547,25 +547,25 @@ strings['hu'] = {
 	'patientive': 'elszenvedő',
 	'dative': 'részes eset',
 	'genitive': 'birtokos eset',
-	'topical': 'Témához kapcsolodó',
+	'topical': 'témához kapcsolodó',
 	'or': 'vagy',
 
 	'attributive-forms': 'Jelzői formák',
 
 	'infix-positions': 'Belsőtag poziciók',
 
-	'sentence-search': 'mondatkeresés',
+	'sentence-search': 'Mondatkeresés',
 	'usages-found-singular': 'találtunk példát a használatra',
 	'usages-found-plural': 'találtunk több példát a használatra',
 
 	'no-results': 'Nincs találat',
-	'no-results-description-navi': 'Ha egy angol szót keresel, akkor kérlek válts át az <i>Angol&rarr; Na\'vi</i> módra.',
-	'no-results-description-english': 'Ha egy Na\'vi szót keresel, akkor kérlek válts át a <i>Na\'vi&rarr; Angol</i> módra.',
-	'no-results-description-annotated': 'A Reykunyu csak ragozatlan szavakat tud megtalálni az Annotated Dictionary-ban. Ha egy ragozott Na\'vi szót vagy több szó sorozatát keresed, akkor kérlek válts át a <i>Na\'vi&rarr; Angol</i> módra.',
+	'no-results-description-navi': 'Ha egy angol szót keresel, akkor kérlek válts át az <i>Magyar &rarr; Na\'vi</i> módra.',
+	'no-results-description-english': 'Ha egy Na\'vi szót keresel, akkor kérlek válts át a <i>Na\'vi &rarr; Magyar</i> módra.',
+	'no-results-description-annotated': 'A Reykunyu csak ragozatlan szavakat tud megtalálni az Annotated Dictionary-ban. Ha egy ragozott Na\'vi szót vagy több szó sorozatát keresed, akkor kérlek válts át a <i>Na\'vi&rarr; Magyar</i> módra.',
 	'did-you-mean': 'Erre gondoltál',
 
-	'omitted-more': 'Több',
-	'not-found': '(Nem talált)',
+	'omitted-more': 'több',
+	'not-found': '(nem talált)',
 
 	'searching-error': 'Valami hiba történt a keresés közben',
 	'searching-error-description': 'Kérlek, próbáld újra később. Ha a probléma fennáll, kérlek vedd fel velem a <a href="//wimiso.nl/contact">kapcsolatot.</a>',
