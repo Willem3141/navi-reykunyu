@@ -461,7 +461,120 @@ strings['fr'] = {
 }
 
 strings['hu'] = {
-	'language': 'Magyar'
+	'language': 'Magyar',
+	'type-n': 'főnév',
+	'type-n:unc': 'főnév',
+	'type-n:si': 'tárgytalan ige',
+	'type-n:pr': 'tulajdonnév',
+	'type-pn': 'névmás',
+	'type-adj': 'melléknév',
+	'type-num': 'számnév',
+	'type-adv': 'határozószó',
+	'type-adp': 'adposition',
+	'type-adp:len': 'gyengítő adposition',
+	'type-intj': 'indulatszó',
+	'type-part': 'partikula',
+	'type-conj': 'ragozott',
+	'type-ctr': 'alárendelő kötőszó ("F-szó")',
+	'type-v:?': 'ige, ismeretlen típus',
+	'type-v:in': 'tárgyatlan ige',
+	'type-v:tr': 'tárgyas ige',
+	'type-v:m': 'Módbeli segédige',
+	'type-v:si': 'tárgyatlan ige',
+	'type-v:cp': 'kapcsolószavas ige',
+	'type-phr': 'kifejezés',
+	'type-inter': 'kérdőszó',
+	'type-aff:pre': 'előtag',
+	'type-aff:in': 'belsőtag',
+	'type-aff:suf': 'utóképző',
+	'type-nv:si': 'tárgyatlan ige',
+
+	'type-traditional-n': 'fn.',
+	'type-traditional-n:unc': 'fn.',
+	'type-traditional-n:si': 'i.(tn)',
+	'type-traditional-n:pr': 'tul.n.',
+	'type-traditional-pn': 'nm.',
+	'type-traditional-adj': 'mn.',
+	'type-traditional-num': 'szám.',
+	'type-traditional-adv': 'hsz.',
+	'type-traditional-adp': 'adp.',
+	'type-traditional-adp:len': 'adp+',
+	'type-traditional-intj': 'ind.',
+	'type-traditional-part': 'part.',
+	'type-traditional-conj': 'rag.',
+	'type-traditional-ctr': 'al.kö.',
+	'type-traditional-v:?': 'i.(ismeretlen)',
+	'type-traditional-v:in': 'i.(tn)',
+	'type-traditional-v:tr': 'i.(t)',
+	'type-traditional-v:m': 'mb.si.',
+	'type-traditional-v:si': 'i.(tn)',
+	'type-traditional-v:cp': 'ksz.i.',
+	'type-traditional-phr': 'kif.',
+	'type-traditional-inter': 'kérd.',
+	'type-traditional-aff:pre': 'e.t.',
+	'type-traditional-aff:in': 'e.t.',
+	'type-traditional-aff:suf': 'uk.',
+	'type-traditional-nv:si': 'i.(tn)',
+
+	'stress-unknown': '(A hangsúly mintázat ismeretlen)',
+
+	'status-unconfirmed': 'Nem megerősített szó',
+	'status-unconfirmed-header': 'Nincs megerősítve:',
+	'status-unofficial': 'Nem hivatalos szó',
+	'status-unofficial-header': 'Nem hivatalos:',
+	'status-loan': 'jövevényszó',
+	'status-loan-header': 'jövevényszó:',
+	'status-unconfirmed-explanation': 'Ez a szó sosem lett hivatalosan megerősítve Paul Frommer által. Ezt tartsd észben ha úgy döntöd, hogy használod.',
+	'status-loan-explanation': 'Ezt a szót egy másik földi nyelvből kölcsönöztük. Csak akkor használunk kölcsönszavakat, ha Paul Frommer használta azokat írásaiban. Viszont mivel bármilyen szó használható a Na\'vi-ban, ha földi koncepciókról beszélünk, ezért az ilyenfajta megkülönböztetés nem szükséges, de választható.',
+
+	'image-drawn-by': 'Rajzolta',
+
+	'etymology': 'etimológia szófejtés',
+	'etymology-from': 'Ebből',
+	'derived': 'Származtatott szavak',
+
+	'source': 'Forrás',
+
+	'see-also': 'Lásd még',
+
+	'conjugated-forms': 'ragszavak',
+	'singular': 'egyes szám',
+	'dual': 'Kettes szám',
+	'trial': 'hármas szám',
+	'plural': 'többes szám',
+	'subjective': 'szubjektív',
+	'agentive': 'cselekvő',
+	'patientive': 'elszenvedő',
+	'dative': 'részes eset',
+	'genitive': 'birtokos eset',
+	'topical': 'Témához kapcsolodó',
+	'or': 'vagy',
+
+	'attributive-forms': 'Jelzői formák',
+
+	'infix-positions': 'Belsőtag poziciók',
+
+	'sentence-search': 'mondatkeresés',
+	'usages-found-singular': 'találtunk példát a használatra',
+	'usages-found-plural': 'találtunk több példát a használatra',
+
+	'no-results': 'Nincs találat',
+	'no-results-description-navi': 'Ha egy angol szót keresel, akkor kérlek válts át az <i>Angol&rarr; Na\'vi</i> módra.',
+	'no-results-description-english': 'Ha egy Na\'vi szót keresel, akkor kérlek válts át a <i>Na\'vi&rarr; Angol</i> módra.',
+	'no-results-description-annotated': 'A Reykunyu csak ragozatlan szavakat tud megtalálni az Annotated Dictionary-ban. Ha egy ragozott Na\'vi szót vagy több szó sorozatát keresed, akkor kérlek válts át a <i>Na\'vi&rarr; Angol</i> módra.',
+	'did-you-mean': 'Erre gondoltál',
+
+	'omitted-more': 'Több',
+	'not-found': '(Nem talált)',
+
+	'searching-error': 'Valami hiba történt a keresés közben',
+	'searching-error-description': 'Kérlek, próbáld újra később. Ha a probléma fennáll, kérlek vedd fel velem a <a href="//wimiso.nl/contact">kapcsolatot.</a>',
+	'parsing-error': 'Valami hiba történt az adott mondat elemzésekor.',
+
+	'syllable': 'szótag',
+	'syllables': 'szótagok',
+	'stressed-on': 'hangsúly a szótagon',
+
 }
 
 strings['pl'] = {
