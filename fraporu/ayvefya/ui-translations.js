@@ -555,8 +555,8 @@ strings['hu'] = {
 	'infix-positions': 'Belsőtag poziciók',
 
 	'sentence-search': 'Mondatkeresés',
-	'usages-found-singular': 'találtunk példát a használatra',
-	'usages-found-plural': 'találtunk több példát a használatra',
+	'usages-found-singular': 'példát találtunk a használatra',
+	'usages-found-plural': 'példát találtunk a használatra',
 
 	'no-results': 'Nincs találat',
 	'no-results-description-navi': 'Ha egy angol szót keresel, akkor kérlek válts át az <i>Magyar &rarr; Na\'vi</i> módra.',
