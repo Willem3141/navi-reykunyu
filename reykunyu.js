@@ -1325,12 +1325,12 @@ function getAnnotatedResponsesFor(query) {
 	let results = [];
 
 	if (annotated.hasOwnProperty(query)) {
-		results.push(annotated[query]);
+		results = results.concat(annotated[query]);
 	}
 	let upperCasedQuery = query[0].toUpperCase() + query.substring(1);
 	if (upperCasedQuery !== query) {
 		if (annotated.hasOwnProperty(upperCasedQuery)) {
-			results.push(annotated[upperCasedQuery]);
+			results = results.concat(annotated[upperCasedQuery]);
 		}
 	}
 
