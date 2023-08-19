@@ -701,11 +701,11 @@ function makeAffixList(conjugated) {
 	for (let conjugation of conjugated) {
 		let affixes = conjugation['conjugation']['affixes'];
 		if (conjugation['type'] === 'n') {
-			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
+			addAffix(list, 'prefix', affixes[0], ['aff:pre', 'aff:pre:len']);
 			if (affixes[1] === '(ay)') {
-				addAffix(list, 'prefix', 'ay', ['aff:pre']);
+				addAffix(list, 'prefix', 'ay', ['aff:pre:len']);
 			} else {
-				addAffix(list, 'prefix', affixes[1], ['aff:pre']);
+				addAffix(list, 'prefix', affixes[1], ['aff:pre:len']);
 			}
 			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
 			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
