@@ -22,16 +22,17 @@ function generateIpa(pronunciation, type, dialect) {
 			ipa += 'ˈ';
 		}
 		let nextStartsWithEjective = false;
+		let nextStartsWithVowel = false;
 		if (j + 1 < syllables.length) {
 			const nextSyllable = syllables[j + 1];
 			nextStartsWithEjective = nextSyllable.length > 1 && nextSyllable[1] === 'x';
+			nextStartsWithVowel = phonology.isVowel(nextSyllable[0]);
 		}
 		ipa += syllableToIpa(syllables[j], dialect, lastOfPrevious, nextStartsWithEjective, stressed);
 		lastOfPrevious = syllables[j][syllables[j].length - 1];
-	}
-
-	if (['p', 't', 'k'].includes(ipa[ipa.length - 1])) {
-		ipa += '\u031A';  // unreleased mark
+		if (['p', 't', 'k'].includes(lastOfPrevious) && !nextStartsWithVowel) {
+			ipa += '\u031A';  // unreleased mark
+		}
 	}
 
 	if (type === "n:si" || type === "nv:si") {
