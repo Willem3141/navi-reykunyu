@@ -56,6 +56,8 @@ function lemmaForm(word, type) {
 		return word + ' si';
 	} else if (type === 'aff:pre') {
 		return word + "-";
+	} else if (type === 'aff:pre:len') {
+		return word + "+";
 	} else if (type === 'aff:in') {
 		return '&#x2039;' + word + '&#x203a;';
 	} else if (type === 'aff:suf') {
