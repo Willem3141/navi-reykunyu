@@ -102,8 +102,9 @@ strings['en'] = {
 	'usages-found-plural': 'usages found',
 
 	'no-results': 'No results found',
-	'no-results-description-navi': 'If you\'re searching for an English word, please switch to <i>English &rarr; Na\'vi</i> mode.',
-	'no-results-description-english': 'If you\'re searching for a Na\'vi word, please switch to <i>Na\'vi &rarr; English</i> mode.',
+	'no-results-description-navi': 'If you\'re searching for an English word, please switch to the <i>English &rarr; Na\'vi</i> tab.',
+	'no-results-description-english': 'If you\'re searching for a Na\'vi word, please switch to the <i>Na\'vi &rarr; English</i> tab.',
+	'no-results-description-english-only-one': 'If you\'re searching for English words, please search for only one word at a time. Reykunyu cannot currently search for English phrases consisting of more than one word.',
 	'no-results-description-annotated': 'Reykunyu can find only single words without affixes in the Annotated Dictionary. If you\'re searching for a conjugated word Na\'vi word, or a string of words, please switch to <i>Na\'vi &harr; English</i> mode.',
 	'did-you-mean': 'Did you mean',
 

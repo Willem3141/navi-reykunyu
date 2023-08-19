@@ -1377,7 +1377,11 @@ function doSearchNavi() {
 					$toNaviResult.append(createResultBlock(i, result));
 				}
 			} else {
-				$toNaviResult.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+				if (tìpawm.split(' ').length > 1) {
+					$toNaviResult.append(createErrorBlock(_("no-results"), _("no-results-description-english-only-one")));
+				} else {
+					$toNaviResult.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+				}
 			}
 
 			// set up tabs
