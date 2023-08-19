@@ -1320,7 +1320,7 @@ function getRhymes(query) {
 }
 
 function getAnnotatedResponsesFor(query) {
-	query = query.toLowerCase();
+	query = preprocessQuery(query);
 	let results = [];
 
 	if (annotated.hasOwnProperty(query)) {
