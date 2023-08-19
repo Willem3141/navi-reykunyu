@@ -1085,6 +1085,7 @@ function typeName(type, language) {
 // normalizes a query by replacing weird Unicode tìftang variations by
 // normal ASCII ', and c -> ts / g -> ng
 function preprocessQuery(query) {
+	query = query.trim();
 	query = query.replace(/’/g, "'");
 	query = query.replace(/‘/g, "'");
 	query = query.replace(/sh/g, "sy");
@@ -1118,6 +1119,7 @@ function getReverseResponsesFor(query, language) {
 		language = "en";
 	}
 
+	query = query.trim();
 	query = query.toLowerCase();
 
 	for (word in dictionary) {
