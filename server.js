@@ -75,6 +75,10 @@ app.get('/', function(req, res) {
 	res.render('txin', { user: req.user, query: req.query['q'] });
 });
 
+app.get('/sw.js', function(req, res) {
+	res.sendFile(__dirname + '/fraporu/ayvefya/sw.js');
+});
+
 app.get('/all', function(req, res) {
 	res.sendFile(__dirname + '/fraporu/fralì\'u.html');
 });
