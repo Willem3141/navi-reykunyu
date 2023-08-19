@@ -906,7 +906,7 @@ function postprocessResult(result) {
 			};
 		}
 	}
-	const key = result['na\'vi'] + ':' + result['type'];
+	const key = result['na\'vi'] + ':' + (result['type'] === 'nv:si' ? 'n:si' : result['type']);
 	if (derivedWords.hasOwnProperty(key)) {
 		result['derived'] = derivedWords[key];
 	}
