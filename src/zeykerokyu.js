@@ -25,7 +25,7 @@ module.exports = {
 }
 
 const fs = require('fs');
-const lessons = JSON.parse(fs.readFileSync(__dirname + "/lessons.json"));
+const lessons = JSON.parse(fs.readFileSync("./data/lessons.json"));
 
 const db = require('./db');
 

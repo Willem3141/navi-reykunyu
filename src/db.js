@@ -3,7 +3,7 @@ const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const reykunyu = require('./reykunyu');
 
-const db = new sqlite3.Database('reykunyu.db');
+const db = new sqlite3.Database('./data/reykunyu.db');
 
 const naviSortAlphabet = " 'aäeéfghiìklmnoprstuvwxyz";
 
@@ -43,7 +43,7 @@ db.serialize(() => {
 	)`);
 	db.run(`begin transaction`);
 	db.parallelize(() => {
-		const lessonData = JSON.parse(fs.readFileSync(__dirname + "/lessons.json"));
+		const lessonData = JSON.parse(fs.readFileSync("./data/lessons.json"));
 		for (let i = 0; i < lessonData.length; i++) {
 			const lesson = lessonData[i];
 			db.run(`insert into lesson values (?, ?, ?)`, i, lesson['name'], lesson['description']);

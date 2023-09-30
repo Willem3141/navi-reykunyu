@@ -44,7 +44,7 @@ const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
 try {
-	var dictionary = JSON.parse(fs.readFileSync(__dirname + "/words.json"));
+	var dictionary = JSON.parse(fs.readFileSync("./data/words.json"));
 } catch (e) {
 	output.error('words.json not found, exiting');
 	output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
@@ -52,16 +52,16 @@ This file does not seem to be present. If you want to run a local mirror
 of the instance at https://reykunyu.lu, you can copy the dictionary data
 from there:
 
-$ wget -O words.json https://reykunyu.lu/api/list/all
+$ wget -O data/words.json https://reykunyu.lu/api/list/all
 
 Alternatively, you can start with an empty database:
 
-$ echo "{}" > words.json`);
+$ echo "{}" > data/words.json`);
 	process.exit(1);
 }
 
 try {
-	var annotated = JSON.parse(fs.readFileSync(__dirname + "/annotated.json"));
+	var annotated = JSON.parse(fs.readFileSync("./data/annotated.json"));
 } catch (e) {
 	output.warning('Annotated Dictionary data not found');
 	output.hint(`Reykunyu uses a JSON file called annotated.json containing the source
@@ -72,7 +72,7 @@ Dictionary will not work.`);
 }
 
 try {
-	var sentences = JSON.parse(fs.readFileSync(__dirname + "/corpus.json"));
+	var sentences = JSON.parse(fs.readFileSync("./data/corpus.json"));
 } catch (e) {
 	output.warning('Corpus data not found');
 	output.hint(`Reykunyu uses a JSON file called corpus.json containing the example
@@ -1374,7 +1374,7 @@ function insertWord(data) {
 }
 
 function saveDictionary() {
-	fs.writeFileSync(__dirname + "/words.json", JSON.stringify(dictionary));
+	fs.writeFileSync("./data/words.json", JSON.stringify(dictionary));
 }
 
 function removeSentence(key) {
@@ -1392,6 +1392,6 @@ function hasSentence(key) {
 }
 
 function saveCorpus() {
-	fs.writeFileSync(__dirname + "/corpus.json", JSON.stringify(sentences));
+	fs.writeFileSync("./data/corpus.json", JSON.stringify(sentences));
 }
 
