@@ -67,6 +67,16 @@ $(function () {
 		self.updateInfixDisabledButtons();
 		self.updateInfixResults();
 	});
+
+	$('html').on('click', 'a.word-link', function (e) {
+		const href = $(this).attr('href');
+		if (href.startsWith('/?q=')) {
+			const q = href.substring(4);
+			$('#search-box').val(q);
+			sngäiTìfwusew();
+			e.preventDefault();
+		}
+	});
 });
 
 function setUpAutocomplete() {
