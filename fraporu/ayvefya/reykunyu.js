@@ -25,11 +25,6 @@ $(function () {
 		}
 	});
 
-	// temporary migration for "navi" and "english"
-	if (!localStorage.getItem('reykunyu-mode') ||
-		localStorage.getItem('reykunyu-mode') == "navi" || localStorage.getItem('reykunyu-mode') == "english") {
-		localStorage.setItem('reykunyu-mode', 'reykunyu');
-	}
 	$('#mode-direction').dropdown('set selected',
 		localStorage.getItem('reykunyu-mode'));
 	$('#mode-direction').dropdown({
