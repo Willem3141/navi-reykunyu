@@ -39,6 +39,7 @@ const output = require('./output');
 const pronouns = require('./pronouns');
 const rhymes = require('./rhymes');
 const verbs = require('./verbs');
+const wordLinks = require('./wordLinks');
 
 const matchAll = require('string.prototype.matchall');
 matchAll.shim();
@@ -91,34 +92,6 @@ var allWordsOfType = {};
 
 reloadData();
 
-// Replaces word links in a string by dictionary objects.
-function addWordLinks(text) {
-
-	// matches word links between brackets
-	const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
-	pieces = text.split(wordLinkRegex);
-
-	let list = [];
-	for (let i = 0; i < pieces.length; i++) {
-		if (i % 3 === 0) {
-			// string piece: just place it into the list
-			list.push(pieces[i]);
-		} else {
-			// regex-matched piece: get object from dictionary
-			const navi = pieces[i];
-			const type = pieces[i + 1];
-			const key = navi + ':' + type;
-			if (dictionary.hasOwnProperty(key)) {
-				list.push(stripToLinkData(dictionary[key]));
-			} else {
-				console.log('Invalid reference to [' + key + ']');
-			}
-			i++;  // skip type
-		}
-	}
-	return list;
-}
-
 function reloadData() {
 
 	derivedWords = {};
@@ -127,7 +100,7 @@ function reloadData() {
 	for (let word of Object.keys(dictionary)) {
 		if (dictionary[word].hasOwnProperty('etymology')) {
 			let etymology = dictionary[word]['etymology'];
-			etymology = addWordLinks(etymology);
+			etymology = wordLinks.enrichWordLinks(etymology, dictionary);
 			for (let piece of etymology) {
 				if (typeof piece === "string") {
 					continue;
@@ -139,7 +112,7 @@ function reloadData() {
 					if (!derivedWords.hasOwnProperty(key)) {
 						derivedWords[key] = [];
 					}
-					derivedWords[key].push(stripToLinkData(dictionary[word]));
+					derivedWords[key].push(wordLinks.stripToLinkData(dictionary[word]));
 				} else {
 					console.log('Invalid reference to [' + key + '] in etymology for ' + word);
 				}
@@ -196,22 +169,6 @@ function getAllWordsOfType(type, allowSubtype) {
 				(allowSubtype && dictionary[word]['type'].startsWith(type))) {
 			result.push(dictionary[word]);
 		}
-	}
-	return result;
-}
-
-// Given a word object, returns an object that contains only the word data
-// relevant when making a word link (Na'vi word, type, and translations).
-// Calling this function makes the returned data smaller, and avoids potential
-// infinite loops if two words happen to have word links to each other.
-function stripToLinkData(word) {
-	let result = {
-		"na'vi": word["na'vi"],
-		"type": word["type"],
-		"translations": word["translations"]
-	};
-	if (word.hasOwnProperty("short_translation")) {
-		result["short_translation"] = word["short_translation"];
 	}
 	return result;
 }
@@ -886,15 +843,15 @@ function postprocessResult(result) {
 		};
 	}
 	if (result.hasOwnProperty('etymology')) {
-		result['etymology'] = addWordLinks(result['etymology']);
+		result['etymology'] = wordLinks.enrichWordLinks(result['etymology'], dictionary);
 	}
 	if (result.hasOwnProperty('meaning_note')) {
-		result['meaning_note'] = addWordLinks(result['meaning_note']);
+		result['meaning_note'] = wordLinks.enrichWordLinks(result['meaning_note'], dictionary);
 	}
 	if (result.hasOwnProperty('seeAlso')) {
 		for (let i = 0; i < result['seeAlso'].length; i++) {
 			if (dictionary.hasOwnProperty(result['seeAlso'][i])) {
-				result['seeAlso'][i] = stripToLinkData(dictionary[result['seeAlso'][i]]);
+				result['seeAlso'][i] = wordLinks.stripToLinkData(dictionary[result['seeAlso'][i]]);
 			}
 		}
 	}
@@ -1394,4 +1351,3 @@ function hasSentence(key) {
 function saveCorpus() {
 	fs.writeFileSync("./data/corpus.json", JSON.stringify(sentences));
 }
-
