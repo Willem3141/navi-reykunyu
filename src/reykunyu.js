@@ -1159,6 +1159,7 @@ function getRhymes(query) {
 
 function getAnnotatedResponsesFor(query) {
 	query = preprocessQuery(query);
+	query = query.toLowerCase();
 	let results = [];
 
 	if (annotated.hasOwnProperty(query)) {
@@ -1175,10 +1176,7 @@ function getAnnotatedResponsesFor(query) {
 }
 
 function getAnnotatedSuggestionsFor(query) {
-	if (query.length < 1) {
-		return { 'results': [] };
-	}
-
+	query = preprocessQuery(query);
 	query = query.toLowerCase();
 	resultsArray = [];
 
@@ -1187,6 +1185,9 @@ function getAnnotatedSuggestionsFor(query) {
 			if (word.toLowerCase().startsWith(query)) {
 				resultsArray.push({ 'title': word });
 			}
+		}
+		if (resultsArray.length > 10) {
+			break;
 		}
 	}
 
