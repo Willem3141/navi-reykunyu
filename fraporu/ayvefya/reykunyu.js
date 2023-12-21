@@ -1,9 +1,9 @@
 $(function () {
 	if ($('#search-box').val().length) {
-		sngäiTìfwusew();
+		sngäiTìfwusew(true);
 	}
 
-	$('#search-form').on('submit', sngäiTìfwusew);
+	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
 
 	$('.ui.dropdown').dropdown();
 
@@ -16,7 +16,7 @@ $(function () {
 	$('#language-dropdown').dropdown({
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-language', value);
-			sngäiTìfwusew();
+			sngäiTìfwusew(false);
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			$('.current-lang').text(_('language'));
@@ -30,7 +30,7 @@ $(function () {
 	$('#mode-direction').dropdown({
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-mode', value);
-			sngäiTìfwusew();
+			sngäiTìfwusew(false);
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			return false;
@@ -73,9 +73,14 @@ $(function () {
 		if (href.startsWith('/?q=')) {
 			const q = href.substring(4);
 			$('#search-box').val(q);
-			sngäiTìfwusew();
+			sngäiTìfwusew(false);
 			e.preventDefault();
 		}
+	});
+
+	window.addEventListener("popstate", (event) => {
+		$('#search-box').val(event.state['query']);
+		sngäiTìfwusew(true);
 	});
 });
 
@@ -1315,13 +1320,26 @@ function createSentenceBarItem(result) {
 let mode = 'fromNa\'vi';
 
 // fìvefyat sar fkol mawfwa saryu pamrel soli tìpawmur
-function sngäiTìfwusew() {
+// initial - if true, this is taken to be the first automatic search when the
+//           page loads, hence we should not pushState
+function sngäiTìfwusew(initial) {
 	$('.ui.search').search('hide results');
 	$results = $('#results');
 	$results.empty();
 	$modeTabs = $('#tab-mode-bar');
 	$modeTabs.hide();
+	const query = $('#search-box').val();
 	const mode = localStorage.getItem('reykunyu-mode');
+	if (initial) {
+		history.replaceState({ 'query': query, 'mode': mode }, '', '/?q=' + query);
+	} else {
+		history.pushState({ 'query': query, 'mode': mode }, '', '/?q=' + query);
+	}
+	if (query === "") {
+		document.title = "Reykunyu – Online Na'vi dictionary";
+	} else {
+		document.title = query + " – Reykunyu";
+	}
 	if (mode === 'reykunyu') {
 		doSearchNavi();
 	} else if (mode === 'analyzer') {
@@ -1332,7 +1350,6 @@ function sngäiTìfwusew() {
 		doSearchRhymes();
 	}
 	$('#search-box').trigger('select');
-	return false;
 }
 
 function doSearchNavi() {
