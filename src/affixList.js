@@ -53,7 +53,10 @@ function makeAffixList(conjugated, d) {
 
 		} else if (conjugation['type'] === 'adj_to_adv') {
 			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
-		}
+		} else if (conjugation['type'] === 'gerund') {
++			addAffix(list, 'prefix', 'tì', ['aff:pre']);
++			addAffix(list, 'infix', 'us', ['aff:in']);
+ 		}
 	}
 
 	return list;

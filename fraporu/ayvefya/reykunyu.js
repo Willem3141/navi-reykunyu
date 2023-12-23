@@ -186,6 +186,9 @@ function conjugationExplanation(conjugation) {
 			case "adj_to_adv":
 				$explanation.append(adjectiveToAdverbConjugationExplanation(c));
 				break;
+			case "gerund":
+				$explanation.append(verbToGerundConjugationExplanation(c));
+				break;
 		}
 	}
 
@@ -335,6 +338,25 @@ function adjectiveToAdverbConjugationExplanation(conjugation) {
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 	typeBadge('adv', true).appendTo($conjugation);
+
+	return $conjugation;
+}
+
+function verbToGerundConjugationExplanation(conjugation) {
+	let $conjugation = $('<div/>').addClass('conjugation-explanation');
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+
+	$('<span/>').addClass('prefix').text('tì').appendTo($conjugation);
+	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
+
+	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+	$('<span/>').addClass('infix').html("&#x2039; us &#x203a;").appendTo($conjugation);
+
+	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
+	typeBadge('n', true).appendTo($conjugation);
 
 	return $conjugation;
 }
