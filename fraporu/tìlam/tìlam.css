@@ -78,6 +78,59 @@ h1::after {
 	width: 0px;
 }
 
+.main-menu {
+	width: 100%;
+}
+
+.main-menu > .button > .button-label {
+	padding-left: 6px;
+}
+.main-menu > .button > .icon.dropdown {
+	padding-left: 6px;
+}
+
+.main-menu > .button.dropdown {
+	text-align: center;
+}
+
+.main-menu > .button.dropdown .menu .item {
+	text-decoration: none;
+}
+
+@media (max-width: 600px) {
+	.main-menu > .button {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.main-menu > .button > .button-label {
+		padding-left: 0;
+		padding-top: 6px;
+	}
+	.main-menu > .button > .icon.dropdown {
+		padding-left: 0;
+		padding-top: 3px;
+	}
+}
+
+@media (max-width: 460px) {
+	.main-menu > .button > .button-label {
+		display: none;
+	}
+
+	#language-dropdown .text {
+		display: none;
+	}
+}
+
+@media (min-width: 1000px) {
+	.main-menu {
+		width: auto;
+		float: right;
+	}
+}
+
 #mode-direction {
 	width: 200px;
 }
