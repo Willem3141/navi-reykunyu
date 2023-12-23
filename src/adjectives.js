@@ -27,8 +27,7 @@ function conjugate(adjective, form, etymology) {
 	} else if (form === "postnoun") {
 		if (adjective.charAt(0) === "a") {
 			return "a-" + adjective.substring(1) + "-";
-		} else if (adjective.substring(0, 2) === "le"
-				&& etymology && etymology.indexOf('[le:aff:pre]') !== -1) {
+		} else if (etymology && etymology.indexOf('[le:aff:pre]') !== -1) {
 			return "(a)-" + adjective + "-";
 		} else {
 			return "a-" + adjective + "-";
