@@ -30,12 +30,13 @@ var http = require('http').Server(app);
 var config = JSON.parse(fs.readFileSync('config.json'));
 
 var reykunyu = require('./reykunyu');
+var annotatedDictionary = require('./annotatedDictionary');
 var conjugationString = require('./conjugationString');
 var verbs = require('./verbs');
 
 var tslamyu;
 try {
-	tslamyu = require('../navi-tslamyu/tslamyu');
+	tslamyu = require('../../navi-tslamyu/tslamyu');
 } catch (e) {
 	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
 }
@@ -66,9 +67,13 @@ passport.deserializeUser(function (id, cb) {
 	}
 });
 
-app.use(express.static('fraporu'));
+const staticRoot = './fraporu';
+app.use(express.static(staticRoot));
 
-app.set('views', __dirname + '/fraporu');
+app.use('/ayrel', express.static('./data/ayrel'));
+app.use('/fam', express.static('./data/fam'));
+
+app.set('views', './fraporu');
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
@@ -80,11 +85,11 @@ app.get('/sw.js', function(req, res) {
 });
 
 app.get('/all', function(req, res) {
-	res.sendFile(__dirname + '/fraporu/fralì\'u.html');
+	res.render('fralì\'u');
 });
 
 app.get('/login', function(req, res) {
-	res.sendFile(__dirname + '/fraporu/login.html');
+	res.render('login');
 });
 
 app.post('/login', passport.authenticate('local', {
@@ -139,7 +144,7 @@ app.post('/add', function(req, res) {
 		return;
 	}
 	reykunyu.insertWord(data);
-	let history = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	let history = JSON.parse(fs.readFileSync("./data/history.json"));
 	history.push({
 		'user': req.user['username'],
 		'date': new Date(),
@@ -147,7 +152,7 @@ app.post('/add', function(req, res) {
 		'type': type,
 		'data': data
 	});
-	fs.writeFileSync(__dirname + "/history.json", JSON.stringify(history));
+	fs.writeFileSync("./data/history.json", JSON.stringify(history));
 	reykunyu.saveDictionary();
 	res.send();
 });
@@ -214,7 +219,7 @@ app.post('/edit', function(req, res) {
 	let old = reykunyu.getWord(word, type);
 	reykunyu.removeWord(word, type);
 	reykunyu.insertWord(data);
-	let history = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	let history = JSON.parse(fs.readFileSync("./data/history.json"));
 	history.push({
 		'user': req.user['username'],
 		'date': new Date(),
@@ -223,13 +228,13 @@ app.post('/edit', function(req, res) {
 		'old': old,
 		'data': data
 	});
-	fs.writeFileSync(__dirname + "/history.json", JSON.stringify(history));
+	fs.writeFileSync("./data/history.json", JSON.stringify(history));
 	reykunyu.saveDictionary();
 	res.send();
 });
 
 app.get('/history', function(req, res) {
-	let historyData = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	let historyData = JSON.parse(fs.readFileSync("./data/history.json"));
 	historyData = historyData.slice(Math.max(1, historyData.length - 50));  // 50 last elements
 	historyData.reverse();
 	res.render('history', { user: req.user, history: historyData });
@@ -423,11 +428,11 @@ app.get('/api/suggest', function(req, res) {
 });
 
 app.get('/api/annotated/search', function(req, res) {
-	res.json(reykunyu.getAnnotatedResponsesFor(req.query["query"]));
+	res.json(annotatedDictionary.getResponsesFor(req.query["query"]));
 });
 
 app.get('/api/annotated/suggest', function(req, res) {
-	res.json(reykunyu.getAnnotatedSuggestionsFor(req.query["query"]));
+	res.json(annotatedDictionary.getSuggestionsFor(req.query["query"]));
 });
 
 app.get('/api/conjugate/verb', function(req, res) {
@@ -436,13 +441,13 @@ app.get('/api/conjugate/verb', function(req, res) {
 });
 
 app.get('/api/history/all', function(req, res) {
-	let historyData = JSON.parse(fs.readFileSync(__dirname + "/history.json"));
+	let historyData = JSON.parse(fs.readFileSync("./data/history.json"));
 	res.json(historyData);
 });
 
 app.get('/api/history/major-changes', function(req, res) {
 	let historyData = [];
-	for (let entry of JSON.parse(fs.readFileSync(__dirname + "/history.json"))) {
+	for (let entry of JSON.parse(fs.readFileSync("./data/history.json"))) {
 		if (!entry.hasOwnProperty('old')) {
 			historyData.push({
 				'date': entry['date'],
@@ -479,9 +484,9 @@ app.get('/api/list/transitivity', function(req, res) {
 });
 
 app.get('/api/sound', function(req, res) {
-	const file = __dirname + '/fam/' + req.query["word"] + "-" + req.query["type"] + '.mp3';
+	const file = req.query["word"] + "-" + req.query["type"] + '.mp3';
 	if (fs.existsSync(file)) {
-		res.sendFile(file);
+		res.sendFile(file, { root: process.cwd() + '/../data/fam' });
 	} else {
 		res.sendStatus(404);
 	}
@@ -578,12 +583,6 @@ app.post('/api/srs/mark-known', function(req, res) {
 		res.send();
 	});
 });
-
-app.use('/ayrel', express.static('ayrel'));
-
-app.use('/fam', express.static('fam'));
-
-app.use('/uvan', express.static('uvan'));
 
 http.listen(config["port"], function() {
 	console.log('listening on *:' + config["port"]);

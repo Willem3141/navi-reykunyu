@@ -22,10 +22,10 @@ registerServiceWorker();
 
 $(function () {
 	if ($('#search-box').val().length) {
-		sngäiTìfwusew();
+		sngäiTìfwusew(true);
 	}
 
-	$('#search-form').on('submit', sngäiTìfwusew);
+	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
 
 	$('.ui.dropdown').dropdown();
 
@@ -38,7 +38,7 @@ $(function () {
 	$('#language-dropdown').dropdown({
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-language', value);
-			sngäiTìfwusew();
+			sngäiTìfwusew(false);
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			$('.current-lang').text(_('language'));
@@ -47,17 +47,12 @@ $(function () {
 		}
 	});
 
-	// temporary migration for "navi" and "english"
-	if (!localStorage.getItem('reykunyu-mode') ||
-		localStorage.getItem('reykunyu-mode') == "navi" || localStorage.getItem('reykunyu-mode') == "english") {
-		localStorage.setItem('reykunyu-mode', 'reykunyu');
-	}
 	$('#mode-direction').dropdown('set selected',
 		localStorage.getItem('reykunyu-mode'));
 	$('#mode-direction').dropdown({
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-mode', value);
-			sngäiTìfwusew();
+			sngäiTìfwusew(false);
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			return false;
@@ -93,6 +88,21 @@ $(function () {
 		$(this).addClass('active').siblings().removeClass('active');
 		self.updateInfixDisabledButtons();
 		self.updateInfixResults();
+	});
+
+	$('html').on('click', 'a.word-link', function (e) {
+		const href = $(this).attr('href');
+		if (href.startsWith('/?q=')) {
+			const q = href.substring(4);
+			$('#search-box').val(q);
+			sngäiTìfwusew(false);
+			e.preventDefault();
+		}
+	});
+
+	window.addEventListener("popstate", (event) => {
+		$('#search-box').val(event.state['query']);
+		sngäiTìfwusew(true);
 	});
 });
 
@@ -197,6 +207,9 @@ function conjugationExplanation(conjugation) {
 				break;
 			case "adj_to_adv":
 				$explanation.append(adjectiveToAdverbConjugationExplanation(c));
+				break;
+			case "gerund":
+				$explanation.append(gerundConjugationExplanation(c));
 				break;
 		}
 	}
@@ -347,6 +360,25 @@ function adjectiveToAdverbConjugationExplanation(conjugation) {
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 	typeBadge('adv', true).appendTo($conjugation);
+
+	return $conjugation;
+}
+
+function gerundConjugationExplanation(conjugation) {
+	let $conjugation = $('<div/>').addClass('conjugation-explanation');
+	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
+
+	$('<span/>').addClass('prefix').text('tì').appendTo($conjugation);
+	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+
+	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
+
+	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+	$('<span/>').addClass('infix').html("&#x2039;us&#x203a;").appendTo($conjugation);
+
+	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
+	typeBadge('n', true).appendTo($conjugation);
 
 	return $conjugation;
 }
@@ -1137,6 +1169,8 @@ function lemmaForm(word, type) {
 		return word + ' si';
 	} else if (type === 'aff:pre') {
 		return word + "-";
+	} else if (type === 'aff:pre:len') {
+		return word + "+";
 	} else if (type === 'aff:in') {
 		return '&#x2039;' + word + '&#x203a;';
 	} else if (type === 'aff:suf') {
@@ -1147,6 +1181,8 @@ function lemmaForm(word, type) {
 
 function addLemmaClass($element, type) {
 	if (type === 'aff:pre') {
+		$element.addClass('prefix');
+	} else if (type === 'aff:pre:len') {
 		$element.addClass('prefix');
 	} else if (type === 'aff:in') {
 		$element.addClass('infix');
@@ -1328,13 +1364,26 @@ function createSentenceBarItem(result) {
 let mode = 'fromNa\'vi';
 
 // fìvefyat sar fkol mawfwa saryu pamrel soli tìpawmur
-function sngäiTìfwusew() {
+// initial - if true, this is taken to be the first automatic search when the
+//           page loads, hence we should not pushState
+function sngäiTìfwusew(initial) {
 	$('.ui.search').search('hide results');
 	$results = $('#results');
 	$results.empty();
 	$modeTabs = $('#tab-mode-bar');
 	$modeTabs.hide();
+	const query = $('#search-box').val();
 	const mode = localStorage.getItem('reykunyu-mode');
+	if (initial) {
+		history.replaceState({ 'query': query, 'mode': mode }, '', '/?q=' + query);
+	} else {
+		history.pushState({ 'query': query, 'mode': mode }, '', '/?q=' + query);
+	}
+	if (query === "") {
+		document.title = "Reykunyu – Online Na'vi dictionary";
+		return;
+	}
+	document.title = query + " – Reykunyu";
 	if (mode === 'reykunyu') {
 		doSearchNavi();
 	} else if (mode === 'analyzer') {
@@ -1345,7 +1394,6 @@ function sngäiTìfwusew() {
 		doSearchRhymes();
 	}
 	$('#search-box').trigger('select');
-	return false;
 }
 
 function doSearchNavi() {
@@ -1395,7 +1443,11 @@ function doSearchNavi() {
 					$toNaviResult.append(createResultBlock(i, result));
 				}
 			} else {
-				$toNaviResult.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+				if (tìpawm.split(' ').length > 1) {
+					$toNaviResult.append(createErrorBlock(_("no-results"), _("no-results-description-english-only-one")));
+				} else {
+					$toNaviResult.append(createErrorBlock(_("no-results"), _("no-results-description-english")));
+				}
 			}
 
 			// set up tabs
@@ -1471,7 +1523,7 @@ function createAnnotatedBlock(definition) {
 function createAnnotatedFooter() {
 	let block = $('<div/>')
 		.addClass('credits-footer')
-		.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2022-07-03');
+		.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2023-02-06');
 	return block;
 }
 

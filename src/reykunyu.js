@@ -13,8 +13,6 @@ module.exports = {
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
 	'getRhymes': getRhymes,
-	'getAnnotatedResponsesFor': getAnnotatedResponsesFor,
-	'getAnnotatedSuggestionsFor': getAnnotatedSuggestionsFor,
 	'getAllSentences': getAllSentences,
 	'removeWord': removeWord,
 	'insertWord': insertWord,
@@ -30,21 +28,24 @@ const fs = require('fs');
 const levenshtein = require('js-levenshtein');
 
 const adjectives = require('./adjectives');
+const affixList = require('./affixList');
 const conjugationString = require('./conjugationString');
 const convert = require('./convert');
 const ipa = require('./ipa');
 const nouns = require('./nouns');
 const numbers = require('./numbers');
 const output = require('./output');
+const preprocess = require('./preprocess');
 const pronouns = require('./pronouns');
 const rhymes = require('./rhymes');
 const verbs = require('./verbs');
+const wordLinks = require('./wordLinks');
 
 const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
 try {
-	var dictionary = JSON.parse(fs.readFileSync(__dirname + "/words.json"));
+	var dictionary = JSON.parse(fs.readFileSync("./data/words.json"));
 } catch (e) {
 	output.error('words.json not found, exiting');
 	output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
@@ -52,27 +53,16 @@ This file does not seem to be present. If you want to run a local mirror
 of the instance at https://reykunyu.lu, you can copy the dictionary data
 from there:
 
-$ wget -O words.json https://reykunyu.lu/api/list/all
+$ wget -O data/words.json https://reykunyu.lu/api/list/all
 
 Alternatively, you can start with an empty database:
 
-$ echo "{}" > words.json`);
+$ echo "{}" > data/words.json`);
 	process.exit(1);
 }
 
 try {
-	var annotated = JSON.parse(fs.readFileSync(__dirname + "/annotated.json"));
-} catch (e) {
-	output.warning('Annotated Dictionary data not found');
-	output.hint(`Reykunyu uses a JSON file called annotated.json containing the source
-of the Annotated Dictionary by Plumps. This file does not seem to be
-present. This warning is harmless, but searching in the Annotated
-Dictionary will not work.`);
-	var annotated = {};
-}
-
-try {
-	var sentences = JSON.parse(fs.readFileSync(__dirname + "/corpus.json"));
+	var sentences = JSON.parse(fs.readFileSync("./data/corpus.json"));
 } catch (e) {
 	output.warning('Corpus data not found');
 	output.hint(`Reykunyu uses a JSON file called corpus.json containing the example
@@ -91,34 +81,6 @@ var allWordsOfType = {};
 
 reloadData();
 
-// Replaces word links in a string by dictionary objects.
-function addWordLinks(text) {
-
-	// matches word links between brackets
-	const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
-	pieces = text.split(wordLinkRegex);
-
-	let list = [];
-	for (let i = 0; i < pieces.length; i++) {
-		if (i % 3 === 0) {
-			// string piece: just place it into the list
-			list.push(pieces[i]);
-		} else {
-			// regex-matched piece: get object from dictionary
-			const navi = pieces[i];
-			const type = pieces[i + 1];
-			const key = navi + ':' + type;
-			if (dictionary.hasOwnProperty(key)) {
-				list.push(stripToLinkData(dictionary[key]));
-			} else {
-				console.log('Invalid reference to [' + key + ']');
-			}
-			i++;  // skip type
-		}
-	}
-	return list;
-}
-
 function reloadData() {
 
 	derivedWords = {};
@@ -127,19 +89,19 @@ function reloadData() {
 	for (let word of Object.keys(dictionary)) {
 		if (dictionary[word].hasOwnProperty('etymology')) {
 			let etymology = dictionary[word]['etymology'];
-			etymology = addWordLinks(etymology);
+			etymology = wordLinks.enrichWordLinks(etymology, dictionary);
 			for (let piece of etymology) {
 				if (typeof piece === "string") {
 					continue;
 				}
 				const navi = piece["na'vi"];
 				const type = piece["type"];
-				const key = navi + ':' + type;
+				const key = navi.toLowerCase() + ':' + type;
 				if (dictionary.hasOwnProperty(key)) {
 					if (!derivedWords.hasOwnProperty(key)) {
 						derivedWords[key] = [];
 					}
-					derivedWords[key].push(stripToLinkData(dictionary[word]));
+					derivedWords[key].push(wordLinks.stripToLinkData(dictionary[word]));
 				} else {
 					console.log('Invalid reference to [' + key + '] in etymology for ' + word);
 				}
@@ -200,22 +162,6 @@ function getAllWordsOfType(type, allowSubtype) {
 	return result;
 }
 
-// Given a word object, returns an object that contains only the word data
-// relevant when making a word link (Na'vi word, type, and translations).
-// Calling this function makes the returned data smaller, and avoids potential
-// infinite loops if two words happen to have word links to each other.
-function stripToLinkData(word) {
-	let result = {
-		"na'vi": word["na'vi"],
-		"type": word["type"],
-		"translations": word["translations"]
-	};
-	if (word.hasOwnProperty("short_translation")) {
-		result["short_translation"] = word["short_translation"];
-	}
-	return result;
-}
-
 function simplifiedTranslation(translation, language) {
 	let result = "";
 
@@ -248,7 +194,7 @@ function hasWord(word, type) {
 }
 
 function getResponsesFor(query) {
-	query = preprocessQuery(query);
+	query = preprocess.preprocessQuery(query);
 	let results = [];
 
 	// first split query on spaces to get individual words
@@ -443,7 +389,7 @@ function lookUpNoun(queryWord, wordResults) {
 				"type": "n",
 				"conjugation": nounResult
 			}];
-			noun["affixes"] = makeAffixList(noun["conjugated"]);
+			noun["affixes"] = affixList.makeAffixList(noun["conjugated"], dictionary);
 			wordResults.push(noun);
 		}
 		const suffixes = ['yu', 'tswo'];
@@ -470,7 +416,7 @@ function lookUpNoun(queryWord, wordResults) {
 							"type": "n",
 							"conjugation": nounResult
 						});
-						verb["affixes"] = makeAffixList(conjugated);
+						verb["affixes"] = affixList.makeAffixList(conjugated, dictionary);
 						wordResults.push(verb);
 					}
 				});
@@ -500,7 +446,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					word["affixes"] = makeAffixList(word["conjugated"]);
+					word["affixes"] = affixList.makeAffixList(word["conjugated"], dictionary);
 					wordResults.push(word);
 				}
 
@@ -514,10 +460,46 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					word["affixes"] = makeAffixList(word["conjugated"]);
+					word["affixes"] = affixList.makeAffixList(word["conjugated"], dictionary);
 					wordResults.push(word);
 				}
 			}
+		}
+
+		// verb gerunds (tì-<us>)
+		if (nounResult["root"].startsWith('tì')) {
+			let possibleVerb = nounResult["root"].slice(2);  // cut off tì-
+			let verbResults = [];
+			lookUpVerb(possibleVerb, verbResults, true);
+			verbResults.forEach(function (verb) {
+				const conjugated = verb["conjugated"];
+				const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
+				// we're only interested in a word starting with tì- if its
+				// verb also has an <us> infix; other tì-words are in the
+				// dictionary already
+				// also, ignore the word if it has other infixes added, as this
+				// is not allowed
+				if (infixes[0] === '' && infixes[1] === 'us' && infixes[2] === '') {
+					let infixesWithoutFirst = ['', '', ''];
+					let conjugatedWithoutFirst = conjugationString.formsFromString(verbs.conjugate(verb["infixes"], infixesWithoutFirst));
+					conjugated[0]['conjugation']['result'] = conjugatedWithoutFirst;
+					conjugated[0]['conjugation']['infixes'] = infixesWithoutFirst;
+					conjugated.push({
+						"type": "gerund",
+						"conjugation": {
+							"result": [nounResult["root"]],
+							"root": conjugatedWithoutFirst[0],
+							"affixes": ['tì', 'us']
+						}
+					});
+					conjugated.push({
+						"type": "n",
+						"conjugation": nounResult
+					});
+					verb["affixes"] = affixList.makeAffixList(verb["conjugated"], dictionary);
+					wordResults.push(verb);
+				}
+			});
 		}
 	});
 }
@@ -544,7 +526,7 @@ function lookUpVerb(queryWord, wordResults, allowParticiples) {
 				"type": "v",
 				"conjugation": resultCopy
 			}];
-			verb["affixes"] = makeAffixList(verb["conjugated"]);
+			verb["affixes"] = affixList.makeAffixList(verb["conjugated"], dictionary);
 			wordResults.push(verb);
 		}
 	});
@@ -564,7 +546,7 @@ function lookUpAdjective(queryWord, wordResults) {
 				"type": "adj",
 				"conjugation": adjResultCopy
 			}];
-			adjective["affixes"] = makeAffixList(adjective["conjugated"]);
+			adjective["affixes"] = affixList.makeAffixList(adjective["conjugated"], dictionary);
 			wordResults.push(adjective);
 		}
 
@@ -591,7 +573,7 @@ function lookUpAdjective(queryWord, wordResults) {
 					"type": "adj",
 					"conjugation": adjResult
 				});
-				verb["affixes"] = makeAffixList(verb["conjugated"]);
+				verb["affixes"] = affixList.makeAffixList(verb["conjugated"], dictionary);
 				wordResults.push(verb);
 			}
 		});
@@ -616,7 +598,7 @@ function lookUpAdjective(queryWord, wordResults) {
 						"type": "adj",
 						"conjugation": adjResult
 					});
-					verb["affixes"] = makeAffixList(verb["conjugated"]);
+					verb["affixes"] = affixList.makeAffixList(verb["conjugated"], dictionary);
 					wordResults.push(verb);
 				});
 			}
@@ -638,7 +620,7 @@ function lookUpProductiveAdverb(queryWord, wordResults) {
 					"affixes": ['nì']
 				}
 			}];
-			adjective["affixes"] = makeAffixList(adjective["conjugated"]);
+			adjective["affixes"] = affixList.makeAffixList(adjective["conjugated"], dictionary);
 			wordResults.push(adjective);
 		}
 	}
@@ -693,128 +675,6 @@ function findVerb(word) {
 		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:?"])));
 	}
 	return results;
-}
-
-function makeAffixList(conjugated) {
-	list = [];
-
-	for (let conjugation of conjugated) {
-		let affixes = conjugation['conjugation']['affixes'];
-		if (conjugation['type'] === 'n') {
-			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
-			if (affixes[1] === '(ay)') {
-				addAffix(list, 'prefix', 'ay', ['aff:pre']);
-			} else {
-				addAffix(list, 'prefix', affixes[1], ['aff:pre']);
-			}
-			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
-			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
-			addAffix(list, 'suffix', affixes[4], ['aff:suf']);
-			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len']);
-			addAffix(list, 'suffix', affixes[6], ['part']);
-
-		} else if (conjugation['type'] === 'v_to_n') {
-			addAffix(list, 'suffix', affixes[0], ['aff:suf']);
-
-		} else if (conjugation['type'] === 'v_to_adj') {
-			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
-
-		} else if (conjugation['type'] === 'v_to_part') {
-			addAffix(list, 'infix', affixes[0], ['aff:in']);
-
-		} else if (conjugation['type'] === 'v') {
-			let infixes = conjugation['conjugation']['infixes'];
-			addPrefirstVerbInfix(list, infixes[0]);
-			addFirstVerbInfix(list, infixes[1]);
-			addAffix(list, 'infix', infixes[2], ['aff:in']);
-
-		} else if (conjugation['type'] === 'adj') {
-			let form = conjugation['conjugation']['form'];
-			if (form === 'postnoun') {
-				addAffix(list, 'prefix', 'a', ['aff:pre']);
-			} else if (form === 'prenoun') {
-				addAffix(list, 'suffix', 'a', ['aff:suf']);
-			}
-
-		} else if (conjugation['type'] === 'adj_to_adv') {
-			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
-		}
-	}
-
-	return list;
-}
-
-function addAffix(list, affixType, affixString, types) {
-	if (!affixString.length) {
-		return;
-	}
-	let affix;
-	for (let t of types) {
-		if (hasWord(affixString, t)) {
-			affix = getWord(affixString, t);
-			break;
-		}
-	}
-	if (affix) {
-		list.push({
-			'type': affixType,
-			'affix': affix
-		});
-	}
-}
-
-function addCombinedAffix(list, affixType, combined, affixStrings, types) {
-	let combinedList = [];
-	for (const affixString of affixStrings) {
-		addAffix(combinedList, affixType, affixString, types);
-	}
-	list.push({
-		'type': affixType,
-		'affix': combined,
-		'combinedFrom': combinedList
-	});
-}
-
-function addPrefirstVerbInfix(list, affixString) {
-	if (affixString === "äpeyk") {
-		addCombinedAffix(list, 'infix', affixString, ['äp', 'eyk'], ['aff:in']);
-	} else {
-		addAffix(list, 'infix', affixString, ['aff:in']);
-	}
-}
-
-function addFirstVerbInfix(list, affixString) {
-	if (affixString === "ìsy") {
-		addCombinedAffix(list, 'infix', affixString, ['ìy', 's'], ['aff:in']);
-	} else if (affixString === "asy") {
-		addCombinedAffix(list, 'infix', affixString, ['ay', 's'], ['aff:in']);
-	} else if (affixString === "alm") {
-		addCombinedAffix(list, 'infix', affixString, ['am', 'ol'], ['aff:in']);
-	} else if (affixString === "ìlm") {
-		addCombinedAffix(list, 'infix', affixString, ['ìm', 'ol'], ['aff:in']);
-	} else if (affixString === "ìly") {
-		addCombinedAffix(list, 'infix', affixString, ['ìy', 'ol'], ['aff:in']);
-	} else if (affixString === "aly") {
-		addCombinedAffix(list, 'infix', affixString, ['ay', 'ol'], ['aff:in']);
-	} else if (affixString === "arm") {
-		addCombinedAffix(list, 'infix', affixString, ['am', 'er'], ['aff:in']);
-	} else if (affixString === "ìrm") {
-		addCombinedAffix(list, 'infix', affixString, ['ìm', 'er'], ['aff:in']);
-	} else if (affixString === "ìry") {
-		addCombinedAffix(list, 'infix', affixString, ['ìy', 'er'], ['aff:in']);
-	} else if (affixString === "ary") {
-		addCombinedAffix(list, 'infix', affixString, ['ay', 'er'], ['aff:in']);
-	} else if (affixString === "imv") {
-		addCombinedAffix(list, 'infix', affixString, ['am', 'iv'], ['aff:in']);
-	} else if (affixString === "ìyev") {
-		addCombinedAffix(list, 'infix', affixString, ['ay', 'iv'], ['aff:in']);
-	} else if (affixString === "ilv") {
-		addCombinedAffix(list, 'infix', affixString, ['ol', 'iv'], ['aff:in']);
-	} else if (affixString === "irv") {
-		addCombinedAffix(list, 'infix', affixString, ['er', 'iv'], ['aff:in']);
-	} else {
-		addAffix(list, 'infix', affixString, ['aff:in']);
-	}
 }
 
 function resultScore(result, queryWord) {
@@ -886,15 +746,15 @@ function postprocessResult(result) {
 		};
 	}
 	if (result.hasOwnProperty('etymology')) {
-		result['etymology'] = addWordLinks(result['etymology']);
+		result['etymology'] = wordLinks.enrichWordLinks(result['etymology'], dictionary);
 	}
 	if (result.hasOwnProperty('meaning_note')) {
-		result['meaning_note'] = addWordLinks(result['meaning_note']);
+		result['meaning_note'] = wordLinks.enrichWordLinks(result['meaning_note'], dictionary);
 	}
 	if (result.hasOwnProperty('seeAlso')) {
 		for (let i = 0; i < result['seeAlso'].length; i++) {
 			if (dictionary.hasOwnProperty(result['seeAlso'][i])) {
-				result['seeAlso'][i] = stripToLinkData(dictionary[result['seeAlso'][i]]);
+				result['seeAlso'][i] = wordLinks.stripToLinkData(dictionary[result['seeAlso'][i]]);
 			}
 		}
 	}
@@ -906,7 +766,7 @@ function postprocessResult(result) {
 			};
 		}
 	}
-	const key = result['na\'vi'] + ':' + result['type'];
+	const key = result['na\'vi'].toLowerCase() + ':' + (result['type'] === 'nv:si' ? 'n:si' : result['type']);
 	if (derivedWords.hasOwnProperty(key)) {
 		result['derived'] = derivedWords[key];
 	}
@@ -991,7 +851,7 @@ function getSuggestionsFor(query, language) {
 	if (query.length < 3) {
 		return { 'results': [] };
 	}
-	query = preprocessQuery(query);
+	query = preprocess.preprocessQuery(query);
 	query = query.toLowerCase();
 	let results = [];
 	for (let w in dictionary) {
@@ -1074,37 +934,13 @@ function typeName(type, language) {
 		'phr': 'phr.',
 		'inter': 'inter.',
 		'aff:pre': 'pref.',
+		'aff:pre:len': 'pref.',
 		'aff:in': 'inf.',
 		'aff:suf': 'suff.',
 		'nv:si': 'vin.',
 	};
 
 	return types[type];
-}
-
-// normalizes a query by replacing weird Unicode tìftang variations by
-// normal ASCII ', and c -> ts / g -> ng
-function preprocessQuery(query) {
-	query = query.replace(/’/g, "'");
-	query = query.replace(/‘/g, "'");
-	query = query.replace(/sh/g, "sy");
-	query = query.replace(/Sh/g, "Sy");
-	query = query.replace(/ch/g, "tsy");
-	query = query.replace(/Ch/g, "Tsy");
-	query = query.replace(/b/g, "px");
-	query = query.replace(/B/g, "Px");
-	query = query.replace(/d/g, "tx");
-	query = query.replace(/D/g, "Tx");
-	query = query.replace(/-g/g, "kx");
-	query = query.replace(/-G/g, "Kx");
-	query = query.replace(/·g/g, "kx");
-	query = query.replace(/·G/g, "Kx");
-	query = query.replace(/(?<![Nn])g/g, "kx");
-	query = query.replace(/(?<![Nn])G/g, "Kx");
-	query = query.replace(/·/g, "");
-	query = query.replace(/ù/g, "u");
-	query = query.replace(/Ù/g, "U");
-	return query;
 }
 
 function getReverseResponsesFor(query, language) {
@@ -1118,6 +954,7 @@ function getReverseResponsesFor(query, language) {
 		language = "en";
 	}
 
+	query = query.trim();
 	query = query.toLowerCase();
 
 	for (word in dictionary) {
@@ -1282,22 +1119,23 @@ function getRhymes(query) {
 
 	for (const word in dictionary) {
 		if (dictionary.hasOwnProperty(word)) {
-			if (rhymes.rhymes(dictionary[word]["na'vi"], query)) {
-				let key = 0;
-				if (dictionary[word].hasOwnProperty('pronunciation')) {
+			if (dictionary[word].hasOwnProperty('pronunciation') &&
+			    dictionary[word]['pronunciation'].length > 0) {
+				if (rhymes.rhymes(dictionary[word]['pronunciation'][0]['syllables'], query)) {
+					let key = 0;
 					key = dictionary[word]['pronunciation'][0]['syllables'].split('-').length;
+					if (!words.hasOwnProperty(key)) {
+						words[key] = [];
+					}
+					let subKey = 0;
+					if (dictionary[word].hasOwnProperty('pronunciation')) {
+						subKey = dictionary[word]['pronunciation'][0]['stressed'];
+					}
+					if (!words[key].hasOwnProperty(subKey)) {
+						words[key][subKey] = [];
+					}
+					words[key][subKey].push(dictionary[word]);
 				}
-				if (!words.hasOwnProperty(key)) {
-					words[key] = [];
-				}
-				let subKey = 0;
-				if (dictionary[word].hasOwnProperty('pronunciation')) {
-					subKey = dictionary[word]['pronunciation'][0]['stressed'];
-				}
-				if (!words[key].hasOwnProperty(subKey)) {
-					words[key][subKey] = [];
-				}
-				words[key][subKey].push(dictionary[word]);
 			}
 		}
 	}
@@ -1317,44 +1155,6 @@ function getRhymes(query) {
 	return words;
 }
 
-function getAnnotatedResponsesFor(query) {
-	query = query.toLowerCase();
-	let results = [];
-
-	if (annotated.hasOwnProperty(query)) {
-		results.push(annotated[query]);
-	}
-	let upperCasedQuery = query[0].toUpperCase() + query.substring(1);
-	if (upperCasedQuery !== query) {
-		if (annotated.hasOwnProperty(upperCasedQuery)) {
-			results.push(annotated[upperCasedQuery]);
-		}
-	}
-
-	return results;
-}
-
-function getAnnotatedSuggestionsFor(query) {
-	if (query.length < 1) {
-		return { 'results': [] };
-	}
-
-	query = query.toLowerCase();
-	resultsArray = [];
-
-	for (word in annotated) {
-		if (annotated.hasOwnProperty(word)) {
-			if (word.toLowerCase().startsWith(query)) {
-				resultsArray.push({ 'title': word });
-			}
-		}
-	}
-
-	return {
-		'results': resultsArray
-	};
-}
-
 function getAllSentences() {
 	return sentences;
 }
@@ -1370,7 +1170,7 @@ function insertWord(data) {
 }
 
 function saveDictionary() {
-	fs.writeFileSync(__dirname + "/words.json", JSON.stringify(dictionary));
+	fs.writeFileSync("./data/words.json", JSON.stringify(dictionary));
 }
 
 function removeSentence(key) {
@@ -1388,6 +1188,5 @@ function hasSentence(key) {
 }
 
 function saveCorpus() {
-	fs.writeFileSync(__dirname + "/corpus.json", JSON.stringify(sentences));
+	fs.writeFileSync("./data/corpus.json", JSON.stringify(sentences));
 }
-

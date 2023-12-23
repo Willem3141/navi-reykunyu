@@ -1,5 +1,5 @@
 var fs = require('fs');
-var users = JSON.parse(fs.readFileSync('users.json'));
+var users = JSON.parse(fs.readFileSync('./data/users.json'));
 
 function findUser(username, password) {
 	for (let i = 0; i < users.length; i++) {

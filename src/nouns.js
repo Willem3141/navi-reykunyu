@@ -130,11 +130,6 @@ function conjugate(noun, affixes, simple) {
 		if (determinerPrefix === "pe" && pluralPrefix === "pxe") {
 			pluralPrefix = "pe";
 		}
-		// special case: pe- + me- maybe becomes pem-?
-		// (https://naviteri.org/2011/07/number-in-na%e2%80%99vi/)
-		if (determinerPrefix === "pe" && pluralPrefix[1] === "e") {
-			pluralPrefix = pluralPrefix[0] + "(e)";
-		}
 	}
 
 	if (stemPrefix[stemPrefix.length - 1] === convert.decompress(noun)[0]) {

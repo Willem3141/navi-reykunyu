@@ -126,6 +126,7 @@ class StressGame {
 			"phr": "phr.",
 			"inter": "inter.",
 			"aff:pre": "pref.",
+			"aff:pre:len": "pref.",
 			"aff:in": "inf.",
 			"aff:suf": "suf.",
 			"nv:si": "vin."
