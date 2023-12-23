@@ -1359,9 +1359,9 @@ function sngäiTìfwusew(initial) {
 	}
 	if (query === "") {
 		document.title = "Reykunyu – Online Na'vi dictionary";
-	} else {
-		document.title = query + " – Reykunyu";
+		return;
 	}
+	document.title = query + " – Reykunyu";
 	if (mode === 'reykunyu') {
 		doSearchNavi();
 	} else if (mode === 'analyzer') {
