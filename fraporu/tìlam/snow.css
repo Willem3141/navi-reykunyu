@@ -1,0 +1,44 @@
+#snow-layer {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: -50px;
+	bottom: 0;
+	pointer-events: none;
+	filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.flake {
+	position: absolute;
+	left: 50%;
+	background-color: white;
+	border-radius: 50%;
+}
+
+@keyframes fallingFlake {
+	from {
+		top: 0%;
+	}
+	to {
+		top: 100%;
+	}
+}
+
+@keyframes windWave {
+	from {
+		transform: translateX(-20px);
+	}
+	to {
+		transform: translateX(20px);
+	}
+}
+
+body.no-snow #snow-layer {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#snow-layer {
+		display: none;
+	}
+}

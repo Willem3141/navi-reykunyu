@@ -8,6 +8,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="Reykunyu is a user-friendly online Na'vi dictionary, supporting translations to and from English, German, French, and other languages.">
 		<link href="tìlam/tìlam.css" rel="stylesheet">
+		<link href="tìlam/snow.css" rel="stylesheet">
 		<link rel="manifest" href="manifest.webmanifest">
 		<link rel="icon" type="image/png" href="/ayrel/favicon.png">
 		<link rel="search" type="application/opensearchdescription+xml" title="Reykunyu" href="/opensearch.xml">
@@ -34,6 +35,7 @@
 						<div class="item" data-value="x-navi">Na’vi</div>
 					</div>
 				</div>
+				<a class="ui icon basic button right floated" id="snow-button"><i class="snowflake icon"></i></a>
 				<div class="ui buttons right floated">
 					<a class="ui icon basic button" href="/all"><i class="book icon"></i> All words</a>
 					<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i> Study</a>
@@ -88,6 +90,8 @@
 			<div id="results">
 			</div>
 		</div>
+
+		<div id="snow-layer"></div>
 
 		<!-- modals -->
 		<div id="infix-details-modal" class="ui modal">
@@ -292,6 +296,7 @@
 		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
 		<script src="ayvefya/ui-translations.js"></script>
 		<script src="ayvefya/reykunyu.js"></script>
+		<script src="ayvefya/snow.js"></script>
 	</body>
 </html>
 
