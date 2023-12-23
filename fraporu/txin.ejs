@@ -16,6 +16,11 @@
 		<div class="container">
 			<h1>
 				<a class="logo" href="/"></a>
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
 				<div id="language-dropdown" class="ui icon right floated top right dropdown basic button">
 					<i class="globe icon"></i>
 					<span class="text">English</span>
@@ -34,13 +39,12 @@
 						<div class="item" data-value="x-navi">Na’vi</div>
 					</div>
 				</div>
-				<div class="ui buttons right floated">
-					<a class="ui icon basic button" href="/all"><i class="book icon"></i> All words</a>
-					<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i> Study</a>
+				<div class="ui buttons main-menu">
+					<a class="ui icon basic button" href="/all"><i class="book icon"></i><span class="button-label">All words</span></a>
+					<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i><span class="button-label">Study</span></a>
 					<% if (user) { %>
 					<div class="ui icon top right pointing dropdown basic button">
-						<i class="wrench icon"></i> Administration
-						&nbsp;<i class="dropdown icon"></i>
+						<i class="wrench icon"></i><span class="button-label">Administration</span><i class="dropdown icon"></i>
 						<div class="menu">
 							<a href="/add" class="item">Add new word</a>
 							<a href="/history" class="item">Recent edits</a>
@@ -52,16 +56,11 @@
 						</div>
 					</div>
 					<% } else { %>
-					<a class="ui icon basic button" href="/login"><i class="user icon"></i> Login</a>
+					<a class="ui icon basic button" href="/login"><i class="user icon"></i><span class="button-label">Login</span></a>
 					<% } %>
-					<div id="settings-button" class="ui icon basic button" href="/all"><i class="cogs icon"></i> Settings</div>
-					<div id="credits-button" class="ui icon basic button" href="/all"><i class="question icon"></i> Help</div>
+					<div id="settings-button" class="ui icon basic button" href="/all"><i class="cogs icon"></i><span class="button-label">Settings</span></div>
+					<div id="credits-button" class="ui icon basic button" href="/all"><i class="question icon"></i><span class="button-label">Help</span></div>
 			</div>
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kaltxì ma <%= user.username %>!
-				</div>
-				<% } %>
 			</h1>
 			<form id="search-form">
 				<div class="ui search fluid">
