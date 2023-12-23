@@ -108,7 +108,7 @@ function reloadData() {
 				}
 				const navi = piece["na'vi"];
 				const type = piece["type"];
-				const key = navi + ':' + type;
+				const key = navi.toLowerCase() + ':' + type;
 				if (dictionary.hasOwnProperty(key)) {
 					if (!derivedWords.hasOwnProperty(key)) {
 						derivedWords[key] = [];
@@ -778,7 +778,7 @@ function postprocessResult(result) {
 			};
 		}
 	}
-	const key = result['na\'vi'] + ':' + (result['type'] === 'nv:si' ? 'n:si' : result['type']);
+	const key = result['na\'vi'].toLowerCase() + ':' + (result['type'] === 'nv:si' ? 'n:si' : result['type']);
 	if (derivedWords.hasOwnProperty(key)) {
 		result['derived'] = derivedWords[key];
 	}

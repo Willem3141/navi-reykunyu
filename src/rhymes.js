@@ -14,8 +14,8 @@ function rhymes(first, second) {
 		return false;
 	}
 
-	first = convert.compress(first);
-	second = convert.compress(second);
+	first = convert.compress(first).replace('u', 'ù');
+	second = convert.compress(second).replace('u', 'ù');
 
 	// find last vowel of first
 	const n = first.length;
