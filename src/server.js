@@ -30,6 +30,7 @@ var http = require('http').Server(app);
 var config = JSON.parse(fs.readFileSync('config.json'));
 
 var reykunyu = require('./reykunyu');
+var annotatedDictionary = require('./annotatedDictionary');
 var conjugationString = require('./conjugationString');
 var verbs = require('./verbs');
 
@@ -423,11 +424,11 @@ app.get('/api/suggest', function(req, res) {
 });
 
 app.get('/api/annotated/search', function(req, res) {
-	res.json(reykunyu.getAnnotatedResponsesFor(req.query["query"]));
+	res.json(annotatedDictionary.getResponsesFor(req.query["query"]));
 });
 
 app.get('/api/annotated/suggest', function(req, res) {
-	res.json(reykunyu.getAnnotatedSuggestionsFor(req.query["query"]));
+	res.json(annotatedDictionary.getSuggestionsFor(req.query["query"]));
 });
 
 app.get('/api/conjugate/verb', function(req, res) {
