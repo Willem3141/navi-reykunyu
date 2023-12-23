@@ -478,17 +478,19 @@ function lookUpNoun(queryWord, wordResults) {
 			}
 		}
 
-		// verb gerunds (tì-<us>), straight up copied from lookUpAdjective for the participles
+		// verb gerunds (tì-<us>)
 		if (nounResult["root"].startsWith('tì')) {
-			let possibleVerb = nounResult["root"].slice(2); // Cut off the 'tì' part
+			let possibleVerb = nounResult["root"].slice(2);  // cut off tì-
 			let verbResults = [];
 			lookUpVerb(possibleVerb, verbResults, true);
 			verbResults.forEach(function (verb) {
 				const conjugated = verb["conjugated"];
 				const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
-				// We're only interested in a word starting with tì if its verb also has an <us> infix
-				// Other tì-words are in the dictionary already
-				// Also, ignore the word if it has other infixes added, as this is not allowed
+				// we're only interested in a word starting with tì- if its
+				// verb also has an <us> infix; other tì-words are in the
+				// dictionary already
+				// also, ignore the word if it has other infixes added, as this
+				// is not allowed
 				if (infixes[0] === '' && infixes[1] === 'us' && infixes[2] === '') {
 					let infixesWithoutFirst = ['', '', ''];
 					let conjugatedWithoutFirst = conjugationString.formsFromString(verbs.conjugate(verb["infixes"], infixesWithoutFirst));

@@ -187,7 +187,7 @@ function conjugationExplanation(conjugation) {
 				$explanation.append(adjectiveToAdverbConjugationExplanation(c));
 				break;
 			case "gerund":
-				$explanation.append(verbToGerundConjugationExplanation(c));
+				$explanation.append(gerundConjugationExplanation(c));
 				break;
 		}
 	}
@@ -342,7 +342,7 @@ function adjectiveToAdverbConjugationExplanation(conjugation) {
 	return $conjugation;
 }
 
-function verbToGerundConjugationExplanation(conjugation) {
+function gerundConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
@@ -352,7 +352,7 @@ function verbToGerundConjugationExplanation(conjugation) {
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
-	$('<span/>').addClass('infix').html("&#x2039; us &#x203a;").appendTo($conjugation);
+	$('<span/>').addClass('infix').html("&#x2039;us&#x203a;").appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
 	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
