@@ -1,18 +1,16 @@
 $(function () {
-	if ($('#search-box').val().length) {
-		sngäiTìfwusew(true);
-	}
-
-	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
-
+	// initialize UI elements
 	$('.ui.dropdown').dropdown();
 
-	if (!localStorage.getItem('reykunyu-language')) {
+	// language dropdown
+	if (localStorage.getItem('reykunyu-language')) {
+		$('#language-dropdown').dropdown('set selected',
+			localStorage.getItem('reykunyu-language'));
+	} else {
 		localStorage.setItem('reykunyu-language', 'en');
+		$('#language-dropdown').dropdown('set selected', 'en');
 	}
 	$('.current-lang').text(_('language'));
-	$('#language-dropdown').dropdown('set selected',
-		localStorage.getItem('reykunyu-language'));
 	$('#language-dropdown').dropdown({
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-language', value);
@@ -25,8 +23,14 @@ $(function () {
 		}
 	});
 
-	$('#mode-direction').dropdown('set selected',
-		localStorage.getItem('reykunyu-mode'));
+	// mode dropdown
+	if (localStorage.getItem('reykunyu-mode')) {
+		$('#mode-direction').dropdown('set selected',
+			localStorage.getItem('reykunyu-mode'));
+	} else {
+		localStorage.setItem('reykunyu-mode', 'reykunyu');
+		$('#mode-direction').dropdown('set selected', 'reykunyu');
+	}
 	$('#mode-direction').dropdown({
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-mode', value);
@@ -37,9 +41,18 @@ $(function () {
 		}
 	});
 
+	// IPA setting
 	if (!localStorage.getItem('reykunyu-ipa')) {
 		localStorage.setItem('reykunyu-ipa', false);
 	}
+
+	// if there's already something in the search field, then just start a
+	// search immediately
+	if ($('#search-box').val().length) {
+		sngäiTìfwusew(true);
+	}
+
+	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
 
 	setUpAutocomplete();
 
@@ -84,16 +97,24 @@ $(function () {
 	});
 });
 
+function getMode() {
+	return $('#mode-direction').dropdown('get value');
+}
+
+function getLanguage() {
+	return $('#language-dropdown').dropdown('get value');
+}
+
 function setUpAutocomplete() {
 	let url = null;
-	if (localStorage.getItem('reykunyu-mode') === 'reykunyu') {
-		url = 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}';
-	} else if (localStorage.getItem('reykunyu-mode') === 'rhymes') {
-		url = 'api/mok?language=' + localStorage.getItem('reykunyu-language') + '&tìpawm={query}';
-	} else if (localStorage.getItem('reykunyu-mode') === 'annotated') {
+	if (getMode() === 'reykunyu') {
+		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}';
+	} else if (getMode() === 'rhymes') {
+		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}';
+	} else if (getMode() === 'annotated') {
 		url = 'api/annotated/suggest?' + '&query={query}';
 	} else {
-		url = 'api/suggest?language=' + localStorage.getItem('reykunyu-language') + '&query={query}';
+		url = 'api/suggest?language=' + getLanguage() + '&query={query}';
 	}
 	$('.ui.search').search({
 		apiSettings: {
@@ -388,9 +409,8 @@ function imageSection(name, image) {
 }
 
 function getTranslation(tìralpeng) {
-	let lang = localStorage.getItem('reykunyu-language');
-	if (tìralpeng.hasOwnProperty(lang)) {
-		return tìralpeng[lang];
+	if (tìralpeng.hasOwnProperty(getLanguage())) {
+		return tìralpeng[getLanguage()];
 	} else {
 		return tìralpeng['en'];
 	}
@@ -1351,33 +1371,33 @@ function sngäiTìfwusew(initial) {
 	$modeTabs = $('#tab-mode-bar');
 	$modeTabs.hide();
 	const query = $('#search-box').val();
-	const mode = localStorage.getItem('reykunyu-mode');
 	if (initial) {
-		history.replaceState({ 'query': query, 'mode': mode }, '', '/?q=' + query);
+		history.replaceState({ 'query': query, 'mode': getMode() }, '', '/?q=' + query);
 	} else {
-		history.pushState({ 'query': query, 'mode': mode }, '', '/?q=' + query);
+		history.pushState({ 'query': query, 'mode': getMode() }, '', '/?q=' + query);
 	}
 	if (query === "") {
 		document.title = "Reykunyu – Online Na'vi dictionary";
 		return;
 	}
 	document.title = query + " – Reykunyu";
-	if (mode === 'reykunyu') {
+	if (getMode() === 'reykunyu') {
 		doSearchNavi();
-	} else if (mode === 'analyzer') {
+	} else if (getMode() === 'analyzer') {
 		doSearchAnalyzer();
-	} else if (mode === 'annotated') {
+	} else if (getMode() === 'annotated') {
 		doSearchAnnotated();
-	} else if (mode === 'rhymes') {
+	} else if (getMode() === 'rhymes') {
 		doSearchRhymes();
+	} else {
+		console.error("Unexpected mode value '" + getMode() + "'");
 	}
 	$('#search-box').trigger('select');
 }
 
 function doSearchNavi() {
 	let tìpawm = $('#search-box').val();
-	let lang = localStorage.getItem('reykunyu-language');
-	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': lang })
+	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': getLanguage() })
 		.done(function (tìeyng) {
 			const fromNaviResult = tìeyng['fromNa\'vi'];
 			const toNaviResult = tìeyng['toNa\'vi'];

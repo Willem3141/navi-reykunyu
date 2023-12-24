@@ -13,8 +13,6 @@ module.exports = {
 	'getVerbs': getVerbs,
 	'getTransitivityList': getTransitivityList,
 	'getRhymes': getRhymes,
-	'getAnnotatedResponsesFor': getAnnotatedResponsesFor,
-	'getAnnotatedSuggestionsFor': getAnnotatedSuggestionsFor,
 	'getAllSentences': getAllSentences,
 	'removeWord': removeWord,
 	'insertWord': insertWord,
@@ -37,6 +35,7 @@ const ipa = require('./ipa');
 const nouns = require('./nouns');
 const numbers = require('./numbers');
 const output = require('./output');
+const preprocess = require('./preprocess');
 const pronouns = require('./pronouns');
 const rhymes = require('./rhymes');
 const verbs = require('./verbs');
@@ -60,17 +59,6 @@ Alternatively, you can start with an empty database:
 
 $ echo "{}" > data/words.json`);
 	process.exit(1);
-}
-
-try {
-	var annotated = JSON.parse(fs.readFileSync("./data/annotated.json"));
-} catch (e) {
-	output.warning('Annotated Dictionary data not found');
-	output.hint(`Reykunyu uses a JSON file called annotated.json containing the source
-of the Annotated Dictionary by Plumps. This file does not seem to be
-present. This warning is harmless, but searching in the Annotated
-Dictionary will not work.`);
-	var annotated = {};
 }
 
 try {
@@ -206,7 +194,7 @@ function hasWord(word, type) {
 }
 
 function getResponsesFor(query) {
-	query = preprocessQuery(query);
+	query = preprocess.preprocessQuery(query);
 	let results = [];
 
 	// first split query on spaces to get individual words
@@ -863,7 +851,7 @@ function getSuggestionsFor(query, language) {
 	if (query.length < 3) {
 		return { 'results': [] };
 	}
-	query = preprocessQuery(query);
+	query = preprocess.preprocessQuery(query);
 	query = query.toLowerCase();
 	let results = [];
 	for (let w in dictionary) {
@@ -953,32 +941,6 @@ function typeName(type, language) {
 	};
 
 	return types[type];
-}
-
-// normalizes a query by replacing weird Unicode tìftang variations by
-// normal ASCII ', and c -> ts / g -> ng
-function preprocessQuery(query) {
-	query = query.trim();
-	query = query.replace(/’/g, "'");
-	query = query.replace(/‘/g, "'");
-	query = query.replace(/sh/g, "sy");
-	query = query.replace(/Sh/g, "Sy");
-	query = query.replace(/ch/g, "tsy");
-	query = query.replace(/Ch/g, "Tsy");
-	query = query.replace(/b/g, "px");
-	query = query.replace(/B/g, "Px");
-	query = query.replace(/d/g, "tx");
-	query = query.replace(/D/g, "Tx");
-	query = query.replace(/-g/g, "kx");
-	query = query.replace(/-G/g, "Kx");
-	query = query.replace(/·g/g, "kx");
-	query = query.replace(/·G/g, "Kx");
-	query = query.replace(/(?<![Nn])g/g, "kx");
-	query = query.replace(/(?<![Nn])G/g, "Kx");
-	query = query.replace(/·/g, "");
-	query = query.replace(/ù/g, "u");
-	query = query.replace(/Ù/g, "U");
-	return query;
 }
 
 function getReverseResponsesFor(query, language) {
@@ -1191,45 +1153,6 @@ function getRhymes(query) {
 	}
 
 	return words;
-}
-
-function getAnnotatedResponsesFor(query) {
-	query = preprocessQuery(query);
-	query = query.toLowerCase();
-	let results = [];
-
-	if (annotated.hasOwnProperty(query)) {
-		results = results.concat(annotated[query]);
-	}
-	let upperCasedQuery = query[0].toUpperCase() + query.substring(1);
-	if (upperCasedQuery !== query) {
-		if (annotated.hasOwnProperty(upperCasedQuery)) {
-			results = results.concat(annotated[upperCasedQuery]);
-		}
-	}
-
-	return results;
-}
-
-function getAnnotatedSuggestionsFor(query) {
-	query = preprocessQuery(query);
-	query = query.toLowerCase();
-	resultsArray = [];
-
-	for (word in annotated) {
-		if (annotated.hasOwnProperty(word)) {
-			if (word.toLowerCase().startsWith(query)) {
-				resultsArray.push({ 'title': word });
-			}
-		}
-		if (resultsArray.length > 10) {
-			break;
-		}
-	}
-
-	return {
-		'results': resultsArray
-	};
 }
 
 function getAllSentences() {
