@@ -1370,6 +1370,7 @@ function sngäiTìfwusew(initial) {
 	$('.ui.search').search('hide results');
 	$results = $('#results');
 	$results.empty();
+	$('#offline-banner').hide();
 	$modeTabs = $('#tab-mode-bar');
 	$modeTabs.hide();
 	const query = $('#search-box').val();
@@ -1404,6 +1405,10 @@ function doSearchNavi() {
 			const fromNaviResult = tìeyng['fromNa\'vi'];
 			const toNaviResult = tìeyng['toNa\'vi'];
 			$results.empty();
+
+			if (tìeyng['offline']) {
+				$('#offline-banner').show();
+			}
 
 			// create from-Na'vi results
 			let $fromNaviResult = $('<div/>');

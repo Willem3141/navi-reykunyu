@@ -25,6 +25,7 @@ self.addEventListener("install", (event) => {
 			"/aysrungsiyu/semantic/dist/semantic.js",
 			"/ayvefya/ui-translations.js",
 			"/ayvefya/reykunyu.js",
+			"/ayvefya/sw-lib.js",
 			"/ayrel/reykunyu.svg",
 			"/ayrel/reykunyu.png",
 			"/ayrel/reykunyu-dark.svg",
@@ -33,6 +34,7 @@ self.addEventListener("install", (event) => {
 			"/fonts/Recursive_VF_1.078.woff2",
 			"/ayrel/favicon.png",
 			"/manifest.webmanifest",
+			"/words.json",
 		])
 	);
 });
@@ -50,21 +52,16 @@ const cacheFirst = async (request) => {
 	}
 	return fetch(request);
 };
+importScripts("/ayvefya/sw-lib.js");
 const getFallback = async (request) => {
 	const url = new URL(request.url);
+	const query = url.searchParams.get("query");
+	const language = url.searchParams.get("language");
 	const path = url.pathname;
 	if (path === '/api/fwew-search') {
 		// if it's a search, then search locally and return that
-		const results = {
-			'fromNa\'vi': [
-				{
-					'tìpawm': 'batsch',
-					'sì\'eyng': [],
-					'aysämok': []
-				}
-			],
-			'toNa\'vi': []
-		};
+		let results = reykunyu.getResponseFor(query, language);
+		results['offline'] = true;
 		const response = new Response(JSON.stringify(results), {
 			headers: { 'Content-Type': 'application/json' }
 		});
