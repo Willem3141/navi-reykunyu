@@ -389,7 +389,7 @@ function lookUpNoun(queryWord, wordResults) {
 				"type": "n",
 				"conjugation": nounResult
 			}];
-			noun["affixes"] = affixList.makeAffixList(noun, dictionary);
+			affixList.addAffixList(noun, dictionary);
 			wordResults.push(noun);
 		}
 		const suffixes = ['yu', 'tswo'];
@@ -416,7 +416,7 @@ function lookUpNoun(queryWord, wordResults) {
 							"type": "n",
 							"conjugation": nounResult
 						});
-						verb["affixes"] = affixList.makeAffixList(verb, dictionary);
+						affixList.addAffixList(verb, dictionary);
 						wordResults.push(verb);
 					}
 				});
@@ -446,7 +446,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					word["affixes"] = affixList.makeAffixList(word, dictionary);
+					affixList.addAffixList(word, dictionary);
 					wordResults.push(word);
 				}
 
@@ -460,7 +460,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					word["affixes"] = affixList.makeAffixList(word, dictionary);
+					affixList.addAffixList(word, dictionary);
 					wordResults.push(word);
 				}
 			}
@@ -496,7 +496,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					});
-					verb["affixes"] = affixList.makeAffixList(verb, dictionary);
+					affixList.addAffixList(verb, dictionary);
 					wordResults.push(verb);
 				}
 			});
@@ -526,7 +526,7 @@ function lookUpVerb(queryWord, wordResults, allowParticiples) {
 				"type": "v",
 				"conjugation": resultCopy
 			}];
-			verb["affixes"] = affixList.makeAffixList(verb, dictionary);
+			affixList.addAffixList(verb, dictionary);
 			wordResults.push(verb);
 		}
 	});
@@ -546,7 +546,7 @@ function lookUpAdjective(queryWord, wordResults) {
 				"type": "adj",
 				"conjugation": adjResultCopy
 			}];
-			adjective["affixes"] = affixList.makeAffixList(adjective, dictionary);
+			affixList.addAffixList(adjective, dictionary);
 			wordResults.push(adjective);
 		}
 
@@ -573,7 +573,7 @@ function lookUpAdjective(queryWord, wordResults) {
 					"type": "adj",
 					"conjugation": adjResult
 				});
-				verb["affixes"] = affixList.makeAffixList(verb, dictionary);
+				affixList.addAffixList(verb, dictionary);
 				wordResults.push(verb);
 			}
 		});
@@ -598,7 +598,7 @@ function lookUpAdjective(queryWord, wordResults) {
 						"type": "adj",
 						"conjugation": adjResult
 					});
-					verb["affixes"] = affixList.makeAffixList(verb, dictionary);
+					affixList.addAffixList(verb, dictionary);
 					wordResults.push(verb);
 				});
 			}
@@ -620,7 +620,7 @@ function lookUpProductiveAdverb(queryWord, wordResults) {
 					"affixes": ['nì']
 				}
 			}];
-			adjective["affixes"] = affixList.makeAffixList(adjective, dictionary);
+			affixList.addAffixList(adjective, dictionary);
 			wordResults.push(adjective);
 		}
 	}

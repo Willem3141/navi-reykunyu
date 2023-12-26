@@ -217,9 +217,13 @@ function conjugatedBox(conjugation) {
 				$explanation.append(gerundConjugationExplanation(c));
 				break;
 		}
-	}
 
-	$conjugatedBox.append($explanation);
+		if (conjugation[i].hasOwnProperty("affixes") && conjugation[i]["affixes"].length) {
+			$explanation.append(affixesSection(conjugation[i]["affixes"]));
+		}
+
+		$conjugatedBox.append($explanation);
+	}
 	if (boxIsEmpty) {
 		return null;
 	}

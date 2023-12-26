@@ -3,18 +3,17 @@
  */
 
 module.exports = {
-	makeAffixList: makeAffixList
+	addAffixList: addAffixList
 }
 
 let dictionary;
 
-function makeAffixList(word, d) {
+function addAffixList(word, d) {
 	dictionary = d;
 	let conjugated = word['conjugated'];
 
-	list = [];
-
 	for (let conjugation of conjugated) {
+		list = [];
 		let affixes = conjugation['conjugation']['affixes'];
 		if (conjugation['type'] === 'n') {
 			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
@@ -58,9 +57,11 @@ function makeAffixList(word, d) {
 			addAffix(list, 'prefix', 'tì', ['aff:pre']);
 			addAffix(list, 'infix', 'us', ['aff:in']);
 		}
+
+		conjugation['affixes'] = list;
 	}
 
-	let translation = getShortTranslation(word);
+	/*let translation = getShortTranslation(word);
 	for (let i = 0; i < list.length; i++) {
 		let a = list[i];
 		let newTranslation;
@@ -147,9 +148,7 @@ function makeAffixList(word, d) {
 			a['translation'] = newTranslation;
 			translation = newTranslation;
 		}
-	}
-
-	return list;
+	}*/
 }
 
 function addAffix(list, affixType, affixString, types) {
