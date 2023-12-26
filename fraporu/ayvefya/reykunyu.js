@@ -180,8 +180,10 @@ function conjugatedBox(conjugation) {
 		.addClass('result-item conjugated-box');
 	let boxIsEmpty = true;
 
-	let $explanation = $('<div/>');
 	for (let i = 0; i < conjugation.length; i++) {
+		let $explanation = $('<div/>')
+			.addClass('conjugated-box-item');
+
 		let type = conjugation[i]["type"];
 		let c = conjugation[i]["conjugation"];
 		if (c["result"].length == 1

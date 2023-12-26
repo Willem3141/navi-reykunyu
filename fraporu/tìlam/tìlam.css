@@ -301,9 +301,18 @@ h1::after {
 
 .conjugated-box {
 	margin-top: 20px;
-	border-radius: 3px;
+	border-radius: 4px;
 	border: 1px solid #ddd;
+}
+
+.conjugated-box-item {
 	padding: 8px;
+	margin-top: 8px;
+	border-top: 1px solid #ddd;
+}
+.conjugated-box-item:first-child {
+	margin-top: 0;
+	border-top: none;
 }
 
 .conjugation-explanation,
