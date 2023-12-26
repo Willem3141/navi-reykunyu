@@ -174,7 +174,12 @@ function statusBadge(wordStatus) {
 	return $pätsì;
 }
 
-function conjugationExplanation(conjugation) {
+// creates a box showing the conjugated form of a word
+function conjugatedBox(conjugation) {
+	let $conjugatedBox = $('<div/>')
+		.addClass('result-item conjugated-box');
+	let boxIsEmpty = true;
+
 	let $explanation = $('<div/>');
 	for (let i = 0; i < conjugation.length; i++) {
 		let type = conjugation[i]["type"];
@@ -184,6 +189,7 @@ function conjugationExplanation(conjugation) {
 			&& !c.hasOwnProperty("correction")) {
 			continue;
 		}
+		boxIsEmpty = false;
 
 		switch (type) {
 			case "n":
@@ -213,7 +219,11 @@ function conjugationExplanation(conjugation) {
 		}
 	}
 
-	return $explanation;
+	$conjugatedBox.append($explanation);
+	if (boxIsEmpty) {
+		return null;
+	}
+	return $conjugatedBox;
 }
 
 function nounConjugationExplanation(conjugation) {
@@ -1241,15 +1251,11 @@ function createResultBlock(i, r) {
 		$result.append(statusNoteSection(r["status"], r["status_note"]));
 	}
 
-	if (r.hasOwnProperty("conjugated")) {
-		let $conjugatedBox = $('<div/>')
-			.addClass('result-item conjugated-box');
-		$explanation = conjugationExplanation(r["conjugated"]);
-		$conjugatedBox.append($explanation);
-		if (r["affixes"] && r["affixes"].length) {
-			$conjugatedBox.append(affixesSection(r["affixes"]));
+	if (r.hasOwnProperty("conjugated") && r["conjugated"].length > 0) {
+		$conjugatedBox = conjugatedBox(r["conjugated"]);
+		if ($conjugatedBox) {
+			$result.append($conjugatedBox);
 		}
-		$result.append($conjugatedBox);
 	}
 
 	//if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
