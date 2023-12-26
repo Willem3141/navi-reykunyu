@@ -580,8 +580,7 @@ function noteSection(note) {
 }
 
 function affixesSection(affixes) {
-	let $affixesSection = $('<div/>').addClass('result-item affixes');
-	let $affixes = $('<div/>').addClass('body');
+	let $affixes = $('<div/>').addClass('affixes');
 
 	let $table = $('<table/>').appendTo($affixes);
 	$('<tr/>')
@@ -638,8 +637,7 @@ function affixesSection(affixes) {
 		}
 	}
 
-	$affixesSection.append($affixes);
-	return $affixesSection;
+	return $affixes;
 }
 
 function sourceSection(sources) {
@@ -1244,17 +1242,19 @@ function createResultBlock(i, r) {
 	}
 
 	if (r.hasOwnProperty("conjugated")) {
+		let $conjugatedBox = $('<div/>')
+			.addClass('result-item conjugated-box');
 		$explanation = conjugationExplanation(r["conjugated"]);
-		$result.append($explanation);
+		$conjugatedBox.append($explanation);
+		if (r["affixes"] && r["affixes"].length) {
+			$conjugatedBox.append(affixesSection(r["affixes"]));
+		}
+		$result.append($conjugatedBox);
 	}
 
-	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
-		$result.append(externalLenitionExplanation(r["externalLenition"]));
-	}
-
-	if (r["affixes"] && r["affixes"].length) {
-		$result.append(affixesSection(r["affixes"]));
-	}
+	//if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
+	//	$result.append(externalLenitionExplanation(r["externalLenition"]));
+	//}
 
 	if (r["etymology"]) {
 		$result.append(etymologySection(r["etymology"]));
