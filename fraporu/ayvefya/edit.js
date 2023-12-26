@@ -9,7 +9,32 @@ $(function() {
 	showHideInfixes();
 	$('#type-field').on('change', showHideInfixes);
 
-	$('.translation-button').on('click', function () {
+	$('#pronunciation-field').on('click', '.add-pronunciation-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.clone().insertAfter($tr);
+	});
+	$('#pronunciation-field').on('click', '.delete-pronunciation-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.remove();
+	});
+
+	$('#definition-field').on('click', '.add-meaning-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.clone().insertAfter($tr);
+		if ($('#definition-field tbody tr').length >= 2) {
+			$('.delete-meaning-button').removeClass('disabled');
+		}
+		renumberMeanings();
+	});
+	$('#definition-field').on('click', '.delete-meaning-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.remove();
+		if ($('#definition-field tbody tr').length < 2) {
+			$('.delete-meaning-button').addClass('disabled');
+		}
+		renumberMeanings();
+	});
+	$('#definition-field').on('click', '.translation-button', function () {
 		const $tr = $(this).closest('tr');
 		const $field = $tr.find('input');
 		const english = $field.val();
@@ -24,16 +49,29 @@ $(function() {
 		$('#translations-modal').modal('show');
 	});
 
+	$('#source-field').on('click', '.add-source-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.clone().insertAfter($tr);
+	});
+	$('#source-field').on('click', '.delete-source-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.remove();
+	});
+
 	$('#save-button').on('click', function () {
-		const wordData = generateWordData();
-		const url = $('body').data('url');
-		$.post(url, {
-			'word': word,
-			'type': type,
-			'data': JSON.stringify(wordData)
-		}, function () {
-			document.location.href = '/?q=' + wordData["na'vi"];
-		});
+		//try {
+			const wordData = generateWordData();
+			const url = $('body').data('url');
+			$.post(url, {
+				'word': word,
+				'type': type,
+				'data': JSON.stringify(wordData)
+			}, function () {
+				document.location.href = '/?q=' + wordData["na'vi"];
+			});
+		//} catch (e) {
+		//	alert(e);
+		//}
 	});
 
 	$('#translations-modal-cancel-button').on('click', function () {
@@ -66,10 +104,14 @@ function showHideInfixes() {
 
 function generateWordData() {
 	word = {};
-	word["na'vi"] = $('#root-field').val();
+	word["na'vi"] = preprocess($('#root-field').val());
 	word["type"] = $('#type-field').val();
-	if (word["type"].startsWith('v:') && $('#infixes-field').val()) {
-		word["infixes"] = $('#infixes-field').val();
+	if (word["type"].startsWith('v:')) {
+		if ($('#infixes-field').val()) {
+			word["infixes"] = $('#infixes-field').val();
+		} else {
+			throw new Error('Cannot save a verb without infix data');
+		}
 	}
 	if ($('#meaning-note-field').val()) {
 		word["meaning_note"] = $('#meaning-note-field').val();
@@ -77,11 +119,23 @@ function generateWordData() {
 	if ($('#conjugation-note-field').val()) {
 		word["conjugation_note"] = $('#conjugation-note-field').val();
 	}
-	if ($('#pronunciation-field .syllables-cell').val()) {
-		word["pronunciation"] = [
-			$('#pronunciation-field .syllables-cell').val(),
-			parseInt($('#pronunciation-field .stress-cell').val(), 10)
-		];
+	let pronunciations = [];
+	const $pronunciationRows= $('#pronunciation-field').find('tr');
+	$pronunciationRows.each(function() {
+		if ($(this).find('.syllables-cell').val().length) {
+			let pronunciation = {
+				'syllables': preprocess($(this).find('.syllables-cell').val()),
+				'stressed': parseInt($(this).find('.stress-cell').val(), 10)
+			};
+			let audioJson = $(this).find('.audio-cell').val();
+			if (audioJson.length) {
+				pronunciation['audio'] = JSON.parse(audioJson);
+			}
+			pronunciations.push(pronunciation);
+		}
+	});
+	if (pronunciations.length) {
+		word["pronunciation"] = pronunciations;
 	}
 
 	let translations = [];
@@ -114,6 +168,19 @@ function generateWordData() {
 			$('#source-date-field').val()
 		];
 	}
+	let sources = [];
+	const $sourceRows = $('#source-field tbody').find('tr');
+	$sourceRows.each(function() {
+		let source = [];
+		source.push($(this).find('.source-name-field').val());
+		source.push($(this).find('.source-url-field').val());
+		source.push($(this).find('.source-date-field').val());
+		if ($(this).find('.source-remarks-field').val().length) {
+			source.push($(this).find('.source-remarks-field').val());
+		}
+		sources.push(source);
+	});
+	word["source"] = sources;
 
 	// hidden fields
 	if ($('#image-field').val()) {
@@ -132,3 +199,14 @@ function generateWordData() {
 	return word;
 }
 
+function preprocess(query) {
+	query = query.replace(/’/g, "'");
+	query = query.replace(/‘/g, "'");
+	return query;
+}
+
+function renumberMeanings() {
+	$('#definition-field tbody tr').each(function (i, tr) {
+		$(tr).find('.id-cell').text((i + 1) + '.');
+	});
+}

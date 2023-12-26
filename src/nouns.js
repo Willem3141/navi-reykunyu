@@ -1,35 +1,35 @@
 /**
  * Functions to conjugate and parse Na'vi nouns.
- * 
+ *
  * A conjugated Na'vi noun has the following parts (which are all optional,
  * except of course the stem):
- * 
+ *
  *  0. determiner prefix: "fì", "tsa", "pe", "fra"
- *  1. plural prefix: "me", "pxe", "ay"
+ *  1. plural prefix: "me", "pxe", "ay", "(ay)"
  *  2. stem prefix: "fne"
  *     stem
  *  3. stem suffix: "tsyìp", "fkeyk"
  *  4. determiner suffix: "pe", "o"
  *  5. case suffix: "l", "t", "r", "ä", "ri", (any adposition)
  *  6. final suffix: "sì", "to"
- * 
+ *
  * Here pe- (from 0) cannot be combined with -pe (from 4). The other
  * combinations should in theory all be possible, so you could make monster
  * words like
- * 
+ *
  * pepefneutraltsyìpftusì
  * = utral + ["pe", "pxe", "fne", "tsyìp", "", "ftu", "sì"]
  * = "and from which three types of little trees"
- * 
+ *
  * Some combinations may not make sense in practice, and in fact, the rules
  * about which combinations are allowed or not are not completely clear.
- * 
+ *
  * The conjugate function takes a stem and an array with 7 elements, like the
  * one above, and returns the conjugated form. The conjugated form is not just
  * a single string, because there may be several possibilities for 2 and 6.
  * Therefore in fact we return an array with 9 arrays which represent the
  * possibilities for each part:
- * 
+ *
  *  0. determiner prefix
  *  1. plural prefix
  *  2. stem prefix
@@ -39,48 +39,26 @@
  *  6. determiner suffix
  *  7. case suffix
  *  8. final suffix
- * 
+ *
  * (We separate the lenited consonant of the stem so that we can nicely
  * highlight it in the interface.)
- * 
+ *
  * The parse function takes a string, and returns all possible (valid) input
  * arrays that, when given to the conjugate function, result in that string
  * being a possibility.
  */
 
-var convert = require("./convert");
+const conjugationString = require("./conjugationString");
+const convert = require("./convert");
+const phonology = require("./phonology");
 
 module.exports = {
 	conjugate: conjugate,
 	parse: parse
 }
 
-let vowels = ["a", "ä", "e", "i", "ì", "o", "u"];
-
-function isVowel(char) {
-	return vowels.includes(char);
-}
-
-let diphthongs = ["1", "2", "3", "4"];
-
-function isDiphthong(char) {
-	return diphthongs.includes(char);
-}
-
-function isConsonant(char) {
-	return !isVowel(char) && !isDiphthong(char);
-}
-
 function lastLetter(noun) {
 	return noun.slice(-1);
-}
-
-function endsInVowel(noun) {
-	return isVowel(lastLetter(noun));
-}
-
-function endsInConsonant(noun) {
-	return isConsonant(lastLetter(noun));
 }
 
 let caseFunctions = {
@@ -100,14 +78,19 @@ let pluralFunctions = {
 };
 
 /**
- * Conjugates a noun. Returns an array with nine arrays as detailed above.
- * 
+ * Conjugates a noun. Returns a conjugation string with nine parts.
+ *
  * noun - the noun stem
  * affixes - an array with seven affixes to be applied to the stem, as detailed
  *           above
+ * simple - (boolean) if true, assumes that only plural and case affixes are
+ *          present, and returns a simplified version of the conjugation string
+ *          with only these parts.
  */
-function conjugate(noun, affixes) {
-	
+function conjugate(noun, affixes, simple) {
+
+	const upperCase = noun.length > 0 && noun[0] !== noun[0].toLowerCase();
+	noun = noun.toLowerCase();
 	noun = convert.compress(noun);
 
 	// first find the stem
@@ -115,32 +98,53 @@ function conjugate(noun, affixes) {
 	let stemPrefix = convert.compress(affixes[2]);
 	let stemSuffix = convert.compress(affixes[3]);
 	let determinerSuffix = convert.compress(affixes[4]);
-	
+
 	// prefixes
 	let determinerPrefix = convert.compress(affixes[0]);
 	if (determinerPrefix !== "" && plural === "2") {  // ay
-		determinerPrefix = determinerPrefix[0];  // fì- + ay- -> fay-, etc.
+		// special case: fì- + ay- -> fay-, etc.
+		if (determinerPrefix === "fì") {
+			determinerPrefix = "fì/f";  // Horen §3.3.1
+		} else {
+			determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
+		}
+
+	} else if (determinerPrefix[determinerPrefix.length - 1] === convert.decompress(noun)[0] &&
+			plural === "" && stemPrefix === "") {
+		// special case: tsa- + atan -> tsatan, etc.
+		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
+
+	} else if (noun.length >= 2 && noun[0] === "'" &&
+		determinerPrefix[determinerPrefix.length - 1] === convert.decompress(noun)[1] &&
+			plural === "" && stemPrefix === "") {
+		// special case: pe- + 'eveng -> peveng (combination of the case above and ' lenition)
+		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
 	}
-	
-	let pluralPrefix = [""];
+
+	let pluralPrefix = "";
 	if (affixes[1] !== "") {
 		pluralPrefix = pluralFunctions[plural](
-							stemPrefix + noun, determinerPrefix);
+			stemPrefix + noun, determinerPrefix);
 
 		// special case: pe- can lenite pxe-
-		if (determinerPrefix === "pe" && pluralPrefix[0] === "Pe") {
-			pluralPrefix[0] = "pe";
+		if (determinerPrefix === "pe" && pluralPrefix === "pxe") {
+			pluralPrefix = "pe";
 		}
 	}
 
+	if (stemPrefix[stemPrefix.length - 1] === convert.decompress(noun)[0]) {
+		// special case: fne- + ekxan -> fnekxan, etc.
+		stemPrefix = stemPrefix.substring(0, stemPrefix.length - 1);
+	}
+
 	// suffixes
-	let caseSuffix;
+	let caseSuffix = "";
 	if (caseFunctions.hasOwnProperty(affixes[5])) {
 		caseSuffix = caseFunctions[affixes[5]](noun + stemSuffix + determinerSuffix);
 	} else {
-		caseSuffix = [affixes[5]];
+		caseSuffix = affixes[5];
 	}
-	
+
 	// special case for genitive -ia -> -iä - see genitiveSuffix()
 	if (noun.slice(-2) === "ia" && affixes[5] === "ä") {
 		noun = noun.slice(0, -1);
@@ -159,102 +163,132 @@ function conjugate(noun, affixes) {
 	 * lenited letter of the stem prefix separate, and so on).
 	 */
 	let needsLenition =
-		(plural !== "" || (plural === "" && determinerPrefix === "pe")) &&
+		(plural !== "" || (plural === "" && (determinerPrefix === "pe" || determinerPrefix === "p"))) &&
 		stemPrefix === "";
-	
+
 	if (needsLenition) {
 		let lenited = lenite(noun);
-		return convert.decompressAll([
-				determinerPrefix, pluralPrefix,
-				stemPrefix, lenited[0], lenited[1], stemSuffix,
-				determinerSuffix, caseSuffix, finalSuffix]);
+		if (upperCase) {
+			lenited[0] = lenited[0].toUpperCase();
+		}
+		if (simple) {
+			return pluralPrefix + '-{' + lenited[0] + '}' +
+				convert.decompress(lenited[1]) + '-' + caseSuffix;
+		} else {
+			return [
+				convert.decompress(determinerPrefix),
+				convert.decompress(pluralPrefix),
+				convert.decompress(stemPrefix),
+				lenited[0],
+				convert.decompress(lenited[1]),
+				convert.decompress(stemSuffix),
+				convert.decompress(determinerSuffix),
+				caseSuffix,
+				convert.decompress(finalSuffix)
+			].join('-');
+		}
 
 	} else {
 		// else, no lenition
-		return convert.decompressAll([
-				determinerPrefix, pluralPrefix,
-				stemPrefix, "", noun, stemSuffix,
-				determinerSuffix, caseSuffix, finalSuffix]);
+		noun = convert.decompress(noun);
+		if (upperCase) {
+			noun = noun[0].toUpperCase() + noun.slice(1);
+		}
+		if (simple) {
+			return pluralPrefix + '-' + noun + '-' + caseSuffix;
+		} else {
+			return [
+				convert.decompress(determinerPrefix),
+				convert.decompress(pluralPrefix),
+				convert.decompress(stemPrefix),
+				'',
+				noun,
+				convert.decompress(stemSuffix),
+				convert.decompress(determinerSuffix),
+				caseSuffix,
+				convert.decompress(finalSuffix)
+			].join('-');
+		}
 	}
 }
 
 function subjectiveSuffix(noun) {
-	return [""];
+	return '';
 }
 
 function agentiveSuffix(noun) {
-	if (endsInVowel(noun)) {
-		return ["l"];
+	if (phonology.endsInVowel(noun)) {
+		return 'l';
 	} else {
-		return ["ìl"];
+		return 'ìl';
 	}
 }
 
 function patientiveSuffix(noun) {
-	if (endsInVowel(noun)) {
-		return ["t", "ti"];
+	if (phonology.endsInVowel(noun)) {
+		return 't(i)';
 	} else {
-		if (endsInConsonant(noun)) {
-			return ["it", "ti"];
+		if (phonology.endsInConsonant(noun)) {
+			return 'it/ti';
 		} else {
 			if (noun.slice(-1) === "2") {  // ay
-				return ["it", "t", "ti"];
+				return 'it/t(i)';
 			} else if (noun.slice(-1) === "4") {  // ey
-				return ["t", "ti"];
+				return 't(i)';
 			} else {
-				return ["it", "ti"];
+				return 'it/ti';
 			}
 		}
 	}
 }
 
 function dativeSuffix(noun) {
-	if (endsInVowel(noun)) {
-		return ["r", "ru"];
+	if (phonology.endsInVowel(noun)) {
+		return 'r(u)';
 	} else {
-		if (endsInConsonant(noun)) {
+		if (phonology.endsInConsonant(noun)) {
 			if (noun.slice(-1) === "'") {
-				return ["ur", "ru"];
+				return 'ur/ru';
 			} else {
-				return ["ur"];
+				return 'ur';
 			}
 		} else {
 			if (noun.slice(-1) === "1") {  // aw
-				return ["ur", "r", "ru"];
+				return 'ur/r(u)';
 			} else if (noun.slice(-1) === "3") {  // ew
-				return ["r", "ru"];
+				return 'r(u)';
 			} else {
-				return ["ru", "ur"];
+				return 'ur/ru';
 			}
 		}
 	}
 }
 
 function genitiveSuffix(noun) {
-	if (endsInVowel(noun)) {
+	if (phonology.endsInVowel(noun)) {
 		if (noun.slice(-1) === "o" || noun.slice(-1) === "u") {
-			return ["ä"];
+			return 'ä';
 		} else {
 			if (noun.slice(-2) === "ia") {
-				return ["ä"];  // note: in this case, drop the a from the stem
+				return 'ä';  // note: in this case, drop the a from the stem
 			} else {
 				if (noun === "omatik2a") {
-					return ["ä"];
+					return 'ä';
 				} else {
-					return ["yä"];
+					return 'yä';
 				}
 			}
 		}
 	} else {
-		return ["ä"];
+		return 'ä';
 	}
 }
 
 function topicalSuffix(noun) {
-	if (endsInConsonant(noun)) {
-		return ["ìri"];
+	if (phonology.endsInConsonant(noun)) {
+		return 'ìri';
 	} else {
-		return ["ri"];
+		return 'ri';
 	}
 }
 
@@ -263,29 +297,29 @@ function topicalSuffix(noun) {
 function dualPrefix(noun) {
 	let first = lenite(noun).join('')[0];
 	if (first === "e" || first === "3" || first === "4") {  // e, ew, ey
-		return ["m"];
+		return 'm';
 	} else {
-		return ["me"];
+		return 'me';
 	}
 }
 
 function trialPrefix(noun) {
 	let first = lenite(noun).join('')[0];
 	if (first === "e" || first === "3" || first === "4") {  // e, ew, ey
-		return ["P"];
+		return 'px';
 	} else {
-		return ["Pe"];
+		return 'pxe';
 	}
 }
 
 function pluralPrefix(noun, determinerPrefix) {
 	let lenited = lenite(noun).join('');
 	if (lenited !== noun
-			&& noun !== "'u"  // 'u doesn't have short plural
-			&& determinerPrefix === "") {  // no short plural with fì- etc.
-		return ["2", ""];
+		&& noun !== "'u"  // 'u doesn't have short plural
+		&& determinerPrefix === "") {  // no short plural with fì- etc.
+		return '(ay)';
 	} else {
-		return ["2"];
+		return 'ay';
 	}
 }
 
@@ -305,11 +339,11 @@ function lenite(word) {
 	if (word.substring(0, 2) === "'L" || word.substring(0, 2) === "'R") {
 		return ["", word];
 	}
-	
+
 	if (!(word[0] in lenitions)) {
 		return ["", word];
 	}
-	
+
 	return [lenitions[word[0]], word.slice(1)];
 }
 
@@ -321,13 +355,20 @@ function parse(word) {
 
 	// step 1: generate a set of candidates
 	let candidates = getCandidates(word);
-	
+
 	// step 2: for each candidate, check if it is indeed correct
 	let result = [];
 	for (let i = 0; i < candidates.length; i++) {
-		if (checkCandidate(candidates[i])) {
-			result.push(candidates[i]);
+		const candidate = candidates[i];
+		if (!candidatePossible(candidate)) {
+			continue;
 		}
+		let conjugation = conjugate(candidate["root"], candidate["affixes"]);
+		if (!conjugationString.stringAdmits(conjugation, candidate["result"])) {
+			candidate["correction"] = candidate["result"];
+		}
+		candidate["result"] = conjugationString.formsFromString(conjugation);
+		result.push(candidates[i]);
 	}
 
 	return result;
@@ -352,7 +393,7 @@ function unlenite(word) {
 	if (!(word[0] in unlenitions)) {
 		return result;
 	}
-	
+
 	let initials = unlenitions[word[0]];
 	for (let i = 0; i < initials.length; i++) {
 		result.push(initials[i] + word.slice(1));
@@ -364,7 +405,7 @@ function unlenite(word) {
 function tryDeterminerPrefixes(candidate) {
 	let candidates = [];
 
-	candidates.push({...candidate});
+	candidates.push({ ...candidate });
 	let tryPrefix = function (prefix, name) {
 		if (candidate["root"].startsWith(prefix)) {
 			let stems = unlenite(candidate["root"].slice(prefix.length));
@@ -395,7 +436,7 @@ function tryPluralPrefixes(candidate) {
 	let candidates = [];
 
 	// singular
-	candidates.push({...candidate});
+	candidates.push({ ...candidate });
 
 	// plural forms
 	// need to try all possible initial consonants that could have lenited to our form
@@ -428,7 +469,7 @@ function tryPluralPrefixes(candidate) {
 function tryStemPrefixes(candidate) {
 	let candidates = [];
 
-	candidates.push({...candidate});
+	candidates.push({ ...candidate });
 
 	let tryPrefix = function (prefix, name) {
 		if (candidate["root"].startsWith(prefix)) {
@@ -445,6 +486,7 @@ function tryStemPrefixes(candidate) {
 		}
 	};
 	tryPrefix("fne", "fne");
+	tryPrefix("fn", "fne");
 
 	return candidates;
 }
@@ -452,7 +494,7 @@ function tryStemPrefixes(candidate) {
 function tryStemSuffixes(candidate) {
 	let candidates = [];
 
-	candidates.push({...candidate});
+	candidates.push({ ...candidate });
 	let tryEnding = function (suffix, name) {
 		if (candidate["root"].endsWith(suffix)) {
 			let newAffixes = [...candidate["affixes"]];
@@ -473,7 +515,7 @@ function tryStemSuffixes(candidate) {
 function tryDeterminerSuffixes(candidate) {
 	let candidates = [];
 
-	candidates.push({...candidate});
+	candidates.push({ ...candidate });
 	let tryEnding = function (suffix, name) {
 		if (candidate["root"].endsWith(suffix)) {
 			let newAffixes = [...candidate["affixes"]];
@@ -502,7 +544,7 @@ let adpositions = [
 function tryCaseSuffixes(candidate) {
 	let candidates = [];
 
-	candidates.push({...candidate});
+	candidates.push({ ...candidate });
 	let tryEnding = function (suffix, name) {
 		if (candidate["root"].endsWith(suffix)) {
 			let newAffixes = [...candidate["affixes"]];
@@ -546,7 +588,7 @@ function tryCaseSuffixes(candidate) {
 function tryFinalSuffixes(candidate) {
 	let candidates = [];
 
-	candidates.push({...candidate});
+	candidates.push({ ...candidate });
 	let tryEnding = function (suffix, name) {
 		if (candidate["root"].endsWith(suffix)) {
 			let newAffixes = [...candidate["affixes"]];
@@ -589,29 +631,14 @@ function getCandidates(word) {
 		}
 		candidates = newCandidates;
 	}
-	
+
 	return candidates;
 }
 
-/**
- * Tests if a given word is a correct conjugation for the given form.
- */
-function checkCandidate(candidate) {
-	let conjugation = conjugate(candidate["root"], candidate["affixes"]);
-	
-	for (let i = 0; i < conjugation[1].length; i++) {
-		for (let j = 0; j < conjugation[7].length; j++) {
-			let possibility = conjugation[0] + conjugation[1][i] +
-			                  conjugation[2] + conjugation[3] +
-			                  conjugation[4] + conjugation[5] +
-			                  conjugation[6] + conjugation[7][j] +
-			                  conjugation[8];
-			if (candidate["result"] === possibility) {
-				return true;
-			}
-		}
+function candidatePossible(candidate) {
+	const affixes = candidate["affixes"];
+	if (affixes[0] !== "" && affixes[1] === "(ay)") {
+		return false;
 	}
-
-	return false;
+	return true;
 }
-

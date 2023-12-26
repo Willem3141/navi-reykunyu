@@ -22,14 +22,14 @@
 				</a>
 			</h1>
 
-			<p>The following words do not have a German translation at all:</p>
+			<p>The following words do not have a French translation at all:</p>
 
 			<table class="ui table">
 				<thead>
 					<tr>
 						<th>Word</th>
 						<th>English</th>
-						<th>German</th>
+						<th>French</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -43,7 +43,7 @@
 						<td rowspan="<%= word['translations'].length %>"><%= word["na'vi"] %> <span class="muted">(<%= word['type'] %>)</span></td>
 						<% } %>
 						<td><%= translation["en"] %></td>
-						<td><% if (translation["de"]) { %><%= translation["de"] %><% } else { %><span class='muted'>(none)</span><% } %></td>
+						<td><% if (translation["fr"]) { %><%= translation["fr"] %><% } else { %><span class='muted'>(none)</span><% } %></td>
 						<td>
 							<a class="ui icon basic button edit-button" href="/edit?word=<%= word['na\'vi'] %>&type=<%= word['type'] %>">
 								<i class="pencil icon"></i>

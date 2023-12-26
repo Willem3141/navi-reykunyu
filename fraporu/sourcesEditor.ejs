@@ -1,0 +1,102 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Sources editor &bull; Reykunyu</title>
+		<link rel="stylesheet" type="text/css" href="aysrungsiyu/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="tìlam/tìlam.css" rel="stylesheet">
+		<link rel="manifest" href="manifest.webmanifest">
+	</head>
+	<body data-url="<%= post_url %>">
+		<div class="container">
+			<h1>
+				<span class="muted">Reykunyu &rarr;</span> Sources editor
+				<a href="/" class="ui icon right floated top right basic button">
+					<i class="arrow left icon"></i> Back to Reykunyu
+				</a>
+				<div id="language-dropdown" class="ui icon right floated top right dropdown basic button">
+					<i class="globe icon"></i>
+					<span class="text">English</span>
+					&nbsp;<i class="dropdown icon"></i>
+					<div class="menu">
+						<div class="item" data-value="de">Deutsch</div>
+						<div class="item" data-value="et">Eesti</div>
+						<div class="item" data-value="en">English</div>
+						<div class="item" data-value="fr">Français</div>
+						<div class="item" data-value="hu">Magyar</div>
+						<div class="item" data-value="nl">Nederlands</div>
+						<div class="item" data-value="pl">Polski</div>
+						<div class="item" data-value="ru">Русский</div>
+						<div class="item" data-value="sv">Svenska</div>
+					</div>
+				</div>
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
+			</h1>
+
+			<p>On this page, you can edit Reykunyu's source data. To edit, just type in a text field. Then as soon as you move to another text field, the text you typed will be stored automatically (so you don't need to click a save button).</p>
+			<p>The source data is represented as follows:</p>
+			<ul>
+				<li>A source is represented by four elements: the <b>name</b> (e.g., &lsquo;Na'viteri&rsquo;, &lsquo;LN Forum&rsquo;, &lsquo;ASG&rsquo;), the <b>URL</b> (e.g., the link to the specific Na'viteri blog post), the <b>date</b> (when the source was published, in <i>yyyy-mm-dd</i> format, and optionally a short <b>remark</b> explaining what aspect of the word was clarified by this source (this is useful when a word has more than one source).</li>
+				<li>The elements are separated by pipes, for example: <code>Na'viteri | https://... | 2022-07-10 | clarified stress</code>.</li>
+				<li>For words sourced from the ASG, the URL and date are unnecessary and you can just write <code>ASG</code>.</li>
+				<li>Words can have more than one source. These can be separated by double pipes (<code>||</code>).</li>
+			</ul>
+			<div class="ui section divider"></div>
+			<div class="ui form">
+				<table class="ui table">
+					<thead>
+						<tr>
+							<th class="four wide">Word</th>
+							<th>Source</th>
+						</tr>
+					</thead>
+					<tbody>
+						<%
+						function getSourceString(source) {
+							if (!source) {
+								return '';
+							}
+							let sources = [];
+							for (const s of source) {
+								sources.push(s.join(' | '));
+							}
+							return sources.join(' || ');
+						}
+						%>
+						<% let keys = [];
+						for (let key in words) {
+							keys.push(key);
+						}
+						keys.sort(Intl.Collator().compare);
+						keys.sort(function(a, b) {
+							return getSourceString(words[a]['source']).localeCompare(getSourceString(words[b]['source']));
+						});
+						for (let w of keys) {
+							const word = words[w];
+						%>
+						<tr>
+							<td>
+								<%= word["na'vi"] %><span class="muted">:<%= word['type'] %></span>
+							</td>
+							<td>
+								<input class="source-field" data-json="<%= JSON.stringify(word) %>" value="<%= getSourceString(word['source']) %>">
+							</td>
+						</tr>
+						<% } %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
+		<script src="ayvefya/sourcesEditor.js"></script>
+	</body>
+</html>
+

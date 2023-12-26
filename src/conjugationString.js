@@ -15,7 +15,8 @@
  */
 
 module.exports = {
-	formsFromString: formsFromString
+	formsFromString: formsFromString,
+	stringAdmits: stringAdmits
 }
 
 function formsFromString(formString) {
@@ -59,3 +60,7 @@ function formsRecursive(formString) {
 	return [formString.split("-").join("")];
 }
 
+function stringAdmits(formString, target) {
+	const forms = formsFromString(formString);
+	return forms.includes(target);
+}

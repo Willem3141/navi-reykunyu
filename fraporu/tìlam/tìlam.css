@@ -1,53 +1,51 @@
-@import url('https://fonts.googleapis.com/css?family=Julius+Sans+One&subset=latin,latin-ext');
 @font-face {
-  font-family: 'Calluna Sans';
-  src: url('/fonts/CallunaSansRegular-webfont.woff2') format('woff2'), url('/fonts/CallunaSansRegular-webfont.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
+	font-family: 'Recursive';
+	font-weight: 300 1000;
+	font-style: oblique 0deg 14deg;
+	src: url('/fonts/Recursive_VF_1.078.woff2');
 }
 @font-face {
-  font-family: 'Calluna Sans';
-  src: url('/fonts/CallunaSansItalic-webfont.woff2') format('woff2'), url('/fonts/CallunaSansItalic-webfont.woff') format('woff');
-  font-weight: normal;
-  font-style: italic;
-}
-@font-face {
-  font-family: 'Calluna Sans';
-  src: url('/fonts/CallunaSansBold-webfont.woff2') format('woff2'), url('/fonts/CallunaSansBold-webfont.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Calluna Sans';
-  src: url('/fonts/CallunaSansBoldItalic-webfont.woff2') format('woff2'), url('/fonts/CallunaSansBoldItalic-webfont.woff') format('woff');
-  font-weight: bold;
-  font-style: italic;
+	font-family: 'Gentium Plus';
+	src: url('/fonts/GentiumPlus-Regular.woff2');
 }
 
 body,
 .ui.button,
-.ui.modal > .header,
-h2, h3, h4, h5,
+.ui.modal .ui.header,
+h1, h2, h3, h4, h5,
 .ui.menu,
-.ui.form input {
-	font-family: 'Calluna Sans' !important;
+.ui.form input,
+#search-box,
+.ui.modal .header {
+	font-family: 'Recursive' !important;
+}
+
+a {
+	text-decoration: underline;
 }
 
 body {
-	font-size: 16px;
+	font-size: 14px;
 	background-color: #fff;
 	color: #222;
 	padding: 0 15px;
 	width: 100%;
+	line-height: 1.5;
+	height: auto;
 }
 
 .container {
-	margin: 20px auto;
+	margin: 0px auto;
 	max-width: 1000px;
+	padding: 20px 0px;
+}
+
+body.wide .container,
+.container.wide {
+	max-width: none;
 }
 
 h1 {
-	font-family: 'Julius Sans One';
 	padding-bottom: 5px;
 	border-bottom: 1px solid #ddd;
 }
@@ -57,8 +55,84 @@ h1 #user-label {
 	top: -5px;
 }
 
-#search-box {
-	font-family: 'Calluna Sans';
+h1 .logo {
+	background-image: url('/ayrel/reykunyu.svg');
+	background-repeat: no-repeat;
+	background-size: contain;
+	width: 150px;
+	height: 50px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#language-dropdown {
+	margin-left: 10px;
+}
+
+h1::after {
+	content: ".";
+	visibility: hidden;
+	clear: both;
+	display: block;
+	height: 0px;
+	width: 0px;
+}
+
+.main-menu {
+	width: 100%;
+}
+
+.main-menu > .button > .button-label {
+	padding-left: 6px;
+}
+.main-menu > .button > .icon.dropdown {
+	padding-left: 6px;
+}
+
+.main-menu > .button.dropdown {
+	text-align: center;
+}
+
+.main-menu > .button.dropdown .menu .item {
+	text-decoration: none;
+}
+
+@media (max-width: 600px) {
+	.main-menu > .button {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.main-menu > .button > .button-label {
+		padding-left: 0;
+		padding-top: 6px;
+	}
+	.main-menu > .button > .icon.dropdown {
+		padding-left: 0;
+		padding-top: 3px;
+	}
+}
+
+@media (max-width: 460px) {
+	.main-menu > .button > .button-label {
+		display: none;
+	}
+
+	#language-dropdown .text {
+		display: none;
+	}
+}
+
+@media (min-width: 1000px) {
+	.main-menu {
+		width: auto;
+		float: right;
+	}
+}
+
+#mode-direction {
+	width: 200px;
 }
 
 .ui.search > .results {
@@ -67,7 +141,7 @@ h1 #user-label {
 }
 
 .ui.search > .results .result .title {
-	font-family: 'Calluna Sans';
+	font-family: 'Recursive';
 	display: inline-block;
 	width: 30%;
 }
@@ -78,6 +152,32 @@ h1 #user-label {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+#tab-mode-bar {
+	margin-bottom: 40px;
+	justify-content: center;
+}
+#tab-mode-bar .item {
+	cursor: pointer;
+	flex-grow: 0.05;
+	justify-content: center;
+}
+#tab-mode-bar .gray {
+	color: #bbb;
+}
+#tab-mode-bar .item .result-count-tag {
+	display: inline-block;
+	padding: 3px 6px;
+	margin-left: 15px;
+	background-color: black;
+	color: white;
+	font-size: 12px;
+	font-weight: 700;
+	border-radius: 20px;
+}
+#tab-mode-bar .item.gray .result-count-tag {
+	background-color: #ccc;
 }
 
 #sentence-bar {
@@ -100,7 +200,6 @@ h1 #user-label {
 
 #sentence-bar .item .label {
 	font-size: 75%;
-	text-transform: uppercase;
 }
 
 #sentence-bar .item .more {
@@ -111,6 +210,7 @@ h1 #user-label {
 
 #results .result {
 	margin-top: 50px;
+	clear: right;
 }
 
 .result .result-word {
@@ -118,13 +218,16 @@ h1 #user-label {
 	top: -1px;
 	background-color: white;
 	padding: 10px 0;
-	box-shadow: 0 0 7px 7px white;
+	box-shadow: 0 0 4px 4px white;
 }
 
 .result .result-word .id {
 	color: #aaa;
-	width: 28px;
+	width: 48px;
 	display: inline-block;
+	text-align: right;
+	margin-left: -20px;
+	padding-right: 5px;
 }
 
 .result .result-word .id,
@@ -133,9 +236,13 @@ h1 #user-label {
 	font-weight: 700;
 }
 
-.result .result-word .type {
-	margin-left: 26px;
-	text-transform: uppercase;
+.type.ui.type-badge {
+	margin-left: 16px;
+}
+#sentence-bar .type.ui.type-badge {
+	margin-left: 0px;
+}
+.result .result-word .type-badge {
 	position: relative;
 	top: -5px;
 }
@@ -148,6 +255,21 @@ h1 #user-label {
 
 .result .stress .stressed {
 	text-decoration: underline;
+}
+
+.ipa {
+	font-family: "Gentium Plus";
+	font-size: 110%;
+}
+
+.pronunciation-audio-buttons {
+	display: inline-block;
+	margin-left: 10px;
+}
+
+.pronunciation-audio-button {
+	position: relative;
+	top: -1px;
 }
 
 .result .result-word .status-badge {
@@ -177,23 +299,31 @@ h1 #user-label {
 	top: -5px;
 }
 
-.result .result-word .conjugation-explanation,
-.result .result-word .lenition-explanation {
+.conjugation-explanation,
+.lenition-explanation {
 	margin-top: 3px;
 	margin-left: 20px;
 	font-size: 18px;
 }
 
-.result .result-word .conjugation-explanation .operator,
-.result .result-word .lenition-explanation .operator {
+.conjugation-explanation .operator,
+.lenition-explanation .operator {
 	margin-left: 10px;
 	margin-right: 10px;
 	color: #888;
 }
 
-.result .result-word .conjugation-explanation .word,
-.result .result-word .lenition-explanation .word {
+.conjugation-explanation .word,
+.lenition-explanation .word {
 	font-weight: 700;
+}
+
+.conjugation-explanation .correction,
+.lenition-explanation .correction {
+	margin-right: 10px;
+	color: #dd2255;
+	font-weight: 700;
+	text-decoration: line-through;
 }
 
 .result .definition-image {
@@ -222,7 +352,12 @@ h1 #user-label {
 
 .result .result-item.definition ol {
 	margin-top: 0;
-	margin-bottom: 0;
+	margin-bottom: 30px;
+}
+
+.result .result-item.definition ol li {
+	margin-top: 10px;
+	margin-bottom: 20px;
 }
 
 .result .result-item.note {
@@ -253,6 +388,15 @@ h1 #user-label {
 .result .result-item .body {
 	margin-left: 20px;
 	overflow-x: auto;
+}
+
+.result .result-item.affixes .body {
+	overflow-x: visible;
+	padding-top: 8px;
+}
+
+.result .result-item.affixes table {
+	margin: 0;
 }
 
 .result .result-item.affixes table tr td:first-child {
@@ -349,6 +493,7 @@ table.conjugation-table {
 }
 
 .prefix,
+.word-link.prefix,
 .word-link .prefix {
 	color: #dd2255;
 	font-weight: bold;
@@ -360,12 +505,14 @@ table.conjugation-table {
 }
 
 .infix,
+.word-link.infix,
 .word-link .infix {
 	color: #8623dd;
 	font-weight: bold;
 }
 
 .suffix,
+.word-link.suffix,
 .word-link .suffix {
 	color: #2255dd;
 	font-weight: bold;
@@ -385,8 +532,8 @@ table.conjugation-table {
 	color: #17e;
 }
 
-a {
-	color: black;
+.result a {
+	color: #222;
 	cursor: pointer;
 }
 
@@ -397,24 +544,128 @@ a {
 .word-link:before {
 	content: '→ ';
 	font-weight: 700;
-	color: black;
+	color: #222;
+	text-decoration: underline white;
 }
 
 /* word list */
-#word-list > div {
+.word-list-toc {
+	position: sticky;
+	top: 0px;
+	background-color: white;
+	box-shadow: 0 0 4px 4px white;
+	text-align: center;
+}
+
+.word-list-toc #toc-bar > a.ui.button {
+	width: 2em;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+h2[id]::before {
+	content: '';
+	display: block;
+	height: 75px;
+	margin-top: -75px;
+	visibility: hidden;
+}
+
+@media (max-width: 768px) {
+	.word-list-toc #toc-bar {
+		display: flex;
+		flex-flow: row wrap;
+	}
+
+	.word-list-toc #toc-bar > a.ui.button {
+		width: 9.09090909%;
+		flex-grow: 0;
+	}
+
+	h2[id]::before {
+		content: '';
+		display: block;
+		height: 105px;
+		margin-top: -105px;
+		visibility: hidden;
+	}
+}
+
+.word-list .letter-block {
+	column-count: 2;
+	column-gap: 40px;
+	column-rule: 1px solid #ddd;
+}
+
+@media (max-width: 768px) {
+	.word-list .letter-block {
+		column-count: 1;
+	}
+}
+
+.word-list .entry {
 	padding-bottom: 5px;
+	break-inside: avoid-column;
+	padding-left: 1.5em;
+	text-indent: -1.5em;
 }
 
-#word-list > div > span {
-	padding-right: 5px;
-}
-
-#word-list .word {
+.word-list .word,
+.word-list .number {
 	font-weight: 700;
 }
 
-#word-list .stressed {
+.word-list .word-type {
+	font-style: italic;
+}
+
+.word-list .stressed {
 	text-decoration: underline;
+}
+.word-list .status-badge.loan,
+.word-list .status-badge.unconfirmed,
+.word-list .status-badge.unofficial {
+	background-image: url('/ayrel/tsahey.svg');
+	background-repeat: no-repeat;
+	background-size: 1em;
+	background-position: 5px 5px;
+	background-color: #fcf2c3;
+	border-radius: 10px;
+	padding: 4px 6px;
+	padding-left: 22px;
+	margin: 0 2px;
+}
+
+.word-list .source-link {
+	font-variant: small-caps;
+	text-decoration: none;
+}
+
+.word-list.explanation {
+	margin-bottom: 110px;
+}
+
+.word-list.explanation .entry {
+	position: relative;
+}
+
+.word-list.explanation .arrow {
+	position: absolute;
+	top: 20px;
+}
+
+.two-columns {
+	display: flex;
+	flex-flow: row wrap;
+}
+.two-columns .column {
+	width: 50%;
+	flex-grow: 0;
+}
+@media (max-width: 768px) {
+	.two-columns .column {
+		width: 100%;
+	}
 }
 
 .warning {
@@ -426,14 +677,188 @@ a {
 	padding-left: 22px;
 }
 
+.result-annotated {
+	max-width: 500px;
+	padding: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid #ddd;
+	text-align: justify;
+}
+
+.result-annotated .purple {
+	color: #8623dd;
+}
+
+.result-annotated a {
+	text-decoration: underline;
+}
+
+.result-annotated a.source-link {
+	color: #1e70bf;
+	text-decoration: none;
+}
+
+.result-annotated a.source-link,
+.result-annotated .small-capitals {
+	font-variant: small-caps;
+}
+
+.credits-footer {
+	margin-top: 40px;
+	padding-top: 10px;
+	text-align: center;
+	font-style: italic;
+}
+
+.etymology-field,
+.source-field {
+	transition: background-color .2s !important;
+}
+
+.etymology-field.edit-succeeded,
+.source-field.edit-succeeded {
+	background-color: #bbface !important;
+}
+
+.stressed-cell {
+	width: 200px;
+}
+
+/* infix details dialog */
+#infix-details-input,
+#infix-details-result {
+	text-align: center;
+	font-weight: 700;
+	font-size: 125%;
+}
+
+#infix-details-input-translation,
+#infix-details-result-translation {
+	text-align: center;
+	color: #888;
+}
+
+/* sentence analysis */
+.beta-notice-block,
+.error-block,
+.warning-block,
+.result-block {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	padding: 15px 20px;
+}
+.beta-notice-block {
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	margin-bottom: 40px;
+}
+.error-block {
+	background-color: #ffc4bb;
+	border-left: 2px solid #9a2210;
+}
+.warning-block {
+	background-color: #fcf2c3;
+	border-left: 2px solid #f2bd10;
+}
+.result-block .header,
+.error-block .header,
+.warning-block .header {
+	font-weight: 700;
+}
+.result-block .body,
+.error-block .body,
+.warning-block .body {
+	margin-left: 20px;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #000;
+	}
+
+	body,
+	.word-link,
+	.word-link::before,
+	.result a,
+	.ui.form .field > label,
+	.ui.label,
+	.ui.search > .results .result .title,
+	.ui.selection.dropdown:hover,
+	.ui.selection.dropdown:focus,
+	.ui.selection.visible.dropdown > .text:not(.default),
+	.ui.modal .header,
+	.ui.modal .content,
+	.ui.checkbox label,
+	.ui.checkbox + label,
+	.ui.checkbox label:hover,
+	.ui.checkbox + label:hover,
+	.ui.checkbox input:focus ~ label,
+	.ui.horizontal.divider,
+	.ui.vertical.divider,
+	.ui.tabular.menu .item,
+	.ui.tabular.menu .item:hover,
+	.ui.tabular.menu .active.item {
 		color: #eee;
+	}
+
+	.ui.basic.button,
+	.ui.basic.buttons .button {
+		color: #eee !important;
+	}
+
+	.ui.basic.button:hover,
+	.ui.basic.button.active,
+	.ui.basic.buttons .button:hover,
+	.ui.basic.buttons .button.active {
+		color: #eee !important;
+		background-color: #333 !important;
+	}
+
+	.ui.search > .results .result .description {
+		color: #999;
+	}
+
+	.ui.search > .results .result:hover {
+		background-color: #222;
+	}
+
+	.ui.modal .header,
+	.ui.modal .content {
+		background-color: #111;
+	}
+
+	.ui.modal .actions,
+	.ui.segment {
+		background-color: #222;
 	}
 
 	h1 {
 		border-bottom-color: #555;
+	}
+
+	h1 .logo {
+		background-image: url('/ayrel/reykunyu-dark.svg');
+	}
+
+	.ui.tabular.menu .active.item {
+		background-color: black;
+	}
+
+	.ui.tabular.menu,
+	.ui.tabular.menu .active.item {
+		border-color: #555;
+	}
+
+	#tab-mode-bar .gray {
+		color: #888;
+	}
+	#tab-mode-bar .item .result-count-tag {
+		background-color: #eee;
+		color: black;
+	}
+	#tab-mode-bar .item.gray .result-count-tag {
+		background-color: #666;
 	}
 
 	.result .result-word {
@@ -473,7 +898,8 @@ a {
 		background-color: #000 !important;
 	}
 
-	.ui.basic.button {
+	.ui.basic.button,
+	.edit-button.ui.basic.button {
 		color: #eee !important;
 	}
 
@@ -509,8 +935,52 @@ a {
 		background: #444;
 	}
 
-	.word-link {
-		color: white;
+	.ui.label {
+		background-color: #555;
+	}
+
+	.ui.search > .results {
+		background-color: #000;
+		border-color: #333;
+	}
+
+	.ui.selection.dropdown:hover {
+		border-color: #777;
+	}
+
+	.beta-notice-block {
+		border-top: 1px solid #555;
+		border-bottom: 1px solid #555;
+	}
+
+	.error-block {
+		background-color: #1a0906;
+	}
+
+	.warning-block {
+		background-color: #1a1606;
+	}
+
+	.word-link:before {
+		text-decoration: underline black;
+	}
+
+	.word-list-toc {
+		background-color: black;
+		box-shadow: 0 0 4px 4px black;
+	}
+
+	.word-list .letter-block {
+		column-rule: 1px solid #555;
+	}
+
+	.word-list .status-badge.loan,
+	.word-list .status-badge.unconfirmed,
+	.word-list .status-badge.unofficial {
+		background-color: #493c00;
+	}
+
+	.word-list.explanation .arrow {
+		filter: invert();
 	}
 }
-

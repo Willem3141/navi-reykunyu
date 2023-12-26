@@ -1,6 +1,6 @@
 /**
  * Functions to conjugate and parse Na'vi verbs.
- * 
+ *
  * Na'vi verbs have three infix locations.
  *
  * tolängul
@@ -13,7 +13,7 @@ module.exports = {
 }
 
 /**
- * Conjugates a verb and returns a conjugation string with five parts:
+ * Conjugates a verb and returns a conjugation string with six parts:
  *
  * * the part before the prefirst-position infix;
  * * the prefirst-position infix;
@@ -45,14 +45,15 @@ function conjugate(verb, infixes) {
 	}
 
 	// special cases for second infix
-	// Horen 2.3.3
+	// Horen §2.3.3
 	if (second === "ei") {
 		if (afterSecond.charAt(0) === "i" || afterSecond.charAt(0) === "ì" ||
-				afterSecond.substring(0, 2) === "ll" || afterSecond.substring(0, 2) === "rr") {
+				afterSecond.startsWith("ll") || afterSecond.startsWith("rr") ||
+				afterSecond.startsWith("(ll)") || afterSecond.startsWith("(rr)")) {
 			second = "eiy";
 		}
 	}
-	// Horen 2.3.5.2
+	// Horen §2.3.5.2
 	if (second === "äng") {
 		if (afterSecond.charAt(0) === "i") {
 			second = "äng/eng";
@@ -75,7 +76,38 @@ function conjugate(verb, infixes) {
 		}
 	}
 
-	// TODO: handle verbs like plltxe -> poltxe
+	// pseudovowel contraction:
+	// * (stressed) ferrrfen -> frrfen
+	// * (unstressed) pollltxe -> poltxe (marked as p.(ll)tx.e)
+	// Horen §2.3.2
+	function handlePseudovowelContraction(pseudovowel, infix) {
+		if (between.startsWith('(' + pseudovowel + ')')) {
+			if (first === infix) {
+				between = between.substring(4);
+			} else {
+				between = pseudovowel + between.substring(4);
+			}
+		} else if (between.startsWith(pseudovowel)) {
+			if (first === infix) {
+				first = '';
+			}
+		} else if (between === '') {
+			if (afterSecond.startsWith('(' + pseudovowel + ')')) {
+				if (first === infix && second == '') {
+					afterSecond = afterSecond.substring(4);
+				} else {
+					afterSecond = pseudovowel + afterSecond.substring(4);
+				}
+			} else if (afterSecond.startsWith(pseudovowel)) {
+				if (first === infix && second == '') {
+					first = '';
+				}
+			}
+		}
+	};
+
+	handlePseudovowelContraction('ll', 'ol');
+	handlePseudovowelContraction('rr', 'er');
 
 	return [beforeFirst, prefirst, first, between, second, afterSecond].join('-');
 }
@@ -118,7 +150,10 @@ function tryFirstInfixes(candidate) {
 	let candidates = [];
 
 	candidates.push({...candidate});
-	let tryInfix = function (infix, name) {
+	let tryInfix = function (infix, name, replacement) {
+		if (!replacement) {
+			replacement = '';
+		}
 		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
 			let index = match.index;
@@ -126,11 +161,14 @@ function tryFirstInfixes(candidate) {
 			newInfixes[1] = name;
 			candidates.push({
 				"result": candidate["result"],
-				"root": candidate["root"].slice(0, index) + candidate["root"].slice(index + infix.length),
+				"root": candidate["root"].slice(0, index) + replacement + candidate["root"].slice(index + infix.length),
 				"infixes": newInfixes
 			});
 		}
 	};
+
+	tryInfix("us", "us");
+	tryInfix("awn", "awn");
 
 	tryInfix("am", "am");
 	tryInfix("ìm", "ìm");
@@ -140,12 +178,16 @@ function tryFirstInfixes(candidate) {
 	tryInfix("asy", "asy");
 
 	tryInfix("ol", "ol");
+	tryInfix("ol", "ol", "ll");
+	tryInfix("ll", "ol", "ll");
 	tryInfix("alm", "alm");
 	tryInfix("ìlm", "ìlm");
 	tryInfix("ìly", "ìly");
 	tryInfix("aly", "aly");
 
 	tryInfix("er", "er");
+	tryInfix("er", "er", "rr");
+	tryInfix("rr", "er", "rr");
 	tryInfix("arm", "arm");
 	tryInfix("ìrm", "ìrm");
 	tryInfix("ìry", "ìry");
@@ -214,7 +256,7 @@ function getCandidates(word) {
 		}
 		candidates = newCandidates;
 	}
-	
+
 	return candidates;
 }
 
@@ -223,11 +265,11 @@ function getCandidates(word) {
  */
 function checkCandidate(word, verb, infixes) {
 	let conjugation = conjugate(verb, infixes);
-	
+
 	let possibility = conjugation.join('');
 	if (word === possibility) {
 		return true;
 	}
-	
+
 	return false;
 }
