@@ -17,13 +17,13 @@ function makeAffixList(word, d) {
 	for (let conjugation of conjugated) {
 		let affixes = conjugation['conjugation']['affixes'];
 		if (conjugation['type'] === 'n') {
-			addAffix(list, 'prefix', affixes[0], ['aff:pre', 'aff:pre:len']);
+			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
 			if (affixes[1] === '(ay)') {
 				addAffix(list, 'prefix', 'ay', ['aff:pre:len']);
 			} else {
 				addAffix(list, 'prefix', affixes[1], ['aff:pre:len']);
 			}
-			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
+			addAffix(list, 'prefix', affixes[0], ['aff:pre', 'aff:pre:len']);
 			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[4], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len']);
@@ -64,20 +64,32 @@ function makeAffixList(word, d) {
 	for (let i = 0; i < list.length; i++) {
 		let a = list[i];
 		let newTranslation;
-		let affix = a['affix']["na'vi"];
+		let affix = a['affix'];
+		if (affix.hasOwnProperty("na'vi")) {
+			affix = affix["na'vi"];
+		}
 		switch (affix) {
 			case 'am':
-				newTranslation = 'did ' + translation;  // TODO past-tense-ify instead
+				newTranslation = translation + 'ed';
 				break;
 			case 'ay':
 				if (a['affix']['type'] === 'aff:in') {
 					newTranslation = 'will ' + translation;
 				} else {
-					newTranslation = translation;  // TODO pluralize
+					newTranslation = translation + 's';
 				}
+				break;
+			case 'äng':
+				newTranslation = translation + ' :(';
 				break;
 			case 'äp':
 				newTranslation = translation + ' oneself';
+				break;
+			case 'äpeyk':
+				newTranslation = 'cause oneself to ' + translation;
+				break;
+			case 'ei':
+				newTranslation = translation + ' :)';
 				break;
 			case 'eyk':
 				newTranslation = 'cause (someone) to ' + translation;
@@ -86,7 +98,7 @@ function makeAffixList(word, d) {
 				newTranslation = 'this ' + translation;
 				break;
 			case 'fkeyk':
-				newTranslation = 'state of (a/the) ' + translation;
+				newTranslation = 'state of ' + translation;
 				break;
 			case 'fne':
 				newTranslation = 'type of ' + translation;
@@ -95,31 +107,40 @@ function makeAffixList(word, d) {
 				newTranslation = 'each ' + translation;
 				break;
 			case 'ìm':
-				newTranslation = 'did just ' + translation;  // TODO past-tense-ify instead
+				newTranslation = 'just ' + translation + 'ed';
 				break;
 			case 'ìy':
 				newTranslation = 'will soon ' + translation;
 				break;
+			case 'ìyev':
+				newTranslation = 'will ' + translation;
+				break;
 			case 'me':
-				newTranslation = 'two ' + translation;  // TODO pluralize
+				newTranslation = 'two ' + translation + 's';
+				break;
+			case 'nì':
+				newTranslation = translation + 'ly';
 				break;
 			case 'o':
-				newTranslation = 'some ' + translation;  // TODO pluralize
+				newTranslation = 'some ' + translation;
 				break;
 			case 'pe':
 				newTranslation = 'which ' + translation;
 				break;
 			case 'pxe':
-				newTranslation = 'three ' + translation;  // TODO pluralize
+				newTranslation = 'three ' + translation + 's';
 				break;
 			case 'tsa':
 				newTranslation = 'that ' + translation;
+				break;
+			case 'tswo':
+				newTranslation = 'ability to ' + translation;
 				break;
 			case 'tsyìp':
 				newTranslation = 'little ' + translation;
 				break;
 			case 'yu':
-				newTranslation = 'someone who ' + translation;  // TODO 3rd-person-ify
+				newTranslation = translation + 'er';
 				break;
 		}
 		if (newTranslation) {

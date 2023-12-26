@@ -584,10 +584,15 @@ function affixesSection(affixes) {
 	let $affixes = $('<div/>').addClass('body');
 
 	let $table = $('<table/>').appendTo($affixes);
+	$('<tr/>')
+		.append($('<th/>').attr('colspan', 2).text('Affix'))
+		.append($('<th/>').text('Meaning'))
+		.append($('<th/>').text('Rough translation'))
+		.appendTo($table);
 	for (let a of affixes) {
 		const affix = a['affix'];
+		let $tr = $('<tr/>').appendTo($table);
 		if (a.hasOwnProperty('combinedFrom')) {
-			let $tr = $('<tr/>').appendTo($table);
 			let $affixSpan = $('<span/>')
 				.html(lemmaForm(affix, 'aff:in'));
 			addLemmaClass($affixSpan, 'aff:in');
@@ -615,7 +620,6 @@ function affixesSection(affixes) {
 				$meaningCell.append($('<span/>').text(getTranslation(c['affix']["translations"][0])));
 			}
 		} else {
-			let $tr = $('<tr/>').appendTo($table);
 			let $affixLink = $('<a/>')
 				.addClass('word-link')
 				.html(lemmaForm(affix["na'vi"], affix['type']))
@@ -628,9 +632,9 @@ function affixesSection(affixes) {
 				.appendTo($tr);
 			let $meaningCell = $('<td/>').appendTo($tr);
 			$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
-			if (a['translation']) {
-				$('<td/>').html('&ldquo;' + a['translation'] + '&rdquo;').appendTo($tr);
-			}
+		}
+		if (a['translation']) {
+			$('<td/>').html('&ldquo;' + a['translation'] + '&rdquo;').appendTo($tr);
 		}
 	}
 
@@ -1225,19 +1229,6 @@ function createResultBlock(i, r) {
 
 	$resultWord.appendTo($result);
 
-	if (r.hasOwnProperty("conjugated")) {
-		$explanation = conjugationExplanation(r["conjugated"]);
-		$result.append($explanation);
-	}
-
-	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
-		$result.append(externalLenitionExplanation(r["externalLenition"]));
-	}
-
-	if (r["affixes"] && r["affixes"].length) {
-		$result.append(affixesSection(r["affixes"]));
-	}
-
 	if (r["image"]) {
 		$result.append(imageSection(r["na'vi"], r["image"]));
 	}
@@ -1250,6 +1241,19 @@ function createResultBlock(i, r) {
 
 	if (r["status"]) {
 		$result.append(statusNoteSection(r["status"], r["status_note"]));
+	}
+
+	if (r.hasOwnProperty("conjugated")) {
+		$explanation = conjugationExplanation(r["conjugated"]);
+		$result.append($explanation);
+	}
+
+	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
+		$result.append(externalLenitionExplanation(r["externalLenition"]));
+	}
+
+	if (r["affixes"] && r["affixes"].length) {
+		$result.append(affixesSection(r["affixes"]));
 	}
 
 	if (r["etymology"]) {
