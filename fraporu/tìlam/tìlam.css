@@ -306,13 +306,24 @@ h1::after {
 }
 
 .conjugated-box-item {
+	position: relative;
 	padding: 8px;
 	margin-top: 8px;
+	padding-left: 40px;
 	border-top: 1px solid #ddd;
 }
 .conjugated-box-item:first-child {
 	margin-top: 0;
 	border-top: none;
+}
+.conjugated-box-item::before {
+	content: '»';
+	position: absolute;
+	margin-top: 8px;
+	font-size: 18px;
+	left: 18px;
+	top: 0;
+	color: #888;
 }
 
 .conjugation-explanation,
@@ -407,7 +418,6 @@ h1::after {
 .result .affixes {
 	overflow-x: visible;
 	padding-top: 8px;
-	padding-left: 36px;
 }
 
 .result .result-item.affixes table {

@@ -181,7 +181,7 @@ function conjugatedBox(conjugation) {
 	let boxIsEmpty = true;
 
 	for (let i = 0; i < conjugation.length; i++) {
-		let $explanation = $('<div/>')
+		let $item = $('<div/>')
 			.addClass('conjugated-box-item');
 
 		let type = conjugation[i]["type"];
@@ -193,38 +193,48 @@ function conjugatedBox(conjugation) {
 		}
 		boxIsEmpty = false;
 
+		let $explanation;
 		switch (type) {
 			case "n":
-				$explanation.append(nounConjugationExplanation(c));
+				$explanation = nounConjugationExplanation(c);
 				break;
 			case "v":
-				$explanation.append(verbConjugationExplanation(c));
+				$explanation = verbConjugationExplanation(c);
 				break;
 			case "adj":
-				$explanation.append(adjectiveConjugationExplanation(c));
+				$explanation = adjectiveConjugationExplanation(c);
 				break;
 			case "v_to_n":
-				$explanation.append(verbToNounConjugationExplanation(c));
+				$explanation = verbToNounConjugationExplanation(c);
 				break;
 			case "v_to_adj":
-				$explanation.append(verbToAdjectiveConjugationExplanation(c));
+				$explanation = verbToAdjectiveConjugationExplanation(c);
 				break;
 			case "v_to_part":
-				$explanation.append(verbToParticipleConjugationExplanation(c));
+				$explanation = verbToParticipleConjugationExplanation(c);
 				break;
 			case "adj_to_adv":
-				$explanation.append(adjectiveToAdverbConjugationExplanation(c));
+				$explanation = adjectiveToAdverbConjugationExplanation(c);
 				break;
 			case "gerund":
-				$explanation.append(gerundConjugationExplanation(c));
+				$explanation = gerundConjugationExplanation(c);
 				break;
 		}
+		if (conjugation[i].hasOwnProperty('translation')) {
+			$explanation.append($('<span/>')
+				.addClass('operator')
+				.html('&rarr;'));
+			$explanation.append($('<span/>')
+				.addClass('translation')
+				.html('&ldquo;' + conjugation[i]['translation'] + '&rdquo;'));
+		}
+		$item.append($explanation);
 
 		if (conjugation[i].hasOwnProperty("affixes") && conjugation[i]["affixes"].length) {
-			$explanation.append(affixesSection(conjugation[i]["affixes"]));
+			$item.append(affixesSection(conjugation[i]["affixes"]));
 		}
 
-		$conjugatedBox.append($explanation);
+		$conjugatedBox.append($item);
 	}
 	if (boxIsEmpty) {
 		return null;
@@ -234,8 +244,6 @@ function conjugatedBox(conjugation) {
 
 function nounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	for (let i = 0; i <= 2; i++) {
 		if (conjugation["affixes"][i]) {
@@ -265,8 +273,6 @@ function nounConjugationExplanation(conjugation) {
 function verbConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	for (let i = 0; i < 3; i++) {
@@ -287,8 +293,6 @@ function verbConjugationExplanation(conjugation) {
 
 function adjectiveConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	if (conjugation["form"] === "postnoun") {
 		$('<span/>').addClass('prefix').html("a").appendTo($conjugation);
@@ -314,8 +318,6 @@ function adjectiveConjugationExplanation(conjugation) {
 function verbToNounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -330,8 +332,6 @@ function verbToNounConjugationExplanation(conjugation) {
 
 function verbToAdjectiveConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -348,8 +348,6 @@ function verbToAdjectiveConjugationExplanation(conjugation) {
 function verbToParticipleConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -365,8 +363,6 @@ function verbToParticipleConjugationExplanation(conjugation) {
 function adjectiveToAdverbConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 
@@ -381,7 +377,6 @@ function adjectiveToAdverbConjugationExplanation(conjugation) {
 
 function gerundConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').addClass('prefix').text('tì').appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -400,8 +395,6 @@ function gerundConjugationExplanation(conjugation) {
 
 function externalLenitionExplanation(lenition) {
 	let $lenition = $('<div/>').addClass('lenition-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($lenition);
 
 	$('<span/>').text(lenition["by"]).appendTo($lenition);
 	$('<span/>').addClass('operator').text('+').appendTo($lenition);
@@ -602,7 +595,6 @@ function affixesSection(affixes) {
 	$('<tr/>')
 		.append($('<th/>').attr('colspan', 2).text('Affix'))
 		.append($('<th/>').text('Meaning'))
-		.append($('<th/>').text('Rough translation'))
 		.appendTo($table);
 	for (let a of affixes) {
 		const affix = a['affix'];
@@ -647,9 +639,6 @@ function affixesSection(affixes) {
 				.appendTo($tr);
 			let $meaningCell = $('<td/>').appendTo($tr);
 			$meaningCell.append($('<span/>').text(getTranslation(affix["translations"][0])));
-		}
-		if (a['translation']) {
-			$('<td/>').html('&ldquo;' + a['translation'] + '&rdquo;').appendTo($tr);
 		}
 	}
 
@@ -1325,6 +1314,9 @@ function createResults(results, $block) {
 
 // TODO remove as soon as the server sends this
 function getShortTranslation(result) {
+	if (result["short_translation_conjugated"]) {
+		return result["short_translation_conjugated"];
+	}
 	if (result["short_translation"]) {
 		return result["short_translation"];
 	}

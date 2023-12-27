@@ -29,6 +29,7 @@ const levenshtein = require('js-levenshtein');
 
 const adjectives = require('./adjectives');
 const affixList = require('./affixList');
+const conjugatedTranslation = require('./conjugatedTranslation');
 const conjugationString = require('./conjugationString');
 const convert = require('./convert');
 const ipa = require('./ipa');
@@ -390,6 +391,7 @@ function lookUpNoun(queryWord, wordResults) {
 				"conjugation": nounResult
 			}];
 			affixList.addAffixList(noun, dictionary);
+			conjugatedTranslation.addTranslations(noun, dictionary);
 			wordResults.push(noun);
 		}
 		const suffixes = ['yu', 'tswo'];
@@ -417,6 +419,7 @@ function lookUpNoun(queryWord, wordResults) {
 							"conjugation": nounResult
 						});
 						affixList.addAffixList(verb, dictionary);
+						conjugatedTranslation.addTranslations(verb, dictionary);
 						wordResults.push(verb);
 					}
 				});
@@ -447,6 +450,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"conjugation": nounResult
 					}];
 					affixList.addAffixList(word, dictionary);
+					conjugatedTranslation.addTranslations(word, dictionary);
 					wordResults.push(word);
 				}
 
@@ -461,6 +465,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"conjugation": nounResult
 					}];
 					affixList.addAffixList(word, dictionary);
+					conjugatedTranslation.addTranslations(word, dictionary);
 					wordResults.push(word);
 				}
 			}
@@ -497,6 +502,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"conjugation": nounResult
 					});
 					affixList.addAffixList(verb, dictionary);
+					conjugatedTranslation.addTranslations(verb, dictionary);
 					wordResults.push(verb);
 				}
 			});
@@ -527,6 +533,7 @@ function lookUpVerb(queryWord, wordResults, allowParticiples) {
 				"conjugation": resultCopy
 			}];
 			affixList.addAffixList(verb, dictionary);
+			conjugatedTranslation.addTranslations(verb, dictionary);
 			wordResults.push(verb);
 		}
 	});
@@ -547,6 +554,7 @@ function lookUpAdjective(queryWord, wordResults) {
 				"conjugation": adjResultCopy
 			}];
 			affixList.addAffixList(adjective, dictionary);
+			conjugatedTranslation.addTranslations(adjective, dictionary);
 			wordResults.push(adjective);
 		}
 
@@ -574,6 +582,7 @@ function lookUpAdjective(queryWord, wordResults) {
 					"conjugation": adjResult
 				});
 				affixList.addAffixList(verb, dictionary);
+				conjugatedTranslation.addTranslations(verb, dictionary);
 				wordResults.push(verb);
 			}
 		});
@@ -599,6 +608,7 @@ function lookUpAdjective(queryWord, wordResults) {
 						"conjugation": adjResult
 					});
 					affixList.addAffixList(verb, dictionary);
+					conjugatedTranslation.addTranslations(verb, dictionary);
 					wordResults.push(verb);
 				});
 			}
@@ -621,6 +631,7 @@ function lookUpProductiveAdverb(queryWord, wordResults) {
 				}
 			}];
 			affixList.addAffixList(adjective, dictionary);
+			conjugatedTranslation.addTranslations(adjective, dictionary);
 			wordResults.push(adjective);
 		}
 	}
@@ -764,6 +775,14 @@ function postprocessResult(result) {
 				'FN': ipa.generateIpa(pronunciation, result['type'], 'FN'),
 				'RN': ipa.generateIpa(pronunciation, result['type'], 'RN')
 			};
+		}
+	}
+	if (result.hasOwnProperty('conjugated')) {
+		// retain the last conjugated item that has a translation
+		for (let conjugated of result['conjugated']) {
+			if (conjugated.hasOwnProperty('translation')) {
+				result['short_translation_conjugated'] = conjugated['translation'];
+			}
 		}
 	}
 	const key = result['na\'vi'].toLowerCase() + ':' + (result['type'] === 'nv:si' ? 'n:si' : result['type']);

@@ -60,95 +60,6 @@ function addAffixList(word, d) {
 
 		conjugation['affixes'] = list;
 	}
-
-	/*let translation = getShortTranslation(word);
-	for (let i = 0; i < list.length; i++) {
-		let a = list[i];
-		let newTranslation;
-		let affix = a['affix'];
-		if (affix.hasOwnProperty("na'vi")) {
-			affix = affix["na'vi"];
-		}
-		switch (affix) {
-			case 'am':
-				newTranslation = translation + 'ed';
-				break;
-			case 'ay':
-				if (a['affix']['type'] === 'aff:in') {
-					newTranslation = 'will ' + translation;
-				} else {
-					newTranslation = translation + 's';
-				}
-				break;
-			case 'äng':
-				newTranslation = translation + ' :(';
-				break;
-			case 'äp':
-				newTranslation = translation + ' oneself';
-				break;
-			case 'äpeyk':
-				newTranslation = 'cause oneself to ' + translation;
-				break;
-			case 'ei':
-				newTranslation = translation + ' :)';
-				break;
-			case 'eyk':
-				newTranslation = 'cause (someone) to ' + translation;
-				break;
-			case 'fì':
-				newTranslation = 'this ' + translation;
-				break;
-			case 'fkeyk':
-				newTranslation = 'state of ' + translation;
-				break;
-			case 'fne':
-				newTranslation = 'type of ' + translation;
-				break;
-			case 'fra':
-				newTranslation = 'each ' + translation;
-				break;
-			case 'ìm':
-				newTranslation = 'just ' + translation + 'ed';
-				break;
-			case 'ìy':
-				newTranslation = 'will soon ' + translation;
-				break;
-			case 'ìyev':
-				newTranslation = 'will ' + translation;
-				break;
-			case 'me':
-				newTranslation = 'two ' + translation + 's';
-				break;
-			case 'nì':
-				newTranslation = translation + 'ly';
-				break;
-			case 'o':
-				newTranslation = 'some ' + translation;
-				break;
-			case 'pe':
-				newTranslation = 'which ' + translation;
-				break;
-			case 'pxe':
-				newTranslation = 'three ' + translation + 's';
-				break;
-			case 'tsa':
-				newTranslation = 'that ' + translation;
-				break;
-			case 'tswo':
-				newTranslation = 'ability to ' + translation;
-				break;
-			case 'tsyìp':
-				newTranslation = 'little ' + translation;
-				break;
-			case 'yu':
-				newTranslation = translation + 'er';
-				break;
-		}
-		if (newTranslation) {
-			a['translation'] = newTranslation;
-			translation = newTranslation;
-		}
-	}*/
 }
 
 function addAffix(list, affixType, affixString, types) {
@@ -222,23 +133,4 @@ function addFirstVerbInfix(list, affixString) {
 	} else {
 		addAffix(list, 'infix', affixString, ['aff:in']);
 	}
-}
-
-function getShortTranslation(word) {
-	if (word["short_translation"]) {
-		return word["short_translation"];
-	}
-
-	let translation = word["translations"][0]['en'];
-	translation = translation.split(',')[0];
-	translation = translation.split(';')[0];
-	translation = translation.split(' | ')[0];
-	translation = translation.split(' (')[0];
-
-	if (word["type"][0] === "v"
-		&& translation.indexOf("to ") === 0) {
-		translation = translation.substr(3);
-	}
-
-	return translation;
 }
