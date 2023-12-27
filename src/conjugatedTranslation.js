@@ -162,12 +162,17 @@ function addTranslations(word, d) {
 	for (let conjugation of conjugated) {
 		for (let affix of conjugation['affixes']) {
 			affix = affix['affix'];
+			a = affix;
 			if (affix.hasOwnProperty("na'vi")) {
-				affix = affix["na'vi"];
+				a = affix["na'vi"];
 			}
 			if (translators.hasOwnProperty(conjugation['type'])) {
-				if (translators[conjugation['type']].hasOwnProperty(affix)) {
-					translation = translators[conjugation['type']][affix](translation);
+				if (translators[conjugation['type']].hasOwnProperty(a)) {
+					translation = translators[conjugation['type']][a](translation);
+				} else if (conjugation['type'] === 'n') {
+					console.log(affix);
+					translation = getShortTranslation(affix)
+						+ ' ' + toAccusative(translation);
 				}
 			}
 		}
