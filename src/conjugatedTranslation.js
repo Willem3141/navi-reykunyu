@@ -47,17 +47,23 @@ let translators = {
 		'pe': (t) => 'which ' + t,
 		'fì': (t) => 'this ' + t,
 		'tsa': (t) => 'that ' + t,
+		'fra': (t) => 'every ' + t,
 		
 		'me': (t) => 'two ' + pluralize(t),
 		'pxe': (t) => 'three ' + pluralize(t),
 		'ay': (t) => pluralize(t),
+
+		'fne': (t) => 'type of ' + toAccusative(t),
+
+		'tsyìp': (t) => 'little ' + t,
+		'fkeyk': (t) => 'state of ' + toAccusative(t),
 
 		'o': (t) => 'some ' + t,
 
 		'l': (t) => t,
 		't': (t) => toAccusative(t),
 		'r': (t) => 'to ' + toAccusative(t),
-		'ä': (t) => 'of ' + toAccusative(t),
+		'ä': (t) => toPossessive(t),
 		'ri': (t) => 'as for ' + toAccusative(t),
 
 		'sì': (t) => 'and ' + t,
@@ -127,6 +133,8 @@ let plurals = {
 	'I': 'we',
 	'you': 'you',
 	'he/she': 'they',
+	'he': 'they',
+	'she': 'they',
 	'child': 'children',
 	'fish': 'fish',
 };
@@ -143,6 +151,8 @@ function pluralize(noun) {
 let accusatives = {
 	'I': 'me',
 	'he/she': 'him/her',
+	'he': 'him',
+	'she': 'her',
 	'we': 'us',
 	'they': 'them',
 };
@@ -151,6 +161,22 @@ function toAccusative(noun) {
 		return accusatives[noun];
 	}
 	return noun;
+}
+
+let possessives = {
+	'I': 'my',
+	'you': 'your',
+	'he/she': 'his/her',
+	'he': 'his',
+	'she': 'her',
+	'we': 'our',
+	'they': 'their',
+};
+function toPossessive(noun) {
+	if (possessives.hasOwnProperty(noun)) {
+		return possessives[noun];
+	}
+	return 'of ' + noun;
 }
 
 let dictionary;
@@ -170,7 +196,6 @@ function addTranslations(word, d) {
 				if (translators[conjugation['type']].hasOwnProperty(a)) {
 					translation = translators[conjugation['type']][a](translation);
 				} else if (conjugation['type'] === 'n') {
-					console.log(affix);
 					translation = getShortTranslation(affix)
 						+ ' ' + toAccusative(translation);
 				}
