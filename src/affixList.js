@@ -16,6 +16,7 @@ function addAffixList(word, d) {
 		list = [];
 		let affixes = conjugation['conjugation']['affixes'];
 		if (conjugation['type'] === 'n') {
+			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
 			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
 			if (affixes[1] === '(ay)') {
 				addAffix(list, 'prefix', 'ay', ['aff:pre:len']);
@@ -23,7 +24,6 @@ function addAffixList(word, d) {
 				addAffix(list, 'prefix', affixes[1], ['aff:pre:len']);
 			}
 			addAffix(list, 'prefix', affixes[0], ['aff:pre', 'aff:pre:len']);
-			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[4], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len']);
 			addAffix(list, 'suffix', affixes[6], ['part']);
