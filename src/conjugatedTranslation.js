@@ -45,9 +45,9 @@ let translators = {
 	},
 	'n': {
 		'pe': (t) => 'which ' + t,
-		'fì': (t) => 'this ' + t,
-		'tsa': (t) => 'that ' + t,
-		'fra': (t) => 'every ' + t,
+		'fì': (t, d) => (d['hasPluralPrefix'] ? 'these ' : 'this ') + t,
+		'tsa': (t, d) => (d['hasPluralPrefix'] ? 'those ' : 'that ') + t,
+		'fra': (t, d) => (d['hasPluralPrefix'] ? 'all ' : 'every ') + t,
 		
 		'me': (t) => 'two ' + pluralize(t),
 		'pxe': (t) => 'three ' + pluralize(t),
@@ -186,6 +186,12 @@ function addTranslations(word, d) {
 	let conjugated = word['conjugated'];
 
 	for (let conjugation of conjugated) {
+		let hasPluralPrefix = false;
+		for (let affix of conjugation['affixes']) {
+			if (['me', 'pxe', 'ay'].includes(affix['affix']["na'vi"])) {
+				hasPluralPrefix = true;
+			}
+		}
 		for (let affix of conjugation['affixes']) {
 			affix = affix['affix'];
 			a = affix;
@@ -194,7 +200,10 @@ function addTranslations(word, d) {
 			}
 			if (translators.hasOwnProperty(conjugation['type'])) {
 				if (translators[conjugation['type']].hasOwnProperty(a)) {
-					translation = translators[conjugation['type']][a](translation);
+					let data = {
+						'hasPluralPrefix': hasPluralPrefix
+					};
+					translation = translators[conjugation['type']][a](translation, data);
 				} else if (conjugation['type'] === 'n') {
 					translation = getShortTranslation(affix)
 						+ ' ' + toAccusative(translation);
