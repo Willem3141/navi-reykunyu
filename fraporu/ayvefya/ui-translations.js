@@ -598,6 +598,10 @@ strings['sv'] = {
 	'language': 'Svenska'
 }
 
+strings['it'] = {
+	'language': 'Italian'
+}
+
 function _(key) {
 	const lang = localStorage.getItem('reykunyu-language');
 	if (strings.hasOwnProperty(lang) && strings[lang].hasOwnProperty(key)) {
