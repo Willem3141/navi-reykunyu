@@ -220,7 +220,7 @@ function conjugatedBox(conjugation) {
 				$explanation = gerundConjugationExplanation(c);
 				break;
 		}
-		if (conjugation[i].hasOwnProperty('translation')) {
+		if (getLanguage() == "en" && conjugation[i].hasOwnProperty('translation')) {
 			$explanation.append($('<span/>')
 				.addClass('operator')
 				.html('&rarr;'));
