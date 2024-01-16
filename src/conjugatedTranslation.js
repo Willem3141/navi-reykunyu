@@ -84,7 +84,6 @@ let translators = {
 	}
 };
 
-// TODO: make these more intelligent (yay, English grammar)
 let pasts = {
 	'be': 'was',
 	'have': 'had',
@@ -114,9 +113,24 @@ function toPresentParticiple(verb) {
 	}
 	return duplicateFinalConsonant(verb) + 'ing';
 }
+
+let pastParticiples = {
+	'be': 'been',
+	'have': 'had',
+	'go': 'gone',
+	'make': 'made',
+	'do': 'done',
+};
 function toPastParticiple(verb) {
+	if (pastParticiples.hasOwnProperty(verb)) {
+		return pastParticiples[verb];
+	}
+	if (verb.endsWith('e')) {
+		return verb + 'd';
+	}
 	return verb + 'ed';
 }
+
 function duplicateFinalConsonant(word) {
 	if (word.length < 2) {
 		return word;
