@@ -1314,10 +1314,12 @@ function createResults(results, $block) {
 
 // TODO remove as soon as the server sends this
 function getShortTranslation(result) {
-	if (result["short_translation_conjugated"]) {
+	const language = getLanguage();
+
+	if (language == "en" && result["short_translation_conjugated"]) {
 		return result["short_translation_conjugated"];
 	}
-	if (result["short_translation"]) {
+	if (language == "en" && result["short_translation"]) {
 		return result["short_translation"];
 	}
 
@@ -1331,7 +1333,7 @@ function getShortTranslation(result) {
 		translation = translation.substring(1, translation.length - 1);
 	}
 
-	if (result["type"][0] === "v"
+	if (language == "en" && result["type"][0] === "v"
 		&& translation.indexOf("to ") === 0) {
 		translation = translation.substr(3);
 	}
