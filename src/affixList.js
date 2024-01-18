@@ -3,27 +3,27 @@
  */
 
 module.exports = {
-	makeAffixList: makeAffixList
+	addAffixList: addAffixList
 }
 
 let dictionary;
 
-function makeAffixList(conjugated, d) {
+function addAffixList(word, d) {
 	dictionary = d;
-
-	list = [];
+	let conjugated = word['conjugated'];
 
 	for (let conjugation of conjugated) {
+		list = [];
 		let affixes = conjugation['conjugation']['affixes'];
 		if (conjugation['type'] === 'n') {
-			addAffix(list, 'prefix', affixes[0], ['aff:pre', 'aff:pre:len']);
+			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
+			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
 			if (affixes[1] === '(ay)') {
 				addAffix(list, 'prefix', 'ay', ['aff:pre:len']);
 			} else {
 				addAffix(list, 'prefix', affixes[1], ['aff:pre:len']);
 			}
-			addAffix(list, 'prefix', affixes[2], ['aff:pre']);
-			addAffix(list, 'suffix', affixes[3], ['aff:suf']);
+			addAffix(list, 'prefix', affixes[0], ['aff:pre', 'aff:pre:len']);
 			addAffix(list, 'suffix', affixes[4], ['aff:suf']);
 			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len']);
 			addAffix(list, 'suffix', affixes[6], ['part']);
@@ -54,12 +54,12 @@ function makeAffixList(conjugated, d) {
 		} else if (conjugation['type'] === 'adj_to_adv') {
 			addAffix(list, 'prefix', affixes[0], ['aff:pre']);
 		} else if (conjugation['type'] === 'gerund') {
-+			addAffix(list, 'prefix', 'tì', ['aff:pre']);
-+			addAffix(list, 'infix', 'us', ['aff:in']);
- 		}
-	}
+			addAffix(list, 'prefix', 'tì', ['aff:pre']);
+			addAffix(list, 'infix', 'us', ['aff:in']);
+		}
 
-	return list;
+		conjugation['affixes'] = list;
+	}
 }
 
 function addAffix(list, affixType, affixString, types) {

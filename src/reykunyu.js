@@ -29,6 +29,7 @@ const levenshtein = require('js-levenshtein');
 
 const adjectives = require('./adjectives');
 const affixList = require('./affixList');
+const conjugatedTranslation = require('./conjugatedTranslation');
 const conjugationString = require('./conjugationString');
 const convert = require('./convert');
 const ipa = require('./ipa');
@@ -389,7 +390,8 @@ function lookUpNoun(queryWord, wordResults) {
 				"type": "n",
 				"conjugation": nounResult
 			}];
-			noun["affixes"] = affixList.makeAffixList(noun["conjugated"], dictionary);
+			affixList.addAffixList(noun, dictionary);
+			conjugatedTranslation.addTranslations(noun, dictionary);
 			wordResults.push(noun);
 		}
 		const suffixes = ['yu', 'tswo'];
@@ -416,7 +418,8 @@ function lookUpNoun(queryWord, wordResults) {
 							"type": "n",
 							"conjugation": nounResult
 						});
-						verb["affixes"] = affixList.makeAffixList(conjugated, dictionary);
+						affixList.addAffixList(verb, dictionary);
+						conjugatedTranslation.addTranslations(verb, dictionary);
 						wordResults.push(verb);
 					}
 				});
@@ -446,7 +449,8 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					word["affixes"] = affixList.makeAffixList(word["conjugated"], dictionary);
+					affixList.addAffixList(word, dictionary);
+					conjugatedTranslation.addTranslations(word, dictionary);
 					wordResults.push(word);
 				}
 
@@ -460,7 +464,8 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					word["affixes"] = affixList.makeAffixList(word["conjugated"], dictionary);
+					affixList.addAffixList(word, dictionary);
+					conjugatedTranslation.addTranslations(word, dictionary);
 					wordResults.push(word);
 				}
 			}
@@ -496,7 +501,8 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					});
-					verb["affixes"] = affixList.makeAffixList(verb["conjugated"], dictionary);
+					affixList.addAffixList(verb, dictionary);
+					conjugatedTranslation.addTranslations(verb, dictionary);
 					wordResults.push(verb);
 				}
 			});
@@ -526,7 +532,8 @@ function lookUpVerb(queryWord, wordResults, allowParticiples) {
 				"type": "v",
 				"conjugation": resultCopy
 			}];
-			verb["affixes"] = affixList.makeAffixList(verb["conjugated"], dictionary);
+			affixList.addAffixList(verb, dictionary);
+			conjugatedTranslation.addTranslations(verb, dictionary);
 			wordResults.push(verb);
 		}
 	});
@@ -546,7 +553,8 @@ function lookUpAdjective(queryWord, wordResults) {
 				"type": "adj",
 				"conjugation": adjResultCopy
 			}];
-			adjective["affixes"] = affixList.makeAffixList(adjective["conjugated"], dictionary);
+			affixList.addAffixList(adjective, dictionary);
+			conjugatedTranslation.addTranslations(adjective, dictionary);
 			wordResults.push(adjective);
 		}
 
@@ -573,7 +581,8 @@ function lookUpAdjective(queryWord, wordResults) {
 					"type": "adj",
 					"conjugation": adjResult
 				});
-				verb["affixes"] = affixList.makeAffixList(verb["conjugated"], dictionary);
+				affixList.addAffixList(verb, dictionary);
+				conjugatedTranslation.addTranslations(verb, dictionary);
 				wordResults.push(verb);
 			}
 		});
@@ -598,7 +607,8 @@ function lookUpAdjective(queryWord, wordResults) {
 						"type": "adj",
 						"conjugation": adjResult
 					});
-					verb["affixes"] = affixList.makeAffixList(verb["conjugated"], dictionary);
+					affixList.addAffixList(verb, dictionary);
+					conjugatedTranslation.addTranslations(verb, dictionary);
 					wordResults.push(verb);
 				});
 			}
@@ -620,7 +630,8 @@ function lookUpProductiveAdverb(queryWord, wordResults) {
 					"affixes": ['nì']
 				}
 			}];
-			adjective["affixes"] = affixList.makeAffixList(adjective["conjugated"], dictionary);
+			affixList.addAffixList(adjective, dictionary);
+			conjugatedTranslation.addTranslations(adjective, dictionary);
 			wordResults.push(adjective);
 		}
 	}
@@ -764,6 +775,14 @@ function postprocessResult(result) {
 				'FN': ipa.generateIpa(pronunciation, result['type'], 'FN'),
 				'RN': ipa.generateIpa(pronunciation, result['type'], 'RN')
 			};
+		}
+	}
+	if (result.hasOwnProperty('conjugated')) {
+		// retain the last conjugated item that has a translation
+		for (let conjugated of result['conjugated']) {
+			if (conjugated.hasOwnProperty('translation')) {
+				result['short_translation_conjugated'] = conjugated['translation'];
+			}
 		}
 	}
 	const key = result['na\'vi'].toLowerCase() + ':' + (result['type'] === 'nv:si' ? 'n:si' : result['type']);

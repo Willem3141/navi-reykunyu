@@ -174,9 +174,16 @@ function statusBadge(wordStatus) {
 	return $pätsì;
 }
 
-function conjugationExplanation(conjugation) {
-	let $explanation = $('<div/>');
+// creates a box showing the conjugated form of a word
+function conjugatedBox(conjugation) {
+	let $conjugatedBox = $('<div/>')
+		.addClass('result-item conjugated-box');
+	let boxIsEmpty = true;
+
 	for (let i = 0; i < conjugation.length; i++) {
+		let $item = $('<div/>')
+			.addClass('conjugated-box-item');
+
 		let type = conjugation[i]["type"];
 		let c = conjugation[i]["conjugation"];
 		if (c["result"].length == 1
@@ -184,42 +191,59 @@ function conjugationExplanation(conjugation) {
 			&& !c.hasOwnProperty("correction")) {
 			continue;
 		}
+		boxIsEmpty = false;
 
+		let $explanation;
 		switch (type) {
 			case "n":
-				$explanation.append(nounConjugationExplanation(c));
+				$explanation = nounConjugationExplanation(c);
 				break;
 			case "v":
-				$explanation.append(verbConjugationExplanation(c));
+				$explanation = verbConjugationExplanation(c);
 				break;
 			case "adj":
-				$explanation.append(adjectiveConjugationExplanation(c));
+				$explanation = adjectiveConjugationExplanation(c);
 				break;
 			case "v_to_n":
-				$explanation.append(verbToNounConjugationExplanation(c));
+				$explanation = verbToNounConjugationExplanation(c);
 				break;
 			case "v_to_adj":
-				$explanation.append(verbToAdjectiveConjugationExplanation(c));
+				$explanation = verbToAdjectiveConjugationExplanation(c);
 				break;
 			case "v_to_part":
-				$explanation.append(verbToParticipleConjugationExplanation(c));
+				$explanation = verbToParticipleConjugationExplanation(c);
 				break;
 			case "adj_to_adv":
-				$explanation.append(adjectiveToAdverbConjugationExplanation(c));
+				$explanation = adjectiveToAdverbConjugationExplanation(c);
 				break;
 			case "gerund":
-				$explanation.append(gerundConjugationExplanation(c));
+				$explanation = gerundConjugationExplanation(c);
 				break;
 		}
-	}
+		if (getLanguage() == "en" && conjugation[i].hasOwnProperty('translation')) {
+			$explanation.append($('<span/>')
+				.addClass('operator')
+				.html('&rarr;'));
+			$explanation.append($('<span/>')
+				.addClass('translation')
+				.html('&ldquo;' + conjugation[i]['translation'] + '&rdquo;'));
+		}
+		$item.append($explanation);
 
-	return $explanation;
+		if (conjugation[i].hasOwnProperty("affixes") && conjugation[i]["affixes"].length) {
+			$item.append(affixesSection(conjugation[i]["affixes"]));
+		}
+
+		$conjugatedBox.append($item);
+	}
+	if (boxIsEmpty) {
+		return null;
+	}
+	return $conjugatedBox;
 }
 
 function nounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	for (let i = 0; i <= 2; i++) {
 		if (conjugation["affixes"][i]) {
@@ -249,8 +273,6 @@ function nounConjugationExplanation(conjugation) {
 function verbConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	for (let i = 0; i < 3; i++) {
@@ -271,8 +293,6 @@ function verbConjugationExplanation(conjugation) {
 
 function adjectiveConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	if (conjugation["form"] === "postnoun") {
 		$('<span/>').addClass('prefix').html("a").appendTo($conjugation);
@@ -298,8 +318,6 @@ function adjectiveConjugationExplanation(conjugation) {
 function verbToNounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -314,8 +332,6 @@ function verbToNounConjugationExplanation(conjugation) {
 
 function verbToAdjectiveConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -332,8 +348,6 @@ function verbToAdjectiveConjugationExplanation(conjugation) {
 function verbToParticipleConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -349,8 +363,6 @@ function verbToParticipleConjugationExplanation(conjugation) {
 function adjectiveToAdverbConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 
@@ -365,7 +377,6 @@ function adjectiveToAdverbConjugationExplanation(conjugation) {
 
 function gerundConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').addClass('prefix').text('tì').appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -384,8 +395,6 @@ function gerundConjugationExplanation(conjugation) {
 
 function externalLenitionExplanation(lenition) {
 	let $lenition = $('<div/>').addClass('lenition-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($lenition);
 
 	$('<span/>').text(lenition["by"]).appendTo($lenition);
 	$('<span/>').addClass('operator').text('+').appendTo($lenition);
@@ -580,14 +589,17 @@ function noteSection(note) {
 }
 
 function affixesSection(affixes) {
-	let $affixesSection = $('<div/>').addClass('result-item affixes');
-	let $affixes = $('<div/>').addClass('body');
+	let $affixes = $('<div/>').addClass('affixes');
 
 	let $table = $('<table/>').appendTo($affixes);
+	$('<tr/>')
+		.append($('<th/>').attr('colspan', 2).text('Affix'))
+		.append($('<th/>').text('Meaning'))
+		.appendTo($table);
 	for (let a of affixes) {
 		const affix = a['affix'];
+		let $tr = $('<tr/>').appendTo($table);
 		if (a.hasOwnProperty('combinedFrom')) {
-			let $tr = $('<tr/>').appendTo($table);
 			let $affixSpan = $('<span/>')
 				.html(lemmaForm(affix, 'aff:in'));
 			addLemmaClass($affixSpan, 'aff:in');
@@ -615,7 +627,6 @@ function affixesSection(affixes) {
 				$meaningCell.append($('<span/>').text(getTranslation(c['affix']["translations"][0])));
 			}
 		} else {
-			let $tr = $('<tr/>').appendTo($table);
 			let $affixLink = $('<a/>')
 				.addClass('word-link')
 				.html(lemmaForm(affix["na'vi"], affix['type']))
@@ -631,8 +642,7 @@ function affixesSection(affixes) {
 		}
 	}
 
-	$affixesSection.append($affixes);
-	return $affixesSection;
+	return $affixes;
 }
 
 function sourceSection(sources) {
@@ -1222,19 +1232,6 @@ function createResultBlock(i, r) {
 
 	$resultWord.appendTo($result);
 
-	if (r.hasOwnProperty("conjugated")) {
-		$explanation = conjugationExplanation(r["conjugated"]);
-		$result.append($explanation);
-	}
-
-	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
-		$result.append(externalLenitionExplanation(r["externalLenition"]));
-	}
-
-	if (r["affixes"] && r["affixes"].length) {
-		$result.append(affixesSection(r["affixes"]));
-	}
-
 	if (r["image"]) {
 		$result.append(imageSection(r["na'vi"], r["image"]));
 	}
@@ -1248,6 +1245,17 @@ function createResultBlock(i, r) {
 	if (r["status"]) {
 		$result.append(statusNoteSection(r["status"], r["status_note"]));
 	}
+
+	if (r.hasOwnProperty("conjugated") && r["conjugated"].length > 0) {
+		$conjugatedBox = conjugatedBox(r["conjugated"]);
+		if ($conjugatedBox) {
+			$result.append($conjugatedBox);
+		}
+	}
+
+	//if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
+	//	$result.append(externalLenitionExplanation(r["externalLenition"]));
+	//}
 
 	if (r["etymology"]) {
 		$result.append(etymologySection(r["etymology"]));
@@ -1304,8 +1312,14 @@ function createResults(results, $block) {
 	}
 }
 
+// TODO remove as soon as the server sends this
 function getShortTranslation(result) {
-	if (result["short_translation"]) {
+	const language = getLanguage();
+
+	if (language == "en" && result["short_translation_conjugated"]) {
+		return result["short_translation_conjugated"];
+	}
+	if (language == "en" && result["short_translation"]) {
 		return result["short_translation"];
 	}
 
@@ -1319,7 +1333,7 @@ function getShortTranslation(result) {
 		translation = translation.substring(1, translation.length - 1);
 	}
 
-	if (result["type"][0] === "v"
+	if (language == "en" && result["type"][0] === "v"
 		&& translation.indexOf("to ") === 0) {
 		translation = translation.substr(3);
 	}
