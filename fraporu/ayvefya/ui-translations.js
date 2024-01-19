@@ -464,7 +464,7 @@ strings['fr'] = {
 	'not-found': '(pas trouvé)',
 
 	'searching-error': 'Un problème est survenu pendant la recherche',
-	'searching-error-description': 'Veuillez s’il vous plait essayer plus tard. Si le problème persiste, veuillez s’il vous plaît me <a href="//wimiso.nl/contact">contacter</a>.',
+	'searching-error-description': 'S’il vous plaît réessayez plus tard. Si le problème persiste, veuillez s’il vous plaît me <a href="//wimiso.nl/contact">contacter</a>.',
 }
 
 strings['hu'] = {
