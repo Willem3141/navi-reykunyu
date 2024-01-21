@@ -440,14 +440,15 @@ function lookUpNoun(queryWord, wordResults) {
 					(nounResult["affixes"][3] === "" || foundForm["case"] === "") &&
 					nounResult["affixes"][4] === "" &&
 					(nounResult["affixes"][5] === "" || (nounResult["affixes"][3] !== "" && foundForm["case"] === "") || (foundForm["case"] === "" && ['l', 't', 'r', 'ä', 'ri'].indexOf(nounResult["affixes"][5]) === -1))) {
-					nounResult["root"] = word["na'vi"];
-					nounResult["affixes"][1] = foundForm["plural"];
+					let resultCopy = JSON.parse(JSON.stringify(nounResult));
+					resultCopy["root"] = word["na'vi"];
+					resultCopy["affixes"][1] = foundForm["plural"];
 					if (foundForm["case"] !== "") {
-						nounResult["affixes"][5] = foundForm["case"];
+						resultCopy["affixes"][5] = foundForm["case"];
 					}
 					word["conjugated"] = [{
 						"type": "n",
-						"conjugation": nounResult
+						"conjugation": resultCopy
 					}];
 					affixList.addAffixList(word, dictionary);
 					conjugatedTranslation.addTranslations(word, dictionary);
