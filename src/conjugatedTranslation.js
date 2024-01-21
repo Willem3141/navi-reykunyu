@@ -151,6 +151,8 @@ let plurals = {
 	'she': 'they',
 	'child': 'children',
 	'fish': 'fish',
+	'this': 'these things',
+	'that': 'those things',
 };
 function pluralize(noun) {
 	if (plurals.hasOwnProperty(noun)) {
