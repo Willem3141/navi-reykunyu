@@ -18,6 +18,7 @@ h1, h2, h3, h4, h5,
 #search-box,
 .ui.modal .header {
 	font-family: 'Recursive' !important;
+	font-variation-settings: "MONO" 0;
 }
 
 a {
