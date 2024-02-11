@@ -45,6 +45,8 @@ var zeykerokyu = require('./zeykerokyu');
 
 const ejs = require('ejs');
 
+var translations = require('./translations');
+
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(session({
 	store: new sqliteSession(),
@@ -77,7 +79,21 @@ app.set('views', './fraporu');
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
-	res.render('txin', { user: req.user, query: req.query['q'] });
+	var lang = 'en';
+	if (req.headers.cookie) {
+		for (let cookie of req.headers.cookie.split('; ')) {
+			if (cookie.startsWith('lang=')) {
+				lang = cookie.substring(5);
+				break;
+			}
+		}
+	}
+	translations.setLanguage(lang);
+	res.render('txin', { user: req.user, query: req.query['q'], _: translations._ });
+});
+
+app.get('/ayvefya/ui-translations.js', function(req, res) {
+	res.render('ayvefya/ui-translations', { strings_json: translations.getStringsJSON() });
 });
 
 app.get('/all', function(req, res) {

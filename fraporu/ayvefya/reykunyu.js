@@ -14,6 +14,10 @@ $(function () {
 	$('#language-dropdown').dropdown({
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-language', value);
+			document.cookie = 'lang=' + value;  // note that this removes all other cookies (but we don't set any)
+			$('.translation').each(function() {
+				$(this).html(_($(this).attr('data-key')));
+			});
 			sngäiTìfwusew(false);
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
