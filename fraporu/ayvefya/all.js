@@ -1,5 +1,11 @@
 $(function() {
 	loadWordList();
+
+	$('#type-filter-dropdown').dropdown('set selected', 'all');
+	$('#type-filter-dropdown').dropdown({
+		onChange: runFilter
+	});
+	$('#filter-box').on('input', runFilter);
 });
 
 function createErrorBlock(text, subText) {
@@ -105,7 +111,10 @@ function sourceAbbreviation(source) {
 
 function createWordBlock(word) {
 	let $block = $("<div/>")
-		.addClass('entry');
+		.addClass('entry')
+		.attr('data-lemma', word['na\'vi'])
+		.attr('data-type', word['type']);
+
 	const $word = $('<span/>').addClass('word').html(lemmaForm(word["na'vi"], word["type"]));
 	addLemmaClass($word, word["type"]);
 	$block.append($word);
@@ -233,6 +242,45 @@ function loadWordList() {
 		});
 	return false;
 }
+
+
+// filtering
+
+function runFilter() {
+	let filter;
+	try {
+		filter = new RegExp($('#filter-box').val());
+	} catch (e) {
+		// TODO provide proper error
+		filter = /.*/;
+	}
+	let typeFilter = $('#type-filter-dropdown').dropdown('get value');
+	$('.letter-block').each((i, block) => {
+		const $block = $(block);
+		let anyMatchesInBlock = false;
+		$block.find('.entry').each((i, e) => {
+			const $e = $(e);
+			const type = $e.attr('data-type');
+			if (typeFilter === "all" || typeFilter === type) {
+				console.log('hoi');
+				const lemma = $e.attr('data-lemma');
+				const matches = filter.test(lemma);
+				$e.toggle(matches);
+				anyMatchesInBlock = anyMatchesInBlock || matches;
+			} else {
+				$e.toggle(false);
+			}
+		});
+		const $header = $block.prev();
+		$header.toggle(anyMatchesInBlock);
+		$('#button-' + $.escapeSelector($header.attr('id'))).toggle(anyMatchesInBlock);
+	});
+
+	updateToC();
+}
+
+
+// table of contents handling
 
 function updateToC() {
 	for (const section of sections) {

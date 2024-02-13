@@ -14,7 +14,7 @@ body,
 .ui.modal .ui.header,
 h1, h2, h3, h4, h5,
 .ui.menu,
-.ui.form input,
+.ui input,
 #search-box,
 .ui.modal .header {
 	font-family: 'Recursive' !important;
@@ -583,6 +583,14 @@ table.conjugation-table {
 	background-color: white;
 	box-shadow: 0 0 4px 4px white;
 	text-align: center;
+}
+
+.word-list-toc #type-filter-dropdown {
+	width: 200px;
+}
+
+.word-list-toc #toc-bar {
+	margin-top: 8px;
 }
 
 .word-list-toc #toc-bar > a.ui.button {
