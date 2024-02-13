@@ -686,7 +686,13 @@ function createWordLink(link) {
 			.html(lemmaForm(link["na'vi"], link["type"]));
 		addLemmaClass($word, link["type"]);
 		$link.append($word);
-		$link.append(' (' + getShortTranslation(link) + ')');
+
+		let translation = getShortTranslation(link);
+		// avoid double parentheses
+		if (translation.startsWith('(') && translation.endsWith(')')) {
+			translation = translation.substring(1, translation.length - 1);
+		}
+		$link.append(' (' + translation + ')');
 		return $link;
 	}
 }
@@ -1332,10 +1338,6 @@ function getShortTranslation(result) {
 	translation = translation.split(';')[0];
 	translation = translation.split(' | ')[0];
 	translation = translation.split(' (')[0];
-
-	if (translation.startsWith('(') && translation.endsWith(')')) {
-		translation = translation.substring(1, translation.length - 1);
-	}
 
 	if (language == "en" && result["type"][0] === "v"
 		&& translation.indexOf("to ") === 0) {
