@@ -220,6 +220,7 @@ h1::after {
 	background-color: white;
 	padding: 10px 0;
 	box-shadow: 0 0 4px 4px white;
+	z-index: 1;
 }
 
 .result .result-word .id {
