@@ -30,6 +30,24 @@ var http = require('http').Server(app);
 var config = JSON.parse(fs.readFileSync('config.json'));
 
 var reykunyu = require('./reykunyu');
+var dictionaryJSON;
+try {
+	dictionaryJSON = fs.readFileSync("./data/words.json");
+} catch (e) {
+	output.error('words.json not found, exiting');
+	output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
+This file does not seem to be present. If you want to run a local mirror
+of the instance at https://reykunyu.lu, you can copy the dictionary data
+from there:
+
+$ wget -O data/words.json https://reykunyu.lu/api/list/all
+
+Alternatively, you can start with an empty database:
+
+$ echo "{}" > data/words.json`);
+	process.exit(1);
+}
+reykunyu.initialize(dictionaryJSON);
 var annotatedDictionary = require('./annotatedDictionary');
 var conjugationString = require('./conjugationString');
 var verbs = require('./verbs');
@@ -94,6 +112,14 @@ app.get('/', function(req, res) {
 
 app.get('/ayvefya/ui-translations.js', function(req, res) {
 	res.render('ayvefya/ui-translations', { strings_json: translations.getStringsJSON() });
+});
+
+app.get('/sw.js', function(req, res) {
+	res.sendFile('sw.js', { root: process.cwd() + '/fraporu/ayvefya' });
+});
+
+app.get('/words.json', function(req, res) {
+	res.sendFile('words.json', { root: process.cwd() + '/data' });
 });
 
 app.get('/all', function(req, res) {
