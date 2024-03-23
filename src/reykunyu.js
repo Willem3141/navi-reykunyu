@@ -280,7 +280,9 @@ function getResponsesFor(query) {
 					}
 				}
 			}
-			suggestions = suggestions.filter(a => a[1] === minDistance).map(a => a[0]);
+			suggestions = suggestions.filter(a => a[1] === minDistance)
+				.map(a => a[0]).sort()
+				.filter((a, i, array) => i === 0 || array[i - 1] !== a);
 		}
 
 		results.push({
