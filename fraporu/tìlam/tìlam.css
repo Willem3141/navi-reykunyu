@@ -109,6 +109,7 @@ h1::after {
 		padding-left: 0;
 		padding-top: 6px;
 	}
+
 	.main-menu > .button > .icon.dropdown {
 		padding-left: 0;
 		padding-top: 3px;
@@ -117,10 +118,26 @@ h1::after {
 
 @media (max-width: 460px) {
 	.main-menu > .button > .button-label {
-		display: none;
+		font-weight: 475;
+		font-size: 85%;
+		padding-top: 5px;
 	}
 
 	#language-dropdown .text {
+		display: none;
+	}
+}
+
+@media (max-width: 400px) {
+	.main-menu > .button > .button-label {
+		font-weight: 550;
+		font-size: 70%;
+		padding-top: 4px;
+	}
+}
+
+@media (max-width: 340px) {
+	.main-menu > .button > .button-label {
 		display: none;
 	}
 }
