@@ -114,6 +114,29 @@ h1::after {
 		padding-left: 0;
 		padding-top: 3px;
 	}
+
+	/* put the mode dropdown below the search field */
+	#search-form .ui.input {
+		flex-wrap: wrap;
+	}
+	#search-form .search.icon {
+		height: 38px;
+	}
+	#search-form #search-box {
+		border-top-right-radius: 0.28571429rem !important;
+		border-right-color: rgba(34, 36, 38, 0.15) !important;
+		border-bottom-left-radius: 0px !important;
+		border-bottom-color: transparent !important;
+	}
+	#search-form #search-box:focus {
+		border-right-color: #85B7D9 !important;
+		border-bottom-color: #85B7D9 !important;
+	}
+	#search-form #mode-direction {
+		width: 100%;
+		border-top-right-radius: 0px !important;
+		border-bottom-left-radius: 0.28571429rem !important;
+	}
 }
 
 @media (max-width: 460px) {
