@@ -977,6 +977,7 @@ function getReverseResponsesFor(query, language) {
 						let result = JSON.parse(JSON.stringify(dictionary[word]));
 						results.push(result);
 					}
+					break;
 				}
 			}
 		}
