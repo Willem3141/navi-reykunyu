@@ -33,6 +33,8 @@ body {
 	width: 100%;
 	line-height: 1.5;
 	height: auto;
+	min-width: 300px;
+	overflow-x: auto;
 }
 
 .container {
@@ -219,6 +221,28 @@ h1::after {
 }
 #tab-mode-bar .item.gray .result-count-tag {
 	background-color: #ccc;
+}
+
+@media (max-width: 460px) {
+	#tab-mode-bar .item {
+		flex-direction: column;
+		padding: 10px;
+	}
+	#tab-mode-bar .item .result-count-tag {
+		display: block;
+		margin-left: 0;
+		margin-top: 4px;
+	}
+}
+
+@media (max-width: 400px) {
+	#tab-mode-bar .item {
+		font-weight: 475;
+		font-size: 85%;
+	}
+	#tab-mode-bar .item.active {
+		font-weight: 800;
+	}
 }
 
 #sentence-bar {
