@@ -539,7 +539,7 @@ h1::after {
 
 .error p {
 	width: 80%;
-	min-width: 400px;
+	min-width: 270px;
 	margin: 20px auto;
 }
 
