@@ -22,7 +22,6 @@ $(function () {
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			$('.current-lang').text(_('language'));
-			$('.mode-english-item').toggle(value !== 'x-navi');  // for Na’vi it makes no sense to reverse search
 			return false;
 		}
 	});
@@ -1468,60 +1467,63 @@ function doSearchNavi() {
 				}
 			}
 
-			// set up tabs
 			$results.append($fromNaviResult);
-			$results.append($toNaviResult);
-			$modeTabs.empty();
-			$modeTabs.show();
-			let $fromNaviTab = $('<div/>')
-				.addClass('item')
-				.html("Na'vi&nbsp;&rarr;&nbsp;" + _('language'))
-				.appendTo($modeTabs);
-			$fromNaviTab.append($('<div/>')
-				.text(fromNaviResultCount)
-				.addClass('result-count-tag'));
-			if (fromNaviResultCount === 0) {
-				$fromNaviTab.addClass('gray');
-			}
-			$fromNaviTab.on('click', function () {
-				mode = 'fromNa\'vi';
-				$fromNaviTab.addClass('active');
-				$toNaviTab.removeClass('active');
-				$fromNaviResult.show();
-				$toNaviResult.hide();
-			});
-			let $toNaviTab = $('<div/>')
-				.addClass('item')
-				.html(_('language') + "&nbsp;&rarr;&nbsp;Na'vi")
-				.appendTo($modeTabs);
-			$toNaviTab.append($('<div/>')
-				.text(toNaviResult.length)
-				.addClass('result-count-tag'));
-			if (toNaviResult.length === 0) {
-				$toNaviTab.addClass('gray');
-			}
-			$toNaviTab.on('click', function () {
-				mode = 'toNa\'vi';
-				$toNaviTab.addClass('active');
-				$fromNaviTab.removeClass('active');
-				$toNaviResult.show();
-				$fromNaviResult.hide();
-			});
 
-			if (mode === 'fromNa\'vi' &&
-					fromNaviResultCount === 0 && toNaviResult.length > 0) {
-				mode = 'toNa\'vi';
-			} else if (mode === 'toNa\'vi' &&
-					toNaviResult.length === 0 && fromNaviResultCount > 0) {
-				mode = 'fromNa\'vi';
-			}
+			// set up tabs
+			if (getLanguage() !== "x-navi") {
+				$results.append($toNaviResult);
+				$modeTabs.empty();
+				$modeTabs.show();
+				let $fromNaviTab = $('<div/>')
+					.addClass('item')
+					.html("Na'vi&nbsp;&rarr;&nbsp;" + _('language'))
+					.appendTo($modeTabs);
+				$fromNaviTab.append($('<div/>')
+					.text(fromNaviResultCount)
+					.addClass('result-count-tag'));
+				if (fromNaviResultCount === 0) {
+					$fromNaviTab.addClass('gray');
+				}
+				$fromNaviTab.on('click', function () {
+					mode = 'fromNa\'vi';
+					$fromNaviTab.addClass('active');
+					$toNaviTab.removeClass('active');
+					$fromNaviResult.show();
+					$toNaviResult.hide();
+				});
+				let $toNaviTab = $('<div/>')
+					.addClass('item')
+					.html(_('language') + "&nbsp;&rarr;&nbsp;Na'vi")
+					.appendTo($modeTabs);
+				$toNaviTab.append($('<div/>')
+					.text(toNaviResult.length)
+					.addClass('result-count-tag'));
+				if (toNaviResult.length === 0) {
+					$toNaviTab.addClass('gray');
+				}
+				$toNaviTab.on('click', function () {
+					mode = 'toNa\'vi';
+					$toNaviTab.addClass('active');
+					$fromNaviTab.removeClass('active');
+					$toNaviResult.show();
+					$fromNaviResult.hide();
+				});
 
-			if (mode === 'fromNa\'vi') {
-				$fromNaviTab.addClass('active');
-				$toNaviResult.hide();
-			} else {
-				$toNaviTab.addClass('active');
-				$fromNaviResult.hide();
+				if (mode === 'fromNa\'vi' &&
+						fromNaviResultCount === 0 && toNaviResult.length > 0) {
+					mode = 'toNa\'vi';
+				} else if (mode === 'toNa\'vi' &&
+						toNaviResult.length === 0 && fromNaviResultCount > 0) {
+					mode = 'fromNa\'vi';
+				}
+
+				if (mode === 'fromNa\'vi') {
+					$fromNaviTab.addClass('active');
+					$toNaviResult.hide();
+				} else {
+					$toNaviTab.addClass('active');
+					$fromNaviResult.hide();
+				}
 			}
 		})
 		.fail(function () {
