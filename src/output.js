@@ -16,6 +16,13 @@ function warning(message) {
 	console.log('\x1b[33;1mWarning:\x1b[37m ' + message + '\x1b[0m');
 }
 
-function hint(message) {
-	console.log(message + '\n');
+let printedHints = [];
+
+function hint(message, id) {
+	if (!id || !printedHints.includes(id)) {
+		console.log(message + '\n');
+		if (id) {
+			printedHints.push(id);
+		}
+	}
 }

@@ -52,7 +52,7 @@ db.serialize(() => {
 			} else {
 				words = reykunyu.getAllKeys();
 				words.sort(function (a, b) {
-					return compareNaviWords(a, b, 0);
+					return compareNaviWords(reykunyu.getWord(a), reykunyu.getWord(b), 0);
 				});
 			}
 			const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?)`);

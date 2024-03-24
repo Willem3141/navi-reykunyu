@@ -66,17 +66,11 @@ function addAffix(list, affixType, affixString, types) {
 	if (!affixString.length) {
 		return;
 	}
-	let affix;
-	for (let t of types) {
-		if (dictionary.hasOwnProperty(affixString + ':' + t)) {
-			affix = dictionary[affixString + ':' + t];
-			break;
-		}
-	}
-	if (affix) {
+	let affix = dictionary.getOfTypes(affixString, types);
+	if (affix.length > 0) {
 		list.push({
 			'type': affixType,
-			'affix': affix
+			'affix': affix[0]
 		});
 	}
 }

@@ -68,6 +68,7 @@ $(function () {
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
 		},
 	});
+	$('#settings-modal button').popup();
 
 	$('#settings-button').on("click", function () {
 		$('#ipa-checkbox').prop('checked',
@@ -410,12 +411,12 @@ function externalLenitionExplanation(lenition) {
 	return $lenition;
 }
 
-function imageSection(name, image) {
+function imageSection(word, image) {
 	let $section = $('<div/>').addClass('definition-image');
 	$('<img/>').attr('src', '/ayrel/' + image)
 		.appendTo($section);
 	$('<div/>').addClass('credit')
-		.text(name + ' ' + _('image-drawn-by') + ' Eana Unil')
+		.html(lemmaForm(word) + ' ' + _('image-drawn-by') + ' Eana Unil')
 		.appendTo($section);
 	return $section;
 }
@@ -623,7 +624,7 @@ function affixesSection(affixes) {
 				}
 				let $affixLink = $('<a/>')
 					.addClass('word-link')
-					.html(lemmaForm(c['affix']["na'vi"], c['affix']['type']))
+					.html(lemmaForm(c['affix']))
 					.attr('href', '/?q=' + affix["na'vi"]);
 				addLemmaClass($affixLink, c['affix']['type']);
 				$componentsCell.append($affixLink);
@@ -632,7 +633,7 @@ function affixesSection(affixes) {
 		} else {
 			let $affixLink = $('<a/>')
 				.addClass('word-link')
-				.html(lemmaForm(affix["na'vi"], affix['type']))
+				.html(lemmaForm(affix))
 				//.addClass(a['type'])
 				.attr('href', '/?q=' + affix["na'vi"]);
 			addLemmaClass($affixLink, affix['type']);
@@ -682,7 +683,7 @@ function createWordLink(link) {
 		let $word = $('<a/>')
 			.addClass('word-link')
 			.attr('href', "/?q=" + link["na'vi"])
-			.html(lemmaForm(link["na'vi"], link["type"]));
+			.html(lemmaForm(link));
 		addLemmaClass($word, link["type"]);
 		$link.append($word);
 
@@ -1181,19 +1182,23 @@ function sentencesSection(sentences, lemma) {
 	return $section;
 }
 
-function lemmaForm(word, type) {
+function lemmaForm(word) {
+	let type = word['type'];
+	let lemma = word["na'vi"];
+	lemma = lemma.replaceAll('/', '');
+	lemma = lemma.replace(/\[([^\]]*)\]/g, '<span class="stressed">$1</span>');
 	if (type === "n:si" || type === "nv:si") {
-		return word + ' si';
+		return lemma + ' si';
 	} else if (type === 'aff:pre') {
-		return word + "-";
+		return lemma + "-";
 	} else if (type === 'aff:pre:len') {
-		return word + "+";
+		return lemma + "+";
 	} else if (type === 'aff:in') {
-		return '&#x2039;' + word + '&#x203a;';
+		return '&#x2039;' + lemma + '&#x203a;';
 	} else if (type === 'aff:suf') {
-		return '-' + word;
+		return '-' + lemma;
 	}
-	return word;
+	return lemma;
 }
 
 function addLemmaClass($element, type) {
@@ -1221,7 +1226,7 @@ function createResultBlock(i, r) {
 
 	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
 	addLemmaClass($lemma, r['type']);
-	$lemma.html(lemmaForm(r["na'vi"], r['type']));
+	$lemma.html(lemmaForm(r));
 	$resultWord.append(typeBadge(r["type"], true));
 
 	if (r["status"]) {
@@ -1242,7 +1247,7 @@ function createResultBlock(i, r) {
 	$resultWord.appendTo($result);
 
 	if (r["image"]) {
-		$result.append(imageSection(r["na'vi"], r["image"]));
+		$result.append(imageSection(r, r["image"]));
 	}
 
 	$result.append(translationSection(r["translations"]));

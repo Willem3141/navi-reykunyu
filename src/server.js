@@ -33,15 +33,17 @@ var reykunyu = require('./reykunyu');
 var annotatedDictionary = require('./annotatedDictionary');
 var conjugationString = require('./conjugationString');
 var verbs = require('./verbs');
+var output = require('./output');
 
 var tslamyu;
 try {
 	tslamyu = require('../../navi-tslamyu/tslamyu');
 } catch (e) {
-	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
+	output.warning('navi-tslamyu not found, continuing without parsing support');
+	output.hint(`Reykunyu can use navi-tslamyu to parse sentences.`);
 }
 
-var zeykerokyu = require('./zeykerokyu');
+//var zeykerokyu = require('./zeykerokyu'); // TODO
 
 const ejs = require('ejs');
 

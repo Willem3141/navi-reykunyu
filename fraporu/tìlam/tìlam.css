@@ -313,14 +313,14 @@ h1::after {
 	top: -5px;
 }
 
+.stressed {
+	text-decoration: underline;
+}
+
 .result .stress {
 	margin-left: 26px;
 	position: relative;
 	top: -5px;
-}
-
-.result .stress .stressed {
-	text-decoration: underline;
 }
 
 .ipa {
@@ -718,9 +718,6 @@ h2[id]::before {
 	font-style: italic;
 }
 
-.word-list .stressed {
-	text-decoration: underline;
-}
 .word-list .status-badge.loan,
 .word-list .status-badge.unconfirmed,
 .word-list .status-badge.unofficial {
@@ -826,6 +823,14 @@ h2[id]::before {
 #infix-details-input-translation,
 #infix-details-result-translation {
 	text-align: center;
+	color: #888;
+}
+
+/* settings modal */
+#settings-modal .explanation {
+	line-height: 1.4285em;
+	padding-top: 2px;
+	padding-bottom: 5px;
 	color: #888;
 }
 
