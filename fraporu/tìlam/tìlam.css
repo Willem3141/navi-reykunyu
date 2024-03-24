@@ -21,7 +21,7 @@ h1, h2, h3, h4, h5,
 	font-variation-settings: "MONO" 0;
 }
 
-a {
+a:hover {
 	text-decoration: underline;
 }
 
@@ -625,7 +625,6 @@ table.conjugation-table {
 }
 
 .result a {
-	color: #222;
 	cursor: pointer;
 }
 
@@ -790,15 +789,6 @@ h2[id]::before {
 	color: #8623dd;
 }
 
-.result-annotated a {
-	text-decoration: underline;
-}
-
-.result-annotated a.source-link {
-	color: #1e70bf;
-	text-decoration: none;
-}
-
 .result-annotated a.source-link,
 .result-annotated .small-capitals {
 	font-variant: small-caps;
@@ -878,9 +868,7 @@ h2[id]::before {
 	}
 
 	body,
-	.word-link,
 	.word-link::before,
-	.result a,
 	.ui.form .field > label,
 	.ui.label,
 	.ui.search > .results .result .title,
