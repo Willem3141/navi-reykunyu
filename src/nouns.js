@@ -91,6 +91,7 @@ function conjugate(noun, affixes, simple) {
 
 	const upperCase = noun.length > 0 && noun[0] !== noun[0].toLowerCase();
 	noun = noun.toLowerCase();
+	noun = noun.replace(/[-\[\]]/g, '').replaceAll('/', '');
 	noun = convert.compress(noun);
 
 	// first find the stem

@@ -35,6 +35,8 @@ module.exports = {
 	stripToLinkData: stripToLinkData
 }
 
+const output = require('./output');
+
 // Replaces word links in a string by dictionary objects.
 function enrichWordLinks(text, dictionary) {
 
@@ -52,10 +54,13 @@ function enrichWordLinks(text, dictionary) {
 			const navi = pieces[i];
 			const type = pieces[i + 1];
 			const key = navi + ':' + type;
-			if (dictionary.hasOwnProperty(key)) {
-				list.push(stripToLinkData(dictionary[key]));
+			const word = dictionary.get(navi, type);
+			if (word) {
+				list.push(stripToLinkData(word));
 			} else {
-				console.log('Invalid reference to [' + key + ']');
+				output.warning('Invalid reference to ' + key + ' in word link');
+				output.hint(`A word link refers to a word/type that
+doesn't exist. This word link will look broken.`, 'invalid-word-link-reference');
 			}
 			i++;  // skip type
 		}
