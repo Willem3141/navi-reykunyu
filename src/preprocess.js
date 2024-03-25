@@ -23,6 +23,7 @@ function preprocessQuery(query) {
 	query = query.replace(/(?<![Nn])g/g, "kx");
 	query = query.replace(/(?<![Nn])G/g, "Kx");
 	query = query.replace(/·/g, "");
+	query = query.replaceAll("\u{AD}", "");
 	query = query.replace(/ù/g, "u");
 	query = query.replace(/Ù/g, "U");
 	return query;
