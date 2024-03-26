@@ -61,7 +61,8 @@ function reload() {
 		let word = words[i];
 
 		// put the word in the searchables dictionary
-		let searchable = word["na'vi"].replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');
+		let searchable = word["na'vi"].toLowerCase()
+			.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');
 		console.log(searchable);
 		if (!searchables.hasOwnProperty(searchable)) {
 			searchables[searchable] = [];
