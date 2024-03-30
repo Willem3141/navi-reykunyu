@@ -15,6 +15,7 @@
 		"menu-settings": "Settings",
 		"menu-help": "Help",
 		"menu-rhymes": "Rhymes",
+		"menu-back-to-reykunyu": "Back to Reykunyu",
 		"dialog-cancel": "Cancel",
 		"dialog-save": "Save",
 		"dialog-close": "Close",
@@ -131,7 +132,14 @@
 		"parsing-error": "Something went wrong while analyzing your sentence",
 		"syllable": "syllable",
 		"syllables": "syllables",
-		"stressed-on": "stressed on syllable"
+		"stressed-on": "stressed on syllable",
+		"help": "Help",
+		"api-documentation": "API documentation",
+		"credits": "Credits",
+		"help-text-1": "<b>Welcome to Reykunyu!</b> Reykunyu  is a user-friendly online Na'vi dictionary, supporting translations to and from English, German, French, and other languages.",
+		"help-text-2": "Reykunyu is Na’vi for \"someone who causes (you) to find (something)\". Search for <a href=\"/?q=reykun\" class=\"word-link\">reykun</a> and <a href=\"/?q=yu\" class=\"word-link\">-yu</a> for more information! (Note for Na’vi experts: <b>-yu</b> is not productive with <b>‹eyk›</b>, so this usage is technically non-productive. Reykunyu is a name though, so anything goes.)",
+		"help-learning": "Interested in learning Na’vi?",
+		"help-learning-text": "A dictionary like Reykunyu is great for reference, but not necessarily useful to actually study the language. For proper learning materials (grammar guides, lessons, word lists for beginners, etc.) please visit one of the websites dedicated to learning Na’vi: <a href=\"https://www.kelutral.org/\">Kelutral</a> or <a href=\"https://learnnavi.org/\">Learn Na’vi</a>."
 	},
 	"de": {
 		"language": "Deutsch",
@@ -241,6 +249,7 @@
 		"menu-settings": "Instellingen",
 		"menu-help": "Help",
 		"menu-rhymes": "Rijmen",
+		"menu-back-to-reykunyu": "Terug naar Reykunyu",
 		"dialog-cancel": "Annuleren",
 		"dialog-save": "Opslaan",
 		"dialog-close": "Sluiten",
@@ -319,7 +328,14 @@
 		"searching-error-description": "Probeer het later opnieuw. Als het probleem aanhoudt, <a href='//wimiso.nl/contact'>laat het dan weten</a>.",
 		"syllable": "lettergreep",
 		"syllables": "lettergrepen",
-		"stressed-on": "klemtoon op lettergreep"
+		"stressed-on": "klemtoon op lettergreep",
+		"help": "Help",
+		"api-documentation": "API-documentatie",
+		"credits": "Credits",
+		"help-text-1": "<b>Welkom bij Reykunyu!</b> Reykunyu is een gebruiksvriendelijk online Na’vi-woordenboek, met ondersteuning voor vertalingen van en naar het Nederlands, Engels, Duits, Frans en andere talen.",
+		"help-text-2": "Reykunyu is Na’vi voor \"iemand die ervoor zorgt dat (je iets) vindt\". Zoek naar <a href=\"/?q=reykun\" class=\"word-link\">reykun</a> en <a href=\"/?q=yu\" class=\"word-link\">-yu</a> voor meer informatie! (Opmerking voor Na’vi-experts: <b>-yu</b> is niet productief samen met <b>‹eyk›</b>, dus deze constructie is technisch gesproken niet-productief. Maar Reykunyu is een naam, dus alles kan.)",
+		"help-learning": "Wil je graag Na’vi leren?",
+		"help-learning-text": "Een woordenboek als Reykunyu is heel handig als naslagwerk, maar niet noodzakelijk nuttig om de taal te leren. Voor leermaterialen (grammatica, lessen, woordenlijsten voor beginners, enzovoorts) kun je kijken op een van de websites over Na’vi: <a href=\"https://www.kelutral.org/\">Kelutral</a> of <a href=\"https://learnnavi.org/\">Learn Na’vi</a>."
 	},
 	"x-navi": {
 		"language": "Na’vi",

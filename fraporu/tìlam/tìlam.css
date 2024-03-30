@@ -867,6 +867,28 @@ h2[id]::before {
 	margin-left: 20px;
 }
 
+/* help */
+.note-box {
+	margin: 20px 0;
+	border-radius: 4px;
+	border: 1px solid #ddd;
+	padding: 15px 20px;
+}
+
+#tab-help-page-bar {
+	position: sticky;
+	top: 0;
+	background-color: white;
+	padding: 10px 0;
+	margin-bottom: 5px;
+	box-shadow: 0 0 4px 4px white;
+	z-index: 1;
+}
+
+.api-output-description-table td {
+	vertical-align: top;
+}
+
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #000;
@@ -954,9 +976,10 @@ h2[id]::before {
 		background-color: #666;
 	}
 
-	.result .result-word {
+	.result .result-word,
+	#tab-help-page-bar {
 		background-color: black;
-		box-shadow: 0 0 7px 7px black;
+		box-shadow: 0 0 4px 4px black;
 	}
 
 	.result .result-word .id {

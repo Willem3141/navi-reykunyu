@@ -3,25 +3,12 @@ $(function () {
 	$('.ui.dropdown').dropdown();
 
 	// language dropdown
-	if (localStorage.getItem('reykunyu-language')) {
-		$('#language-dropdown').dropdown('set selected',
-			localStorage.getItem('reykunyu-language'));
-	} else {
-		localStorage.setItem('reykunyu-language', 'en');
-		$('#language-dropdown').dropdown('set selected', 'en');
-	}
-	$('.current-lang').text(_('language'));
 	$('#language-dropdown').dropdown({
 		onChange: function (value) {
-			localStorage.setItem('reykunyu-language', value);
-			document.cookie = 'lang=' + value;  // note that this removes all other cookies (but we don't set any)
-			$('.translation').each(function() {
-				$(this).html(_($(this).attr('data-key')));
-			});
+			setNewLanguage(value);
 			sngäiTìfwusew(false);
 			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
-			$('.current-lang').text(_('language'));
 			return false;
 		}
 	});
@@ -74,9 +61,6 @@ $(function () {
 		$('#ipa-checkbox').prop('checked',
 			localStorage.getItem('reykunyu-ipa') === '1');
 		$('#settings-modal').modal("show");
-	});
-	$('#credits-button').on("click", function () {
-		$('#credits-modal').modal("show");
 	});
 
 	$('.infix-button').on('click', function () {

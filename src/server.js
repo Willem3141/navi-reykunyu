@@ -81,6 +81,16 @@ app.set('views', './fraporu');
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
+	setLanguage(req);
+	res.render('txin', { user: req.user, query: req.query['q'], _: translations._ });
+});
+
+app.get('/help', function(req, res) {
+	setLanguage(req);
+	res.render('help', { user: req.user, _: translations._ });
+});
+
+function setLanguage(req) {
 	var lang = 'en';
 	if (req.headers.cookie) {
 		for (let cookie of req.headers.cookie.split('; ')) {
@@ -91,8 +101,7 @@ app.get('/', function(req, res) {
 		}
 	}
 	translations.setLanguage(lang);
-	res.render('txin', { user: req.user, query: req.query['q'], _: translations._ });
-});
+}
 
 app.get('/ayvefya/ui-translations.js', function(req, res) {
 	res.render('ayvefya/ui-translations', { strings_json: translations.getStringsJSON() });
