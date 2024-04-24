@@ -5,6 +5,7 @@ module.exports = {
 
 const fs = require('fs');
 
+const output = require('./output');
 const preprocess = require('./preprocess');
 
 try {
