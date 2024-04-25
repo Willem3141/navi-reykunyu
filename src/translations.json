@@ -139,7 +139,10 @@
 		"help-text-1": "<b>Welcome to Reykunyu!</b> Reykunyu  is a user-friendly online Na'vi dictionary, supporting translations to and from English, German, French, and other languages.",
 		"help-text-2": "Reykunyu is Na’vi for \"someone who causes (you) to find (something)\". Search for <a href=\"/?q=reykun\" class=\"word-link\">reykun</a> and <a href=\"/?q=yu\" class=\"word-link\">-yu</a> for more information! (Note for Na’vi experts: <b>-yu</b> is not productive with <b>‹eyk›</b>, so this usage is technically non-productive. Reykunyu is a name though, so anything goes.)",
 		"help-learning": "Interested in learning Na’vi?",
-		"help-learning-text": "A dictionary like Reykunyu is great for reference, but not necessarily useful to actually study the language. For proper learning materials (grammar guides, lessons, word lists for beginners, etc.) please visit one of the websites dedicated to learning Na’vi: <a href=\"https://www.kelutral.org/\">Kelutral</a> or <a href=\"https://learnnavi.org/\">Learn Na’vi</a>."
+		"help-learning-text": "A dictionary like Reykunyu is great for reference, but not necessarily useful to actually study the language. For proper learning materials (grammar guides, lessons, word lists for beginners, etc.) please visit one of the websites dedicated to learning Na’vi: <a href=\"https://www.kelutral.org/\">Kelutral</a> or <a href=\"https://learnnavi.org/\">Learn Na’vi</a>.",
+		"error-403-text": "You don't have permission to access this page. If you expected to see something here, you should try <a href=\"/login\">logging in</a>.",
+		"error-404-text": "Reykunyu couldn't find the page you're looking for. You can go back to the homepage with the button above.",
+		"error-500-text": "You encountered an internal server error. Sorry!"
 	},
 	"de": {
 		"language": "Deutsch",
@@ -335,7 +338,10 @@
 		"help-text-1": "<b>Welkom bij Reykunyu!</b> Reykunyu is een gebruiksvriendelijk online Na’vi-woordenboek, met ondersteuning voor vertalingen van en naar het Nederlands, Engels, Duits, Frans en andere talen.",
 		"help-text-2": "Reykunyu is Na’vi voor \"iemand die ervoor zorgt dat (je iets) vindt\". Zoek naar <a href=\"/?q=reykun\" class=\"word-link\">reykun</a> en <a href=\"/?q=yu\" class=\"word-link\">-yu</a> voor meer informatie! (Opmerking voor Na’vi-experts: <b>-yu</b> is niet productief samen met <b>‹eyk›</b>, dus deze constructie is technisch gesproken niet-productief. Maar Reykunyu is een naam, dus alles kan.)",
 		"help-learning": "Wil je graag Na’vi leren?",
-		"help-learning-text": "Een woordenboek als Reykunyu is heel handig als naslagwerk, maar niet noodzakelijk nuttig om de taal te leren. Voor leermaterialen (grammatica, lessen, woordenlijsten voor beginners, enzovoorts) kun je kijken op een van de websites over Na’vi: <a href=\"https://www.kelutral.org/\">Kelutral</a> of <a href=\"https://learnnavi.org/\">Learn Na’vi</a>."
+		"help-learning-text": "Een woordenboek als Reykunyu is heel handig als naslagwerk, maar niet noodzakelijk nuttig om de taal te leren. Voor leermaterialen (grammatica, lessen, woordenlijsten voor beginners, enzovoorts) kun je kijken op een van de websites over Na’vi: <a href=\"https://www.kelutral.org/\">Kelutral</a> of <a href=\"https://learnnavi.org/\">Learn Na’vi</a>.",
+		"error-403-text": "Je hebt geen toegang tot deze pagina. Als je verwacht hier iets te zien, dan kan het helpen om <a href=\"/login\">in te loggen</a>.",
+		"error-404-text": "Reykunyu heeft de pagina waar je naar op zoek was niet kunnen vinden. Je kunt terug naar de startpagina gaan met de knop hierboven.",
+		"error-500-text": "Je bent tegen een interne serverfout aangelopen. Sorry!"
 	},
 	"x-navi": {
 		"language": "Na’vi",

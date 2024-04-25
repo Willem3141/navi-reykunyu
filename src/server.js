@@ -130,7 +130,8 @@ app.get('/logout', function(req, res) {
 app.get('/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('leykatem', {
@@ -146,7 +147,8 @@ app.get('/add', function(req, res) {
 app.post('/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 
@@ -183,7 +185,8 @@ app.post('/add', function(req, res) {
 app.get('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	const word = req.query["word"];
@@ -204,7 +207,8 @@ app.get('/edit', function(req, res) {
 app.get('/edit/raw', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	const word = req.query["word"];
@@ -225,7 +229,8 @@ app.get('/edit/raw', function(req, res) {
 app.post('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let word, type, data;
@@ -266,7 +271,8 @@ app.get('/history', function(req, res) {
 app.get('/etymology-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('etymologyEditor', {
@@ -279,7 +285,8 @@ app.get('/etymology-editor', function(req, res) {
 app.get('/sources-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('sourcesEditor', {
@@ -292,7 +299,8 @@ app.get('/sources-editor', function(req, res) {
 app.get('/corpus-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('corpusEditor', {
@@ -304,7 +312,8 @@ app.get('/corpus-editor', function(req, res) {
 app.get('/corpus-editor/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('corpusEditorAdd', {
@@ -316,7 +325,8 @@ app.get('/corpus-editor/add', function(req, res) {
 app.get('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	const key = req.query["sentence"];
@@ -337,7 +347,8 @@ app.get('/corpus-editor/edit', function(req, res) {
 app.post('/corpus-editor/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let key, sentence;
@@ -380,7 +391,8 @@ app.post('/corpus-editor/add', function(req, res) {
 app.post('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let key, sentence;
@@ -402,7 +414,8 @@ app.post('/corpus-editor/edit', function(req, res) {
 app.get('/untranslated', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let untranslated = reykunyu.getUntranslated('fr');
@@ -606,6 +619,18 @@ app.post('/api/srs/mark-known', function(req, res) {
 		res.send();
 	});
 });
+
+app.use((req, res, next) => {
+	res.status(404);
+	setLanguage(req);
+	res.render('404', { user: req.user, _: translations._ });
+})
+
+app.use((err, req, res, next) => {
+	res.status(500);
+	setLanguage(req);
+	res.render('500', { user: req.user, _: translations._, error: err });
+})
 
 http.listen(config["port"], function() {
 	console.log('listening on *:' + config["port"]);
