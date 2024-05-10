@@ -36,6 +36,7 @@ class StressGame {
 			if (!data[0].hasOwnProperty('pronunciation') ||
 				data[0]['pronunciation'].length === 0 ||
 				!(data[0]['pronunciation'][0]['syllables'].includes('-')) ||
+				data[0]['pronunciation'][0]['stressed'] === null ||
 				data[0]['type'] === 'n:si') {
 				self.fetchAndSetUp();
 				return;
