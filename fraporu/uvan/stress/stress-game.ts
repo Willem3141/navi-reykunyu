@@ -34,7 +34,7 @@ class StressGame {
 		const self = this;
 		$.getJSON('/api/random', { 'holpxay': 1 }).done(function (data) {
 			if (!data[0].hasOwnProperty('pronunciation') ||
-				data[0]['pronunciation'].length === 0 ||
+				data[0]['pronunciation'].length !== 1 ||
 				!(data[0]['pronunciation'][0]['syllables'].includes('-')) ||
 				data[0]['pronunciation'][0]['stressed'] === null ||
 				data[0]['type'] === 'n:si') {
