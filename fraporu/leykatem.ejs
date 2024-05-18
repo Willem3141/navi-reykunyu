@@ -82,7 +82,7 @@ const types = [
 					<div class="eight wide field">
 						<label>Pronunciation</label>
 						<% if (!word.hasOwnProperty('pronunciation')) {
-							word['pronunciation'] = [['', '']];
+							word['pronunciation'] = [];
 						} %>
 						<table id="pronunciation-field" class="ui compact table">
 							<tbody>

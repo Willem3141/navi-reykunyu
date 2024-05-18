@@ -1,6 +1,7 @@
 class StressGame {
 	correctCount = 0;
 	totalCount = 0;
+	currentQuestion: any;
 
 	constructor() {
 		this.fetchAndSetUp();
@@ -16,42 +17,55 @@ class StressGame {
 			}
 			$($syllables[number - 1]).trigger('click');
 		});
+
+		$('.score').on('click', function () {
+			const popout = $('.score-popout');
+			if (popout.is(':visible')) {
+				$('#overlay').removeClass('visible');
+				$('.score-popout').slideUp();
+			} else {
+				$('#overlay').addClass('visible');
+				$('.score-popout').slideDown();
+			}
+		});
 	}
 
 	fetchAndSetUp(): void {
 		const self = this;
 		$.getJSON('/api/random', { 'holpxay': 1 }).done(function (data) {
 			if (!data[0].hasOwnProperty('pronunciation') ||
-				data[0]['pronunciation'].length === 0 ||
+				data[0]['pronunciation'].length !== 1 ||
 				!(data[0]['pronunciation'][0]['syllables'].includes('-')) ||
+				data[0]['pronunciation'][0]['stressed'] === null ||
 				data[0]['type'] === 'n:si') {
 				self.fetchAndSetUp();
 				return;
 			}
-			self.setUpQuestion(data[0]);
+			self.currentQuestion = data[0];
+			self.setUpQuestion();
 		});
 	}
 
-	setUpQuestion(word: any): void {
+	setUpQuestion(): void {
 		const $definition = $('#definition');
 		$definition.empty();
-		$definition.append($('<span/>').addClass('lemma').text(word["na'vi"]));
+		$definition.append($('<span/>').addClass('lemma').text(this.currentQuestion["na'vi"]));
 		$definition.append(' ');
-		$definition.append($('<span/>').addClass('type').text('(' + this.toReadableType(word['type']) + ')'));
+		$definition.append($('<span/>').addClass('type').text('(' + this.toReadableType(this.currentQuestion['type']) + ')'));
 		$definition.append(' ');
-		$definition.append($('<span/>').addClass('meaning').text(word['translations'][0]['en']));
+		$definition.append($('<span/>').addClass('meaning').text(this.currentQuestion['translations'][0]['en']));
 
 		const $syllables = $('#syllables');
 		$syllables.empty();
 		// TODO take into account words with multiple pronunciations
 		// instead of just taking pronunciation[0]
-		const syllables = word.pronunciation[0]['syllables'].split('-');
+		const syllables = this.currentQuestion.pronunciation[0]['syllables'].split('-');
 		for (let i = 0; i < syllables.length; i++) {
 			if (i > 0) {
 				$syllables.append(this.createSeparator());
 			}
 			const syllable = syllables[i];
-			$syllables.append(this.createSyllableBlock(syllable, i + 1, word.pronunciation[0]['stressed']));
+			$syllables.append(this.createSyllableBlock(syllable, i + 1, this.currentQuestion.pronunciation[0]['stressed']));
 		}
 	}
 
@@ -86,6 +100,27 @@ class StressGame {
 				$syllable.children('.index').text('✗');
 				$correctSyllable.addClass('correction');
 				timeout = 2000;
+
+				// add to mistakes list
+				let $mistake = $('<span/>').addClass('mistake');
+				const syllables = self.currentQuestion['pronunciation'][0]['syllables'].split('-');
+				for (let j = 0; j < syllables.length; j++) {
+					if (j > 0) {
+						$mistake.append('-');
+					}
+					if ((j + 1) === self.currentQuestion['pronunciation'][0]['stressed']) {
+						$mistake.append($('<span/>').addClass('mistake-correct').html(syllables[j]));
+					} else if ((j + 1) === i) {
+						$mistake.append($('<span/>').addClass('mistake-wrong').html(syllables[j]));
+					} else {
+						$mistake.append(syllables[j]);
+					}
+				}
+				let $mistakesList = $('#mistakes-list');
+				if ($mistakesList.html() === '(none yet!)') {
+					$mistakesList.empty();
+				}
+				$mistakesList.append($mistake);
 			}
 			self.totalCount++;
 			self.updateScore();

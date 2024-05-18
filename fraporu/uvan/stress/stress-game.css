@@ -13,15 +13,19 @@ body {
 }
 
 .top-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
 	background-color: #222;
 	color: #fff;
-	padding: 15px;
-	margin-bottom: 20px;
+	z-index: 20;
 }
 
 .title {
 	font-size: 25px;
 	font-weight: bold;
+	padding: 15px;
 }
 
 .beta-tag {
@@ -39,6 +43,8 @@ body {
 
 .score {
 	float: right;
+	padding: 15px;
+	cursor: pointer;
 }
 
 #score-field {
@@ -53,8 +59,27 @@ body {
 	transition: scale 0.25s;
 }
 
+.score-popout {
+	padding: 15px;
+}
+
+.mistake {
+	display: inline-block;
+	line-height: 100%;
+	background-color: rgba(255, 255, 255, 0.25);
+	border-radius: 10px;
+	padding: 5px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+.mistake-correct {
+	text-decoration: underline;
+	text-decoration-skip-ink: none;
+}
+
 .game-container {
-	padding-top: 40px;
+	padding-top: 95px;
 	text-align: center;
 }
 
@@ -119,3 +144,21 @@ body {
 	font-size: 30px;
 }
 
+#overlay {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	backdrop-filter: blur(0px);
+	background-color: rgba(255, 255, 255, 0);
+	z-index: 10;
+	transition: backdrop-filter .5s, background-color .5s;
+	pointer-events: none;
+}
+
+#overlay.visible {
+	backdrop-filter: blur(10px);
+	background-color: rgba(255, 255, 255, 0.25);
+	pointer-events: all;
+}
