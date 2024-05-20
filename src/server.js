@@ -6,6 +6,7 @@ var fs = require('fs');
 
 var express = require('express');
 var compression = require('compression');
+var cors = require('cors');
 var session = require('express-session');
 var sqliteSession = require('connect-sqlite3')(session);
 
@@ -404,22 +405,22 @@ app.get('/study', function(req, res) {
 	});
 });
 
-app.get('/api/word', function(req, res) {
+app.get('/api/word', cors(), function(req, res) {
 	res.json(reykunyu.getWordPostprocessed(req.query['word'], req.query['type']));
 });
 
-app.get('/api/fwew-search', function(req, res) {
+app.get('/api/fwew-search', cors(), function(req, res) {
 	res.json({
 		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"]),
 		'toNa\'vi': reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"])
 	});
 });
 
-app.get('/api/fwew', function(req, res) {
+app.get('/api/fwew', cors(), function(req, res) {
 	res.json(reykunyu.getResponsesFor(req.query["tìpawm"]));
 });
 
-app.get('/api/mok-suggest', function (req, res) {
+app.get('/api/mok-suggest', cors(), function (req, res) {
 	let suggestionsFrom = reykunyu.getSuggestionsFor(req.query["query"], req.query["language"]);
 	let suggestionsTo = reykunyu.getReverseSuggestionsFor(req.query["query"], req.query["language"]);
 	res.json({
@@ -427,11 +428,11 @@ app.get('/api/mok-suggest', function (req, res) {
 	});
 });
 
-app.get('/api/mok', function(req, res) {
+app.get('/api/mok', cors(), function(req, res) {
 	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"], req.query["language"]));
 });
 
-app.get('/api/search', function(req, res) {
+app.get('/api/search', cors(), function(req, res) {
 	res.json(reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"]));
 });
 
@@ -447,7 +448,7 @@ app.get('/api/annotated/suggest', function(req, res) {
 	res.json(annotatedDictionary.getSuggestionsFor(req.query["query"]));
 });
 
-app.get('/api/conjugate/verb', function(req, res) {
+app.get('/api/conjugate/verb', cors(), function(req, res) {
 	res.json(conjugationString.formsFromString(verbs.conjugate(
 		req.query["verb"], [req.query["prefirst"], req.query["first"], req.query["second"]])));
 });
@@ -522,11 +523,11 @@ app.get('/api/parse', function(req, res) {
 	res.json(output);
 });
 
-app.get('/api/random', function(req, res) {
+app.get('/api/random', cors(), function(req, res) {
 	res.json(reykunyu.getRandomWords(req.query["holpxay"], req.query["fnel"]));
 });
 
-app.get('/api/rhymes', function(req, res) {
+app.get('/api/rhymes', cors(), function(req, res) {
 	res.json(reykunyu.getRhymes(req.query["tìpawm"]));
 });
 
