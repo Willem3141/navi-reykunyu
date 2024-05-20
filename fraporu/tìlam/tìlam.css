@@ -315,6 +315,14 @@ h1::after {
 
 .stressed {
 	text-decoration: underline;
+	text-decoration-skip-ink: none;
+	text-decoration-thickness: 1px;
+}
+
+.result .result-word .stressed {
+	text-decoration: underline;
+	text-decoration-skip-ink: none;
+	text-decoration-thickness: 2px;
 }
 
 .result .stress {
