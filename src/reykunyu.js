@@ -255,8 +255,8 @@ function getResponsesFor(query) {
 		// sort on result relevancy
 		// higher scores result in being sorted lower
 		wordResults.sort((a, b) => {
-			scoreA = resultScore(a);
-			scoreB = resultScore(b);
+			scoreA = resultScore(a, queryWord);
+			scoreB = resultScore(b, queryWord);
 			return scoreA - scoreB;
 		});
 
@@ -705,6 +705,7 @@ function resultScore(result, queryWord) {
 		// (e.g. utraltsyìp vs. utral)
 		score += 100 - result["na'vi"].length;
 	}
+
 	return score;
 }
 
