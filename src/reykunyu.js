@@ -14,7 +14,6 @@ module.exports = {
 	'getTransitivityList': getTransitivityList,
 	'getRhymes': getRhymes,
 	'getAllSentences': getAllSentences,
-	'saveDictionary': saveDictionary,
 	'removeSentence': removeSentence,
 	'insertSentence': insertSentence,
 	'hasSentence': hasSentence,
@@ -55,7 +54,6 @@ harmless, but Reykunyu won't find any example sentences.`);
 }
 
 var sentencesForWord = {};
-var derivedWords = {};
 var pronounForms = {};
 
 // list of all words, for randomization
@@ -65,29 +63,50 @@ var allWordsOfType = {};
 reloadData();
 
 function reloadData() {
-	derivedWords = [];
+	pronounForms = pronouns.getConjugatedForms(dictionary);
+
 	sentencesForWord = [];
 
+	// preprocess all words
 	for (let word of dictionary.getAll()) {
+		// pronunciation
+		if (word.hasOwnProperty('pronunciation')) {
+			for (let pronunciation of word['pronunciation']) {
+				pronunciation['ipa'] = {
+					'FN': ipa.generateIpa(pronunciation, word['type'], 'FN'),
+					'RN': ipa.generateIpa(pronunciation, word['type'], 'RN')
+				};
+			}
+		}
+		
+		// conjugation tables
+		if (word['type'] === 'n' || word['type'] === 'n:pr') {
+			word['conjugation'] = {
+				'forms': createNounConjugation(word['na\'vi'], word['type'])
+			};
+		}
+		if (word['type'] === 'adj') {
+			word['conjugation'] = {
+				'forms': createAdjectiveConjugation(word)
+			};
+		}
 
-		// prepare derived words data
+		// etymology and derived words
 		if (word.hasOwnProperty('etymology')) {
-			let etymology = word['etymology'];
-			etymology = wordLinks.enrichWordLinks(etymology, dictionary);
-			for (let piece of etymology) {
+			word['etymology'] = wordLinks.enrichWordLinks(word['etymology'], dictionary);
+			for (let piece of word['etymology']) {
 				if (typeof piece === "string") {
 					continue;
 				}
 				const navi = piece["na'vi"].toLowerCase()
-					.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');
+					.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');  // TODO replace by word_raw
 				const type = piece["type"];
 				const result = dictionary.get(navi, type);
 				if (result) {
-					let id = result['id'];
-					if (!derivedWords.hasOwnProperty(id)) {
-						derivedWords[id] = [];
+					if (!result.hasOwnProperty('derived')) {
+						result['derived'] = [];
 					}
-					derivedWords[id].push(wordLinks.stripToLinkData(word));
+					result['derived'].push(wordLinks.stripToLinkData(word));
 				} else {
 					output.warning('Invalid reference to ' + navi + ':' + type + ' in etymology for ' + word);
 					output.hint(`The etymology data for a word refers to a word/type that doesn't
@@ -95,13 +114,31 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 				}
 			}
 		}
+
+		// meaning notes
+		if (word.hasOwnProperty('meaning_note')) {
+			word['meaning_note'] = wordLinks.enrichWordLinks(word['meaning_note'], dictionary);
+		}
+
+		// see also
+		if (word.hasOwnProperty('seeAlso')) {
+			for (let i = 0; i < word['seeAlso'].length; i++) {
+				let [navi, type] = splitWordAndType(word['seeAlso'][i]);
+				let result = dictionary.get(navi, type);
+				if (result) {
+					word['seeAlso'][i] = wordLinks.stripToLinkData(result);
+				}
+			}
+		}
 	}
 
 	// sort derived words
-	for (let word of Object.keys(derivedWords)) {
-		derivedWords[word].sort(function (a, b) {
-			return a["na'vi"].localeCompare(b["na'vi"]);
-		});
+	for (let word of dictionary.getAll()) {
+		if (word.hasOwnProperty('derived')) {
+			word['derived'].sort(function (a, b) {
+				return a["na'vi"].localeCompare(b["na'vi"]);  // TODO use word_raw
+			});
+		}
 	}
 
 	// prepare sentence search data
@@ -113,12 +150,11 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 				let [word, type] = splitWordAndType(r);
 				let result = dictionary.get(word, type);
 				if (result) {
-					let rId = result['id'];
-					if (!sentencesForWord.hasOwnProperty(rId)) {
-						sentencesForWord[rId] = [];
+					if (!result.hasOwnProperty('sentences')) {
+						result['sentences'] = [];
 					}
-					if (!sentencesForWord[rId].includes(sentences[sentenceKey])) {
-						sentencesForWord[rId].push(sentences[sentenceKey]);
+					if (!result['sentences'].includes(sentences[sentenceKey])) {
+						result['sentences'].push(sentences[sentenceKey]);
 					}
 				} else {
 					output.warning('Invalid reference to ' + r + ' in sentence ' + sentenceKey);
@@ -128,8 +164,6 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 			}
 		}
 	}
-
-	pronounForms = pronouns.getConjugatedForms(dictionary);
 
 	allWords = [];
 	for (let word of dictionary.getAll()) {
@@ -696,51 +730,12 @@ function postprocessResults(results) {
 }
 
 function postprocessResult(result) {
-	if (result['type'] === 'n' || result['type'] === 'n:pr') {
-		result['conjugation'] = {
-			'forms': createNounConjugation(result['na\'vi'], result['type'])
-		};
-	}
-	if (result['type'] === 'adj') {
-		result['conjugation'] = {
-			'forms': createAdjectiveConjugation(result)
-		};
-	}
-	if (result.hasOwnProperty('etymology')) {
-		result['etymology'] = wordLinks.enrichWordLinks(result['etymology'], dictionary);
-	}
-	if (result.hasOwnProperty('meaning_note')) {
-		result['meaning_note'] = wordLinks.enrichWordLinks(result['meaning_note'], dictionary);
-	}
-	if (result.hasOwnProperty('seeAlso')) {
-		for (let i = 0; i < result['seeAlso'].length; i++) {
-			let [navi, type] = splitWordAndType(result['seeAlso'][i]);
-			let word = dictionary.get(navi, type);
-			if (word) {
-				result['seeAlso'][i] = wordLinks.stripToLinkData(word);
-			}
-		}
-	}
-	if (result.hasOwnProperty('pronunciation')) {
-		for (let pronunciation of result['pronunciation']) {
-			pronunciation['ipa'] = {
-				'FN': ipa.generateIpa(pronunciation, result['type'], 'FN'),
-				'RN': ipa.generateIpa(pronunciation, result['type'], 'RN')
-			};
-		}
-	}
 	if (result.hasOwnProperty('conjugated')) {
 		// retain the last conjugated item that has a translation
 		for (let conjugated of result['conjugated']) {
 			conjugatedTranslation.addTranslations(result, dictionary);
 			result['short_translation_conjugated'] = conjugated['translation'];
 		}
-	}
-	if (derivedWords.hasOwnProperty(result['id'])) {
-		result['derived'] = derivedWords[result['id']];
-	}
-	if (sentencesForWord.hasOwnProperty(result['id'])) {
-		result['sentences'] = sentencesForWord[result['id']];
 	}
 }
 
@@ -1124,20 +1119,6 @@ function getRhymes(query) {
 
 function getAllSentences() {
 	return sentences;
-}
-
-function removeWord(word, type) {
-	delete dictionary[word.toLowerCase() + ':' + type];
-	reloadData();
-}
-
-function insertWord(data) {
-	dictionary[data["na'vi"].toLowerCase() + ':' + data["type"]] = data;
-	reloadData();
-}
-
-function saveDictionary() {
-	fs.writeFileSync("./data/words.json", JSON.stringify(dictionary));
 }
 
 function removeSentence(key) {
