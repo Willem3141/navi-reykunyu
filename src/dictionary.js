@@ -15,10 +15,7 @@ module.exports = {
 	'get': get,
 	'getOfTypes': getOfTypes,
 	'getNotOfTypes': getNotOfTypes,
-	'getAll': getAll,
-	'insert': insert,
-	'remove': remove,
-	'save': save,
+	'getAll': getAll
 }
 
 const fs = require('fs');
@@ -62,8 +59,7 @@ function reload() {
 
 		// put the word in the searchables dictionary
 		let searchable = word["na'vi"].toLowerCase()
-			.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');
-		console.log(searchable);
+			.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');  // TODO replace by word_raw
 		if (!searchables.hasOwnProperty(searchable)) {
 			searchables[searchable] = [];
 		}
@@ -92,7 +88,7 @@ function get(word, type) {
 		for (let id of searchables[word]) {
 			let result = words[id];
 			if (result['type'] === type) {
-				return JSON.parse(JSON.stringify(result));
+				return result;
 			}
 		}
 	}
@@ -130,21 +126,4 @@ function getNotOfTypes(word, types) {
 
 function getAll() {
 	return words;
-}
-
-// TODO
-function insert(data) {
-	dictionary[data["na'vi"].toLowerCase() + ':' + data["type"]] = data;
-	reloadData();
-}
-
-// TODO
-function remove(word, type) {
-	delete dictionary[word.toLowerCase() + ':' + type];
-	reloadData();
-}
-
-// Saves the dictionary data back to disk.
-function save() {
-	fs.writeFileSync("./data/words.json", JSON.stringify(words));
 }
