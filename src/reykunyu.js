@@ -29,6 +29,7 @@ const affixList = require('./affixList');
 const conjugatedTranslation = require('./conjugatedTranslation');
 const conjugationString = require('./conjugationString');
 const convert = require('./convert');
+const dialect = require('./dialect');
 const dictionary = require('./dictionary');
 const ipa = require('./ipa');
 const nouns = require('./nouns');
@@ -69,6 +70,21 @@ function reloadData() {
 
 	// preprocess all words
 	for (let word of dictionary.getAll()) {
+		// dialect forms of the word
+		console.log(word["na'vi"]);
+		word['word'] = {
+			'combined': word["na'vi"],
+			'FN': dialect.combinedToFN(word["na'vi"]),
+			'RN': dialect.combinedToRN(word["na'vi"])
+		};
+		word['word_raw'] = {
+			'combined': dialect.makeRaw(word['word']['combined']),
+			'FN': dialect.makeRaw(word['word']['FN']),
+			'RN': dialect.makeRaw(word['word']['RN'])
+		};
+
+		word["na'vi"] = word['word_raw']['FN'];  // for compatibility reasons
+
 		// pronunciation
 		if (word.hasOwnProperty('pronunciation')) {
 			for (let pronunciation of word['pronunciation']) {
