@@ -93,6 +93,10 @@ function getLanguage() {
 	return $('#language-dropdown').dropdown('get value');
 }
 
+function getDialect() {
+	return "RN";  // TODO
+}
+
 function setUpAutocomplete() {
 	let url = null;
 	if (getMode() === 'reykunyu') {
@@ -541,9 +545,9 @@ function pronunciationAudioButtons(audioData) {
 	return $buttons;
 }
 
-function editButton(word, type) {
+function editButton(id) {
 	let $button = $('<a/>').addClass('ui icon basic button edit-button');
-	const url = "/edit?word=" + word + "&type=" + type;
+	const url = "/edit?word=" + id;
 	$button.attr('href', url);
 	$('<i/>').addClass('pencil icon').appendTo($button);
 	return $button;
@@ -609,7 +613,7 @@ function affixesSection(affixes) {
 				let $affixLink = $('<a/>')
 					.addClass('word-link')
 					.html(lemmaForm(c['affix']))
-					.attr('href', '/?q=' + affix["na'vi"]);
+					.attr('href', '/?q=' + affix["word_raw"][getDialect()]);
 				addLemmaClass($affixLink, c['affix']['type']);
 				$componentsCell.append($affixLink);
 				$meaningCell.append($('<span/>').text(getTranslation(c['affix']["translations"][0])));
@@ -619,7 +623,7 @@ function affixesSection(affixes) {
 				.addClass('word-link')
 				.html(lemmaForm(affix))
 				//.addClass(a['type'])
-				.attr('href', '/?q=' + affix["na'vi"]);
+				.attr('href', '/?q=' + affix["word_raw"][getDialect()]);
 			addLemmaClass($affixLink, affix['type']);
 			$('<td/>').append($affixLink)
 				.append(typeBadge(affix['type'], true))
@@ -666,7 +670,7 @@ function createWordLink(link) {
 		let $link = $('<span/>');
 		let $word = $('<a/>')
 			.addClass('word-link')
-			.attr('href', "/?q=" + link["na'vi"])
+			.attr('href', "/?q=" + link["word_raw"][getDialect()])
 			.html(lemmaForm(link));
 		addLemmaClass($word, link["type"]);
 		$link.append($word);
@@ -1168,7 +1172,7 @@ function sentencesSection(sentences, lemma) {
 
 function lemmaForm(word) {
 	let type = word['type'];
-	let lemma = word["na'vi"];
+	let lemma = word['word'][getDialect()];
 	lemma = lemma.replaceAll('/', '');
 	lemma = lemma.replace(/\[([^\]]*)\]/g, '<span class="stressed">$1</span>');
 	if (type === "n:si" || type === "nv:si") {
@@ -1225,7 +1229,7 @@ function createResultBlock(i, r) {
 
 	const showEditButton = $('body').hasClass('editable');
 	if (showEditButton) {
-		$resultWord.append(editButton(r["na'vi"], r["type"]));
+		$resultWord.append(editButton(r["id"]));
 	}
 
 	$resultWord.appendTo($result);

@@ -71,7 +71,6 @@ function reloadData() {
 	// preprocess all words
 	for (let word of dictionary.getAll()) {
 		// dialect forms of the word
-		console.log(word["na'vi"]);
 		word['word'] = {
 			'combined': word["na'vi"],
 			'FN': dialect.combinedToFN(word["na'vi"]),
@@ -84,7 +83,9 @@ function reloadData() {
 		};
 
 		word["na'vi"] = word['word_raw']['FN'];  // for compatibility reasons
+	}
 
+	for (let word of dictionary.getAll()) {
 		// pronunciation
 		if (word.hasOwnProperty('pronunciation')) {
 			for (let pronunciation of word['pronunciation']) {

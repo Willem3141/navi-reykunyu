@@ -38,7 +38,7 @@ test('converting words to RN', (t) => {
 	assert.strictEqual(dialect.combinedToRN("[la']/ang"), "[la']/ang");
 
 	// -n/kx- becomes -n/·g-
-	assert.strictEqual(dialect.combinedToRN('tì/kan/[kxan]'), 'tì/kan/[·gan]');
+	assert.strictEqual(dialect.combinedToRN('tì/kan/[kxan]'), 'tì/kan·/[gan]');
 
 	// ä becomes e in unstressed syllables
 	assert.strictEqual(dialect.combinedToRN('sä/[lang]'), 'se/[lang]');

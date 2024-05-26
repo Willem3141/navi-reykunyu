@@ -74,6 +74,8 @@ doesn't exist. This word link will look broken.`, 'invalid-word-link-reference')
 // infinite loops if two words happen to have word links to each other.
 function stripToLinkData(word) {
 	let result = {
+		"word": word["word"],
+		"word_raw": word["word_raw"],
 		"na'vi": word["na'vi"],
 		"type": word["type"],
 		"translations": word["translations"]

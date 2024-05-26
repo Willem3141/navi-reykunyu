@@ -43,7 +43,7 @@ function combinedToRN(combined) {
 	rn = rn.replace(/(\].*)ä/g, "$1e");
 
 	// insert interpunct to avoid n/g being read as ng
-	rn = rn.replace(/n(\]?)\/(\[?)g/g, 'n$1/$2·g');
+	rn = rn.replace(/n(\]?)\/(\[?)g/g, 'n$1·/$2g');
 
 	return rn;
 }
