@@ -33,7 +33,7 @@ function combinedToRN(combined) {
 	rn = rn.replace(/kx\/(\[?[bdg])/g, "g\/$1");
 
 	// tìftang dropping between non-equal vowels
-	rn = rn.replace(/(([aäeiìouù]|[ae][wy])\]?\/?\[?)'(\]?\/?\[?([aäeiìou]))/g,
+	rn = rn.replace(/(([aäeiìouù]|[ae][wy])\]?\/?\[?)'(\]?\/?\[?([aäeiìouù]))/g,
 		function (m, before, beforeVowel, after, afterVowel) {
 			return beforeVowel === afterVowel ? before + "'" + after : before + after;
 		});
