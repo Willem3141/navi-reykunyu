@@ -358,7 +358,7 @@ let unlenitions = {
 function unlenite(word) {
 
 	// word starts with vowel
-	if (["a", "ä", "e", "i", "ì", "o", "u"].includes(word[0])) {
+	if (["a", "ä", "e", "i", "ì", "o", "u", "ù"].includes(word[0])) {
 		return [word, "'" + word];
 	}
 
