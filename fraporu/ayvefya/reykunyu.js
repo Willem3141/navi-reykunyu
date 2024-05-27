@@ -51,6 +51,7 @@ $(function () {
 	$('#infix-details-modal button').popup();
 	$('#settings-modal').modal({
 		onApprove: function () {
+			sngäiTìfwusew(true);
 			localStorage.setItem('reykunyu-ipa',
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
 		},
