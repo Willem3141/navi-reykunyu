@@ -94,7 +94,13 @@ function getLanguage() {
 }
 
 function getDialect() {
-	return "RN";  // TODO
+	if ($('#dialect-fn-radiobutton').is(':checked')) {
+		return 'FN';
+	} else if ($('#dialect-rn-radiobutton').is(':checked')) {
+		return 'RN';
+	} else {
+		return 'combined';
+	}
 }
 
 function setUpAutocomplete() {
@@ -479,37 +485,36 @@ function pronunciationSectionIpa(pronunciation, fnel) {
 		return $result;
 	}
 
-	//$result.addClass('ipa');
-	$result.text("(");
 	for (let i = 0; i < pronunciation.length; i++) {
 		if (i > 0) {
 			$result.append(' ' + _('or') + ' ');
 		}
-		const fnIpa = pronunciation[i]['ipa']['FN'];
-		const rnIpa = pronunciation[i]['ipa']['RN'];
-		if (fnIpa === rnIpa) {
-			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
-			$result.append('/');
-			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
-			$result.append(' ');
-			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
-			if (pronunciation[i].hasOwnProperty('audio')) {
-				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
-			}
-		} else {
+		const ipa = pronunciation[i]['ipa'];
+		if (getDialect() === 'combined' && ipa['FN'] !== ipa['RN']) {
 			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
 			$result.append(' ');
-			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
+			$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
 			if (pronunciation[i].hasOwnProperty('audio')) {
 				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
 			}
 			$result.append(' / ');
 			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
 			$result.append(' ');
-			$result.append($('<span/>').text(rnIpa).addClass('ipa'));
+			$result.append($('<span/>').text(ipa['RN']).addClass('ipa'));
+
+		} else if (getDialect() === 'combined') {
+			$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
+			if (pronunciation[i].hasOwnProperty('audio')) {
+				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+			}
+
+		} else {
+			$result.append($('<span/>').text(ipa[getDialect()]).addClass('ipa'));
+			if (ipa[getDialect()] === ipa['FN'] && pronunciation[i].hasOwnProperty('audio')) {
+				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+			}
 		}
 	}
-	$result.append(")");
 
 	return $result;
 }
