@@ -17,7 +17,8 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "sqlite3": "^5.1.2",
-    "string.prototype.matchall": "^4.0.2"
+    "string.prototype.matchall": "^4.0.2",
+    "webpack": "^5.89.0"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.14",
