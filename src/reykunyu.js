@@ -82,12 +82,16 @@ function reloadData() {
 		// conjugation tables
 		if (word['type'] === 'n' || word['type'] === 'n:pr') {
 			word['conjugation'] = {
-				'forms': createNounConjugation(word['na\'vi'], word['type'])
+				'FN': createNounConjugation(word, 'FN'),
+				'combined': createNounConjugation(word, 'combined'),
+				'RN': createNounConjugation(word, 'RN')
 			};
 		}
 		if (word['type'] === 'adj') {
 			word['conjugation'] = {
-				'forms': createAdjectiveConjugation(word)
+				'FN': createAdjectiveConjugation(word, 'FN'),
+				'combined': createAdjectiveConjugation(word, 'combined'),
+				'RN': createAdjectiveConjugation(word, 'RN')
 			};
 		}
 
@@ -739,7 +743,7 @@ function postprocessResult(result) {
 	}
 }
 
-function createNounConjugation(word, type) {
+function createNounConjugation(word, dialect) {
 
 	let conjugation = [];
 	let cases = ['', 'l', 't', 'r', 'ä', 'ri'];
@@ -747,10 +751,10 @@ function createNounConjugation(word, type) {
 
 	for (let j = 0; j < 4; j++) {
 		let row = [];
-		if (type !== 'n:pr' || j === 0) {
+		if (word['type'] !== 'n:pr' || j === 0) {
 			for (let i = 0; i < 6; i++) {
-				let conjugated = nouns.conjugate(word,
-					['', plurals[j], '', '', '', cases[i], ''], true);
+				let conjugated = nouns.conjugate(word['word_raw'][dialect],
+					['', plurals[j], '', '', '', cases[i], ''], true, dialect);
 				row.push(conjugated);
 			}
 		}
@@ -760,10 +764,10 @@ function createNounConjugation(word, type) {
 	return conjugation;
 }
 
-function createAdjectiveConjugation(word) {
+function createAdjectiveConjugation(word, dialect) {
 	const conjugation = {
-		"prefixed": adjectives.conjugate(word["na'vi"], 'postnoun', word["etymology"]),
-		"suffixed": adjectives.conjugate(word["na'vi"], 'prenoun', word["etymology"])
+		"prefixed": adjectives.conjugate(word['word_raw'][dialect], 'postnoun', word["etymology"], dialect),
+		"suffixed": adjectives.conjugate(word['word_raw'][dialect], 'prenoun', word["etymology"], dialect)
 	};
 	return conjugation;
 }

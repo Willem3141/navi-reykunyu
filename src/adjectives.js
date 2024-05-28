@@ -21,11 +21,11 @@ module.exports = {
  * etymology - (optional) the etymology string, used to determine if the
  * adjective starts with the le- prefix
  */
-function conjugate(adjective, form, etymology) {
+function conjugate(adjective, form, etymology, dialect) {
 	if (form === "predicative") {
 		return "-" + adjective + "-";
 	} else if (form === "postnoun") {
-		if (adjective.charAt(0) === "a") {
+		if (adjective.charAt(0) === "a" && dialect !== 'RN') {
 			return "a-" + adjective.substring(1) + "-";
 		} else if (etymology && etymology.indexOf('[le:aff:pre]') !== -1) {
 			return "(a)-" + adjective + "-";
@@ -33,7 +33,7 @@ function conjugate(adjective, form, etymology) {
 			return "a-" + adjective + "-";
 		}
 	} else if (form === "prenoun") {
-		if (adjective.charAt(adjective.length - 1) === "a") {
+		if (adjective.charAt(adjective.length - 1) === "a" && dialect !== 'RN') {
 			return "-" + adjective.slice(0, -1) + "-a";
 		} else {
 			return "-" + adjective + "-a";

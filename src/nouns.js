@@ -87,7 +87,7 @@ let pluralFunctions = {
  *          present, and returns a simplified version of the conjugation string
  *          with only these parts.
  */
-function conjugate(noun, affixes, simple) {
+function conjugate(noun, affixes, simple, dialect) {
 
 	const upperCase = noun.length > 0 && noun[0] !== noun[0].toLowerCase();
 	noun = noun.toLowerCase();
@@ -141,7 +141,7 @@ function conjugate(noun, affixes, simple) {
 	// suffixes
 	let caseSuffix = "";
 	if (caseFunctions.hasOwnProperty(affixes[5])) {
-		caseSuffix = caseFunctions[affixes[5]](noun + stemSuffix + determinerSuffix);
+		caseSuffix = caseFunctions[affixes[5]](noun + stemSuffix + determinerSuffix, dialect);
 	} else {
 		caseSuffix = affixes[5];
 	}
@@ -265,23 +265,25 @@ function dativeSuffix(noun) {
 	}
 }
 
-function genitiveSuffix(noun) {
+function genitiveSuffix(noun, dialect) {
+	const äOrE = dialect === 'RN' ? 'ä/e' : 'ä';
+	const yäOrYe = dialect === 'RN' ? 'yä/ye' : 'yä';
 	if (phonology.endsInVowel(noun)) {
 		if (noun.slice(-1) === "o" || noun.slice(-1) === "u") {
-			return 'ä';
+			return äOrE;
 		} else {
 			if (noun.slice(-2) === "ia") {
-				return 'ä';  // note: in this case, drop the a from the stem
+				return äOrE;  // note: in this case, drop the a from the stem
 			} else {
 				if (noun === "omatik2a") {
-					return 'ä';
+					return äOrE;
 				} else {
-					return 'yä';
+					return yäOrYe;
 				}
 			}
 		}
 	} else {
-		return 'ä';
+		return äOrE;
 	}
 }
 
@@ -332,6 +334,9 @@ let lenitions = {
 	"T": "t",
 	"P": "p",
 	"K": "k",
+	"d": "t",
+	"b": "p",
+	"g": "k",
 	"'": ""
 };
 
