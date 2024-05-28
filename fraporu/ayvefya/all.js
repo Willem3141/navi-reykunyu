@@ -207,17 +207,13 @@ function loadWordList() {
 					.appendTo($tocBar);
 			}
 
-			let keys = []
-			for (let key in dictionary) {
-				keys.push(key);
-			}
-			keys.sort(function (a, b) {
-				return compareNaviWords(a, b, 0);
+			dictionary.sort(function (a, b) {
+				return compareNaviWords(a['word_raw']['FN'], b['word_raw']['FN'], 0);
 			});
 			let section = '';
 			let block = null;
-			for (let i in keys) {
-				const initial = keys[i][0].toLowerCase();
+			for (let word of dictionary) {
+				const initial = word['word_raw']['FN'][0].toLowerCase();
 				if (initial !== section) {
 					let $header = $('<h2/>')
 						.append(initial)
@@ -232,7 +228,6 @@ function loadWordList() {
 					$results.append($block);
 					section = initial;
 				}
-				let word = dictionary[keys[i]];
 				$block.append(createWordBlock(word));
 			}
 		})

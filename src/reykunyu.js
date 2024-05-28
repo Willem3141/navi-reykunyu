@@ -1017,7 +1017,7 @@ function getUntranslated(language) {
 }
 
 function getAll() {
-	return dictionary;
+	return dictionary.getAll();
 }
 
 function getAllKeys() {
