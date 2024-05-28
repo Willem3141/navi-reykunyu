@@ -54,7 +54,7 @@ function enrichWordLinks(text, dictionary) {
 			const navi = pieces[i];
 			const type = pieces[i + 1];
 			const key = navi + ':' + type;
-			const word = dictionary.get(navi, type);
+			const word = dictionary.get(navi, type, 'FN');
 			if (word) {
 				list.push(stripToLinkData(word));
 			} else {

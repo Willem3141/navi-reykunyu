@@ -1417,7 +1417,7 @@ function sngäiTìfwusew(initial) {
 
 function doSearchNavi() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': getLanguage() })
+	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': getLanguage(), 'dialect': getDialect() })
 		.done(function (tìeyng) {
 			const fromNaviResult = tìeyng['fromNa\'vi'];
 			const toNaviResult = tìeyng['toNa\'vi'];

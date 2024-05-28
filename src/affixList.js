@@ -66,7 +66,7 @@ function addAffix(list, affixType, affixString, types) {
 	if (!affixString.length) {
 		return;
 	}
-	let affix = dictionary.getOfTypes(affixString, types);
+	let affix = dictionary.getOfTypes(affixString, types, 'FN');
 	if (affix.length > 0) {
 		list.push({
 			'type': affixType,

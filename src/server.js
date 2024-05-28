@@ -435,7 +435,7 @@ app.get('/api/word', cors(), function(req, res) {
 
 app.get('/api/fwew-search', cors(), function(req, res) {
 	res.json({
-		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"]),
+		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"], req.query["dialect"]),
 		'toNa\'vi': reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"])
 	});
 });
@@ -630,6 +630,8 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
 	res.status(500);
 	setLanguage(req);
+	output.error('Uncaught exception when handling a request; responding with HTTP 500');
+	console.log(err.stack);
 	res.render('500', { user: req.user, _: translations._, error: err });
 })
 

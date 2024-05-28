@@ -29,7 +29,6 @@ const affixList = require('./affixList');
 const conjugatedTranslation = require('./conjugatedTranslation');
 const conjugationString = require('./conjugationString');
 const convert = require('./convert');
-const dialect = require('./dialect');
 const dictionary = require('./dictionary');
 const ipa = require('./ipa');
 const nouns = require('./nouns');
@@ -70,22 +69,6 @@ function reloadData() {
 
 	// preprocess all words
 	for (let word of dictionary.getAll()) {
-		// dialect forms of the word
-		word['word'] = {
-			'combined': word["na'vi"],
-			'FN': dialect.combinedToFN(word["na'vi"]),
-			'RN': dialect.combinedToRN(word["na'vi"])
-		};
-		word['word_raw'] = {
-			'combined': dialect.makeRaw(word['word']['combined']),
-			'FN': dialect.makeRaw(word['word']['FN']),
-			'RN': dialect.makeRaw(word['word']['RN'])
-		};
-
-		word["na'vi"] = word['word_raw']['FN'];  // for compatibility reasons
-	}
-
-	for (let word of dictionary.getAll()) {
 		// pronunciation
 		if (word.hasOwnProperty('pronunciation')) {
 			for (let pronunciation of word['pronunciation']) {
@@ -118,7 +101,7 @@ function reloadData() {
 				const navi = piece["na'vi"].toLowerCase()
 					.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');  // TODO replace by word_raw
 				const type = piece["type"];
-				const result = dictionary.get(navi, type);
+				const result = dictionary.get(navi, type, 'FN');
 				if (result) {
 					if (!result.hasOwnProperty('derived')) {
 						result['derived'] = [];
@@ -141,7 +124,7 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 		if (word.hasOwnProperty('seeAlso')) {
 			for (let i = 0; i < word['seeAlso'].length; i++) {
 				let [navi, type] = splitWordAndType(word['seeAlso'][i]);
-				let result = dictionary.get(navi, type);
+				let result = dictionary.get(navi, type, 'FN');
 				if (result) {
 					word['seeAlso'][i] = wordLinks.stripToLinkData(result);
 				}
@@ -165,7 +148,7 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 			const roots = a[1];
 			for (const r of roots) {
 				let [word, type] = splitWordAndType(r);
-				let result = dictionary.get(word, type);
+				let result = dictionary.get(word, type, 'FN');
 				if (result) {
 					if (!result.hasOwnProperty('sentences')) {
 						result['sentences'] = [];
@@ -243,8 +226,8 @@ function hasWord(word, type) {
 	return dictionary.hasOwnProperty(word.toLowerCase() + ':' + type);
 }
 
-function getResponsesFor(query) {
-	query = preprocess.preprocessQuery(query);
+function getResponsesFor(query, dialect) {
+	query = preprocess.preprocessQuery(query, dialect);
 	let results = [];
 
 	// first split query on spaces to get individual words
@@ -280,14 +263,14 @@ function getResponsesFor(query) {
 			// the simple case: no external lenition, so just look up the
 			// query word
 			let queryArray = [queryWord].concat(queryWords.slice(i + 1));
-			[wordCount, wordResults] = lookUpWordOrPhrase(queryArray);
+			[wordCount, wordResults] = lookUpWordOrPhrase(queryArray, dialect);
 
 		} else {
 			// the complicated case: figure out which words this query word
 			// could possibly be lenited from, and look all of these up
 			let unlenitedWords = unlenite(queryWord);
 			for (let j = 0; j < unlenitedWords.length; j++) {
-				let wordResult = lookUpWord(unlenitedWords[j]);
+				let wordResult = lookUpWord(unlenitedWords[j], dialect);
 				for (let k = 0; k < wordResult.length; k++) {
 					if (!forbiddenByExternalLenition(wordResult[k])) {
 						wordResult[k]["externalLenition"] = {
@@ -350,9 +333,9 @@ let unlenitions = {
 	"s": ["ts", "t", "s"],
 	"f": ["p", "f"],
 	"h": ["k", "h"],
-	"t": ["tx"],
-	"p": ["px"],
-	"k": ["kx"]
+	"t": ["tx", "d"],
+	"p": ["px", "b"],
+	"k": ["kx", "g"]
 };
 
 function unlenite(word) {
@@ -363,7 +346,7 @@ function unlenite(word) {
 	}
 
 	// word starts with ejective or ts
-	if (word[1] === "x" || (word.substring(0, 2) === "ts")) {
+	if (word[1] === "x" || word.substring(0, 2) === "ts" || ['b', 'd', 'g'].includes(word[0])) {
 		return [];
 	}
 
@@ -403,38 +386,38 @@ function forbiddenByExternalLenition(result) {
 	return hasNoDeterminer;
 }
 
-function lookUpWordOrPhrase(queryWord) {
+function lookUpWordOrPhrase(queryWord, dialect) {
 	// phrases
 	for (let length = 8; length > 1; length--) {
 		let phrase = queryWord.slice(0, length).join(' ');
 		let key = phrase + ':phr';
-		let result = dictionary.get(phrase, 'phr');
+		let result = dictionary.get(phrase, 'phr', dialect);
 		if (result) {
 			return [length, [result]];
 		}
 	}
-	return [1, lookUpWord(queryWord[0])];
+	return [1, lookUpWord(queryWord[0], dialect)];
 }
 
 // Looks up a single word; returns a list of results.
 //
 // This method ensures that the data returned is a deep copy (i.e., we can
 // safely change it without changing the dictionary data itself).
-function lookUpWord(queryWord) {
+function lookUpWord(queryWord, dialect) {
 	let wordResults = [];
-	lookUpNoun(queryWord, wordResults);
-	lookUpVerb(queryWord, wordResults);
-	lookUpAdjective(queryWord, wordResults);
-	lookUpProductiveAdverb(queryWord, wordResults);
-	lookUpOtherType(queryWord, wordResults);
+	lookUpNoun(queryWord, wordResults, dialect);
+	lookUpVerb(queryWord, wordResults, dialect);
+	lookUpAdjective(queryWord, wordResults, dialect);
+	lookUpProductiveAdverb(queryWord, wordResults, dialect);
+	lookUpOtherType(queryWord, wordResults, dialect);
 	return wordResults;
 }
 
-function lookUpNoun(queryWord, wordResults) {
+function lookUpNoun(queryWord, wordResults, dialect) {
 	// handles conjugated nouns and pronouns
 	let nounResults = nouns.parse(queryWord);
 	nounResults.forEach(function (nounResult) {
-		let nouns = dictionary.getOfTypes(nounResult["root"], ['n', 'n:pr']);
+		let nouns = dictionary.getOfTypes(nounResult["root"], ['n', 'n:pr'], dialect);
 		for (let noun of nouns) {
 			noun["conjugated"] = [{
 				"type": "n",
@@ -448,7 +431,7 @@ function lookUpNoun(queryWord, wordResults) {
 			if (nounResult["root"].endsWith(suffix)) {
 				let possibleVerb = nounResult["root"].slice(0, -suffix.length);
 				let verbResults = [];
-				lookUpVerb(possibleVerb, verbResults);
+				lookUpVerb(possibleVerb, verbResults, dialect);
 				verbResults.forEach(function (verb) {
 					const conjugated = verb["conjugated"];
 					const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
@@ -522,7 +505,7 @@ function lookUpNoun(queryWord, wordResults) {
 		if (nounResult["root"].startsWith('tì')) {
 			let possibleVerb = nounResult["root"].slice(2);  // cut off tì-
 			let verbResults = [];
-			lookUpVerb(possibleVerb, verbResults, true);
+			lookUpVerb(possibleVerb, verbResults, dialect, true);
 			verbResults.forEach(function (verb) {
 				const conjugated = verb["conjugated"];
 				const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
@@ -556,7 +539,7 @@ function lookUpNoun(queryWord, wordResults) {
 	});
 }
 
-function lookUpVerb(queryWord, wordResults, allowParticiples) {
+function lookUpVerb(queryWord, wordResults, dialect, allowParticiples) {
 	// handles conjugated verbs
 	let verbResults = verbs.parse(queryWord);
 	verbResults.forEach(function (result) {
@@ -565,7 +548,7 @@ function lookUpVerb(queryWord, wordResults, allowParticiples) {
 			// these are handled as adjectives; see lookUpAdjective()
 			return;
 		}
-		let results = dictionary.getOfTypes(result["root"], ['v:in', 'v:tr', 'v:cp', 'v:m', 'v:si', 'v:?']);
+		let results = dictionary.getOfTypes(result["root"], ['v:in', 'v:tr', 'v:cp', 'v:m', 'v:si', 'v:?'], dialect);
 		for (let verb of results) {
 			let conjugation = conjugationString.formsFromString(
 				verbs.conjugate(verb["infixes"], result["infixes"]));
@@ -584,11 +567,11 @@ function lookUpVerb(queryWord, wordResults, allowParticiples) {
 	});
 }
 
-function lookUpAdjective(queryWord, wordResults) {
+function lookUpAdjective(queryWord, wordResults, dialect) {
 	// handles conjugated adjectives
 	let adjectiveResults = adjectives.parse(queryWord);
 	adjectiveResults.forEach(function (adjResult) {
-		let adjective = dictionary.get(adjResult['root'], 'adj');
+		let adjective = dictionary.get(adjResult['root'], 'adj', dialect);
 		if (adjective) {
 			let conjugation = conjugationString.formsFromString(
 				adjectives.conjugate(adjResult["root"], adjResult["form"], adjective["etymology"]));
@@ -605,7 +588,7 @@ function lookUpAdjective(queryWord, wordResults) {
 		// verb participles (somewhat hacky as the <us>/<awn> is parsed by the
 		// verb parser, so we have to take that out again...)
 		let verbResults = [];
-		lookUpVerb(adjResult["root"], verbResults, true);
+		lookUpVerb(adjResult["root"], verbResults, dialect, true);
 		verbResults.forEach(function (verb) {
 			const infixes = verb['conjugated'][0]['conjugation']['infixes'];
 			if (infixes[1] === 'us' || infixes[1] === 'awn') {
@@ -636,7 +619,7 @@ function lookUpAdjective(queryWord, wordResults) {
 			if (adjResult["root"].startsWith(prefix)) {
 				let possibleVerb = adjResult["root"].substring(prefix.length);
 				let verbResults = [];
-				lookUpVerb(possibleVerb, verbResults);
+				lookUpVerb(possibleVerb, verbResults, dialect);
 				verbResults.forEach(function (verb) {
 					verb["conjugated"].push({
 						"type": "v_to_adj",
@@ -658,12 +641,12 @@ function lookUpAdjective(queryWord, wordResults) {
 	});
 }
 
-function lookUpProductiveAdverb(queryWord, wordResults) {
+function lookUpProductiveAdverb(queryWord, wordResults, dialect) {
 	// handles adverbs made from nì- + adjectives
 	if (queryWord.startsWith('nì')) {
-		const possibleAdjective = queryWord.substring(2);
-		if (dictionary.hasOwnProperty(possibleAdjective + ':adj')) {
-			const adjective = JSON.parse(JSON.stringify(dictionary[possibleAdjective + ':adj']));
+		let possibleAdjective = dictionary.get(queryWord.substring(2), 'adj', dialect);
+		if (possibleAdjective) {
+			const adjective = JSON.parse(JSON.stringify(possibleAdjective));
 			adjective["conjugated"] = [{
 				"type": "adj_to_adv",
 				"conjugation": {
@@ -678,10 +661,10 @@ function lookUpProductiveAdverb(queryWord, wordResults) {
 	}
 }
 
-function lookUpOtherType(queryWord, wordResults) {
+function lookUpOtherType(queryWord, wordResults, dialect) {
 	// handles other word types
 	let ignoredTypes = ['n', 'n:pr', 'adj', 'v:in', 'v:tr', 'v:cp', 'v:m', 'v:si', 'v:?'];
-	for (let word of dictionary.getNotOfTypes(queryWord, ignoredTypes)) {
+	for (let word of dictionary.getNotOfTypes(queryWord, ignoredTypes, dialect)) {
 		if (!word.hasOwnProperty('conjugation')) {
 			wordResults.push(JSON.parse(JSON.stringify(word)));
 		}

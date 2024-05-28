@@ -19,6 +19,8 @@ module.exports = {
 }
 
 const fs = require('fs');
+
+const dialect = require('./dialect');
 const output = require('./output');
 
 try {
@@ -38,8 +40,8 @@ $ echo "{}" > data/words.json`);
 	process.exit(1);
 }
 
-// dictionary of all Na'vi words in the database
-// this is a mapping from strings to (arrays of) IDs in `words`
+// dictionaries of all Na'vi words in the database, one per dialect
+// each dictionary is a mapping from strings to (arrays of) IDs in `words`
 // used for searching
 var searchables = {};
 
@@ -52,22 +54,47 @@ reload();
 
 // Processes the dictionary data.
 function reload() {
-	searchables = {};
+	searchables = {
+		'FN': {},
+		'RN': {},
+		'combined': {}
+	};
 
 	for (let i = 0; i < words.length; i++) {
 		let word = words[i];
 
+		// dialect forms of the word
+		word['word'] = {
+			'combined': word["na'vi"],
+			'FN': dialect.combinedToFN(word["na'vi"]),
+			'RN': dialect.combinedToRN(word["na'vi"])
+		};
+		word['word_raw'] = {
+			'combined': dialect.makeRaw(word['word']['combined']),
+			'FN': dialect.makeRaw(word['word']['FN']),
+			'RN': dialect.makeRaw(word['word']['RN'])
+		};
+
+		word["na'vi"] = word['word_raw']['FN'];  // for compatibility reasons
+
 		// put the word in the searchables dictionary
-		let searchable = word["na'vi"].toLowerCase()
-			.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');  // TODO replace by word_raw
-		if (!searchables.hasOwnProperty(searchable)) {
-			searchables[searchable] = [];
+		for (let dialect of ['FN', 'RN']) {
+			let searchable = word['word_raw'][dialect];
+			if (!searchables[dialect].hasOwnProperty(searchable)) {
+				searchables[dialect][searchable] = [];
+			}
+			searchables[dialect][searchable].push(i);
+			if (!searchables['combined'].hasOwnProperty(searchable)) {
+				searchables['combined'][searchable] = [];
+			}
+			if (!searchables['combined'][searchable].includes(i)) {
+				searchables['combined'][searchable].push(i);
+			}
 		}
-		searchables[searchable].push(i);
 
 		// put the word in the wordTypeKeys dictionary
-		let wordTypeKey = word['type'];
-		if (wordTypeKey.hasOwnProperty(searchable)) {
+		let wordTypeKey = word['word_raw']['FN'] + ':' + word['type'];
+		if (wordTypeKeys.hasOwnProperty(wordTypeKey)) {
 			output.warning('Duplicate word/type ' + wordTypeKey + ' in words.json');
 			output.hint(`Reykunyu assumes there cannot be two identical words with the same word
 type (as word/type combinations are used to refer to words). Because
@@ -83,9 +110,9 @@ function getById(id) {
 }
 
 // Returns the given word of the given type.
-function get(word, type) {
-	if (searchables.hasOwnProperty(word)) {
-		for (let id of searchables[word]) {
+function get(word, type, dialect) {
+	if (searchables[dialect].hasOwnProperty(word)) {
+		for (let id of searchables[dialect][word]) {
 			let result = words[id];
 			if (result['type'] === type) {
 				return result;
@@ -97,10 +124,10 @@ function get(word, type) {
 
 // Returns the given word of one of the given types. This returns an array
 // because more than one type may match.
-function getOfTypes(word, types) {
+function getOfTypes(word, types, dialect) {
 	let results = [];
 	for (let type of types) {
-		let result = get(word, type);
+		let result = get(word, type, dialect);
 		if (result) {
 			results.push(result);
 		}
@@ -110,10 +137,10 @@ function getOfTypes(word, types) {
 
 // Returns the given word that is not one of the given types. This returns an
 // array because more than one type may match.
-function getNotOfTypes(word, types) {
+function getNotOfTypes(word, types, dialect) {
 	let results = [];
-	if (searchables.hasOwnProperty(word)) {
-		for (let id of searchables[word]) {
+	if (searchables[dialect].hasOwnProperty(word)) {
+		for (let id of searchables[dialect][word]) {
 			let result = words[id];
 			if (!types.includes(result['type'])) {
 				results.push(JSON.parse(JSON.stringify(result)));
