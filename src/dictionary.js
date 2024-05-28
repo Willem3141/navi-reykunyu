@@ -13,6 +13,7 @@
 module.exports = {
 	'getById': getById,
 	'get': get,
+	'getEditable': getEditable,
 	'getOfTypes': getOfTypes,
 	'getNotOfTypes': getNotOfTypes,
 	'getAll': getAll
@@ -110,9 +111,25 @@ function getById(id) {
 }
 
 // Returns the given word of the given type.
+// The returned object is a deep copy. Editing it won't change the data in the
+// dictionary itself (see also getEditable).
 function get(word, type, dialect) {
 	if (searchables[dialect].hasOwnProperty(word)) {
 		for (let id of searchables[dialect][word]) {
+			let result = words[id];
+			if (result['type'] === type) {
+				return deepCopy(result);
+			}
+		}
+	}
+	return null;
+}
+
+// Returns the given word of the given type, without making a deep copy.
+// The word is assumed to be in FN.
+function getEditable(word, type) {
+	if (searchables['FN'].hasOwnProperty(word)) {
+		for (let id of searchables['FN'][word]) {
 			let result = words[id];
 			if (result['type'] === type) {
 				return result;
@@ -150,7 +167,10 @@ function getNotOfTypes(word, types, dialect) {
 	return results;
 }
 
-
 function getAll() {
 	return words;
+}
+
+function deepCopy(object) {
+	return JSON.parse(JSON.stringify(object));
 }

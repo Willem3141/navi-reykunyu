@@ -101,7 +101,7 @@ function reloadData() {
 				const navi = piece["na'vi"].toLowerCase()
 					.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');  // TODO replace by word_raw
 				const type = piece["type"];
-				const result = dictionary.get(navi, type, 'FN');
+				const result = dictionary.getEditable(navi, type);
 				if (result) {
 					if (!result.hasOwnProperty('derived')) {
 						result['derived'] = [];
@@ -124,7 +124,7 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 		if (word.hasOwnProperty('seeAlso')) {
 			for (let i = 0; i < word['seeAlso'].length; i++) {
 				let [navi, type] = splitWordAndType(word['seeAlso'][i]);
-				let result = dictionary.get(navi, type, 'FN');
+				let result = dictionary.getEditable(navi, type);
 				if (result) {
 					word['seeAlso'][i] = wordLinks.stripToLinkData(result);
 				}
@@ -148,7 +148,7 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 			const roots = a[1];
 			for (const r of roots) {
 				let [word, type] = splitWordAndType(r);
-				let result = dictionary.get(word, type, 'FN');
+				let result = dictionary.getEditable(word, type);
 				if (result) {
 					if (!result.hasOwnProperty('sentences')) {
 						result['sentences'] = [];
