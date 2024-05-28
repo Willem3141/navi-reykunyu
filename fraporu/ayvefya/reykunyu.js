@@ -59,13 +59,13 @@ $(function () {
 	});
 	$('#settings-modal button').popup();
 
+	$('#ipa-checkbox').prop('checked',
+		localStorage.getItem('reykunyu-ipa') === '1');
 	const dialect = localStorage.getItem('reykunyu-dialect');
 	$('#dialect-fn-radiobutton').prop('checked', dialect === 'FN');
 	$('#dialect-both-radiobutton').prop('checked', dialect === 'combined');
 	$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
 	$('#settings-button').on("click", function () {
-		$('#ipa-checkbox').prop('checked',
-			localStorage.getItem('reykunyu-ipa') === '1');
 		$('#settings-modal').modal("show");
 	});
 
@@ -107,6 +107,10 @@ function getDialect() {
 	} else {
 		return 'combined';
 	}
+}
+
+function getIPASetting() {
+	return $('#ipa-checkbox').is(':checked');
 }
 
 function setUpAutocomplete() {
@@ -1232,7 +1236,7 @@ function createResultBlock(i, r) {
 		$resultWord.append(statusBadge(r["status"]));
 	}
 
-	if (localStorage.getItem('reykunyu-ipa') === '1') {
+	if (getIPASetting()) {
 		$resultWord.append(pronunciationSectionIpa(r["pronunciation"], r["type"]));
 	} else {
 		$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
