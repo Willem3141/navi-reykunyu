@@ -54,10 +54,15 @@ $(function () {
 			sngäiTìfwusew(true);
 			localStorage.setItem('reykunyu-ipa',
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
+			localStorage.setItem('reykunyu-dialect', getDialect());
 		},
 	});
 	$('#settings-modal button').popup();
 
+	const dialect = localStorage.getItem('reykunyu-dialect');
+	$('#dialect-fn-radiobutton').prop('checked', dialect === 'FN');
+	$('#dialect-both-radiobutton').prop('checked', dialect === 'combined');
+	$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
 	$('#settings-button').on("click", function () {
 		$('#ipa-checkbox').prop('checked',
 			localStorage.getItem('reykunyu-ipa') === '1');
