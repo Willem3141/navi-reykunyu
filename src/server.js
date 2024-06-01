@@ -445,7 +445,7 @@ app.get('/api/fwew', cors(), function(req, res) {
 });
 
 app.get('/api/mok-suggest', cors(), function (req, res) {
-	let suggestionsFrom = reykunyu.getSuggestionsFor(req.query["query"], req.query["language"]);
+	let suggestionsFrom = reykunyu.getSuggestionsFor(req.query["query"], req.query["language"], req.query["dialect"]);
 	let suggestionsTo = reykunyu.getReverseSuggestionsFor(req.query["query"], req.query["language"]);
 	res.json({
 		'results': suggestionsFrom['results'].concat(suggestionsTo['results'])
@@ -453,7 +453,7 @@ app.get('/api/mok-suggest', cors(), function (req, res) {
 });
 
 app.get('/api/mok', cors(), function(req, res) {
-	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"], req.query["language"]));
+	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"], req.query["language"], req.query["dialect"]));
 });
 
 app.get('/api/search', cors(), function(req, res) {

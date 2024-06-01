@@ -7,7 +7,6 @@ $(function () {
 		onChange: function (value) {
 			setNewLanguage(value);
 			sngäiTìfwusew(false);
-			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			return false;
 		}
@@ -25,7 +24,6 @@ $(function () {
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-mode', value);
 			sngäiTìfwusew(false);
-			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			return false;
 		}
@@ -44,13 +42,12 @@ $(function () {
 
 	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
 
-	setUpAutocomplete();
-
 	$('.ui.checkbox').checkbox();
 	$('#infix-details-modal').modal();
 	$('#infix-details-modal button').popup();
 	$('#settings-modal').modal({
 		onApprove: function () {
+			setUpAutocomplete();
 			sngäiTìfwusew(true);
 			localStorage.setItem('reykunyu-ipa',
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
@@ -89,6 +86,8 @@ $(function () {
 		$('#search-box').val(event.state['query']);
 		sngäiTìfwusew(true);
 	});
+
+	setUpAutocomplete();
 });
 
 function getMode() {
@@ -115,10 +114,11 @@ function getIPASetting() {
 
 function setUpAutocomplete() {
 	let url = null;
+	$('.ui.search').search('clear cache');
 	if (getMode() === 'reykunyu') {
-		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}';
+		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}&dialect=' + getDialect();
 	} else if (getMode() === 'rhymes') {
-		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}';
+		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}&dialect=' + getDialect();
 	} else if (getMode() === 'annotated') {
 		url = 'api/annotated/suggest?' + '&query={query}';
 	} else {
@@ -135,7 +135,7 @@ function setUpAutocomplete() {
 		},
 		showNoResults: false,
 		onSelect: function (result) {
-			$('#search-box').val(result['title']);
+			$('#search-box').val(result['title'].replace(/\<[^\>]*\>/g, ''));
 			sngäiTìfwusew();
 			return false;
 		}

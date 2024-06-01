@@ -815,17 +815,24 @@ function mergeSiVerbs(results) {
 	}
 }
 
-function getSuggestionsFor(query, language) {
+function getSuggestionsFor(query, language, dialect) {
 	if (query.length < 3) {
 		return { 'results': [] };
 	}
-	query = preprocess.preprocessQuery(query);
+	query = preprocess.preprocessQuery(query, dialect);
 	query = query.toLowerCase();
 	let results = [];
 	for (let word of dictionary.getAll()) {
-		if (word["na'vi"].toLowerCase().startsWith(query)) {
+		let key = word['word_raw'][dialect].toLowerCase();
+		if (dialect === 'combined') {
+			key = key.replaceAll('ù', 'u');
+		}
+		if (key.startsWith(query)) {
+			let wordHTML = word['word'][dialect] + (word['type'] === 'n:si' ? ' si' : '');
+			wordHTML = wordHTML.replaceAll('/', '');
+			wordHTML = wordHTML.replace(/\[([^\]]*)\]/g, '<span class="stressed">$1</span>');
 			results.push({
-				"title": word["na'vi"] + (word['type'] === 'n:si' ? ' si' : ''),
+				"title": wordHTML,
 				"description": '<div class="ui horizontal label">' + typeName(word['type'], language) + '</div> ' + simplifiedTranslation(word["translations"], language)
 			});
 		}
