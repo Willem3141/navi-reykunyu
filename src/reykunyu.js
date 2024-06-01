@@ -308,10 +308,10 @@ function getResponsesFor(query, dialect) {
 		if (wordResults.length === 0) {
 			let minDistance = queryWord.length / 3 + 1;  // allow more leeway with longer queries
 			for (let word of dictionary.getAll()) {
-				const distance = levenshtein(word["na'vi"], queryWord);
+				const distance = levenshtein(word['word_raw'][dialect], queryWord);
 				minDistance = Math.min(minDistance, distance);
 				if (distance <= minDistance) {
-					suggestions.push([word["na'vi"] + (word["type"] === "n:si" ? " si" : ""), distance]);
+					suggestions.push([word['word_raw'][dialect] + (word["type"] === "n:si" ? " si" : ""), distance]);
 				}
 			}
 			suggestions = suggestions.filter(a => a[1] === minDistance)
