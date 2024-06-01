@@ -15,8 +15,19 @@ def update_navi_with_pronunciation(word):
 	joined_syllables = '/'.join(syllables)
 
 	if joined_syllables.replace('[', '').replace(']', '').replace('/', '').replace('ù', 'u') == word["na'vi"].lower():
-		print(joined_syllables)
-		word["na'vi"] = joined_syllables
+		generated_word = ''
+		i = 0
+		for letter in joined_syllables:
+			if letter in ['[', ']', '/']:
+				generated_word += letter
+			else:
+				if word["na'vi"][i].isupper():
+					generated_word += letter.upper()
+				else:
+					generated_word += letter
+				i += 1
+
+		word["na'vi"] = generated_word
 		return True
 
 	return False
