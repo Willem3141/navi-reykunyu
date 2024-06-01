@@ -125,15 +125,17 @@ function conjugate(noun, affixes, simple, dialect) {
 	let pluralPrefix = "";
 	if (affixes[1] !== "") {
 		pluralPrefix = pluralFunctions[plural](
-			stemPrefix + noun, determinerPrefix);
+			stemPrefix + noun, dialect, determinerPrefix);
 
 		// special case: pe- can lenite pxe-
-		if (determinerPrefix === "pe" && pluralPrefix === "pxe") {
+		if (determinerPrefix === "pe" && (pluralPrefix === "pxe" || pluralPrefix === "be")) {
 			pluralPrefix = "pe";
+		} else if (determinerPrefix === "pe" && (pluralPrefix === "px" || pluralPrefix === "b")) {
+			pluralPrefix = "p";
 		}
 	}
 
-	if (stemPrefix[stemPrefix.length - 1] === convert.decompress(noun)[0]) {
+	if (dialect !== 'RN' && stemPrefix[stemPrefix.length - 1] === convert.decompress(noun)[0]) {
 		// special case: fne- + ekxan -> fnekxan, etc.
 		stemPrefix = stemPrefix.substring(0, stemPrefix.length - 1);
 	}
@@ -297,7 +299,7 @@ function topicalSuffix(noun) {
 
 // Numbers
 
-function dualPrefix(noun) {
+function dualPrefix(noun, dialect) {
 	let first = lenite(noun).join('')[0];
 	if (first === "e" || first === "3" || first === "4") {  // e, ew, ey
 		return 'm';
@@ -306,16 +308,16 @@ function dualPrefix(noun) {
 	}
 }
 
-function trialPrefix(noun) {
+function trialPrefix(noun, dialect) {
 	let first = lenite(noun).join('')[0];
 	if (first === "e" || first === "3" || first === "4") {  // e, ew, ey
-		return 'px';
+		return dialect === 'RN' ? 'b' : 'px';
 	} else {
-		return 'pxe';
+		return dialect === 'RN' ? 'be' : 'pxe';
 	}
 }
 
-function pluralPrefix(noun, determinerPrefix) {
+function pluralPrefix(noun, dialect, determinerPrefix) {
 	let lenited = lenite(noun).join('');
 	if (lenited !== noun
 		&& noun !== "'u"  // 'u doesn't have short plural
