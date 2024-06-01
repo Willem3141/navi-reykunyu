@@ -80,14 +80,19 @@ function reloadData() {
 		}
 		
 		// conjugation tables
-		if (word['type'] === 'n' || word['type'] === 'n:pr') {
+		if (word.hasOwnProperty('conjugation')) {
+			word['conjugation'] = {
+				'FN': word['conjugation']['forms'],
+				'combined': word['conjugation']['forms'],
+				'RN': word['conjugation']['forms']
+			};
+		} else if (word['type'] === 'n' || word['type'] === 'n:pr') {
 			word['conjugation'] = {
 				'FN': createNounConjugation(word, 'FN'),
 				'combined': createNounConjugation(word, 'combined'),
 				'RN': createNounConjugation(word, 'RN')
 			};
-		}
-		if (word['type'] === 'adj') {
+		} else if (word['type'] === 'adj') {
 			word['conjugation'] = {
 				'FN': createAdjectiveConjugation(word, 'FN'),
 				'combined': createAdjectiveConjugation(word, 'combined'),
