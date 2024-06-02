@@ -195,25 +195,27 @@ function conjugate(noun, affixes, simple, dialect) {
 	let stemVoicingOptions = [];
 	if (dialect === 'RN') {
 		[restOfStemWithoutVoiced, voicedConsonant] = voice(restOfStem);
-		if (stemSuffix !== '' || determinerSuffix !== '') {
-			if (phonology.startsWithVowel(stemSuffix + determinerSuffix)) {
-				stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, caseSuffix]);
-			}
-		} else if (caseSuffix !== '') {
-			let vowelCaseSuffixOptions = [];
-			let consonantCaseSuffixOptions = [];
-			for (let suffix of caseSuffix.split('/')) {
-				if (phonology.startsWithVowel(suffix)) {
-					vowelCaseSuffixOptions.push(suffix);
-				} else {
-					consonantCaseSuffixOptions.push(suffix);
+		if (voicedConsonant !== '') {
+			if (stemSuffix !== '' || determinerSuffix !== '') {
+				if (phonology.startsWithVowel(stemSuffix + determinerSuffix)) {
+					stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, caseSuffix]);
 				}
-			}
-			if (consonantCaseSuffixOptions.length > 0) {
-				stemVoicingOptions.push([restOfStem, '', consonantCaseSuffixOptions.join('/')]);
-			}
-			if (vowelCaseSuffixOptions.length > 0) {
-				stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, vowelCaseSuffixOptions.join('/')]);
+			} else if (caseSuffix !== '') {
+				let vowelCaseSuffixOptions = [];
+				let consonantCaseSuffixOptions = [];
+				for (let suffix of caseSuffix.split('/')) {
+					if (phonology.startsWithVowel(suffix)) {
+						vowelCaseSuffixOptions.push(suffix);
+					} else {
+						consonantCaseSuffixOptions.push(suffix);
+					}
+				}
+				if (consonantCaseSuffixOptions.length > 0) {
+					stemVoicingOptions.push([restOfStem, '', consonantCaseSuffixOptions.join('/')]);
+				}
+				if (vowelCaseSuffixOptions.length > 0) {
+					stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, vowelCaseSuffixOptions.join('/')]);
+				}
 			}
 		}
 	}
@@ -398,7 +400,6 @@ let voicings = {
 };
 
 function voice(word) {
-	// 'rr and 'll are not lenited, since rr and ll cannot start a syllable
 	if (word[word.length - 1] !== 'x' || !(word[word.length - 2] in voicings)) {
 		return [word, ''];
 	}
@@ -410,10 +411,10 @@ function voice(word) {
  * Returns all possible conjugations that could have resulted in the given
  * word.
  */
-function parse(word) {
+function parse(word, dialect) {
 
 	// step 1: generate a set of candidates
-	let candidates = getCandidates(word);
+	let candidates = getCandidates(word, dialect);
 
 	// step 2: for each candidate, check if it is indeed correct
 	let result = [];
@@ -422,7 +423,7 @@ function parse(word) {
 		if (!candidatePossible(candidate)) {
 			continue;
 		}
-		let conjugation = conjugate(candidate["root"], candidate["affixes"]);
+		let conjugation = conjugate(candidate["root"], candidate["affixes"], false, dialect);
 		if (!conjugationString.stringAdmits(conjugation, candidate["result"])) {
 			candidate["correction"] = candidate["result"];
 		}
@@ -446,7 +447,7 @@ let unlenitions = {
  * Returns a superset of the possible words that would be lenited to the
  * given word.
  */
-function unlenite(word) {
+function unlenite(word, dialect) {
 	let result = [word, "'" + word];
 
 	if (!(word[0] in unlenitions)) {
@@ -461,13 +462,13 @@ function unlenite(word) {
 	return result;
 }
 
-function tryDeterminerPrefixes(candidate) {
+function tryDeterminerPrefixes(candidate, dialect) {
 	let candidates = [];
 
 	candidates.push({ ...candidate });
 	let tryPrefix = function (prefix, name) {
 		if (candidate["root"].startsWith(prefix)) {
-			let stems = unlenite(candidate["root"].slice(prefix.length));
+			let stems = unlenite(candidate["root"].slice(prefix.length), dialect);
 			for (let i = 0; i < stems.length; i++) {
 				let newAffixes = [...candidate["affixes"]];
 				newAffixes[0] = name;
@@ -491,7 +492,7 @@ function tryDeterminerPrefixes(candidate) {
 	return candidates;
 }
 
-function tryPluralPrefixes(candidate) {
+function tryPluralPrefixes(candidate, dialect) {
 	let candidates = [];
 
 	// singular
@@ -501,7 +502,7 @@ function tryPluralPrefixes(candidate) {
 	// need to try all possible initial consonants that could have lenited to our form
 	let tryPrefix = function (prefix, name) {
 		if (candidate["root"].startsWith(prefix)) {
-			let stems = unlenite(candidate["root"].slice(prefix.length));
+			let stems = unlenite(candidate["root"].slice(prefix.length), dialect);
 			for (let i = 0; i < stems.length; i++) {
 				let newAffixes = [...candidate["affixes"]];
 				newAffixes[1] = name;
@@ -525,14 +526,14 @@ function tryPluralPrefixes(candidate) {
 	return candidates;
 }
 
-function tryStemPrefixes(candidate) {
+function tryStemPrefixes(candidate, dialect) {
 	let candidates = [];
 
 	candidates.push({ ...candidate });
 
 	let tryPrefix = function (prefix, name) {
 		if (candidate["root"].startsWith(prefix)) {
-			let stems = unlenite(candidate["root"].slice(prefix.length));
+			let stems = unlenite(candidate["root"].slice(prefix.length), dialect);
 			for (let i = 0; i < stems.length; i++) {
 				let newAffixes = [...candidate["affixes"]];
 				newAffixes[2] = name;
@@ -665,7 +666,7 @@ function tryFinalSuffixes(candidate) {
 	return candidates;
 }
 
-function getCandidates(word) {
+function getCandidates(word, dialect) {
 	let functions = [
 		tryDeterminerPrefixes,
 		tryPluralPrefixes,
@@ -686,7 +687,7 @@ function getCandidates(word) {
 	for (let i = 0; i < functions.length; i++) {
 		let newCandidates = [];
 		for (let j = 0; j < candidates.length; j++) {
-			newCandidates = newCandidates.concat(functions[i](candidates[j]));
+			newCandidates = newCandidates.concat(functions[i](candidates[j], dialect));
 		}
 		candidates = newCandidates;
 	}

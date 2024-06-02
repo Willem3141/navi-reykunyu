@@ -424,7 +424,7 @@ function lookUpWord(queryWord, dialect) {
 
 function lookUpNoun(queryWord, wordResults, dialect) {
 	// handles conjugated nouns and pronouns
-	let nounResults = nouns.parse(queryWord);
+	let nounResults = nouns.parse(queryWord, dialect);
 	nounResults.forEach(function (nounResult) {
 		let nouns = dictionary.getOfTypes(nounResult["root"], ['n', 'n:pr'], dialect);
 		for (let noun of nouns) {
