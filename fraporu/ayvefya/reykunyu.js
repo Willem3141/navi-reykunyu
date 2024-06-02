@@ -853,7 +853,7 @@ function nounConjugationString(c) {
 			if (m[1] !== "-") {
 				formatted += "<span class='prefix'>" + m[1] + "</span>";
 			}
-			formatted += m[2].replace(/\{(.*)\}/, "<span class='lenition'>$1</span>");
+			formatted += m[2].replace(/\{([^}]*)\}/g, "<span class='lenition'>$1</span>");
 			if (m[3] !== "-") {
 				formatted += "<span class='suffix'>" + m[3] + "</span>";
 			}

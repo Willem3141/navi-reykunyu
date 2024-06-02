@@ -8,6 +8,7 @@ module.exports = {
 	isVowel: isVowel,
 	isConsonant: isConsonant,
 	isDiphthong: isDiphthong,
+	startsWithVowel: startsWithVowel,
 	endsInVowel: endsInVowel,
 	endsInConsonant: endsInConsonant
 }
@@ -30,6 +31,10 @@ function isConsonant(char) {
 
 function lastLetter(noun) {
 	return noun.slice(-1);
+}
+
+function startsWithVowel(noun) {
+	return isVowel(noun[0]);
 }
 
 function endsInVowel(noun) {

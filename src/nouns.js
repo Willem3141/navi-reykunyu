@@ -184,24 +184,71 @@ function conjugate(noun, affixes, simple, dialect) {
 		}
 	}
 
-	// finally, output the results
-	if (simple) {
-		return pluralPrefix + '-' +
-			(lenitedConsonant === '' ? '' : '{' + lenitedConsonant + '}') +
-			restOfStem + '-' + caseSuffix;
-	} else {
-		return [
-			convert.decompress(determinerPrefix),
-			convert.decompress(pluralPrefix),
-			convert.decompress(stemPrefix),
-			lenitedConsonant,
-			restOfStem,
-			convert.decompress(stemSuffix),
-			convert.decompress(determinerSuffix),
-			caseSuffix,
-			convert.decompress(finalSuffix)
-		].join('-');
+	// for RN, we need to change a final ejective to a voiced stop if the
+	// suffix starts with a vowel
+
+	/* A problem here is that if the suffix is a case suffix, then it may
+	 * have more than one form (e.g., -it/-ti) of which one starts with a vowel
+	 * and the other one doesn't.
+	 */
+	let voicedConsonant = '';
+	let stemVoicingOptions = [];
+	if (dialect === 'RN') {
+		[restOfStemWithoutVoiced, voicedConsonant] = voice(restOfStem);
+		if (stemSuffix !== '' || determinerSuffix !== '') {
+			if (phonology.startsWithVowel(stemSuffix + determinerSuffix)) {
+				stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, caseSuffix]);
+			}
+		} else if (caseSuffix !== '') {
+			let vowelCaseSuffixOptions = [];
+			let consonantCaseSuffixOptions = [];
+			for (let suffix of caseSuffix.split('/')) {
+				if (phonology.startsWithVowel(suffix)) {
+					vowelCaseSuffixOptions.push(suffix);
+				} else {
+					consonantCaseSuffixOptions.push(suffix);
+				}
+			}
+			if (consonantCaseSuffixOptions.length > 0) {
+				stemVoicingOptions.push([restOfStem, '', consonantCaseSuffixOptions.join('/')]);
+			}
+			if (vowelCaseSuffixOptions.length > 0) {
+				stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, vowelCaseSuffixOptions.join('/')]);
+			}
+		}
 	}
+	if (stemVoicingOptions.length === 0) {
+		stemVoicingOptions.push([restOfStem, '', caseSuffix]);
+	}
+
+	// finally, output the results
+	let options = [];
+	for (let [stem, voiced, caseSuffix] of stemVoicingOptions) {
+		if (simple) {
+			options.push([
+				pluralPrefix,
+				(lenitedConsonant === '' ? '' : '{' + lenitedConsonant + '}') +
+				stem +
+				(voiced === '' ? '' : '{' + voiced + '}'),
+				caseSuffix
+			].join('-'));
+		} else {
+			options.push([
+				convert.decompress(determinerPrefix),
+				convert.decompress(pluralPrefix),
+				convert.decompress(stemPrefix),
+				lenitedConsonant,
+				stem,
+				voiced,
+				convert.decompress(stemSuffix),
+				convert.decompress(determinerSuffix),
+				caseSuffix,
+				convert.decompress(finalSuffix)
+			].join('-'));
+		}
+	}
+
+	return options.join(';');
 }
 
 function subjectiveSuffix(noun) {
@@ -342,6 +389,21 @@ function lenite(word) {
 	}
 
 	return [lenitions[word[0]], word.slice(1)];
+}
+
+let voicings = {
+	"t": "d",
+	"p": "b",
+	"k": "g",
+};
+
+function voice(word) {
+	// 'rr and 'll are not lenited, since rr and ll cannot start a syllable
+	if (word[word.length - 1] !== 'x' || !(word[word.length - 2] in voicings)) {
+		return [word, ''];
+	}
+
+	return [word.substring(0, word.length - 2), voicings[word[word.length - 2]]];
 }
 
 /**
