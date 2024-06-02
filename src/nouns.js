@@ -169,49 +169,38 @@ function conjugate(noun, affixes, simple, dialect) {
 		(plural !== "" || (plural === "" && (determinerPrefix === "pe" || determinerPrefix === "p"))) &&
 		stemPrefix === "";
 
+	let lenitedConsonant, restOfStem;
 	if (needsLenition) {
-		let lenited = lenite(noun);
+		[lenitedConsonant, restOfStem] = lenite(noun);
+		restOfStem = convert.decompress(restOfStem);
 		if (upperCase) {
-			lenited[0] = lenited[0].toUpperCase();
+			lenitedConsonant = lenitedConsonant.toUpperCase();
 		}
-		if (simple) {
-			return pluralPrefix + '-{' + lenited[0] + '}' +
-				convert.decompress(lenited[1]) + '-' + caseSuffix;
-		} else {
-			return [
-				convert.decompress(determinerPrefix),
-				convert.decompress(pluralPrefix),
-				convert.decompress(stemPrefix),
-				lenited[0],
-				convert.decompress(lenited[1]),
-				convert.decompress(stemSuffix),
-				convert.decompress(determinerSuffix),
-				caseSuffix,
-				convert.decompress(finalSuffix)
-			].join('-');
-		}
-
 	} else {
-		// else, no lenition
-		noun = convert.decompress(noun);
+		lenitedConsonant = '';
+		restOfStem = convert.decompress(noun);
 		if (upperCase) {
 			noun = noun[0].toUpperCase() + noun.slice(1);
 		}
-		if (simple) {
-			return pluralPrefix + '-' + noun + '-' + caseSuffix;
-		} else {
-			return [
-				convert.decompress(determinerPrefix),
-				convert.decompress(pluralPrefix),
-				convert.decompress(stemPrefix),
-				'',
-				noun,
-				convert.decompress(stemSuffix),
-				convert.decompress(determinerSuffix),
-				caseSuffix,
-				convert.decompress(finalSuffix)
-			].join('-');
-		}
+	}
+
+	// finally, output the results
+	if (simple) {
+		return pluralPrefix + '-' +
+			(lenitedConsonant === '' ? '' : '{' + lenitedConsonant + '}') +
+			restOfStem + '-' + caseSuffix;
+	} else {
+		return [
+			convert.decompress(determinerPrefix),
+			convert.decompress(pluralPrefix),
+			convert.decompress(stemPrefix),
+			lenitedConsonant,
+			restOfStem,
+			convert.decompress(stemSuffix),
+			convert.decompress(determinerSuffix),
+			caseSuffix,
+			convert.decompress(finalSuffix)
+		].join('-');
 	}
 }
 
