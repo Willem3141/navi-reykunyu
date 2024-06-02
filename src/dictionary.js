@@ -80,7 +80,7 @@ function reload() {
 
 		// put the word in the searchables dictionary
 		for (let dialect of ['FN', 'RN']) {
-			let searchable = word['word_raw'][dialect];
+			let searchable = word['word_raw'][dialect].toLowerCase();
 			if (!searchables[dialect].hasOwnProperty(searchable)) {
 				searchables[dialect][searchable] = [];
 			}
