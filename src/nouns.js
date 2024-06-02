@@ -626,6 +626,8 @@ function tryCaseSuffixes(candidate) {
 	tryEnding("ru", "r");
 	tryEnding("ä", "ä");
 	tryEnding("yä", "ä");
+	tryEnding("e", "ä");
+	tryEnding("ye", "ä");
 	tryEnding("ri", "ri");
 	tryEnding("ìri", "ri");
 	if (candidate["root"].endsWith("iä")) {
