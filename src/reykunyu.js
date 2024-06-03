@@ -432,7 +432,7 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 				"type": "n",
 				"conjugation": nounResult
 			}];
-			affixList.addAffixList(noun, dictionary);
+			affixList.addAffixList(noun, dictionary, dialect);
 			wordResults.push(noun);
 		}
 		const suffixes = ['yu', 'tswo'];
