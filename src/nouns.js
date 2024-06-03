@@ -553,6 +553,31 @@ function tryStemPrefixes(candidate, dialect) {
 	return candidates;
 }
 
+function tryLastConsonantUnvoicing(candidate, dialect) {
+	if (dialect !== 'RN') {
+		return [candidate];
+	}
+
+	let candidates = [];
+	let tryUnvoicing = function (voiced, ejective) {
+		if (candidate["root"].endsWith(voiced)) {
+			candidates.push({
+				"result": candidate["result"],
+				"root": candidate["root"].slice(0, -voiced.length) + ejective,
+				"affixes": candidate['affixes']
+			});
+		}
+	};
+	tryUnvoicing("b", "px");
+	tryUnvoicing("d", "tx");
+	tryUnvoicing("g", "kx");
+	if (candidates.length === 0) {
+		candidates.push({ ...candidate });
+	}
+
+	return candidates;
+}
+
 function tryStemSuffixes(candidate) {
 	let candidates = [];
 
@@ -690,7 +715,8 @@ function getCandidates(word, dialect) {
 		tryFinalSuffixes,
 		tryCaseSuffixes,
 		tryDeterminerSuffixes,
-		tryStemSuffixes
+		tryStemSuffixes,
+		tryLastConsonantUnvoicing
 	];
 
 	let candidates = [];
