@@ -520,6 +520,8 @@ function tryPluralPrefixes(candidate, dialect) {
 	tryPrefix("px", "pxe");
 	tryPrefix("pe", "pxe");  // lenited pxe- (as in pepesute)
 	tryPrefix("p", "pxe");  // lenited pxe- (as in pepeylan)
+	tryPrefix("be", "pxe");
+	tryPrefix("b", "pxe");
 	tryPrefix("ay", "ay");
 	tryPrefix("", "(ay)");
 
