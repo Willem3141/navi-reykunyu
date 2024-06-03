@@ -653,9 +653,9 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 function lookUpProductiveAdverb(queryWord, wordResults, dialect) {
 	// handles adverbs made from nì- + adjectives
 	if (queryWord.startsWith('nì')) {
-		let possibleAdjective = dictionary.get(queryWord.substring(2), 'adj', dialect);
-		if (possibleAdjective) {
-			const adjective = JSON.parse(JSON.stringify(possibleAdjective));
+		let possibleAdjective = queryWord.substring(2);
+		let adjective = dictionary.get(possibleAdjective, 'adj', dialect);
+		if (adjective) {
 			adjective["conjugated"] = [{
 				"type": "adj_to_adv",
 				"conjugation": {
