@@ -459,7 +459,7 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 							"type": "n",
 							"conjugation": nounResult
 						});
-						affixList.addAffixList(verb, dictionary);
+						affixList.addAffixList(verb, dictionary, dialect);
 						wordResults.push(verb);
 					}
 				});
@@ -490,7 +490,7 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 						"type": "n",
 						"conjugation": resultCopy
 					}];
-					affixList.addAffixList(word, dictionary);
+					affixList.addAffixList(word, dictionary, dialect);
 					wordResults.push(word);
 				}
 
@@ -504,7 +504,7 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					affixList.addAffixList(word, dictionary);
+					affixList.addAffixList(word, dictionary, dialect);
 					wordResults.push(word);
 				}
 			}
@@ -540,7 +540,7 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 						"type": "n",
 						"conjugation": nounResult
 					});
-					affixList.addAffixList(verb, dictionary);
+					affixList.addAffixList(verb, dictionary, dialect);
 					wordResults.push(verb);
 				}
 			});
@@ -570,7 +570,7 @@ function lookUpVerb(queryWord, wordResults, dialect, allowParticiples) {
 				"type": "v",
 				"conjugation": resultCopy
 			}];
-			affixList.addAffixList(verb, dictionary);
+			affixList.addAffixList(verb, dictionary, dialect);
 			wordResults.push(verb);
 		}
 	});
@@ -590,7 +590,7 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 				"type": "adj",
 				"conjugation": adjResultCopy
 			}];
-			affixList.addAffixList(adjective, dictionary);
+			affixList.addAffixList(adjective, dictionary, dialect);
 			wordResults.push(adjective);
 		}
 
@@ -617,7 +617,7 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 					"type": "adj",
 					"conjugation": adjResult
 				});
-				affixList.addAffixList(verb, dictionary);
+				affixList.addAffixList(verb, dictionary, dialect);
 				wordResults.push(verb);
 			}
 		});
@@ -642,7 +642,7 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 						"type": "adj",
 						"conjugation": adjResult
 					});
-					affixList.addAffixList(verb, dictionary);
+					affixList.addAffixList(verb, dictionary, dialect);
 					wordResults.push(verb);
 				});
 			}
@@ -664,7 +664,7 @@ function lookUpProductiveAdverb(queryWord, wordResults, dialect) {
 					"affixes": ['nì']
 				}
 			}];
-			affixList.addAffixList(adjective, dictionary);
+			affixList.addAffixList(adjective, dictionary, dialect);
 			wordResults.push(adjective);
 		}
 	}
