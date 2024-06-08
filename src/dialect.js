@@ -33,9 +33,13 @@ function combinedToRN(combined) {
 	rn = rn.replace(/kx\/(\[?[bdg])/g, "g\/$1");
 
 	// tìftang dropping between non-equal vowels
-	rn = rn.replace(/(([aäeiìouù]|[ae][wy])\]?\/?\[?)'(\]?\/?\[?([aäeiìouù]))/g,
-		function (m, before, beforeVowel, after, afterVowel) {
-			return beforeVowel === afterVowel ? before + "'" + after : before + after;
+	rn = rn.replace(/(([aäeiìouù]|[ae][wy])\]?\/\[?)'([aäeiìouù])/g,
+		function (m, before, beforeVowel, afterVowel) {
+			return beforeVowel === afterVowel ? before + "'" + afterVowel : before + afterVowel;
+		});
+	rn = rn.replace(/([aäeiìouù]|[ae][wy])'(\]?\/\[?([aäeiìouù]))/g,
+		function (m, beforeVowel, after, afterVowel) {
+			return beforeVowel === afterVowel ? beforeVowel + "'" + after : beforeVowel + after;
 		});
 
 	// ä becomes e in unstressed syllables

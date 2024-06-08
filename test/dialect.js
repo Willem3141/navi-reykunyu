@@ -25,13 +25,14 @@ test('converting words to RN', (t) => {
 	assert.strictEqual(dialect.combinedToRN('stxong'), 'stxong');
 
 	// syllable-initial ejectives become voiced stops if followed by another
-	//ejective
+	// ejective
 	assert.strictEqual(dialect.combinedToRN('ekx/[txu]'), 'eg/[du]');
 	assert.strictEqual(dialect.combinedToRN('atx/[kxe]'), 'ad/[ge]');
 
 	// tìftang between unequal vowels gets dropped
 	assert.strictEqual(dialect.combinedToRN("['i]/'a"), "['i]/a");
 	assert.strictEqual(dialect.combinedToRN("['i']/a"), "['i]/a");
+	assert.strictEqual(dialect.combinedToRN("tì/['i']/a"), "tì/[i]/a");
 
 	// tìftang between equal vowels does not get dropped
 	assert.strictEqual(dialect.combinedToRN("[la]/'ang"), "[la]/'ang");
