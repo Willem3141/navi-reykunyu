@@ -23,14 +23,14 @@ function combinedToRN(combined) {
 	let rn = combined;
 
 	// syllable-initial ejectives become voiced stops
-	rn = rn.replace(/(^|[^fs])px([aäeiìouù])/g, "$1b$2");
-	rn = rn.replace(/(^|[^fs])tx([aäeiìouù])/g, "$1d$2");
-	rn = rn.replace(/(^|[^fs])kx([aäeiìouù])/g, "$1g$2");
+	rn = rn.replace(/(?<=^|[^fs])px(?=[aäeiìouù])/g, 'b');
+	rn = rn.replace(/(?<=^|[^fs])tx(?=[aäeiìouù])/g, 'd');
+	rn = rn.replace(/(?<=^|[^fs])kx(?=[aäeiìouù])/g, 'g');
 
 	// syllable-final ejectives become voiced stops if followed by a voiced stop
-	rn = rn.replace(/px\/(\[?[bdg])/g, "b\/$1");
-	rn = rn.replace(/tx\/(\[?[bdg])/g, "d\/$1");
-	rn = rn.replace(/kx\/(\[?[bdg])/g, "g\/$1");
+	rn = rn.replace(/px(?=\/\[?[bdg])/g, 'b');
+	rn = rn.replace(/tx(?=\/\[?[bdg])/g, 'd');
+	rn = rn.replace(/kx(?=\/\[?[bdg])/g, 'g');
 
 	// tìftang dropping between non-equal vowels
 	rn = rn.replace(/(([aäeiìouù]|[ae][wy])\]?\/\[?)'([aäeiìouù])/g,
@@ -43,11 +43,11 @@ function combinedToRN(combined) {
 		});
 
 	// ä becomes e in unstressed syllables
-	rn = rn.replace(/ä(.*\[)/g, "e$1");
-	rn = rn.replace(/(\].*)ä/g, "$1e");
+	rn = rn.replace(/ä(?=.*\[)/g, 'e');
+	rn = rn.replace(/(?<=\].*)ä/g, 'e');
 
 	// insert interpunct to avoid n/g being read as ng
-	rn = rn.replace(/n(\]?)\/(\[?)g/g, 'n$1·/$2g');
+	rn = rn.replace(/(?<=n\]?)\/(?=\[?g)/g, '·/');
 
 	return rn;
 }
