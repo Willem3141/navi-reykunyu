@@ -608,7 +608,7 @@ function affixesSection(affixes) {
 		let $tr = $('<tr/>').appendTo($table);
 		if (a.hasOwnProperty('combinedFrom')) {
 			let $affixSpan = $('<span/>')
-				.html(lemmaForm(affix, 'aff:in'));
+				.html(lemmaForm({'word': {'FN': affix, 'combined': affix, 'RN': affix}, 'type': 'aff:in'}));
 			addLemmaClass($affixSpan, 'aff:in');
 			$('<td/>')
 				.append($affixSpan)
@@ -628,7 +628,7 @@ function affixesSection(affixes) {
 				let $affixLink = $('<a/>')
 					.addClass('word-link')
 					.html(lemmaForm(c['affix']))
-					.attr('href', '/?q=' + affix["word_raw"][getDialect()]);
+					.attr('href', '/?q=' + c['affix']["word_raw"][getDialect()]);
 				addLemmaClass($affixLink, c['affix']['type']);
 				$componentsCell.append($affixLink);
 				$meaningCell.append($('<span/>').text(getTranslation(c['affix']["translations"][0])));
