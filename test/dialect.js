@@ -46,4 +46,7 @@ test('converting words to RN', (t) => {
 
 	// ä does not become e in stressed syllables
 	assert.strictEqual(dialect.combinedToRN("vi/[rä]"), 'vi/[rä]');
+
+	// the combination ä'ä becomes ää
+	assert.strictEqual(dialect.combinedToRN("rä/['ä]"), 'rä/[ä]');
 });
