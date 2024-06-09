@@ -441,7 +441,7 @@ app.get('/api/fwew-search', cors(), function(req, res) {
 });
 
 app.get('/api/fwew', cors(), function(req, res) {
-	res.json(reykunyu.getResponsesFor(req.query["tìpawm"]));
+	res.json(reykunyu.getResponsesFor(req.query["tìpawm"], req.query["dialect"]));
 });
 
 app.get('/api/mok-suggest', cors(), function (req, res) {
