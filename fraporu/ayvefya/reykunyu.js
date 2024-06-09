@@ -62,8 +62,14 @@ $(function () {
 	$('#dialect-fn-radiobutton').prop('checked', dialect === 'FN');
 	$('#dialect-both-radiobutton').prop('checked', dialect === 'combined');
 	$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
+	$('#dialect-rn-warning').toggle(dialect === 'RN');
 	$('#settings-button').on("click", function () {
 		$('#settings-modal').modal("show");
+	});
+
+	// TODO temporary: show the RN warning iff RN is selected
+	$('#settings-modal .ui.radio.checkbox').on('click', () => {
+		$('#dialect-rn-warning').toggle($('#dialect-rn-radiobutton').prop('checked'));
 	});
 
 	$('.infix-button').on('click', function () {
