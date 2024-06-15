@@ -1288,7 +1288,7 @@ function createResultBlock(i, r) {
 	}
 
 	if (r["conjugation"]) {
-		if (r["type"] === "n" || r["type"] === "pn") {
+		if (r["type"] === "n" || r["type"] === "pn" || r["type"] === "n:pr") {
 			$result.append(nounConjugationSection(r["conjugation"][getDialect()], r["conjugation_note"]));
 		} else if (r["type"] === "adj") {
 			$result.append(adjectiveConjugationSection(r["conjugation"][getDialect()], r["conjugation_note"]));
