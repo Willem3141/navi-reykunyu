@@ -1328,7 +1328,7 @@ function createResults(results, $block) {
 			$block.append(createResultBlock(i, results["sì'eyng"][i]));
 		}
 	} else if (results["aysämok"].length) {
-		const suggestions = results["aysämok"].map(a => '<a href="/?q=' + a + '">' + a + '</a>');
+		const suggestions = results["aysämok"].map(a => '<a class="word-link" href="/?q=' + a + '">' + a + '</a>');
 		$block.append(createErrorBlock(_("no-results"),
 			_("did-you-mean") + " " +
 			suggestions.join(', ').replace(/, ([^,]*)$/, " " + _("or") + " $1") + "?"));
