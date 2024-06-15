@@ -34,14 +34,6 @@ $(function () {
 		localStorage.setItem('reykunyu-ipa', false);
 	}
 
-	// if there's already something in the search field, then just start a
-	// search immediately
-	if ($('#search-box').val().length) {
-		sngäiTìfwusew(true);
-	}
-
-	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
-
 	$('.ui.checkbox').checkbox();
 	$('#infix-details-modal').modal();
 	$('#infix-details-modal button').popup();
@@ -92,6 +84,14 @@ $(function () {
 		$('#search-box').val(event.state['query']);
 		sngäiTìfwusew(true);
 	});
+
+	// if there's already something in the search field, then just start a
+	// search immediately
+	if ($('#search-box').val().length) {
+		sngäiTìfwusew(true);
+	}
+
+	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
 
 	setUpAutocomplete();
 });
