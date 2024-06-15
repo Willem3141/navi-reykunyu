@@ -559,6 +559,7 @@ function tryLastConsonantUnvoicing(candidate, dialect) {
 	}
 
 	let candidates = [];
+	candidates.push({ ...candidate });
 	let tryUnvoicing = function (voiced, ejective) {
 		if (candidate["root"].endsWith(voiced)) {
 			candidates.push({
