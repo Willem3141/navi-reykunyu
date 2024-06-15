@@ -1090,40 +1090,37 @@ function getTransitivityList() {
 	return list;
 }
 
-function getRhymes(query) {
+function getRhymes(query, dialect) {
 	query = query.toLowerCase();
 
-	let words = {};
+	let words = [];
 
-	for (const word in dictionary) {
-		if (dictionary.hasOwnProperty(word)) {
-			if (dictionary[word].hasOwnProperty('pronunciation') &&
-			    dictionary[word]['pronunciation'].length > 0) {
-				if (rhymes.rhymes(dictionary[word]['pronunciation'][0]['syllables'], query)) {
-					let key = 0;
-					key = dictionary[word]['pronunciation'][0]['syllables'].split('-').length;
-					if (!words.hasOwnProperty(key)) {
-						words[key] = [];
-					}
-					let subKey = 0;
-					if (dictionary[word].hasOwnProperty('pronunciation')) {
-						subKey = dictionary[word]['pronunciation'][0]['stressed'];
-					}
-					if (!words[key].hasOwnProperty(subKey)) {
-						words[key][subKey] = [];
-					}
-					words[key][subKey].push(dictionary[word]);
+	for (const word of dictionary.getAll()) {
+		if (word.hasOwnProperty('pronunciation') && word['pronunciation'].length > 0) {
+			if (rhymes.rhymes(word['pronunciation'][0]['syllables'], query)) {
+				let key = 0;
+				key = word['pronunciation'][0]['syllables'].split('-').length;
+				if (!words.hasOwnProperty(key)) {
+					words[key] = [];
 				}
+				let subKey = 0;
+				if (word.hasOwnProperty('pronunciation')) {
+					subKey = word['pronunciation'][0]['stressed'];
+				}
+				if (!words[key].hasOwnProperty(subKey)) {
+					words[key][subKey] = [];
+				}
+				words[key][subKey].push(word);
 			}
 		}
 	}
 
-	for (const s in Object.keys(words)) {
-		if (words[s]) {
-			for (const s2 in Object.keys(words[s])) {
-				if (words[s][s2]) {
-					words[s][s2].sort(function (a, b) {
-						return a["na'vi"].localeCompare(b["na'vi"]);
+	for (const s of words) {
+		if (s) {
+			for (const s2 of s) {
+				if (s2) {
+					s2.sort(function (a, b) {
+						return a['word_raw'][dialect].localeCompare(b['word_raw'][dialect]);
 					});
 				}
 			}

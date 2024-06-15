@@ -1622,7 +1622,7 @@ function rhymesWithSyllableCountSection(syllableCount, rhymes) {
 
 function doSearchRhymes() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/rhymes', { 'tìpawm': tìpawm })
+	$.getJSON('/api/rhymes', { 'tìpawm': tìpawm, 'dialect': getDialect() })
 		.done(function (response) {
 			$results.empty();
 

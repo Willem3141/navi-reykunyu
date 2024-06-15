@@ -552,7 +552,7 @@ app.get('/api/random', cors(), function(req, res) {
 });
 
 app.get('/api/rhymes', cors(), function(req, res) {
-	res.json(reykunyu.getRhymes(req.query["tìpawm"]));
+	res.json(reykunyu.getRhymes(req.query["tìpawm"], req.query['dialect']));
 });
 
 app.get('/api/srs/lessons', function(req, res) {
