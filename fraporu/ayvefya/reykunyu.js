@@ -1406,6 +1406,13 @@ function sngäiTìfwusew(initial) {
 	$modeTabs = $('#tab-mode-bar');
 	$modeTabs.hide();
 	const query = $('#search-box').val();
+
+	// TODO temporary easter egg to enable RN mode
+	if (query === "lu oe tsulfätu lì'fyaye wione") {
+		const $rnButton = $('#dialect-rn-radiobutton');
+		$rnButton.parent().checkbox('set enabled');
+	}
+
 	if (initial) {
 		history.replaceState({ 'query': query, 'mode': getMode() }, '', '/?q=' + query);
 	} else {
