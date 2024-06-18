@@ -1408,7 +1408,7 @@ function sngäiTìfwusew(initial) {
 	const query = $('#search-box').val();
 
 	// TODO temporary easter egg to enable RN mode
-	if (query === "lu oe tsulfätu lì'fyaye wione") {
+	if (query === "lu oe tsùlfätu lì'fyaye wione") {
 		const $rnButton = $('#dialect-rn-radiobutton');
 		$rnButton.parent().checkbox('set enabled');
 	}
