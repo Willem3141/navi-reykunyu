@@ -7,7 +7,7 @@
  * table for the remaining letters:
  * 
  * ts -> c
- * ng -> g
+ * ng -> G
  * tx -> T
  * px -> P
  * kx -> K
@@ -30,7 +30,7 @@ module.exports = {
 
 function compress(word) {
 	let result = word.replace(/ts/g, 'c')
-	                 .replace(/ng/g, 'g')
+	                 .replace(/ng/g, 'G')
 	                 .replace(/tx/g, 'T')
 	                 .replace(/px/g, 'P')
 	                 .replace(/kx/g, 'K')
@@ -39,7 +39,8 @@ function compress(word) {
 	                 .replace(/aw/g, '1')
 	                 .replace(/ay/g, '2')
 	                 .replace(/ew/g, '3')
-	                 .replace(/ey/g, '4');
+	                 .replace(/ey/g, '4')
+	                 .replace(/·/g, '');
 	return result;
 }
 
@@ -54,7 +55,8 @@ function decompress(word) {
 	                 .replace(/P/g, 'px')
 	                 .replace(/K/g, 'kx')
 	                 .replace(/c/g, 'ts')
-	                 .replace(/g/g, 'ng');
+	                 .replace(/ng/g, 'n·g')
+	                 .replace(/G/g, 'ng');
 	return result;
 }
 

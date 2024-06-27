@@ -34,15 +34,17 @@ var reykunyu = require('./reykunyu');
 var annotatedDictionary = require('./annotatedDictionary');
 var conjugationString = require('./conjugationString');
 var verbs = require('./verbs');
+var output = require('./output');
 
 var tslamyu;
 try {
 	tslamyu = require('../../navi-tslamyu/tslamyu');
 } catch (e) {
-	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
+	output.warning('navi-tslamyu not found, continuing without parsing support');
+	output.hint(`Reykunyu can use navi-tslamyu to parse sentences.`);
 }
 
-var zeykerokyu = require('./zeykerokyu');
+//var zeykerokyu = require('./zeykerokyu'); // TODO
 
 const ejs = require('ejs');
 
@@ -80,6 +82,16 @@ app.set('views', './fraporu');
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
+	setLanguage(req);
+	res.render('txin', { user: req.user, query: req.query['q'], _: translations._ });
+});
+
+app.get('/help', function(req, res) {
+	setLanguage(req);
+	res.render('help', { user: req.user, _: translations._ });
+});
+
+function setLanguage(req) {
 	var lang = 'en';
 	if (req.headers.cookie) {
 		for (let cookie of req.headers.cookie.split('; ')) {
@@ -90,8 +102,7 @@ app.get('/', function(req, res) {
 		}
 	}
 	translations.setLanguage(lang);
-	res.render('txin', { user: req.user, query: req.query['q'], _: translations._ });
-});
+}
 
 app.get('/ayvefya/ui-translations.js', function(req, res) {
 	res.render('ayvefya/ui-translations', { strings_json: translations.getStringsJSON() });
@@ -120,7 +131,8 @@ app.get('/logout', function(req, res) {
 app.get('/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('leykatem', {
@@ -136,7 +148,8 @@ app.get('/add', function(req, res) {
 app.post('/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 
@@ -173,7 +186,8 @@ app.post('/add', function(req, res) {
 app.get('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	const word = req.query["word"];
@@ -194,7 +208,8 @@ app.get('/edit', function(req, res) {
 app.get('/edit/raw', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	const word = req.query["word"];
@@ -215,7 +230,8 @@ app.get('/edit/raw', function(req, res) {
 app.post('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let word, type, data;
@@ -256,7 +272,8 @@ app.get('/history', function(req, res) {
 app.get('/etymology-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('etymologyEditor', {
@@ -269,7 +286,8 @@ app.get('/etymology-editor', function(req, res) {
 app.get('/sources-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('sourcesEditor', {
@@ -282,7 +300,8 @@ app.get('/sources-editor', function(req, res) {
 app.get('/corpus-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('corpusEditor', {
@@ -294,7 +313,8 @@ app.get('/corpus-editor', function(req, res) {
 app.get('/corpus-editor/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('corpusEditorAdd', {
@@ -306,7 +326,8 @@ app.get('/corpus-editor/add', function(req, res) {
 app.get('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	const key = req.query["sentence"];
@@ -327,7 +348,8 @@ app.get('/corpus-editor/edit', function(req, res) {
 app.post('/corpus-editor/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let key, sentence;
@@ -370,7 +392,8 @@ app.post('/corpus-editor/add', function(req, res) {
 app.post('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let key, sentence;
@@ -392,7 +415,8 @@ app.post('/corpus-editor/edit', function(req, res) {
 app.get('/untranslated', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let untranslated = reykunyu.getUntranslated('fr');
@@ -411,17 +435,17 @@ app.get('/api/word', cors(), function(req, res) {
 
 app.get('/api/fwew-search', cors(), function(req, res) {
 	res.json({
-		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"]),
+		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"], req.query["dialect"]),
 		'toNa\'vi': reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"])
 	});
 });
 
 app.get('/api/fwew', cors(), function(req, res) {
-	res.json(reykunyu.getResponsesFor(req.query["tìpawm"]));
+	res.json(reykunyu.getResponsesFor(req.query["tìpawm"], req.query["dialect"]));
 });
 
 app.get('/api/mok-suggest', cors(), function (req, res) {
-	let suggestionsFrom = reykunyu.getSuggestionsFor(req.query["query"], req.query["language"]);
+	let suggestionsFrom = reykunyu.getSuggestionsFor(req.query["query"], req.query["language"], req.query["dialect"]);
 	let suggestionsTo = reykunyu.getReverseSuggestionsFor(req.query["query"], req.query["language"]);
 	res.json({
 		'results': suggestionsFrom['results'].concat(suggestionsTo['results'])
@@ -429,7 +453,7 @@ app.get('/api/mok-suggest', cors(), function (req, res) {
 });
 
 app.get('/api/mok', cors(), function(req, res) {
-	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"], req.query["language"]));
+	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"], req.query["language"], req.query["dialect"]));
 });
 
 app.get('/api/search', cors(), function(req, res) {
@@ -528,7 +552,7 @@ app.get('/api/random', cors(), function(req, res) {
 });
 
 app.get('/api/rhymes', cors(), function(req, res) {
-	res.json(reykunyu.getRhymes(req.query["tìpawm"]));
+	res.json(reykunyu.getRhymes(req.query["tìpawm"], req.query['dialect']));
 });
 
 app.get('/api/srs/lessons', function(req, res) {
@@ -596,6 +620,20 @@ app.post('/api/srs/mark-known', function(req, res) {
 		res.send();
 	});
 });
+
+app.use((req, res, next) => {
+	res.status(404);
+	setLanguage(req);
+	res.render('404', { user: req.user, _: translations._ });
+})
+
+app.use((err, req, res, next) => {
+	res.status(500);
+	setLanguage(req);
+	output.error('Uncaught exception when handling a request; responding with HTTP 500');
+	console.log(err.stack);
+	res.render('500', { user: req.user, _: translations._, error: err });
+})
 
 app.get('/api/message-stats', function(req, res) {
 	let query = req.query['query'];

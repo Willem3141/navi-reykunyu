@@ -21,7 +21,7 @@ for (let query of queries) {
 	const measurements = [];
 	for (let i = 0; i < sampleCount + spinUpCount; i++) {
 		const startTime = process.hrtime();
-		reykunyu.getResponsesFor(query);
+		reykunyu.getResponsesFor(query, 'combined');
 		const time = process.hrtime(startTime)[1] / 1000000;
 		if (i >= spinUpCount) {
 			measurements.push(time);
