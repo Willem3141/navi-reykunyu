@@ -34,7 +34,9 @@ var reykunyu = require('./reykunyu');
 var annotatedDictionary = require('./annotatedDictionary');
 var conjugationString = require('./conjugationString');
 var verbs = require('./verbs');
+var edit = require('./edit');
 var output = require('./output');
+var dialect = require('./dialect');
 
 var tslamyu;
 try {
@@ -163,7 +165,7 @@ app.post('/add', function(req, res) {
 	}
 	let word = data["na'vi"];
 	let type = data["type"];
-	let existing = reykunyu.hasWord(word, type);
+	let existing = reykunyu.hasWord(word, type);  // TODO
 	if (existing) {
 		res.status(400);
 		res.json({'message': 'Word / type combination already exists'});
@@ -190,14 +192,18 @@ app.get('/edit', function(req, res) {
 		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
-	const word = req.query["word"];
-	const type = req.query["type"];
-	if (!word || !type) {
+	if (!req.query.hasOwnProperty('word')) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
-	const wordData = reykunyu.getWord(word, type);
+	const id = parseInt(req.query['word'], 10);
+	if (isNaN(id)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const wordData = edit.getWordData(id);
 	res.render('leykatem', {
 		'user': req.user,
 		'post_url': '/edit',
@@ -212,14 +218,18 @@ app.get('/edit/raw', function(req, res) {
 		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
-	const word = req.query["word"];
-	const type = req.query["type"];
-	if (!word || !type) {
+	if (!req.query.hasOwnProperty('word')) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
-	const wordData = reykunyu.getWord(word, type);
+	const id = parseInt(req.query['word'], 10);
+	if (isNaN(id)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const wordData = edit.getWordData(id);
 	res.render('leykatem-yrr', {
 		'user': req.user,
 		'post_url': '/edit',
@@ -234,32 +244,31 @@ app.post('/edit', function(req, res) {
 		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
-	let word, type, data;
+	if (!req.body.hasOwnProperty('id') || !req.body.hasOwnProperty('data')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const id = parseInt(req.body['id'], 10);
+	if (isNaN(id)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	let data;
 	try {
-		word = req.body["word"];
-		type = req.body["type"];
-		data = JSON.parse(req.body["data"]);
+		data = JSON.parse(req.body['data']);
 	} catch (e) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
 
-	let old = reykunyu.getWord(word, type);
-	reykunyu.removeWord(word, type);
-	reykunyu.insertWord(data);
-	let history = JSON.parse(fs.readFileSync("./data/history.json"));
-	history.push({
-		'user': req.user['username'],
-		'date': new Date(),
-		'word': word,
-		'type': type,
-		'old': old,
-		'data': data
+	edit.updateWordData(id, data, req.user);
+	reykunyu.reloadData();
+	res.send({
+		'url': '/?q=' + dialect.makeRaw(data["na'vi"])
 	});
-	fs.writeFileSync("./data/history.json", JSON.stringify(history));
-	reykunyu.saveDictionary();
-	res.send();
 });
 
 app.get('/history', function(req, res) {

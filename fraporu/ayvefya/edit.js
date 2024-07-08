@@ -1,10 +1,11 @@
 $('.ui.checkbox').checkbox();
 $('.ui.dropdown').dropdown();
 
+var id = -1;
+
 $(function() {
 	const getParams = new URLSearchParams(window.location.search);
-	const word = getParams.get('word');
-	const type = getParams.get('type');
+	id = parseInt(getParams.get('word'), 10);
 
 	showHideInfixes();
 	$('#type-field').on('change', showHideInfixes);
@@ -59,19 +60,20 @@ $(function() {
 	});
 
 	$('#save-button').on('click', function () {
-		//try {
+		try {
+			$('#save-button').addClass('loading');
 			const wordData = generateWordData();
 			const url = $('body').data('url');
 			$.post(url, {
-				'word': word,
-				'type': type,
+				'id': id,
 				'data': JSON.stringify(wordData)
-			}, function () {
-				document.location.href = '/?q=' + wordData["na'vi"];
+			}, function (data) {
+				document.location.href = data['url'];
 			});
-		//} catch (e) {
-		//	alert(e);
-		//}
+		} catch (e) {
+			$('#save-button').removeClass('loading');
+			alert(e);
+		}
 	});
 
 	$('#translations-modal-cancel-button').on('click', function () {
@@ -104,6 +106,7 @@ function showHideInfixes() {
 
 function generateWordData() {
 	word = {};
+	word['id'] = id;
 	word["na'vi"] = preprocess($('#root-field').val());
 	word["type"] = $('#type-field').val();
 	if (word["type"].startsWith('v:')) {

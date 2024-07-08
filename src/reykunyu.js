@@ -1,7 +1,6 @@
 module.exports = {
+	'reloadData': reloadData,
 	'getWord': getWord,
-	'getWordPostprocessed': getWordPostprocessed,
-	'hasWord': hasWord,
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
@@ -63,6 +62,8 @@ var allWordsOfType = {};
 reloadData();
 
 function reloadData() {
+	dictionary.reload();
+
 	pronounForms = pronouns.getConjugatedForms(dictionary);
 
 	sentencesForWord = [];
@@ -222,7 +223,7 @@ function simplifiedTranslation(translation, language) {
 }
 
 function getWord(id) {
-	return dictionary[word.toLowerCase() + ':' + type];
+	return dictionary.getById(id);
 }
 
 function getWordPostprocessed(word, type) {

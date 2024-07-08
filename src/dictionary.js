@@ -6,11 +6,9 @@
 // and type (the word class, such as "n" or "v:tr") are unique, so that we can
 // uniquely define words by word and type too. We call the combination of a word
 // and its type the key of that word.
-//
-// TODO: define how exactly the key works. What is the key of toruk (torùk?) and
-// pekxinum (peekxinùm?)
 
 module.exports = {
+	'reload': reload,
 	'getById': getById,
 	'get': get,
 	'getEditable': getEditable,
@@ -24,22 +22,7 @@ const fs = require('fs');
 const dialect = require('./dialect');
 const output = require('./output');
 
-try {
-	var words = JSON.parse(fs.readFileSync("./data/words.json"));
-} catch (e) {
-	output.error('words.json not found, exiting');
-	output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
-This file does not seem to be present. If you want to run a local mirror
-of the instance at https://reykunyu.lu, you can copy the dictionary data
-from there:
-
-$ wget -O data/words.json https://reykunyu.lu/api/list/all
-
-Alternatively, you can start with an empty database:
-
-$ echo "{}" > data/words.json`);
-	process.exit(1);
-}
+var words;
 
 // dictionaries of all Na'vi words in the database, one per dialect
 // each dictionary is a mapping from strings to (arrays of) IDs in `words`
@@ -51,10 +34,25 @@ var searchables = {};
 // used for resolving word links
 var wordTypeKeys = {};
 
-reload();
-
 // Processes the dictionary data.
 function reload() {
+	try {
+		words = JSON.parse(fs.readFileSync("./data/words.json"));
+	} catch (e) {
+		output.error('words.json not found, exiting');
+		output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
+	This file does not seem to be present. If you want to run a local mirror
+	of the instance at https://reykunyu.lu, you can copy the dictionary data
+	from there:
+
+	$ wget -O data/words.json https://reykunyu.lu/api/list/all
+
+	Alternatively, you can start with an empty database:
+
+	$ echo "{}" > data/words.json`);
+		process.exit(1);
+	}
+
 	searchables = {
 		'FN': {},
 		'RN': {},
