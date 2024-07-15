@@ -37,7 +37,7 @@ function updateWordData(id, newData, user) {
 	// add history entry
 	let history = JSON.parse(fs.readFileSync("./data/history.json"));
 	history.push({
-		'user': user,
+		'user': user['username'],
 		'date': new Date(),
 		'id': id,
 		'old': data,
