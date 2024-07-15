@@ -1,23 +1,25 @@
 $('.ui.checkbox').checkbox();
 $('.ui.dropdown').dropdown();
 
+var id = -1;
+
 $(function() {
 	const getParams = new URLSearchParams(window.location.search);
-	const word = getParams.get('word');
-	const type = getParams.get('type');
+	id = parseInt(getParams.get('word'), 10);
 
 	$('#save-button').on('click', function () {
 		try {
+			$('#save-button').addClass('loading');
 			const wordData = generateWordData();
 			const url = $('body').data('url');
 			$.post(url, {
-				'word': word,
-				'type': type,
+				'id': id,
 				'data': JSON.stringify(wordData)
-			}, function () {
-				document.location.href = '/?q=' + wordData["na'vi"];
+			}, function (data) {
+				document.location.href = data['url'];
 			});
 		} catch (e) {
+			$('#save-button').removeClass('loading');
 			alert(e);
 		}
 	});
