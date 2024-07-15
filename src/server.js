@@ -288,7 +288,7 @@ app.get('/etymology-editor', function(req, res) {
 	res.render('etymologyEditor', {
 		'user': req.user,
 		'post_url': '/edit',
-		'words': reykunyu.getAll()
+		'words': edit.getAll()
 	});
 });
 

@@ -3,6 +3,7 @@
 module.exports = {
 	'getWordData': getWordData,
 	'updateWordData': updateWordData,
+	'getAll': getAll
 }
 
 const fs = require('fs');
@@ -44,4 +45,8 @@ function updateWordData(id, newData, user) {
 		'data': newData
 	});
 	fs.writeFileSync("./data/history.json", JSON.stringify(history));
+}
+
+function getAll() {
+	return readJson();
 }
