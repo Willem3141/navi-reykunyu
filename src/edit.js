@@ -33,6 +33,9 @@ function updateWordData(id, newData, user) {
 	if (!data) {
 		throw Error('Tried to update word data for a non-existing ID');
 	}
+	if (newData['id'] !== id) {
+		throw Error('Tried to update word data containing the incorrect ID');
+	}
 	json[id] = newData;
 	writeJson(json);
 
