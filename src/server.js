@@ -428,8 +428,9 @@ app.get('/untranslated', function(req, res) {
 		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
-	let untranslated = reykunyu.getUntranslated('fr');
-	res.render('untranslated', { user: req.user, untranslated: untranslated });
+	setLanguage(req);
+	let untranslated = edit.getUntranslated(translations.getLanguage());
+	res.render('untranslated', { user: req.user, untranslated: untranslated, language: translations.getLanguage() });
 });
 
 app.get('/study', function(req, res) {

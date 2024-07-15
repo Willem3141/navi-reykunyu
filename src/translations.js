@@ -1,6 +1,7 @@
 module.exports = {
 	'_': _,
 	setLanguage: setLanguage,
+	getLanguage: getLanguage,
 	getStringsJSON: getStringsJSON,
 };
 
@@ -18,6 +19,10 @@ let lang = 'en';
 
 function setLanguage(l) {
 	lang = l;
+}
+
+function getLanguage(l) {
+	return lang;
 }
 
 function getTranslation(key) {

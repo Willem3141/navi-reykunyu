@@ -6,7 +6,6 @@ module.exports = {
 	'getReverseResponsesFor': getReverseResponsesFor,
 	'getReverseSuggestionsFor': getReverseSuggestionsFor,
 	'getRandomWords': getRandomWords,
-	'getUntranslated': getUntranslated,
 	'getAll': getAll,
 	'getAllKeys': getAllKeys,
 	'getVerbs': getVerbs,
@@ -1010,24 +1009,6 @@ function getRandomWords(number, type) {
 
 	for (let result of results) {
 		postprocessResult(result);
-	}
-
-	return results;
-}
-
-function getUntranslated(language) {
-	let results = [];
-
-	wordLoop:
-	for (let w in dictionary) {
-		let word = dictionary[w];
-		for (let translation of word['translations']) {
-			if (!translation.hasOwnProperty(language) ||
-				translation[language].length === 0) {
-				results.push(word);
-				continue wordLoop;
-			}
-		}
 	}
 
 	return results;

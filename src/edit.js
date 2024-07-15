@@ -3,7 +3,8 @@
 module.exports = {
 	'getWordData': getWordData,
 	'updateWordData': updateWordData,
-	'getAll': getAll
+	'getAll': getAll,
+	'getUntranslated': getUntranslated
 }
 
 const fs = require('fs');
@@ -49,4 +50,23 @@ function updateWordData(id, newData, user) {
 
 function getAll() {
 	return readJson();
+}
+
+function getUntranslated(language) {
+	const json = readJson();
+	let results = [];
+
+	wordLoop:
+	for (let w in json) {
+		let word = json[w];
+		for (let translation of word['translations']) {
+			if (!translation.hasOwnProperty(language) ||
+				translation[language].length === 0) {
+				results.push(word);
+				continue wordLoop;
+			}
+		}
+	}
+
+	return results;
 }
