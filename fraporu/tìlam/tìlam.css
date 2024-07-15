@@ -16,7 +16,8 @@ h1, h2, h3, h4, h5,
 .ui.menu,
 .ui input,
 #search-box,
-.ui.modal .header {
+.ui.modal .header,
+.ui.popup .header {
 	font-family: 'Recursive' !important;
 	font-variation-settings: "MONO" 0;
 }
