@@ -69,20 +69,40 @@
 							return sources.join(' || ');
 						}
 						%>
-						<% let keys = [];
-						for (let key in words) {
-							keys.push(key);
+						<% let ids = [];
+						for (let id in words) {
+							ids.push(id);
 						}
-						keys.sort(Intl.Collator().compare);
-						keys.sort(function(a, b) {
-							return getSourceString(words[a]['source']).localeCompare(getSourceString(words[b]['source']));
+						const collator = new Intl.Collator();
+						const removeMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '').replaceAll(']', '');
+						const htmlMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '<span class="stressed">').replaceAll(']', '</span>');
+						const sourceDate = (word) => {
+							if (!word.hasOwnProperty('source')) {
+								return '';
+							}
+							if (word['source'].length === 0) {
+								return '';
+							}
+							if (word['source'][0].length < 3) {
+								return '';
+							}
+							return word['source'][0][2];
+						};
+						ids.sort((a, b) => {
+							const firstDate = sourceDate(words[a]);
+							const secondDate = sourceDate(words[b]);
+							const result = collator.compare(firstDate, secondDate);
+							if (result !== 0) {
+								return result;
+							}
+							return collator.compare(removeMarkup(words[a]["na'vi"]), removeMarkup(words[b]["na'vi"]));
 						});
-						for (let w of keys) {
-							const word = words[w];
+						for (let id of ids) {
+							const word = words[id];
 						%>
 						<tr>
 							<td>
-								<%= word["na'vi"] %><span class="muted">:<%= word['type'] %></span>
+								<%- htmlMarkup(word["na'vi"]) %><span class="muted"> (<%= word['type'] %>)</span>
 							</td>
 							<td>
 								<input class="source-field" data-json="<%= JSON.stringify(word) %>" value="<%= getSourceString(word['source']) %>">
