@@ -61,35 +61,35 @@
 					<p><%- _('help-learning-text') %></p>
 				</div>
 
-				<h2>Looking up words</h2>
-				<p>To look up a word, go to Reykunyu's <a href="/">main page</a>, type the word you're looking for into the search box, and press Enter. Make sure the dropdown to the right of or below the search box is set to <b>Na'vi ↔ English</b> (this is the default):</p>
+				<h2><%- _('help-looking-up') %></h2>
+				<p><%- _('help-looking-up-text-1') %></p>
 				<form id="search-form" style="padding-bottom: 20px;">
 					<div class="ui search fluid focus">
 						<div class="ui right action left icon input fluid">
 							<i class="search icon"></i>
 							<input id="search-box" type="search" autofocus="" value="" autocomplete="off">
 							<div id="mode-direction" class="ui compact selection dropdown" tabindex="0">
-								<span class="text">Na'vi ↔ <%- _("language") %></span>
+								<span class="text">Na'vi ↔ <%- _('language') %></span>
 								<i class="dropdown icon"></i>
 							</div>
 						</div>
 					</div>
 				</form>
-				<p>You can either input a Na'vi word to find its English translation, or you can input a word in English to find Na'vi words with your searched word in their definition. (If you want to search in another language, then use the language selector in the top-right.) Reykunyu tries to guess which of the two search directions you wanted, but if necessary, you can switch between them with the <b>Na'vi → English</b> and <b>English → Na'vi</b> tabs that appear under the search box after you made a search:</p>
+				<p><%- _('help-looking-up-text-2') %></p>
 				<div id="tab-mode-bar" class="ui top attached tabular menu"><div class="item active">Na'vi&nbsp;→&nbsp;<%- _('language') %><div class="result-count-tag">1</div></div><div class="item"><%- _('language') %>&nbsp;→&nbsp;Na'vi<div class="result-count-tag">2</div></div></div>
-				<p>The small numbers on the tabs indicate how many results there are for the corresponding search direction.</p>
+				<p><%- _('help-looking-up-text-3') %></p>
 
-				<h3>Na’vi → English searches</h3>
-				<p>When you input a Na’vi word, Reykunyu is quite good at detecting affixes. You should be able to search for almost any affixed form. Reykunyu will figure out what affixes your word has, and show you its dictionary form plus a list of affixes that were present in your word. Reykunyu also does its best to figure out what you meant if your word has incorrectly applied affixes. In this case, it will also show you what would have been the correct affixed form. Additionally, you can search for more than one word at a time, in which case Reykunyu will display a list of separate words, looking something like this:</p>
+				<h3><%- _('help-from-navi') %></h3>
+				<p><%- _('help-from-navi-text-1') %></p>
 				<div class="ui pointing menu" id="sentence-bar"><a class="item active"><div><div class="navi">oe</div><div class="definition"><span class="type ui label type-badge horizontal" data-tooltip="pronoun">pn.</span>I</div></div></a><a class="item"><div><div class="navi">kaltxì si</div><div class="definition"><span class="type ui label type-badge horizontal" data-tooltip="intransitive verb">vin.</span>greet</div></div></a><a class="item"><div><div class="navi">ngaru</div><div class="definition"><span class="type ui label type-badge horizontal" data-tooltip="pronoun">pn.</span>to you</div></div></a></div>
-				<p>Click on a word to see the results for that word. As you can see, Reykunyu automatically detects and si-verbs, and treats them as a single word.</p>
+				<p><%- _('help-from-navi-text-2') %></p>
 
-				<h3>English → Na’vi searches</h3>
-				<p>When you input an English word, make sure to only input one word at a time, and input it in its dictionary form (for example, "want", not "wanted"). Reykunyu doesn't know English grammar rules, and doesn't understand that "wanted" is just a form of "want". So searching for "wanted" won't give useful results.</p>
+				<h3><%- _('help-to-navi') %></h3>
+				<p><%- _('help-to-navi-text') %></p>
 
-				<h2>Results</h2>
-				<h3>Word types</h3>
-				<p>Reykunyu shows for each word which type of word it is. It uses the following abbreviations:</p>
+				<h2><%- _('help-results') %></h2>
+				<h3><%- _('help-word-types') %></h3>
+				<p><%- _('help-word-types-text') %></p>
 				<table>
 					<tr>
 						<td><%- _('type-traditional-n') %></td>
@@ -177,10 +177,10 @@
 					</tr>
 				</table>
 
-				<h2>Other search modes</h2>
-				<p>Besides the default <b>Na'vi ↔ English</b> mode, Reykunyu offers two other search modes that you can select using the dropdown in the search box.</p>
-				<p>The <b>Annotated Dictionary</b> mode allows you to search in the <a href="http://ivongnavi.info/AnnotatedDictionary.pdf">Annotated Dictionary</a> by Stefan G. Müller. This dictionary contains, besides the definitions for the Na’vi words, a large number of usage examples and clarifications. Reykunyu contains the exact same data as the Annotated Dictionary PDF file. Note that Reykunyu won't find affixed forms in this mode.</p>
-				<p>The <b>Rhymes</b> mode is a simple rhyme dictionary. It allows you to find rhyme words, grouped by number of syllables and the stressed syllable. This is useful mostly when writing poetry.</p>
+				<h2><%- _('help-other-modes') %></h2>
+				<p><%- _('help-other-modes-text-1') %></p>
+				<p><%- _('help-other-modes-text-2') %></p>
+				<p><%- _('help-other-modes-text-3') %></p>
 			</div>
 
 			<div class="page" id="credits-page" style="display: none;">
