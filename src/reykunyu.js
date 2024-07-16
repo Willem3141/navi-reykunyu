@@ -225,16 +225,6 @@ function getWord(id) {
 	return dictionary.getById(id);
 }
 
-function getWordPostprocessed(word, type) {
-	let result = JSON.parse(JSON.stringify(getWord(word, type)));
-	postprocessResult(result);
-	return result;
-}
-
-function hasWord(word, type) {
-	return dictionary.hasOwnProperty(word.toLowerCase() + ':' + type);
-}
-
 function getResponsesFor(query, dialect) {
 	query = preprocess.preprocessQuery(query, dialect);
 	let results = [];

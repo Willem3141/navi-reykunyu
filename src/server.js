@@ -440,7 +440,7 @@ app.get('/study', function(req, res) {
 });
 
 app.get('/api/word', cors(), function(req, res) {
-	res.json(reykunyu.getWordPostprocessed(req.query['word'], req.query['type']));
+	res.json(reykunyu.getWord(req.query['id']));
 });
 
 app.get('/api/fwew-search', cors(), function(req, res) {
