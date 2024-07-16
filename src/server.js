@@ -515,19 +515,11 @@ app.get('/api/history/major-changes', function(req, res) {
 });
 
 app.get('/api/frau', function(req, res) {
-	res.json(reykunyu.getAll());
+	res.json(edit.getAll());
 });
 
 app.get('/api/list/all', function(req, res) {
-	res.json(reykunyu.getAll());
-});
-
-app.get('/api/list/verbs', function(req, res) {
-	res.json(reykunyu.getVerbs());
-});
-
-app.get('/api/list/transitivity', function(req, res) {
-	res.json(reykunyu.getTransitivityList());
+	res.json(edit.getAll());
 });
 
 app.get('/api/sound', function(req, res) {

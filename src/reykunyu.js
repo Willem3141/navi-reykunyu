@@ -7,9 +7,6 @@ module.exports = {
 	'getReverseSuggestionsFor': getReverseSuggestionsFor,
 	'getRandomWords': getRandomWords,
 	'getAll': getAll,
-	'getAllKeys': getAllKeys,
-	'getVerbs': getVerbs,
-	'getTransitivityList': getTransitivityList,
 	'getRhymes': getRhymes,
 	'getAllSentences': getAllSentences,
 	'removeSentence': removeSentence,
@@ -1006,60 +1003,6 @@ function getRandomWords(number, type) {
 
 function getAll() {
 	return dictionary.getAll();
-}
-
-function getAllKeys() {
-	let result = [];
-	for (let word of words) {
-		if (word !== null) {
-			result.push(word['key']);
-		}
-	}
-	return result;
-}
-
-function getVerbs() {
-	let verbs = [];
-
-	for (word in dictionary) {
-		if (dictionary.hasOwnProperty(word)) {
-			let type = "";
-			if ('type' in dictionary[word]) {
-				type = dictionary[word]['type'];
-			}
-			if (type.startsWith('v') || type === 'n:si') {
-				verbs.push(dictionary[word]);
-			}
-		}
-	}
-
-	return verbs;
-}
-
-function getTransitivityList() {
-	let list = [];
-
-	let verbs = getVerbs();
-	for (let i = 0; i < verbs.length; i++) {
-		const verb = verbs[i];
-		let word = verb["na'vi"];
-		const translation = verb["translations"][0]["en"];
-		let type = verb["type"];
-		if (type === "n:si") {
-			word += " si";
-			type = "v:in";
-		}
-		if (type === "v:in") {
-			type = "intransitive";
-		} else if (type === "v:tr") {
-			type = "transitive";
-		} else {
-			continue;
-		}
-		list.push([word, translation, type]);
-	}
-
-	return list;
 }
 
 function getRhymes(query, dialect) {
