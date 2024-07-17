@@ -1,5 +1,5 @@
-// The code from-Na'vi dictionary in Reykunyu. This module encapsulates the
-// dictionary data read from data/words.json.
+// The code responsible for the from-Na'vi dictionary in Reykunyu. This module
+// encapsulates the dictionary data read from data/words.json.
 //
 // Each word has an integer ID, which is its position in the list in
 // words.json. Furthermore, we assume that combinations of word (the Na’vi word)

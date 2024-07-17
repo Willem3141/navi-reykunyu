@@ -1,4 +1,5 @@
-// Some simple routines that allow editing the data in data/words.json.
+// Some simple routines that allow editing the data in data/words.json, and
+// storing the history of these edits in data/history.json.
 
 module.exports = {
 	'getWordData': getWordData,
