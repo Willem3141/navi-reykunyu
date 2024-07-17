@@ -111,7 +111,8 @@ app.get('/ayvefya/ui-translations.js', function(req, res) {
 });
 
 app.get('/all', function(req, res) {
-	res.render('fralì\'u');
+	setLanguage(req);
+	res.render("fralì'u", { user: req.user, _: translations._ });
 });
 
 app.get('/login', function(req, res) {

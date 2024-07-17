@@ -6,6 +6,14 @@ $(function() {
 		onChange: runFilter
 	});
 	$('#filter-box').on('input', runFilter);
+
+	$('#language-dropdown').dropdown({
+		onChange: function (value) {
+			setNewLanguage(value);
+			loadWordList();
+			return false;
+		}
+	});
 });
 
 function createErrorBlock(text, subText) {
@@ -141,7 +149,7 @@ function createWordBlock(word) {
 		if (word["translations"].length > 1) {
 			$block.append($('<span/>').addClass('number').html(' ' + (parseInt(i, 10) + 1) + '. '));
 		}
-		$block.append($('<span/>').addClass('translation').html(getTranslation(word["translations"][i])));
+		$block.append($('<span/>').addClass('definition').html(getTranslation(word["translations"][i])));
 	}
 	if (word.hasOwnProperty('source')) {
 		for (const s of word['source']) {
@@ -193,11 +201,14 @@ const sections = "'aäefhiìklmnoprstuvwyz".split('');
 
 function loadWordList() {
 	let $results = $('#word-list-result');
+	$results.empty();
+	$('#spinner').show();
+
 	$.getJSON('/api/list/all')
 		.done(function(dictionary) {
-			$results.empty();
-
+			$('#spinner').hide();
 			const $tocBar = $('#toc-bar');
+			$tocBar.empty();
 			for (const section of sections) {
 				$('<a/>')
 					.addClass('ui compact button')
@@ -230,6 +241,8 @@ function loadWordList() {
 				}
 				$block.append(createWordBlock(word));
 			}
+
+			runFilter();
 		})
 		.fail(function() {
 			$results.empty();
@@ -257,7 +270,6 @@ function runFilter() {
 			const $e = $(e);
 			const type = $e.attr('data-type');
 			if (typeFilter === "all" || typeFilter === type) {
-				console.log('hoi');
 				const lemma = $e.attr('data-lemma');
 				const matches = filter.test(lemma);
 				$e.toggle(matches);
