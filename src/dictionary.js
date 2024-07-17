@@ -45,7 +45,7 @@ function reload() {
 	of the instance at https://reykunyu.lu, you can copy the dictionary data
 	from there:
 
-	$ wget -O data/words.json https://reykunyu.lu/api/list/all
+	$ wget -O data/words.json https://reykunyu.lu/words.json
 
 	Alternatively, you can start with an empty database:
 

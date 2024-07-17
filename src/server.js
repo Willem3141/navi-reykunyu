@@ -439,6 +439,10 @@ app.get('/study', function(req, res) {
 	});
 });
 
+app.get('/words.json', function(req, res) {
+	res.sendFile('words.json', { root: process.cwd() + '/data' });
+});
+
 app.get('/api/word', cors(), function(req, res) {
 	res.json(reykunyu.getWord(req.query['id']));
 });
@@ -514,18 +518,14 @@ app.get('/api/history/major-changes', function(req, res) {
 	res.json(historyData);
 });
 
-app.get('/api/frau', function(req, res) {
-	res.json(edit.getAll());
-});
-
 app.get('/api/list/all', function(req, res) {
-	res.json(edit.getAll());
+	res.json(reykunyu.getAll());
 });
 
 app.get('/api/sound', function(req, res) {
 	const file = req.query["word"] + "-" + req.query["type"] + '.mp3';
 	if (fs.existsSync(file)) {
-		res.sendFile(file, { root: process.cwd() + '/../data/fam' });
+		res.sendFile(file, { root: process.cwd() + '/data/fam' });
 	} else {
 		res.sendStatus(404);
 	}

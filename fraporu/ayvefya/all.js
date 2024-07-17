@@ -193,7 +193,7 @@ const sections = "'aäefhiìklmnoprstuvwyz".split('');
 
 function loadWordList() {
 	let $results = $('#word-list-result');
-	$.getJSON('/api/frau')
+	$.getJSON('/api/list/all')
 		.done(function(dictionary) {
 			$results.empty();
 
