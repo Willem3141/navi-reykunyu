@@ -6,6 +6,14 @@ $(function() {
 		onChange: runFilter
 	});
 	$('#filter-box').on('input', runFilter);
+
+	$('#language-dropdown').dropdown({
+		onChange: function (value) {
+			setNewLanguage(value);
+			loadWordList();
+			return false;
+		}
+	});
 });
 
 function createErrorBlock(text, subText) {
@@ -73,7 +81,7 @@ function lemmaForm(word, type) {
 }
 
 function addLemmaClass($element, type) {
-	if (type === 'aff:pre') {
+	if (type === 'aff:pre' || type === 'aff:pre:len') {
 		$element.addClass('prefix');
 	} else if (type === 'aff:in') {
 		$element.addClass('infix');
@@ -141,7 +149,7 @@ function createWordBlock(word) {
 		if (word["translations"].length > 1) {
 			$block.append($('<span/>').addClass('number').html(' ' + (parseInt(i, 10) + 1) + '. '));
 		}
-		$block.append($('<span/>').addClass('translation').html(getTranslation(word["translations"][i])));
+		$block.append($('<span/>').addClass('definition').html(getTranslation(word["translations"][i])));
 	}
 	if (word.hasOwnProperty('source')) {
 		for (const s of word['source']) {
@@ -193,11 +201,14 @@ const sections = "'aäefhiìklmnoprstuvwyz".split('');
 
 function loadWordList() {
 	let $results = $('#word-list-result');
-	$.getJSON('/api/frau')
-		.done(function(dictionary) {
-			$results.empty();
+	$results.empty();
+	$('#spinner').show();
 
+	$.getJSON('/api/list/all')
+		.done(function(dictionary) {
+			$('#spinner').hide();
 			const $tocBar = $('#toc-bar');
+			$tocBar.empty();
 			for (const section of sections) {
 				$('<a/>')
 					.addClass('ui compact button')
@@ -207,17 +218,13 @@ function loadWordList() {
 					.appendTo($tocBar);
 			}
 
-			let keys = []
-			for (let key in dictionary) {
-				keys.push(key);
-			}
-			keys.sort(function (a, b) {
-				return compareNaviWords(a, b, 0);
+			dictionary.sort(function (a, b) {
+				return compareNaviWords(a['word_raw']['FN'], b['word_raw']['FN'], 0);
 			});
 			let section = '';
 			let block = null;
-			for (let i in keys) {
-				const initial = keys[i][0].toLowerCase();
+			for (let word of dictionary) {
+				const initial = word['word_raw']['FN'][0].toLowerCase();
 				if (initial !== section) {
 					let $header = $('<h2/>')
 						.append(initial)
@@ -232,9 +239,10 @@ function loadWordList() {
 					$results.append($block);
 					section = initial;
 				}
-				let word = dictionary[keys[i]];
 				$block.append(createWordBlock(word));
 			}
+
+			runFilter();
 		})
 		.fail(function() {
 			$results.empty();
@@ -262,7 +270,6 @@ function runFilter() {
 			const $e = $(e);
 			const type = $e.attr('data-type');
 			if (typeFilter === "all" || typeFilter === type) {
-				console.log('hoi');
 				const lemma = $e.attr('data-lemma');
 				const matches = filter.test(lemma);
 				$e.toggle(matches);

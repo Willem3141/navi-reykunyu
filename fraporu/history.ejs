@@ -40,8 +40,12 @@
 						<% let date = new Date(item['date']);
 						let parts = date.toISOString().split('T') %>
 						<td><%= parts[0] %> <span class="muted"><%= parts[1].split('.')[0] %></span></td>
-						<td><%= item['word'] %><% if (item['word'] !== item['data']['na\'vi']) { %> &rarr; <%= item['data']['na\'vi'] %><% } %> <span class="muted">(<%= item['type'] %><% if (item['type'] !== item['data']['type']) { %> &rarr; <%= item['data']['type'] %><% } %>)</span></td>
-						<td><span class="muted"><%= item['old'] ? 'edited' : 'added' %></span></td>
+						<td><%= item['data']['na\'vi'] %> <span class="muted">(<%= item['data']['type'] %>)</span></td>
+						<% if (item['old']) { %>
+							<td><span class="muted">edited</span></td>
+						<% } else { %>
+							<td><span class="muted">added</span></td>
+						<% } %>
 					</tr>
 					<% } %>
 				</tbody>

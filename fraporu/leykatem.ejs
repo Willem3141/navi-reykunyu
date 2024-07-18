@@ -55,7 +55,7 @@ const types = [
 					Kaltxì ma <%= user.username %>!
 				</div>
 				<% } %>
-				<a href="/edit/raw?word=<%= word['na\'vi'] %>&type=<%= word['type'] %>" class="ui icon right floated top right basic button">
+				<a href="/edit/raw?word=<%= word['id'] %>" class="ui icon right floated top right basic button">
 					<i class="edit icon"></i> Edit raw JSON
 				</a>
 				<a href="/" class="ui icon right floated top right basic button">
@@ -67,7 +67,8 @@ const types = [
 				<div class="fields">
 					<div class="eight wide field">
 						<label>Root word</label>
-						<input id="root-field" type="text" placeholder="taron" value="<%= word['na\'vi'] %>">
+						<input id="root-field" type="text" placeholder="[ta]/ron" value="<%= word['na\'vi'] %>">
+						<span class="muted">Use FN spelling, but with <b>ù</b> where applicable. For multi-syllable words: mark syllable boundaries with <b>/</b> and the stressed syllable with <b>[...]</b>.</span>
 					</div>
 					<div class="eight wide field">
 						<label>Type</label>

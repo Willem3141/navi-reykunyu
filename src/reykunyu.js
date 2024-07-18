@@ -1,22 +1,14 @@
 module.exports = {
+	'reloadData': reloadData,
 	'getWord': getWord,
-	'getWordPostprocessed': getWordPostprocessed,
-	'hasWord': hasWord,
 	'getResponsesFor': getResponsesFor,
 	'getSuggestionsFor': getSuggestionsFor,
 	'getReverseResponsesFor': getReverseResponsesFor,
 	'getReverseSuggestionsFor': getReverseSuggestionsFor,
 	'getRandomWords': getRandomWords,
-	'getUntranslated': getUntranslated,
 	'getAll': getAll,
-	'getAllKeys': getAllKeys,
-	'getVerbs': getVerbs,
-	'getTransitivityList': getTransitivityList,
 	'getRhymes': getRhymes,
 	'getAllSentences': getAllSentences,
-	'removeWord': removeWord,
-	'insertWord': insertWord,
-	'saveDictionary': saveDictionary,
 	'removeSentence': removeSentence,
 	'insertSentence': insertSentence,
 	'hasSentence': hasSentence,
@@ -32,6 +24,7 @@ const affixList = require('./affixList');
 const conjugatedTranslation = require('./conjugatedTranslation');
 const conjugationString = require('./conjugationString');
 const convert = require('./convert');
+const dictionary = require('./dictionary');
 const ipa = require('./ipa');
 const nouns = require('./nouns');
 const numbers = require('./numbers');
@@ -46,23 +39,6 @@ const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
 try {
-	var dictionary = JSON.parse(fs.readFileSync("./data/words.json"));
-} catch (e) {
-	output.error('words.json not found, exiting');
-	output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
-This file does not seem to be present. If you want to run a local mirror
-of the instance at https://reykunyu.lu, you can copy the dictionary data
-from there:
-
-$ wget -O data/words.json https://reykunyu.lu/api/list/all
-
-Alternatively, you can start with an empty database:
-
-$ echo "{}" > data/words.json`);
-	process.exit(1);
-}
-
-try {
 	var sentences = JSON.parse(fs.readFileSync("./data/corpus.json"));
 } catch (e) {
 	output.warning('Corpus data not found');
@@ -73,7 +49,6 @@ harmless, but Reykunyu won't find any example sentences.`);
 }
 
 var sentencesForWord = {};
-var derivedWords = {};
 var pronounForms = {};
 
 // list of all words, for randomization
@@ -83,64 +58,122 @@ var allWordsOfType = {};
 reloadData();
 
 function reloadData() {
-
-	derivedWords = {};
-	sentencesForWord = {};
-
-	for (let word of Object.keys(dictionary)) {
-		if (dictionary[word].hasOwnProperty('etymology')) {
-			let etymology = dictionary[word]['etymology'];
-			etymology = wordLinks.enrichWordLinks(etymology, dictionary);
-			for (let piece of etymology) {
-				if (typeof piece === "string") {
-					continue;
-				}
-				const navi = piece["na'vi"];
-				const type = piece["type"];
-				const key = navi.toLowerCase() + ':' + type;
-				if (dictionary.hasOwnProperty(key)) {
-					if (!derivedWords.hasOwnProperty(key)) {
-						derivedWords[key] = [];
-					}
-					derivedWords[key].push(wordLinks.stripToLinkData(dictionary[word]));
-				} else {
-					console.log('Invalid reference to [' + key + '] in etymology for ' + word);
-				}
-			}
-		}
-	}
-
-	for (let word of Object.keys(derivedWords)) {
-		derivedWords[word].sort(function (a, b) {
-			return a["na'vi"].localeCompare(b["na'vi"]);
-		});
-	}
-
-	for (const sentenceKey of Object.keys(sentences)) {
-		const sentence = sentences[sentenceKey];
-		for (const a of sentence['na\'vi']) {
-			const word = a[0];
-			const roots = a[1];
-			for (const r of roots) {
-				if (dictionary.hasOwnProperty(r)) {
-					if (!sentencesForWord.hasOwnProperty(r)) {
-						sentencesForWord[r] = [];
-					}
-					if (!sentencesForWord[r].includes(sentences[sentenceKey])) {
-						sentencesForWord[r].push(sentences[sentenceKey]);
-					}
-				} else {
-					console.log('Invalid reference to [' + r + '] in sentence ' + sentenceKey);
-				}
-			}
-		}
-	}
+	dictionary.reload();
 
 	pronounForms = pronouns.getConjugatedForms(dictionary);
 
+	sentencesForWord = [];
+
+	// preprocess all words
+	for (let word of dictionary.getAll()) {
+		// pronunciation
+		if (word.hasOwnProperty('pronunciation')) {
+			for (let pronunciation of word['pronunciation']) {
+				pronunciation['ipa'] = {
+					'FN': ipa.generateIpa(pronunciation, word['type'], 'FN'),
+					'RN': ipa.generateIpa(pronunciation, word['type'], 'RN')
+				};
+			}
+		}
+		
+		// conjugation tables
+		if (word.hasOwnProperty('conjugation')) {
+			word['conjugation'] = {
+				'FN': word['conjugation']['forms'],
+				'combined': word['conjugation']['forms'],
+				'RN': word['conjugation']['forms']
+			};
+		} else if (word['type'] === 'n' || word['type'] === 'n:pr') {
+			word['conjugation'] = {
+				'FN': createNounConjugation(word, 'FN'),
+				'combined': createNounConjugation(word, 'combined'),
+				'RN': createNounConjugation(word, 'RN')
+			};
+		} else if (word['type'] === 'adj') {
+			word['conjugation'] = {
+				'FN': createAdjectiveConjugation(word, 'FN'),
+				'combined': createAdjectiveConjugation(word, 'combined'),
+				'RN': createAdjectiveConjugation(word, 'RN')
+			};
+		}
+
+		// etymology and derived words
+		if (word.hasOwnProperty('etymology')) {
+			word['etymology'] = wordLinks.enrichWordLinks(word['etymology'], dictionary);
+			for (let piece of word['etymology']) {
+				if (typeof piece === "string") {
+					continue;
+				}
+				const navi = piece["na'vi"].toLowerCase()
+					.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');  // TODO replace by word_raw
+				const type = piece["type"];
+				const result = dictionary.getEditable(navi, type);
+				if (result) {
+					if (!result.hasOwnProperty('derived')) {
+						result['derived'] = [];
+					}
+					result['derived'].push(wordLinks.stripToLinkData(word));
+				} else {
+					output.warning('Invalid reference to ' + navi + ':' + type + ' in etymology for ' + word);
+					output.hint(`The etymology data for a word refers to a word/type that doesn't
+exist. This etymology link will look broken in the word entry.`, 'invalid-etymology-reference');
+				}
+			}
+		}
+
+		// meaning notes
+		if (word.hasOwnProperty('meaning_note')) {
+			word['meaning_note'] = wordLinks.enrichWordLinks(word['meaning_note'], dictionary);
+		}
+
+		// see also
+		if (word.hasOwnProperty('seeAlso')) {
+			for (let i = 0; i < word['seeAlso'].length; i++) {
+				let [navi, type] = splitWordAndType(word['seeAlso'][i]);
+				let result = dictionary.getEditable(navi, type);
+				if (result) {
+					word['seeAlso'][i] = wordLinks.stripToLinkData(result);
+				}
+			}
+		}
+	}
+
+	// sort derived words
+	for (let word of dictionary.getAll()) {
+		if (word.hasOwnProperty('derived')) {
+			word['derived'].sort(function (a, b) {
+				return a["na'vi"].localeCompare(b["na'vi"]);  // TODO use word_raw
+			});
+		}
+	}
+
+	// prepare sentence search data
+	for (const sentenceKey of Object.keys(sentences)) {
+		const sentence = sentences[sentenceKey];
+		for (const a of sentence['na\'vi']) {
+			const roots = a[1];
+			for (const r of roots) {
+				let [word, type] = splitWordAndType(r);
+				let result = dictionary.getEditable(word, type);
+				if (result) {
+					if (!result.hasOwnProperty('sentences')) {
+						result['sentences'] = [];
+					}
+					if (!result['sentences'].includes(sentences[sentenceKey])) {
+						result['sentences'].push(sentences[sentenceKey]);
+					}
+				} else {
+					output.warning('Invalid reference to ' + r + ' in sentence ' + sentenceKey);
+					output.hint(`The sentence refers to a word/type that doesn't exist.`,
+						'invalid-sentence-reference');
+				}
+			}
+		}
+	}
+
 	allWords = [];
-	for (let word of Object.keys(dictionary)) {
-		allWords.push(dictionary[word]);
+	for (let word of dictionary.getAll()) {
+		allWords.push(word);
 	}
 
 	allWordsOfType = {};
@@ -152,12 +185,17 @@ function reloadData() {
 	}
 }
 
+function splitWordAndType(wordType) {
+	let i = wordType.indexOf(':');
+	return [wordType.substring(0, i), wordType.substring(i + 1)];
+}
+
 function getAllWordsOfType(type, allowSubtype) {
 	let result = [];
-	for (let word of Object.keys(dictionary)) {
-		if (dictionary[word]['type'] == type ||
-				(allowSubtype && dictionary[word]['type'].startsWith(type))) {
-			result.push(dictionary[word]);
+	for (let word of dictionary.getAll()) {
+		if (word['type'] == type ||
+			(allowSubtype && word['type'].startsWith(type))) {
+			result.push(word);
 		}
 	}
 	return result;
@@ -180,22 +218,12 @@ function simplifiedTranslation(translation, language) {
 	return result;
 }
 
-function getWord(word, type) {
-	return dictionary[word.toLowerCase() + ':' + type];
+function getWord(id) {
+	return dictionary.getById(id);
 }
 
-function getWordPostprocessed(word, type) {
-	let result = JSON.parse(JSON.stringify(getWord(word, type)));
-	postprocessResult(result);
-	return result;
-}
-
-function hasWord(word, type) {
-	return dictionary.hasOwnProperty(word.toLowerCase() + ':' + type);
-}
-
-function getResponsesFor(query) {
-	query = preprocess.preprocessQuery(query);
+function getResponsesFor(query, dialect) {
+	query = preprocess.preprocessQuery(query, dialect);
 	let results = [];
 
 	// first split query on spaces to get individual words
@@ -231,14 +259,14 @@ function getResponsesFor(query) {
 			// the simple case: no external lenition, so just look up the
 			// query word
 			let queryArray = [queryWord].concat(queryWords.slice(i + 1));
-			[wordCount, wordResults] = lookUpWordOrPhrase(queryArray);
+			[wordCount, wordResults] = lookUpWordOrPhrase(queryArray, dialect);
 
 		} else {
 			// the complicated case: figure out which words this query word
 			// could possibly be lenited from, and look all of these up
 			let unlenitedWords = unlenite(queryWord);
 			for (let j = 0; j < unlenitedWords.length; j++) {
-				let wordResult = lookUpWord(unlenitedWords[j]);
+				let wordResult = lookUpWord(unlenitedWords[j], dialect);
 				for (let k = 0; k < wordResult.length; k++) {
 					if (!forbiddenByExternalLenition(wordResult[k])) {
 						wordResult[k]["externalLenition"] = {
@@ -271,13 +299,11 @@ function getResponsesFor(query) {
 
 		if (wordResults.length === 0) {
 			let minDistance = queryWord.length / 3 + 1;  // allow more leeway with longer queries
-			for (word in dictionary) {
-				if (dictionary.hasOwnProperty(word)) {
-					const distance = levenshtein(dictionary[word]["na'vi"], queryWord);
-					minDistance = Math.min(minDistance, distance);
-					if (distance <= minDistance) {
-						suggestions.push([dictionary[word]["na'vi"] + (dictionary[word]["type"] === "n:si" ? " si" : ""), distance]);
-					}
+			for (let word of dictionary.getAll()) {
+				const distance = levenshtein(word['word_raw'][dialect], queryWord);
+				minDistance = Math.min(minDistance, distance);
+				if (distance <= minDistance) {
+					suggestions.push([word['word_raw'][dialect] + (word["type"] === "n:si" ? " si" : ""), distance]);
 				}
 			}
 			suggestions = suggestions.filter(a => a[1] === minDistance)
@@ -303,20 +329,20 @@ let unlenitions = {
 	"s": ["ts", "t", "s"],
 	"f": ["p", "f"],
 	"h": ["k", "h"],
-	"t": ["tx"],
-	"p": ["px"],
-	"k": ["kx"]
+	"t": ["tx", "d"],
+	"p": ["px", "b"],
+	"k": ["kx", "g"]
 };
 
 function unlenite(word) {
 
 	// word starts with vowel
-	if (["a", "ä", "e", "i", "ì", "o", "u"].includes(word[0])) {
+	if (["a", "ä", "e", "i", "ì", "o", "u", "ù"].includes(word[0])) {
 		return [word, "'" + word];
 	}
 
 	// word starts with ejective or ts
-	if (word[1] === "x" || (word.substring(0, 2) === "ts")) {
+	if (word[1] === "x" || word.substring(0, 2) === "ts" || ['b', 'd', 'g'].includes(word[0])) {
 		return [];
 	}
 
@@ -356,43 +382,44 @@ function forbiddenByExternalLenition(result) {
 	return hasNoDeterminer;
 }
 
-function lookUpWordOrPhrase(queryWord) {
+function lookUpWordOrPhrase(queryWord, dialect) {
 	// phrases
 	for (let length = 8; length > 1; length--) {
 		let phrase = queryWord.slice(0, length).join(' ');
 		let key = phrase + ':phr';
-		if (dictionary.hasOwnProperty(key)) {
-			return [length, [JSON.parse(JSON.stringify(dictionary[key]))]];
+		let result = dictionary.get(phrase, 'phr', dialect);
+		if (result) {
+			return [length, [result]];
 		}
 	}
-	return [1, lookUpWord(queryWord[0])];
+	return [1, lookUpWord(queryWord[0], dialect)];
 }
 
 // Looks up a single word; returns a list of results.
 //
 // This method ensures that the data returned is a deep copy (i.e., we can
 // safely change it without changing the dictionary data itself).
-function lookUpWord(queryWord) {
+function lookUpWord(queryWord, dialect) {
 	let wordResults = [];
-	lookUpNoun(queryWord, wordResults);
-	lookUpVerb(queryWord, wordResults);
-	lookUpAdjective(queryWord, wordResults);
-	lookUpProductiveAdverb(queryWord, wordResults);
-	lookUpOtherType(queryWord, wordResults);
+	lookUpNoun(queryWord, wordResults, dialect);
+	lookUpVerb(queryWord, wordResults, dialect);
+	lookUpAdjective(queryWord, wordResults, dialect);
+	lookUpProductiveAdverb(queryWord, wordResults, dialect);
+	lookUpOtherType(queryWord, wordResults, dialect);
 	return wordResults;
 }
 
-function lookUpNoun(queryWord, wordResults) {
+function lookUpNoun(queryWord, wordResults, dialect) {
 	// handles conjugated nouns and pronouns
-	let nounResults = nouns.parse(queryWord);
+	let nounResults = nouns.parse(queryWord, dialect);
 	nounResults.forEach(function (nounResult) {
-		let noun = findNoun(nounResult["root"]);
-		if (noun) {
+		let nouns = dictionary.getOfTypes(nounResult["root"], ['n', 'n:pr'], dialect);
+		for (let noun of nouns) {
 			noun["conjugated"] = [{
 				"type": "n",
 				"conjugation": nounResult
 			}];
-			affixList.addAffixList(noun, dictionary);
+			affixList.addAffixList(noun, dictionary, dialect);
 			wordResults.push(noun);
 		}
 		const suffixes = ['yu', 'tswo'];
@@ -400,7 +427,7 @@ function lookUpNoun(queryWord, wordResults) {
 			if (nounResult["root"].endsWith(suffix)) {
 				let possibleVerb = nounResult["root"].slice(0, -suffix.length);
 				let verbResults = [];
-				lookUpVerb(possibleVerb, verbResults);
+				lookUpVerb(possibleVerb, verbResults, dialect);
 				verbResults.forEach(function (verb) {
 					const conjugated = verb["conjugated"];
 					const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
@@ -419,7 +446,7 @@ function lookUpNoun(queryWord, wordResults) {
 							"type": "n",
 							"conjugation": nounResult
 						});
-						affixList.addAffixList(verb, dictionary);
+						affixList.addAffixList(verb, dictionary, dialect);
 						wordResults.push(verb);
 					}
 				});
@@ -450,7 +477,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": resultCopy
 					}];
-					affixList.addAffixList(word, dictionary);
+					affixList.addAffixList(word, dictionary, dialect);
 					wordResults.push(word);
 				}
 
@@ -464,7 +491,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					}];
-					affixList.addAffixList(word, dictionary);
+					affixList.addAffixList(word, dictionary, dialect);
 					wordResults.push(word);
 				}
 			}
@@ -474,7 +501,7 @@ function lookUpNoun(queryWord, wordResults) {
 		if (nounResult["root"].startsWith('tì')) {
 			let possibleVerb = nounResult["root"].slice(2);  // cut off tì-
 			let verbResults = [];
-			lookUpVerb(possibleVerb, verbResults, true);
+			lookUpVerb(possibleVerb, verbResults, dialect, true);
 			verbResults.forEach(function (verb) {
 				const conjugated = verb["conjugated"];
 				const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
@@ -500,7 +527,7 @@ function lookUpNoun(queryWord, wordResults) {
 						"type": "n",
 						"conjugation": nounResult
 					});
-					affixList.addAffixList(verb, dictionary);
+					affixList.addAffixList(verb, dictionary, dialect);
 					wordResults.push(verb);
 				}
 			});
@@ -508,7 +535,7 @@ function lookUpNoun(queryWord, wordResults) {
 	});
 }
 
-function lookUpVerb(queryWord, wordResults, allowParticiples) {
+function lookUpVerb(queryWord, wordResults, dialect, allowParticiples) {
 	// handles conjugated verbs
 	let verbResults = verbs.parse(queryWord);
 	verbResults.forEach(function (result) {
@@ -517,7 +544,7 @@ function lookUpVerb(queryWord, wordResults, allowParticiples) {
 			// these are handled as adjectives; see lookUpAdjective()
 			return;
 		}
-		let results = findVerb(result["root"]);
+		let results = dictionary.getOfTypes(result["root"], ['v:in', 'v:tr', 'v:cp', 'v:m', 'v:si', 'v:?'], dialect);
 		for (let verb of results) {
 			let conjugation = conjugationString.formsFromString(
 				verbs.conjugate(verb["infixes"], result["infixes"]));
@@ -530,18 +557,18 @@ function lookUpVerb(queryWord, wordResults, allowParticiples) {
 				"type": "v",
 				"conjugation": resultCopy
 			}];
-			affixList.addAffixList(verb, dictionary);
+			affixList.addAffixList(verb, dictionary, dialect);
 			wordResults.push(verb);
 		}
 	});
 }
 
-function lookUpAdjective(queryWord, wordResults) {
+function lookUpAdjective(queryWord, wordResults, dialect) {
 	// handles conjugated adjectives
 	let adjectiveResults = adjectives.parse(queryWord);
 	adjectiveResults.forEach(function (adjResult) {
-		if (dictionary.hasOwnProperty(adjResult["root"] + ":adj")) {
-			adjective = JSON.parse(JSON.stringify(dictionary[adjResult["root"] + ":adj"]));
+		let adjective = dictionary.get(adjResult['root'], 'adj', dialect);
+		if (adjective) {
 			let conjugation = conjugationString.formsFromString(
 				adjectives.conjugate(adjResult["root"], adjResult["form"], adjective["etymology"]));
 			let adjResultCopy = JSON.parse(JSON.stringify(adjResult));
@@ -550,14 +577,14 @@ function lookUpAdjective(queryWord, wordResults) {
 				"type": "adj",
 				"conjugation": adjResultCopy
 			}];
-			affixList.addAffixList(adjective, dictionary);
+			affixList.addAffixList(adjective, dictionary, dialect);
 			wordResults.push(adjective);
 		}
 
 		// verb participles (somewhat hacky as the <us>/<awn> is parsed by the
 		// verb parser, so we have to take that out again...)
 		let verbResults = [];
-		lookUpVerb(adjResult["root"], verbResults, true);
+		lookUpVerb(adjResult["root"], verbResults, dialect, true);
 		verbResults.forEach(function (verb) {
 			const infixes = verb['conjugated'][0]['conjugation']['infixes'];
 			if (infixes[1] === 'us' || infixes[1] === 'awn') {
@@ -577,7 +604,7 @@ function lookUpAdjective(queryWord, wordResults) {
 					"type": "adj",
 					"conjugation": adjResult
 				});
-				affixList.addAffixList(verb, dictionary);
+				affixList.addAffixList(verb, dictionary, dialect);
 				wordResults.push(verb);
 			}
 		});
@@ -588,7 +615,7 @@ function lookUpAdjective(queryWord, wordResults) {
 			if (adjResult["root"].startsWith(prefix)) {
 				let possibleVerb = adjResult["root"].substring(prefix.length);
 				let verbResults = [];
-				lookUpVerb(possibleVerb, verbResults);
+				lookUpVerb(possibleVerb, verbResults, dialect);
 				verbResults.forEach(function (verb) {
 					verb["conjugated"].push({
 						"type": "v_to_adj",
@@ -602,7 +629,7 @@ function lookUpAdjective(queryWord, wordResults) {
 						"type": "adj",
 						"conjugation": adjResult
 					});
-					affixList.addAffixList(verb, dictionary);
+					affixList.addAffixList(verb, dictionary, dialect);
 					wordResults.push(verb);
 				});
 			}
@@ -610,12 +637,12 @@ function lookUpAdjective(queryWord, wordResults) {
 	});
 }
 
-function lookUpProductiveAdverb(queryWord, wordResults) {
+function lookUpProductiveAdverb(queryWord, wordResults, dialect) {
 	// handles adverbs made from nì- + adjectives
 	if (queryWord.startsWith('nì')) {
-		const possibleAdjective = queryWord.substring(2);
-		if (dictionary.hasOwnProperty(possibleAdjective + ':adj')) {
-			const adjective = JSON.parse(JSON.stringify(dictionary[possibleAdjective + ':adj']));
+		let possibleAdjective = queryWord.substring(2);
+		let adjective = dictionary.get(possibleAdjective, 'adj', dialect);
+		if (adjective) {
 			adjective["conjugated"] = [{
 				"type": "adj_to_adv",
 				"conjugation": {
@@ -624,61 +651,20 @@ function lookUpProductiveAdverb(queryWord, wordResults) {
 					"affixes": ['nì']
 				}
 			}];
-			affixList.addAffixList(adjective, dictionary);
+			affixList.addAffixList(adjective, dictionary, dialect);
 			wordResults.push(adjective);
 		}
 	}
 }
 
-function lookUpOtherType(queryWord, wordResults) {
+function lookUpOtherType(queryWord, wordResults, dialect) {
 	// handles other word types
-	for (word in dictionary) {
-		if (dictionary.hasOwnProperty(word)) {
-			let type = dictionary[word]['type'];
-			if (dictionary[word]["na'vi"].toLowerCase() === queryWord &&
-				type !== "n" && type !== "n:pr" &&
-				type !== "adj" &&
-				!dictionary[word].hasOwnProperty('conjugation') &&
-				type.indexOf("v:") === -1) {
-				wordResults.push(JSON.parse(JSON.stringify(dictionary[word])));
-			}
+	let ignoredTypes = ['n', 'n:pr', 'adj', 'v:in', 'v:tr', 'v:cp', 'v:m', 'v:si', 'v:?'];
+	for (let word of dictionary.getNotOfTypes(queryWord, ignoredTypes, dialect)) {
+		if (!word.hasOwnProperty('conjugation')) {
+			wordResults.push(JSON.parse(JSON.stringify(word)));
 		}
 	}
-}
-
-// fwew frafnetstxolì'ut lì'upukmì
-function findNoun(word) {
-	if (dictionary.hasOwnProperty(word + ":n")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":n"]));
-	}
-	if (dictionary.hasOwnProperty(word + ":n:pr")) {
-		return JSON.parse(JSON.stringify(dictionary[word + ":n:pr"]));
-	}
-	return null;
-}
-
-// fwew frafnekemlì'ut lì'upukmì
-function findVerb(word) {
-	let results = [];
-	if (dictionary.hasOwnProperty(word + ":v:in")) {
-		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:in"])));
-	}
-	if (dictionary.hasOwnProperty(word + ":v:tr")) {
-		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:tr"])));
-	}
-	if (dictionary.hasOwnProperty(word + ":v:cp")) {
-		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:cp"])));
-	}
-	if (dictionary.hasOwnProperty(word + ":v:m")) {
-		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:m"])));
-	}
-	if (dictionary.hasOwnProperty(word + ":v:si")) {
-		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:si"])));
-	}
-	if (dictionary.hasOwnProperty(word + ":v:?")) {
-		results.push(JSON.parse(JSON.stringify(dictionary[word + ":v:?"])));
-	}
-	return results;
 }
 
 function resultScore(result, queryWord) {
@@ -740,37 +726,6 @@ function postprocessResults(results) {
 }
 
 function postprocessResult(result) {
-	if (result['type'] === 'n' || result['type'] === 'n:pr') {
-		result['conjugation'] = {
-			'forms': createNounConjugation(result['na\'vi'], result['type'])
-		};
-	}
-	if (result['type'] === 'adj') {
-		result['conjugation'] = {
-			'forms': createAdjectiveConjugation(result)
-		};
-	}
-	if (result.hasOwnProperty('etymology')) {
-		result['etymology'] = wordLinks.enrichWordLinks(result['etymology'], dictionary);
-	}
-	if (result.hasOwnProperty('meaning_note')) {
-		result['meaning_note'] = wordLinks.enrichWordLinks(result['meaning_note'], dictionary);
-	}
-	if (result.hasOwnProperty('seeAlso')) {
-		for (let i = 0; i < result['seeAlso'].length; i++) {
-			if (dictionary.hasOwnProperty(result['seeAlso'][i])) {
-				result['seeAlso'][i] = wordLinks.stripToLinkData(dictionary[result['seeAlso'][i]]);
-			}
-		}
-	}
-	if (result.hasOwnProperty('pronunciation')) {
-		for (let pronunciation of result['pronunciation']) {
-			pronunciation['ipa'] = {
-				'FN': ipa.generateIpa(pronunciation, result['type'], 'FN'),
-				'RN': ipa.generateIpa(pronunciation, result['type'], 'RN')
-			};
-		}
-	}
 	if (result.hasOwnProperty('conjugated')) {
 		// retain the last conjugated item that has a translation
 		for (let conjugated of result['conjugated']) {
@@ -778,16 +733,9 @@ function postprocessResult(result) {
 			result['short_translation_conjugated'] = conjugated['translation'];
 		}
 	}
-	const key = result['na\'vi'].toLowerCase() + ':' + (result['type'] === 'nv:si' ? 'n:si' : result['type']);
-	if (derivedWords.hasOwnProperty(key)) {
-		result['derived'] = derivedWords[key];
-	}
-	if (sentencesForWord.hasOwnProperty(key)) {
-		result['sentences'] = sentencesForWord[key];
-	}
 }
 
-function createNounConjugation(word, type) {
+function createNounConjugation(word, dialect) {
 
 	let conjugation = [];
 	let cases = ['', 'l', 't', 'r', 'ä', 'ri'];
@@ -795,10 +743,10 @@ function createNounConjugation(word, type) {
 
 	for (let j = 0; j < 4; j++) {
 		let row = [];
-		if (type !== 'n:pr' || j === 0) {
+		if (word['type'] !== 'n:pr' || j === 0) {
 			for (let i = 0; i < 6; i++) {
-				let conjugated = nouns.conjugate(word,
-					['', plurals[j], '', '', '', cases[i], ''], true);
+				let conjugated = nouns.conjugate(word['word_raw'][dialect],
+					['', plurals[j], '', '', '', cases[i], ''], true, dialect);
 				row.push(conjugated);
 			}
 		}
@@ -808,10 +756,10 @@ function createNounConjugation(word, type) {
 	return conjugation;
 }
 
-function createAdjectiveConjugation(word) {
+function createAdjectiveConjugation(word, dialect) {
 	const conjugation = {
-		"prefixed": adjectives.conjugate(word["na'vi"], 'postnoun', word["etymology"]),
-		"suffixed": adjectives.conjugate(word["na'vi"], 'prenoun', word["etymology"])
+		"prefixed": adjectives.conjugate(word['word_raw'][dialect], 'postnoun', word["etymology"], dialect),
+		"suffixed": adjectives.conjugate(word['word_raw'][dialect], 'prenoun', word["etymology"], dialect)
 	};
 	return conjugation;
 }
@@ -859,22 +807,26 @@ function mergeSiVerbs(results) {
 	}
 }
 
-function getSuggestionsFor(query, language) {
+function getSuggestionsFor(query, language, dialect) {
 	if (query.length < 3) {
 		return { 'results': [] };
 	}
-	query = preprocess.preprocessQuery(query);
+	query = preprocess.preprocessQuery(query, dialect);
 	query = query.toLowerCase();
 	let results = [];
-	for (let w in dictionary) {
-		if (dictionary.hasOwnProperty(w)) {
-			let word = dictionary[w];
-			if (word["na'vi"].toLowerCase().startsWith(query)) {
-				results.push({
-					"title": word["na'vi"] + (word['type'] === 'n:si' ? ' si' : ''),
-					"description": '<div class="ui horizontal label">' + typeName(word['type'], language) + '</div> ' + simplifiedTranslation(word["translations"], language)
-				});
-			}
+	for (let word of dictionary.getAll()) {
+		let key = word['word_raw'][dialect].toLowerCase();
+		if (dialect === 'combined') {
+			key = key.replaceAll('ù', 'u');
+		}
+		if (key.startsWith(query)) {
+			let wordHTML = word['word'][dialect] + (word['type'] === 'n:si' ? ' si' : '');
+			wordHTML = wordHTML.replaceAll('/', '');
+			wordHTML = wordHTML.replace(/\[([^\]]*)\]/g, '<span class="stressed">$1</span>');
+			results.push({
+				"title": wordHTML,
+				"description": '<div class="ui horizontal label">' + typeName(word['type'], language) + '</div> ' + simplifiedTranslation(word["translations"], language)
+			});
 		}
 	}
 	return {
@@ -969,19 +921,17 @@ function getReverseResponsesFor(query, language) {
 	query = query.trim();
 	query = query.toLowerCase();
 
-	for (word in dictionary) {
-		if (dictionary.hasOwnProperty(word)) {
-			for (let translation of dictionary[word]['translations']) {
-				if (translation[language]) {
-					// split translation into words
-					let t = translation[language].replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
-					t = t.split(' ').map((v) => v.toLowerCase());
-					if (t.includes(query)) {
-						let result = JSON.parse(JSON.stringify(dictionary[word]));
-						results.push(result);
-					}
-					break;
+	for (let word of dictionary.getAll()) {
+		for (let translation of word['translations']) {
+			if (translation[language]) {
+				// split translation into words
+				let t = translation[language].replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
+				t = t.split(' ').map((v) => v.toLowerCase());
+				if (t.includes(query)) {
+					let result = JSON.parse(JSON.stringify(word));
+					results.push(result);
 				}
+				break;
 			}
 		}
 	}
@@ -1051,114 +1001,41 @@ function getRandomWords(number, type) {
 	return results;
 }
 
-function getUntranslated(language) {
-	let results = [];
-
-	wordLoop:
-	for (let w in dictionary) {
-		let word = dictionary[w];
-		for (let translation of word['translations']) {
-			if (!translation.hasOwnProperty(language) ||
-				translation[language].length === 0) {
-				results.push(word);
-				continue wordLoop;
-			}
-		}
-	}
-
-	return results;
-}
-
 function getAll() {
-	return dictionary;
+	return dictionary.getAll();
 }
 
-function getAllKeys() {
-	let result = [];
-	for (let key in dictionary) {
-		result.push(key);
-	}
-	return result;
-}
-
-function getVerbs() {
-	let verbs = [];
-
-	for (word in dictionary) {
-		if (dictionary.hasOwnProperty(word)) {
-			let type = "";
-			if ('type' in dictionary[word]) {
-				type = dictionary[word]['type'];
-			}
-			if (type.startsWith('v') || type === 'n:si') {
-				verbs.push(dictionary[word]);
-			}
-		}
-	}
-
-	return verbs;
-}
-
-function getTransitivityList() {
-	let list = [];
-
-	let verbs = getVerbs();
-	for (let i = 0; i < verbs.length; i++) {
-		const verb = verbs[i];
-		let word = verb["na'vi"];
-		const translation = verb["translations"][0]["en"];
-		let type = verb["type"];
-		if (type === "n:si") {
-			word += " si";
-			type = "v:in";
-		}
-		if (type === "v:in") {
-			type = "intransitive";
-		} else if (type === "v:tr") {
-			type = "transitive";
-		} else {
-			continue;
-		}
-		list.push([word, translation, type]);
-	}
-
-	return list;
-}
-
-function getRhymes(query) {
+function getRhymes(query, dialect) {
 	query = query.toLowerCase();
 
-	let words = {};
+	let words = [];
 
-	for (const word in dictionary) {
-		if (dictionary.hasOwnProperty(word)) {
-			if (dictionary[word].hasOwnProperty('pronunciation') &&
-			    dictionary[word]['pronunciation'].length > 0) {
-				if (rhymes.rhymes(dictionary[word]['pronunciation'][0]['syllables'], query)) {
-					let key = 0;
-					key = dictionary[word]['pronunciation'][0]['syllables'].split('-').length;
-					if (!words.hasOwnProperty(key)) {
-						words[key] = [];
-					}
-					let subKey = 0;
-					if (dictionary[word].hasOwnProperty('pronunciation')) {
-						subKey = dictionary[word]['pronunciation'][0]['stressed'];
-					}
-					if (!words[key].hasOwnProperty(subKey)) {
-						words[key][subKey] = [];
-					}
-					words[key][subKey].push(dictionary[word]);
+	for (const word of dictionary.getAll()) {
+		if (word.hasOwnProperty('pronunciation') && word['pronunciation'].length > 0) {
+			if (rhymes.rhymes(word['pronunciation'][0]['syllables'], query)) {
+				let key = 0;
+				key = word['pronunciation'][0]['syllables'].split('-').length;
+				if (!words.hasOwnProperty(key)) {
+					words[key] = [];
 				}
+				let subKey = 0;
+				if (word.hasOwnProperty('pronunciation')) {
+					subKey = word['pronunciation'][0]['stressed'];
+				}
+				if (!words[key].hasOwnProperty(subKey)) {
+					words[key][subKey] = [];
+				}
+				words[key][subKey].push(word);
 			}
 		}
 	}
 
-	for (const s in Object.keys(words)) {
-		if (words[s]) {
-			for (const s2 in Object.keys(words[s])) {
-				if (words[s][s2]) {
-					words[s][s2].sort(function (a, b) {
-						return a["na'vi"].localeCompare(b["na'vi"]);
+	for (const s of words) {
+		if (s) {
+			for (const s2 of s) {
+				if (s2) {
+					s2.sort(function (a, b) {
+						return a['word_raw'][dialect].localeCompare(b['word_raw'][dialect]);
 					});
 				}
 			}
@@ -1170,20 +1047,6 @@ function getRhymes(query) {
 
 function getAllSentences() {
 	return sentences;
-}
-
-function removeWord(word, type) {
-	delete dictionary[word.toLowerCase() + ':' + type];
-	reloadData();
-}
-
-function insertWord(data) {
-	dictionary[data["na'vi"].toLowerCase() + ':' + data["type"]] = data;
-	reloadData();
-}
-
-function saveDictionary() {
-	fs.writeFileSync("./data/words.json", JSON.stringify(dictionary));
 }
 
 function removeSentence(key) {

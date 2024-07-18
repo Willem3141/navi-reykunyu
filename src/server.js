@@ -34,15 +34,19 @@ var reykunyu = require('./reykunyu');
 var annotatedDictionary = require('./annotatedDictionary');
 var conjugationString = require('./conjugationString');
 var verbs = require('./verbs');
+var edit = require('./edit');
+var output = require('./output');
+var dialect = require('./dialect');
 
 var tslamyu;
 try {
 	tslamyu = require('../../navi-tslamyu/tslamyu');
 } catch (e) {
-	console.log('Warning: navi-tslamyu not found, continuing without parsing support');
+	output.warning('navi-tslamyu not found, continuing without parsing support');
+	output.hint(`Reykunyu can use navi-tslamyu to parse sentences.`);
 }
 
-var zeykerokyu = require('./zeykerokyu');
+//var zeykerokyu = require('./zeykerokyu'); // TODO
 
 const ejs = require('ejs');
 
@@ -80,6 +84,16 @@ app.set('views', './fraporu');
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
+	setLanguage(req);
+	res.render('txin', { user: req.user, query: req.query['q'], _: translations._ });
+});
+
+app.get('/help', function(req, res) {
+	setLanguage(req);
+	res.render('help', { user: req.user, _: translations._ });
+});
+
+function setLanguage(req) {
 	var lang = 'en';
 	if (req.headers.cookie) {
 		for (let cookie of req.headers.cookie.split('; ')) {
@@ -90,15 +104,15 @@ app.get('/', function(req, res) {
 		}
 	}
 	translations.setLanguage(lang);
-	res.render('txin', { user: req.user, query: req.query['q'], _: translations._ });
-});
+}
 
 app.get('/ayvefya/ui-translations.js', function(req, res) {
 	res.render('ayvefya/ui-translations', { strings_json: translations.getStringsJSON() });
 });
 
 app.get('/all', function(req, res) {
-	res.render('fralì\'u');
+	setLanguage(req);
+	res.render("fralì'u", { user: req.user, _: translations._ });
 });
 
 app.get('/login', function(req, res) {
@@ -120,7 +134,8 @@ app.get('/logout', function(req, res) {
 app.get('/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('leykatem', {
@@ -136,7 +151,8 @@ app.get('/add', function(req, res) {
 app.post('/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 
@@ -150,7 +166,7 @@ app.post('/add', function(req, res) {
 	}
 	let word = data["na'vi"];
 	let type = data["type"];
-	let existing = reykunyu.hasWord(word, type);
+	let existing = reykunyu.hasWord(word, type);  // TODO
 	if (existing) {
 		res.status(400);
 		res.json({'message': 'Word / type combination already exists'});
@@ -173,17 +189,22 @@ app.post('/add', function(req, res) {
 app.get('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
-	const word = req.query["word"];
-	const type = req.query["type"];
-	if (!word || !type) {
+	if (!req.query.hasOwnProperty('word')) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
-	const wordData = reykunyu.getWord(word, type);
+	const id = parseInt(req.query['word'], 10);
+	if (isNaN(id)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const wordData = edit.getWordData(id);
 	res.render('leykatem', {
 		'user': req.user,
 		'post_url': '/edit',
@@ -194,17 +215,22 @@ app.get('/edit', function(req, res) {
 app.get('/edit/raw', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
-	const word = req.query["word"];
-	const type = req.query["type"];
-	if (!word || !type) {
+	if (!req.query.hasOwnProperty('word')) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
-	const wordData = reykunyu.getWord(word, type);
+	const id = parseInt(req.query['word'], 10);
+	if (isNaN(id)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const wordData = edit.getWordData(id);
 	res.render('leykatem-yrr', {
 		'user': req.user,
 		'post_url': '/edit',
@@ -215,35 +241,35 @@ app.get('/edit/raw', function(req, res) {
 app.post('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
-	let word, type, data;
+	if (!req.body.hasOwnProperty('id') || !req.body.hasOwnProperty('data')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const id = parseInt(req.body['id'], 10);
+	if (isNaN(id)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	let data;
 	try {
-		word = req.body["word"];
-		type = req.body["type"];
-		data = JSON.parse(req.body["data"]);
+		data = JSON.parse(req.body['data']);
 	} catch (e) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
 
-	let old = reykunyu.getWord(word, type);
-	reykunyu.removeWord(word, type);
-	reykunyu.insertWord(data);
-	let history = JSON.parse(fs.readFileSync("./data/history.json"));
-	history.push({
-		'user': req.user['username'],
-		'date': new Date(),
-		'word': word,
-		'type': type,
-		'old': old,
-		'data': data
+	edit.updateWordData(id, data, req.user);
+	reykunyu.reloadData();
+	res.send({
+		'url': '/?q=' + dialect.makeRaw(data["na'vi"])
 	});
-	fs.writeFileSync("./data/history.json", JSON.stringify(history));
-	reykunyu.saveDictionary();
-	res.send();
 });
 
 app.get('/history', function(req, res) {
@@ -256,33 +282,36 @@ app.get('/history', function(req, res) {
 app.get('/etymology-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('etymologyEditor', {
 		'user': req.user,
 		'post_url': '/edit',
-		'words': reykunyu.getAll()
+		'words': edit.getAll()
 	});
 });
 
 app.get('/sources-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('sourcesEditor', {
 		'user': req.user,
 		'post_url': '/edit',
-		'words': reykunyu.getAll()
+		'words': edit.getAll()
 	});
 });
 
 app.get('/corpus-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('corpusEditor', {
@@ -294,7 +323,8 @@ app.get('/corpus-editor', function(req, res) {
 app.get('/corpus-editor/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	res.render('corpusEditorAdd', {
@@ -306,7 +336,8 @@ app.get('/corpus-editor/add', function(req, res) {
 app.get('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	const key = req.query["sentence"];
@@ -327,7 +358,8 @@ app.get('/corpus-editor/edit', function(req, res) {
 app.post('/corpus-editor/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let key, sentence;
@@ -370,7 +402,8 @@ app.post('/corpus-editor/add', function(req, res) {
 app.post('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
 	let key, sentence;
@@ -392,36 +425,43 @@ app.post('/corpus-editor/edit', function(req, res) {
 app.get('/untranslated', function(req, res) {
 	if (!req.user) {
 		res.status(403);
-		res.send('403 Forbidden');
+		setLanguage(req);
+		res.render('403', { user: req.user, _: translations._ });
 		return;
 	}
-	let untranslated = reykunyu.getUntranslated('fr');
-	res.render('untranslated', { user: req.user, untranslated: untranslated });
+	setLanguage(req);
+	let untranslated = edit.getUntranslated(translations.getLanguage());
+	res.render('untranslated', { user: req.user, untranslated: untranslated, language: translations.getLanguage() });
 });
 
 app.get('/study', function(req, res) {
-	zeykerokyu.getLessons(req.user, (lessonData) => {
+	//zeykerokyu.getLessons(req.user, (lessonData) => {  // TODO
+	const lessonData = [];
 		res.render('study', { user: req.user, lessons: lessonData });
-	});
+	//});
+});
+
+app.get('/words.json', function(req, res) {
+	res.sendFile('words.json', { root: process.cwd() + '/data' });
 });
 
 app.get('/api/word', cors(), function(req, res) {
-	res.json(reykunyu.getWordPostprocessed(req.query['word'], req.query['type']));
+	res.json(reykunyu.getWord(req.query['id']));
 });
 
 app.get('/api/fwew-search', cors(), function(req, res) {
 	res.json({
-		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"]),
+		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"], req.query["dialect"]),
 		'toNa\'vi': reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"])
 	});
 });
 
 app.get('/api/fwew', cors(), function(req, res) {
-	res.json(reykunyu.getResponsesFor(req.query["tìpawm"]));
+	res.json(reykunyu.getResponsesFor(req.query["tìpawm"], req.query["dialect"]));
 });
 
 app.get('/api/mok-suggest', cors(), function (req, res) {
-	let suggestionsFrom = reykunyu.getSuggestionsFor(req.query["query"], req.query["language"]);
+	let suggestionsFrom = reykunyu.getSuggestionsFor(req.query["query"], req.query["language"], req.query["dialect"]);
 	let suggestionsTo = reykunyu.getReverseSuggestionsFor(req.query["query"], req.query["language"]);
 	res.json({
 		'results': suggestionsFrom['results'].concat(suggestionsTo['results'])
@@ -429,7 +469,7 @@ app.get('/api/mok-suggest', cors(), function (req, res) {
 });
 
 app.get('/api/mok', cors(), function(req, res) {
-	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"], req.query["language"]));
+	res.json(reykunyu.getSuggestionsFor(req.query["tìpawm"], req.query["language"], req.query["dialect"]));
 });
 
 app.get('/api/search', cors(), function(req, res) {
@@ -480,26 +520,14 @@ app.get('/api/history/major-changes', function(req, res) {
 	res.json(historyData);
 });
 
-app.get('/api/frau', function(req, res) {
-	res.json(reykunyu.getAll());
-});
-
 app.get('/api/list/all', function(req, res) {
 	res.json(reykunyu.getAll());
-});
-
-app.get('/api/list/verbs', function(req, res) {
-	res.json(reykunyu.getVerbs());
-});
-
-app.get('/api/list/transitivity', function(req, res) {
-	res.json(reykunyu.getTransitivityList());
 });
 
 app.get('/api/sound', function(req, res) {
 	const file = req.query["word"] + "-" + req.query["type"] + '.mp3';
 	if (fs.existsSync(file)) {
-		res.sendFile(file, { root: process.cwd() + '/../data/fam' });
+		res.sendFile(file, { root: process.cwd() + '/data/fam' });
 	} else {
 		res.sendStatus(404);
 	}
@@ -528,7 +556,7 @@ app.get('/api/random', cors(), function(req, res) {
 });
 
 app.get('/api/rhymes', cors(), function(req, res) {
-	res.json(reykunyu.getRhymes(req.query["tìpawm"]));
+	res.json(reykunyu.getRhymes(req.query["tìpawm"], req.query['dialect']));
 });
 
 app.get('/api/srs/lessons', function(req, res) {
@@ -596,6 +624,20 @@ app.post('/api/srs/mark-known', function(req, res) {
 		res.send();
 	});
 });
+
+app.use((req, res, next) => {
+	res.status(404);
+	setLanguage(req);
+	res.render('404', { user: req.user, _: translations._ });
+})
+
+app.use((err, req, res, next) => {
+	res.status(500);
+	setLanguage(req);
+	output.error('Uncaught exception when handling a request; responding with HTTP 500');
+	console.log(err.stack);
+	res.render('500', { user: req.user, _: translations._, error: err });
+})
 
 app.get('/api/message-stats', function(req, res) {
 	let query = req.query['query'];

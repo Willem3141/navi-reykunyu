@@ -17,8 +17,7 @@ $(function() {
 			let $self = $(this);
 			const url = $('body').data('url');
 			$.post(url, {
-				'word': wordData['na\'vi'],
-				'type': wordData['type'],
+				'id': wordData['id'],
 				'data': JSON.stringify(wordData)
 			}, function () {
 				console.log($self);

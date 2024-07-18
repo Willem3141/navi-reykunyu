@@ -16,7 +16,8 @@ h1, h2, h3, h4, h5,
 .ui.menu,
 .ui input,
 #search-box,
-.ui.modal .header {
+.ui.modal .header,
+.ui.popup .header {
 	font-family: 'Recursive' !important;
 	font-variation-settings: "MONO" 0;
 }
@@ -313,14 +314,22 @@ h1::after {
 	top: -5px;
 }
 
+.stressed {
+	text-decoration: underline;
+	text-decoration-skip-ink: none;
+	text-decoration-thickness: 1px;
+}
+
+.result .result-word .stressed {
+	text-decoration: underline;
+	text-decoration-skip-ink: none;
+	text-decoration-thickness: 2px;
+}
+
 .result .stress {
 	margin-left: 26px;
 	position: relative;
 	top: -5px;
-}
-
-.result .stress .stressed {
-	text-decoration: underline;
 }
 
 .ipa {
@@ -552,6 +561,10 @@ h1::after {
 	font-style: italic;
 }
 
+.error pre {
+	text-align: left;
+}
+
 
 
 /* tables */
@@ -718,9 +731,6 @@ h2[id]::before {
 	font-style: italic;
 }
 
-.word-list .stressed {
-	text-decoration: underline;
-}
 .word-list .status-badge.loan,
 .word-list .status-badge.unconfirmed,
 .word-list .status-badge.unofficial {
@@ -829,6 +839,14 @@ h2[id]::before {
 	color: #888;
 }
 
+/* settings modal */
+#settings-modal .explanation {
+	line-height: 1.4285em;
+	padding-top: 2px;
+	padding-bottom: 5px;
+	color: #888;
+}
+
 /* sentence analysis */
 .beta-notice-block,
 .error-block,
@@ -860,6 +878,28 @@ h2[id]::before {
 .error-block .body,
 .warning-block .body {
 	margin-left: 20px;
+}
+
+/* help */
+.note-box {
+	margin: 20px 0;
+	border-radius: 4px;
+	border: 1px solid #ddd;
+	padding: 15px 20px;
+}
+
+#tab-help-page-bar {
+	position: sticky;
+	top: 0;
+	background-color: white;
+	padding: 10px 0;
+	margin-bottom: 5px;
+	box-shadow: 0 0 4px 4px white;
+	z-index: 1;
+}
+
+.api-output-description-table td {
+	vertical-align: top;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -949,9 +989,10 @@ h2[id]::before {
 		background-color: #666;
 	}
 
-	.result .result-word {
+	.result .result-word,
+	#tab-help-page-bar {
 		background-color: black;
-		box-shadow: 0 0 7px 7px black;
+		box-shadow: 0 0 4px 4px black;
 	}
 
 	.result .result-word .id {

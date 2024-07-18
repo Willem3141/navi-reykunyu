@@ -3,25 +3,11 @@ $(function () {
 	$('.ui.dropdown').dropdown();
 
 	// language dropdown
-	if (localStorage.getItem('reykunyu-language')) {
-		$('#language-dropdown').dropdown('set selected',
-			localStorage.getItem('reykunyu-language'));
-	} else {
-		localStorage.setItem('reykunyu-language', 'en');
-		$('#language-dropdown').dropdown('set selected', 'en');
-	}
-	$('.current-lang').text(_('language'));
 	$('#language-dropdown').dropdown({
 		onChange: function (value) {
-			localStorage.setItem('reykunyu-language', value);
-			document.cookie = 'lang=' + value;  // note that this removes all other cookies (but we don't set any)
-			$('.translation').each(function() {
-				$(this).html(_($(this).attr('data-key')));
-			});
+			setNewLanguage(value);
 			sngäiTìfwusew(false);
-			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
-			$('.current-lang').text(_('language'));
 			return false;
 		}
 	});
@@ -38,7 +24,6 @@ $(function () {
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-mode', value);
 			sngäiTìfwusew(false);
-			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			return false;
 		}
@@ -49,33 +34,34 @@ $(function () {
 		localStorage.setItem('reykunyu-ipa', false);
 	}
 
-	// if there's already something in the search field, then just start a
-	// search immediately
-	if ($('#search-box').val().length) {
-		sngäiTìfwusew(true);
-	}
-
-	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
-
-	setUpAutocomplete();
-
 	$('.ui.checkbox').checkbox();
 	$('#infix-details-modal').modal();
 	$('#infix-details-modal button').popup();
 	$('#settings-modal').modal({
 		onApprove: function () {
+			setUpAutocomplete();
+			sngäiTìfwusew(true);
 			localStorage.setItem('reykunyu-ipa',
 				$('#ipa-checkbox').prop('checked') ? '1' : '0');
+			localStorage.setItem('reykunyu-dialect', getDialect());
 		},
 	});
+	$('#settings-modal button').popup();
 
+	$('#ipa-checkbox').prop('checked',
+		localStorage.getItem('reykunyu-ipa') === '1');
+	const dialect = localStorage.getItem('reykunyu-dialect');
+	$('#dialect-fn-radiobutton').prop('checked', dialect === 'FN');
+	$('#dialect-both-radiobutton').prop('checked', dialect !== 'FN' && dialect !== 'RN');
+	$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
+	$('#dialect-rn-warning').toggle(dialect === 'RN');
 	$('#settings-button').on("click", function () {
-		$('#ipa-checkbox').prop('checked',
-			localStorage.getItem('reykunyu-ipa') === '1');
 		$('#settings-modal').modal("show");
 	});
-	$('#credits-button').on("click", function () {
-		$('#credits-modal').modal("show");
+
+	// TODO temporary: show the RN warning iff RN is selected
+	$('#settings-modal .ui.radio.checkbox').on('click', () => {
+		$('#dialect-rn-warning').toggle($('#dialect-rn-radiobutton').prop('checked'));
 	});
 
 	$('.infix-button').on('click', function () {
@@ -98,6 +84,16 @@ $(function () {
 		$('#search-box').val(event.state['query']);
 		sngäiTìfwusew(true);
 	});
+
+	// if there's already something in the search field, then just start a
+	// search immediately
+	if ($('#search-box').val().length) {
+		sngäiTìfwusew(true);
+	}
+
+	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
+
+	setUpAutocomplete();
 });
 
 function getMode() {
@@ -108,12 +104,27 @@ function getLanguage() {
 	return $('#language-dropdown').dropdown('get value');
 }
 
+function getDialect() {
+	if ($('#dialect-fn-radiobutton').is(':checked')) {
+		return 'FN';
+	} else if ($('#dialect-rn-radiobutton').is(':checked')) {
+		return 'RN';
+	} else {
+		return 'combined';
+	}
+}
+
+function getIPASetting() {
+	return $('#ipa-checkbox').is(':checked');
+}
+
 function setUpAutocomplete() {
 	let url = null;
+	$('.ui.search').search('clear cache');
 	if (getMode() === 'reykunyu') {
-		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}';
+		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}&dialect=' + getDialect();
 	} else if (getMode() === 'rhymes') {
-		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}';
+		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}&dialect=' + getDialect();
 	} else if (getMode() === 'annotated') {
 		url = 'api/annotated/suggest?' + '&query={query}';
 	} else {
@@ -130,7 +141,7 @@ function setUpAutocomplete() {
 		},
 		showNoResults: false,
 		onSelect: function (result) {
-			$('#search-box').val(result['title']);
+			$('#search-box').val(result['title'].replace(/\<[^\>]*\>/g, ''));
 			sngäiTìfwusew();
 			return false;
 		}
@@ -410,12 +421,12 @@ function externalLenitionExplanation(lenition) {
 	return $lenition;
 }
 
-function imageSection(name, image) {
+function imageSection(word, image) {
 	let $section = $('<div/>').addClass('definition-image');
 	$('<img/>').attr('src', '/ayrel/' + image)
 		.appendTo($section);
 	$('<div/>').addClass('credit')
-		.text(name + ' ' + _('image-drawn-by') + ' Eana Unil')
+		.html(lemmaForm(word) + ' ' + _('image-drawn-by') + ' Eana Unil')
 		.appendTo($section);
 	return $section;
 }
@@ -490,37 +501,36 @@ function pronunciationSectionIpa(pronunciation, fnel) {
 		return $result;
 	}
 
-	//$result.addClass('ipa');
-	$result.text("(");
 	for (let i = 0; i < pronunciation.length; i++) {
 		if (i > 0) {
 			$result.append(' ' + _('or') + ' ');
 		}
-		const fnIpa = pronunciation[i]['ipa']['FN'];
-		const rnIpa = pronunciation[i]['ipa']['RN'];
-		if (fnIpa === rnIpa) {
-			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
-			$result.append('/');
-			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
-			$result.append(' ');
-			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
-			if (pronunciation[i].hasOwnProperty('audio')) {
-				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
-			}
-		} else {
+		const ipa = pronunciation[i]['ipa'];
+		if (getDialect() === 'combined' && ipa['FN'] !== ipa['RN']) {
 			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
 			$result.append(' ');
-			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
+			$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
 			if (pronunciation[i].hasOwnProperty('audio')) {
 				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
 			}
 			$result.append(' / ');
 			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
 			$result.append(' ');
-			$result.append($('<span/>').text(rnIpa).addClass('ipa'));
+			$result.append($('<span/>').text(ipa['RN']).addClass('ipa'));
+
+		} else if (getDialect() === 'combined') {
+			$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
+			if (pronunciation[i].hasOwnProperty('audio')) {
+				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+			}
+
+		} else {
+			$result.append($('<span/>').text(ipa[getDialect()]).addClass('ipa'));
+			if (ipa[getDialect()] === ipa['FN'] && pronunciation[i].hasOwnProperty('audio')) {
+				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+			}
 		}
 	}
-	$result.append(")");
 
 	return $result;
 }
@@ -556,9 +566,9 @@ function pronunciationAudioButtons(audioData) {
 	return $buttons;
 }
 
-function editButton(word, type) {
+function editButton(id) {
 	let $button = $('<a/>').addClass('ui icon basic button edit-button');
-	const url = "/edit?word=" + word + "&type=" + type;
+	const url = "/edit?word=" + id;
 	$button.attr('href', url);
 	$('<i/>').addClass('pencil icon').appendTo($button);
 	return $button;
@@ -604,7 +614,7 @@ function affixesSection(affixes) {
 		let $tr = $('<tr/>').appendTo($table);
 		if (a.hasOwnProperty('combinedFrom')) {
 			let $affixSpan = $('<span/>')
-				.html(lemmaForm(affix, 'aff:in'));
+				.html(lemmaForm({'word': {'FN': affix, 'combined': affix, 'RN': affix}, 'type': 'aff:in'}));
 			addLemmaClass($affixSpan, 'aff:in');
 			$('<td/>')
 				.append($affixSpan)
@@ -623,8 +633,8 @@ function affixesSection(affixes) {
 				}
 				let $affixLink = $('<a/>')
 					.addClass('word-link')
-					.html(lemmaForm(c['affix']["na'vi"], c['affix']['type']))
-					.attr('href', '/?q=' + affix["na'vi"]);
+					.html(lemmaForm(c['affix']))
+					.attr('href', '/?q=' + c['affix']["word_raw"][getDialect()]);
 				addLemmaClass($affixLink, c['affix']['type']);
 				$componentsCell.append($affixLink);
 				$meaningCell.append($('<span/>').text(getTranslation(c['affix']["translations"][0])));
@@ -632,9 +642,9 @@ function affixesSection(affixes) {
 		} else {
 			let $affixLink = $('<a/>')
 				.addClass('word-link')
-				.html(lemmaForm(affix["na'vi"], affix['type']))
+				.html(lemmaForm(affix))
 				//.addClass(a['type'])
-				.attr('href', '/?q=' + affix["na'vi"]);
+				.attr('href', '/?q=' + affix["word_raw"][getDialect()]);
 			addLemmaClass($affixLink, affix['type']);
 			$('<td/>').append($affixLink)
 				.append(typeBadge(affix['type'], true))
@@ -681,8 +691,8 @@ function createWordLink(link) {
 		let $link = $('<span/>');
 		let $word = $('<a/>')
 			.addClass('word-link')
-			.attr('href', "/?q=" + link["na'vi"])
-			.html(lemmaForm(link["na'vi"], link["type"]));
+			.attr('href', "/?q=" + link["word_raw"][getDialect()])
+			.html(lemmaForm(link));
 		addLemmaClass($word, link["type"]);
 		$link.append($word);
 
@@ -849,7 +859,7 @@ function nounConjugationString(c) {
 			if (m[1] !== "-") {
 				formatted += "<span class='prefix'>" + m[1] + "</span>";
 			}
-			formatted += m[2].replace(/\{(.*)\}/, "<span class='lenition'>$1</span>");
+			formatted += m[2].replace(/\{([^}]*)\}/g, "<span class='lenition'>$1</span>");
 			if (m[3] !== "-") {
 				formatted += "<span class='suffix'>" + m[3] + "</span>";
 			}
@@ -1181,25 +1191,27 @@ function sentencesSection(sentences, lemma) {
 	return $section;
 }
 
-function lemmaForm(word, type) {
+function lemmaForm(word) {
+	let type = word['type'];
+	let lemma = word['word'][getDialect()];
+	lemma = lemma.replaceAll('/', '');
+	lemma = lemma.replace(/\[([^\]]*)\]/g, '<span class="stressed">$1</span>');
 	if (type === "n:si" || type === "nv:si") {
-		return word + ' si';
+		return lemma + ' si';
 	} else if (type === 'aff:pre') {
-		return word + "-";
+		return lemma + "-";
 	} else if (type === 'aff:pre:len') {
-		return word + "+";
+		return lemma + "+";
 	} else if (type === 'aff:in') {
-		return '&#x2039;' + word + '&#x203a;';
+		return '&#x2039;' + lemma + '&#x203a;';
 	} else if (type === 'aff:suf') {
-		return '-' + word;
+		return '-' + lemma;
 	}
-	return word;
+	return lemma;
 }
 
 function addLemmaClass($element, type) {
-	if (type === 'aff:pre') {
-		$element.addClass('prefix');
-	} else if (type === 'aff:pre:len') {
+	if (type === 'aff:pre' || type === 'aff:pre:len') {
 		$element.addClass('prefix');
 	} else if (type === 'aff:in') {
 		$element.addClass('infix');
@@ -1221,14 +1233,14 @@ function createResultBlock(i, r) {
 
 	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
 	addLemmaClass($lemma, r['type']);
-	$lemma.html(lemmaForm(r["na'vi"], r['type']));
+	$lemma.html(lemmaForm(r));
 	$resultWord.append(typeBadge(r["type"], true));
 
 	if (r["status"]) {
 		$resultWord.append(statusBadge(r["status"]));
 	}
 
-	if (localStorage.getItem('reykunyu-ipa') === '1') {
+	if (getIPASetting()) {
 		$resultWord.append(pronunciationSectionIpa(r["pronunciation"], r["type"]));
 	} else {
 		$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
@@ -1236,13 +1248,13 @@ function createResultBlock(i, r) {
 
 	const showEditButton = $('body').hasClass('editable');
 	if (showEditButton) {
-		$resultWord.append(editButton(r["na'vi"], r["type"]));
+		$resultWord.append(editButton(r["id"]));
 	}
 
 	$resultWord.appendTo($result);
 
 	if (r["image"]) {
-		$result.append(imageSection(r["na'vi"], r["image"]));
+		$result.append(imageSection(r, r["image"]));
 	}
 
 	$result.append(translationSection(r["translations"]));
@@ -1274,10 +1286,10 @@ function createResultBlock(i, r) {
 	}
 
 	if (r["conjugation"]) {
-		if (r["type"] === "n" || r["type"] === "pn") {
-			$result.append(nounConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
+		if (r["type"] === "n" || r["type"] === "pn" || r["type"] === "n:pr") {
+			$result.append(nounConjugationSection(r["conjugation"][getDialect()], r["conjugation_note"]));
 		} else if (r["type"] === "adj") {
-			$result.append(adjectiveConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
+			$result.append(adjectiveConjugationSection(r["conjugation"][getDialect()], r["conjugation_note"]));
 		}
 	}
 
@@ -1314,7 +1326,7 @@ function createResults(results, $block) {
 			$block.append(createResultBlock(i, results["sì'eyng"][i]));
 		}
 	} else if (results["aysämok"].length) {
-		const suggestions = results["aysämok"].map(a => '<a href="/?q=' + a + '">' + a + '</a>');
+		const suggestions = results["aysämok"].map(a => '<a class="word-link" href="/?q=' + a + '">' + a + '</a>');
 		$block.append(createErrorBlock(_("no-results"),
 			_("did-you-mean") + " " +
 			suggestions.join(', ').replace(/, ([^,]*)$/, " " + _("or") + " $1") + "?"));
@@ -1392,6 +1404,13 @@ function sngäiTìfwusew(initial) {
 	$modeTabs = $('#tab-mode-bar');
 	$modeTabs.hide();
 	const query = $('#search-box').val();
+
+	// TODO temporary easter egg to enable RN mode
+	if (query === "lu oe tsùlfätu lì'fyaye wione") {
+		const $rnButton = $('#dialect-rn-radiobutton');
+		$rnButton.parent().checkbox('set enabled');
+	}
+
 	if (initial) {
 		history.replaceState({ 'query': query, 'mode': getMode() }, '', '/?q=' + query);
 	} else {
@@ -1418,7 +1437,7 @@ function sngäiTìfwusew(initial) {
 
 function doSearchNavi() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': getLanguage() })
+	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': getLanguage(), 'dialect': getDialect() })
 		.done(function (tìeyng) {
 			const fromNaviResult = tìeyng['fromNa\'vi'];
 			const toNaviResult = tìeyng['toNa\'vi'];
@@ -1608,7 +1627,7 @@ function rhymesWithSyllableCountSection(syllableCount, rhymes) {
 
 function doSearchRhymes() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/rhymes', { 'tìpawm': tìpawm })
+	$.getJSON('/api/rhymes', { 'tìpawm': tìpawm, 'dialect': getDialect() })
 		.done(function (response) {
 			$results.empty();
 

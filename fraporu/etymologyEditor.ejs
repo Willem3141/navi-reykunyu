@@ -51,21 +51,26 @@
 					<thead>
 						<tr>
 							<th>Word</th>
-							<th>Etymology</th>
+							<th style="min-width: 66%;">Etymology</th>
 						</tr>
 					</thead>
 					<tbody>
-						<% let keys = [];
-						for (let key in words) {
-							keys.push(key);
+						<% let ids = [];
+						for (let id in words) {
+							ids.push(id);
 						}
-						keys.sort(Intl.Collator().compare);
-						for (let w of keys) {
-							const word = words[w];
+						const collator = new Intl.Collator();
+						const removeMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '').replaceAll(']', '');
+						const htmlMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '<span class="stressed">').replaceAll(']', '</span>');
+						ids.sort((a, b) => {
+							return collator.compare(removeMarkup(words[a]["na'vi"]), removeMarkup(words[b]["na'vi"]));
+						});
+						for (let id of ids) {
+							const word = words[id];
 						%>
 						<tr>
 							<td>
-								<%= word["na'vi"] %><span class="muted">:<%= word['type'] %></span
+								<%- htmlMarkup(word["na'vi"]) %><span class="muted"> (<%= word['type'] %>)</span>
 							</td>
 							<td>
 								<input class="etymology-field" data-json="<%= JSON.stringify(word) %>" value="<%= word['etymology'] %>">
