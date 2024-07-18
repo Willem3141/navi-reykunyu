@@ -561,6 +561,10 @@ h1::after {
 	font-style: italic;
 }
 
+.error .error-icon {
+	margin: 20px auto;
+}
+
 .error pre {
 	text-align: left;
 }

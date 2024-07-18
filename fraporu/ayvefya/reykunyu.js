@@ -1315,8 +1315,8 @@ function createResultBlock(i, r) {
 function createErrorBlock(text, subText) {
 	let $error = $('<div/>').addClass('error');
 	$('<p/>').addClass('error-text').html(text).appendTo($error);
-	$('<img/>').addClass('error-icon').attr("src", "/ayrel/ke'u.svg").appendTo($error);
 	$('<p/>').addClass('error-subText').html(subText).appendTo($error);
+	$('<img/>').addClass('error-icon').attr("src", "/ayrel/ke'u.svg").appendTo($error);
 	return $error;
 }
 
