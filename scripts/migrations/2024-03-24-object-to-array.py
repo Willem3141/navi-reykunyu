@@ -40,12 +40,27 @@ words = []
 keys = list(old_words.keys())
 keys.sort()
 
+id_to_key_map = {}
+key_to_id_map = {}
+to_review = []
 for key in old_words.keys():
 	word = old_words[key]
 	word['id'] = len(words)
+	id_to_key_map[word['id']] = key
+	key_to_id_map[key] = word['id']
 	if not update_navi_with_pronunciation(word):
-		print(word["na'vi"] + ':' + word['type'])
+		to_review.append([word['id'], word["na'vi"] + ':' + word['type']])
 	words.append(word)
+
+print('\x1b[1mWords for pronunciation review:\x1b[0m')
+for word in to_review:
+	print(word[1] + '  →  ' + 'https://reykunyu.lu/edit?word=' + str(word[0]))
 
 with open('data/words.json', 'w', encoding='utf-8') as dict_file:
 	json.dump(words, dict_file)
+
+with open('data/id-to-key-map.json', 'w', encoding='utf-8') as map_file:
+	json.dump(id_to_key_map, map_file)
+
+with open('data/key-to-id-map.json', 'w', encoding='utf-8') as map_file:
+	json.dump(key_to_id_map, map_file)
