@@ -450,14 +450,32 @@ app.get('/api/word', cors(), function(req, res) {
 });
 
 app.get('/api/fwew-search', cors(), function(req, res) {
+	if (!req.query.hasOwnProperty('query') || !req.query.hasOwnProperty('language')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	let dialect = 'combined';
+	if (req.query.hasOwnProperty('dialect')) {
+		dialect = req.query['dialect'];
+	}
 	res.json({
-		'fromNa\'vi': reykunyu.getResponsesFor(req.query["query"], req.query["dialect"]),
-		'toNa\'vi': reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"])
+		'fromNa\'vi': reykunyu.getResponsesFor(req.query['query'], dialect),
+		'toNa\'vi': reykunyu.getReverseResponsesFor(req.query['query'], req.query['language'])
 	});
 });
 
 app.get('/api/fwew', cors(), function(req, res) {
-	res.json(reykunyu.getResponsesFor(req.query["tìpawm"], req.query["dialect"]));
+	if (!req.query.hasOwnProperty('tìpawm')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	let dialect = 'combined';
+	if (req.query.hasOwnProperty('dialect')) {
+		dialect = req.query['dialect'];
+	}
+	res.json(reykunyu.getResponsesFor(req.query['tìpawm'], dialect));
 });
 
 app.get('/api/mok-suggest', cors(), function (req, res) {
@@ -473,7 +491,12 @@ app.get('/api/mok', cors(), function(req, res) {
 });
 
 app.get('/api/search', cors(), function(req, res) {
-	res.json(reykunyu.getReverseResponsesFor(req.query["query"], req.query["language"]));
+	if (!req.query.hasOwnProperty('query') || !req.query.hasOwnProperty('language')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	res.json(reykunyu.getReverseResponsesFor(req.query['query'], req.query['language']));
 });
 
 app.get('/api/suggest', function(req, res) {
