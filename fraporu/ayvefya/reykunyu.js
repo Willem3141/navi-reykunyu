@@ -663,7 +663,7 @@ function sourceSection(sources) {
 	$sourceSection.append($('<div/>').addClass('header').text(_('source')));
 	for (let source of sources) {
 		let $source = $('<div/>').addClass('body');
-		if (source.length == 1) {
+		if (source.length === 1 || source[1].length === 0) {
 			let $sourceText = $('<div/>');
 			$sourceText.text(source[0]);
 			$source.append($sourceText);
