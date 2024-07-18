@@ -435,9 +435,10 @@ app.get('/untranslated', function(req, res) {
 });
 
 app.get('/study', function(req, res) {
-	zeykerokyu.getLessons(req.user, (lessonData) => {
+	//zeykerokyu.getLessons(req.user, (lessonData) => {  // TODO
+	const lessonData = [];
 		res.render('study', { user: req.user, lessons: lessonData });
-	});
+	//});
 });
 
 app.get('/words.json', function(req, res) {
