@@ -943,6 +943,12 @@ h2[id]::before {
 		background-color: #333 !important;
 	}
 
+	@media (max-width: 600px) {
+		#search-form #search-box {
+			border-right-color: #555 !important;
+		}
+	}
+
 	.ui.search > .results .result .description {
 		color: #999;
 	}
