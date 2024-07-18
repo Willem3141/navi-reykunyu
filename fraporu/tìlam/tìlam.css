@@ -561,6 +561,10 @@ h1::after {
 	font-style: italic;
 }
 
+.error pre {
+	text-align: left;
+}
+
 
 
 /* tables */
