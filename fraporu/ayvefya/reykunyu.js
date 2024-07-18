@@ -457,12 +457,11 @@ function translationSection(sìralpeng) {
 // lìupam[1] - holpxay lì'kongä a takuk lì'upam tsatseng ('awvea lì'kong: 1, muvea lì'kong: 2, saylahe)
 // fnel - fnel lì'uä (kin taluna txo fnel livu "n:si", tsakrr zene sivung lì'ut alu " si")
 function pronunciationSection(lìupam, fnel) {
-	let $tìlam = $('<span/>').addClass('stress');
 	if (!lìupam || lìupam.length === 0) {
-		$tìlam.append(_("stress-unknown"));
-		return $tìlam;
+		return null;
 	}
 
+	let $tìlam = $('<span/>').addClass('stress');
 	$tìlam.append("(");
 	for (let i = 0; i < lìupam.length; i++) {
 		if (i > 0) {
@@ -495,12 +494,11 @@ function pronunciationSection(lìupam, fnel) {
 }
 
 function pronunciationSectionIpa(pronunciation, fnel) {
-	let $result = $('<span/>').addClass('stress');
 	if (!pronunciation || pronunciation.length === 0) {
-		$result.append(_("stress-unknown"));
-		return $result;
+		return null;
 	}
 
+	let $result = $('<span/>').addClass('stress');
 	for (let i = 0; i < pronunciation.length; i++) {
 		if (i > 0) {
 			$result.append(' ' + _('or') + ' ');
