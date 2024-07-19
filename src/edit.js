@@ -4,6 +4,7 @@
 module.exports = {
 	'getWordData': getWordData,
 	'updateWordData': updateWordData,
+	'insertWordData': insertWordData,
 	'getAll': getAll,
 	'getUntranslated': getUntranslated
 }
@@ -47,6 +48,27 @@ function updateWordData(id, newData, user) {
 		'date': new Date(),
 		'id': id,
 		'old': data,
+		'data': newData
+	});
+	fs.writeFileSync("./data/history.json", JSON.stringify(history));
+}
+
+function insertWordData(newData, user) {
+	const json = readJson();
+	const id = json.length;
+	if (newData['id'] !== -1) {
+		throw Error('Tried to insert word data already containing an ID');
+	}
+	newData['id'] = id;
+	json.push(newData);
+	writeJson(json);
+
+	// add history entry
+	let history = JSON.parse(fs.readFileSync("./data/history.json"));
+	history.push({
+		'user': user['username'],
+		'date': new Date(),
+		'id': id,
 		'data': newData
 	});
 	fs.writeFileSync("./data/history.json", JSON.stringify(history));

@@ -156,6 +156,12 @@ app.post('/add', function(req, res) {
 		return;
 	}
 
+	if (!req.body.hasOwnProperty('data')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+
 	let data;
 	try {
 		data = JSON.parse(req.body["data"]);
@@ -164,26 +170,12 @@ app.post('/add', function(req, res) {
 		res.send('400 Bad Request');
 		return;
 	}
-	let word = data["na'vi"];
-	let type = data["type"];
-	let existing = reykunyu.hasWord(word, type);  // TODO
-	if (existing) {
-		res.status(400);
-		res.json({'message': 'Word / type combination already exists'});
-		return;
-	}
-	reykunyu.insertWord(data);
-	let history = JSON.parse(fs.readFileSync("./data/history.json"));
-	history.push({
-		'user': req.user['username'],
-		'date': new Date(),
-		'word': word,
-		'type': type,
-		'data': data
+
+	edit.insertWordData(data, req.user);
+	reykunyu.reloadData();
+	res.send({
+		'url': '/?q=' + dialect.makeRaw(data["na'vi"])
 	});
-	fs.writeFileSync("./data/history.json", JSON.stringify(history));
-	reykunyu.saveDictionary();
-	res.send();
 });
 
 app.get('/edit', function(req, res) {

@@ -6,6 +6,9 @@ var id = -1;
 $(function() {
 	const getParams = new URLSearchParams(window.location.search);
 	id = parseInt(getParams.get('word'), 10);
+	if (isNaN(id)) {
+		id = -1;  // adding new word
+	}
 
 	showHideInfixes();
 	$('#type-field').on('change', showHideInfixes);
