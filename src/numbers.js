@@ -3,6 +3,8 @@
  * round.
  */
 
+const dialect = require('./dialect')
+
 module.exports = {
 	conjugate: conjugate,
 	parse: parse
@@ -10,9 +12,9 @@ module.exports = {
 
 const units = ["", "'aw", "mune", "pxey", "tsìng", "mrr", "pukap", "kinä"];
 const unitSuffixes = ["", "aw", "mun", "pey", "sìng", "mrr", "fu", "hin"];
-const unitPrefixes = ["", "", "me", "pxe", "tsì", "mrr", "pu", "ki"];
-const powers = ["", "vol", "zam", "vozam", "zazam"];
-const powersShortened = ["", "vo", "za", "voza", "zaza"];
+const unitPrefixes = ["", "", "me/", "pxe/", "tsì/", "mrr/", "pu/", "ki/"];
+const powers = ["", "vo/l", "za/m", "vo/za/m", "za/za/m"];
+const powersShortened = ["", "vo/", "za/", "vo/za/", "za/za/"];
 
 /**
  * Generates a Na'vi number.
@@ -57,7 +59,12 @@ function conjugate(number) {
 	}
 	
 	return {
-		"na'vi": result,
+		"na'vi": dialect.makeRaw(result),
+		"word": {
+			"FN": dialect.combinedToFN(result),
+			"combined": result,
+			"RN": dialect.combinedToRN(result)
+		},
 		"type": "num",
 		"translations": [{ "en": "" + number }]
 	}
