@@ -28,11 +28,7 @@ function conjugate(number) {
 		return null;
 	}
 	if (number === 0) {
-		return {
-			"na'vi": "kew",
-			"type": "num",
-			"translations": [{ "en": "" + number }]
-		}
+		return generateNumberEntry(number, "kew");
 	}
 
 	const octal = number.toString(8);
@@ -57,7 +53,11 @@ function conjugate(number) {
 			result = prefix + power + result;
 		}
 	}
-	
+
+	return generateNumberEntry(number, result);
+}
+
+function generateNumberEntry(number, result) {
 	return {
 		"na'vi": dialect.makeRaw(result),
 		"word": {
