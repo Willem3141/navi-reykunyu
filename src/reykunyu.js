@@ -452,6 +452,25 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 				});
 			}
 		}
+		if (nounResult["root"].endsWith('tswo')) {
+			let possibleSiVerb = nounResult["root"].slice(0, -4);
+			let siVerbResult = dictionary.get(possibleSiVerb, 'n:si', dialect);
+			if (siVerbResult) {
+				siVerbResult["conjugated"] = [{
+					"type": "v_to_n",
+					"conjugation": {
+						"result": [nounResult["root"]],
+						"root": possibleSiVerb + ' si',
+						"affixes": ['tswo']
+					}
+				}, {
+					"type": "n",
+					"conjugation": nounResult
+				}];
+				affixList.addAffixList(siVerbResult, dictionary, dialect);
+				wordResults.push(siVerbResult);
+			}
+		}
 
 		if (pronounForms.hasOwnProperty(nounResult["root"])) {
 			let foundForm = pronounForms[nounResult["root"]];
