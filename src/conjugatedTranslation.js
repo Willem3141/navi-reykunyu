@@ -70,7 +70,8 @@ let translators = {
 		'to': (t) => 'than ' + t,
 	},
 	'v_to_n': {
-		'yu': (t) => t + 'er'
+		'yu': (t) => t + 'er',
+		'tswo': (t) => 'ability to ' + t
 	},
 	'v_to_part': {
 		'us': (t) => toPresentParticiple(t),
