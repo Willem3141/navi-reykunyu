@@ -1,0 +1,60 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Study &bull; Reykunyu</title>
+		<link rel="stylesheet" type="text/css" href="/aysrungsiyu/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/tìlam/tìlam.css" rel="stylesheet">
+		<link href="/tìlam/study.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<h1>
+				<span class="muted">Reykunyu &rarr;</span> Study
+				<a href="/" class="ui icon right floated top right basic button">
+					<i class="arrow left icon"></i> Back to Reykunyu
+				</a>
+				<% if (user) { %>
+				<div id="user-label" class="ui left pointing basic label">
+					Kaltxì ma <%= user.username %>!
+				</div>
+				<% } %>
+			</h1>
+		</div>
+
+		<% if (!user) { %>
+		<div class="container">
+			<p>To study vocab, you have to be logged in, so that your progress can be stored.</p>
+			<p>Please <a href="/login">login</a> to Reykunyu, or <a href="/signup">create an account</a>.</p>
+		</div>
+		<% } else { %>
+		<div class="container">
+			<h2><%= course['name'] %></h2>
+			<p><%= course['description'] %></p>
+			<div class="lessons-container">
+				<% for (let i in lessons) {
+					const lesson = lessons[i];
+					const reviewOrLearn = lesson['reviewable_count'] > 0 ? 'review' : 'learn'; %>
+				<a class="lesson-container <%= reviewOrLearn %>-link" href="/study/<%= reviewOrLearn %>?course=<%= course['id'] %>&lesson=<%= i %>">
+					<div class="lesson-name"><%= lesson['name'] %></div>
+					<div class="lesson-progress"><b><%= lesson['total_count'] %></b> items
+						<% if (lesson['known_count'] > 0) { %>
+						&bull; <b><%= lesson['known_count'] %></b> learned
+						<% } %>
+						<% if (lesson['reviewable_count'] > 0) { %>
+						&bull; <b><%= lesson['reviewable_count'] %></b> now up for review
+						<% } %>
+					</div>
+				</a>
+				<% } %>
+			</div>
+		</div>
+		<% } %>
+
+		<script src="/aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="/aysrungsiyu/semantic/dist/semantic.js"></script>
+	</body>
+</html>
+

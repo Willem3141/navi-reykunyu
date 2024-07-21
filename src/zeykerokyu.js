@@ -15,6 +15,8 @@
  */
 
 module.exports = {
+	'getCourses': getCourses,
+	'getCourseData': getCourseData,
 	'getLessons': getLessons,
 	'getLessonItems': getLessonItems,
 	'getLearnableItemsForLesson': getLearnableItemsForLesson,
@@ -25,28 +27,58 @@ module.exports = {
 }
 
 const fs = require('fs');
-const lessons = JSON.parse(fs.readFileSync("./data/lessons.json"));
 
 const db = require('./db');
 
-/// Returns (in a callback) a list of available lessons, with statistics for the
-/// given user.
-function getLessons(user, cb) {
+/// Returns (in a callback) a list of available courses.
+function getCourses(user, cb) {
+	db.all(`select c.id, c.name, c.description,
+		(select count() from lesson l where l.course_id == c.id) as lesson_count
+	from course c`, (err, courses) => {
+		if (err) {
+			console.log(err);
+		}
+		cb(courses);
+	});
+}
+
+function getCourseData(user, courseId, cb) {
+	db.get(`select c.id, c.name, c.description
+	from course c
+	where c.id == ?`, courseId, (err, courses) => {
+		if (err) {
+			console.log(err);
+		}
+		cb(courses);
+	});
+}
+
+/// Returns (in a callback) a list of available lessons in a course, with
+/// statistics for the given user.
+function getLessons(user, courseId, cb) {
 	if (user) {
-		db.all(`select l.name, l.description,
-			(select count() from vocab_in_lesson v where l.id == v.lesson_id) as total_count,
-			(select count() from vocab_in_lesson v, vocab_status s where v.lesson_id == l.id
+		db.all(`select l.name, l.introduction, l.conclusion,
+			(select count() from vocab_in_lesson v
+				where l.course_id == v.course_id and l.id == v.lesson_id) as total_count,
+			(select count() from vocab_in_lesson v, vocab_status s
+				where l.course_id == v.course_id and l.id == v.lesson_id
 				and v.vocab == s.vocab and s.user == ?1) as known_count,
-			(select count() from vocab_in_lesson v, vocab_status s where v.lesson_id == l.id
+			(select count() from vocab_in_lesson v, vocab_status s
+				where l.course_id == v.course_id and l.id == v.lesson_id
 				and v.vocab == s.vocab and s.user == ?1 and s.next_review <= current_timestamp) as reviewable_count
-		from lesson l`, user.username, (err, lessons) => {
+		from lesson l
+		where l.course_id = ?2`, user.username, courseId, (err, lessons) => {
+			if (err) {
+				console.log(err);
+			}
 			cb(lessons);
 		});
 
 	} else {
 		db.all(`select l.name, l.description,
 			(select count() from vocab_in_lesson v where l.id == v.lesson_id) as total_count,
-		from lesson l`, (err, lessons) => {
+		from lesson l
+		where l.course_id = ?`, courseId, (err, lessons) => {
 			cb(lessons);
 		});
 	}
@@ -56,20 +88,19 @@ function getLessonItems() {
 	// TODO
 }
 
-function getLearnableItemsForLesson(lessonId, user, cb) {
+function getLearnableItemsForLesson(courseId, lessonId, user, cb) {
 	if (!user) {
 		cb([]);
 	}
 	db.all(`select v.vocab from vocab_in_lesson v
-		where v.lesson_id == ?
+		where v.course_id == ? and v.lesson_id == ?
 			and v.vocab not in (
 				select vocab
 				from vocab_status
 				where user == ?
 			)
-		` + ((lessonId == 0) ? `order by random()` : ``) + `
 		limit 10
-		`, lessonId, user.username, (err, lessons) => {
+		`, courseId, lessonId, user.username, (err, lessons) => {
 			if (err) {
 				cb([]);
 				console.log(err);
@@ -80,7 +111,7 @@ function getLearnableItemsForLesson(lessonId, user, cb) {
 	);
 }
 
-function getReviewableItemsForLesson(lessonId, user, cb) {
+function getReviewableItemsForLesson(courseId, lessonId, user, cb) {
 	if (!user) {
 		cb([]);
 	}
@@ -89,10 +120,10 @@ function getReviewableItemsForLesson(lessonId, user, cb) {
 		where s.user == ?
 			and s.next_review <= current_timestamp
 			and v.vocab == s.vocab
-			and v.lesson_id == ?
+			and v.course_id == ? and v.lesson_id == ?
 		order by random()
 		limit 50
-		`, user.username, lessonId, (err, lessons) => {
+		`, user.username, courseId, lessonId, (err, lessons) => {
 			if (err) {
 				cb([]);
 				console.log(err);

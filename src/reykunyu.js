@@ -129,7 +129,7 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 		// see also
 		if (word.hasOwnProperty('seeAlso')) {
 			for (let i = 0; i < word['seeAlso'].length; i++) {
-				let [navi, type] = splitWordAndType(word['seeAlso'][i]);
+				let [navi, type] = dictionary.splitWordAndType(word['seeAlso'][i]);
 				let result = dictionary.getEditable(navi, type);
 				if (result) {
 					word['seeAlso'][i] = wordLinks.stripToLinkData(result);
@@ -153,7 +153,7 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 		for (const a of sentence['na\'vi']) {
 			const roots = a[1];
 			for (const r of roots) {
-				let [word, type] = splitWordAndType(r);
+				let [word, type] = dictionary.splitWordAndType(r);
 				let result = dictionary.getEditable(word, type);
 				if (result) {
 					if (!result.hasOwnProperty('sentences')) {
@@ -183,11 +183,6 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 	for (const type of ['v:']) {
 		allWordsOfType[type] = getAllWordsOfType(type, true);
 	}
-}
-
-function splitWordAndType(wordType) {
-	let i = wordType.indexOf(':');
-	return [wordType.substring(0, i), wordType.substring(i + 1)];
 }
 
 function getAllWordsOfType(type, allowSubtype) {

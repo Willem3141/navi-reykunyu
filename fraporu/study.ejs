@@ -24,6 +24,10 @@
 			</h1>
 		</div>
 
+		<div class="container">
+			<p>Welcome to <b>Zeykerokyu</b>, Reykunyu’s vocab study tool!</p>
+		</div>
+
 		<% if (!user) { %>
 		<div class="container">
 			<p>Reykunyu’s study tool allows you to learn and review Na’vi vocabulary. It has a built-in <i>spaced repetition system</i> (SRS). This means that Reykunyu remembers which words you know well and which words you find difficult, and will make sure difficult words end up in your review sessions more often.</p>
@@ -32,22 +36,14 @@
 		</div>
 		<% } else { %>
 		<div class="container">
-			<h2>Available lessons</h2>
+			<h2>Courses</h2>
 			<div class="lessons-container">
-				<% for (const i in lessons) {
-					const lesson = lessons[i];
-					const reviewOrLearn = lesson['reviewable_count'] > 0 ? 'review' : 'learn'; %>
-				<a class="lesson-container <%= reviewOrLearn %>-link" href="/study/<%= reviewOrLearn %>?lesson=<%= i %>">
-					<div class="lesson-name"><%= lesson['name'] %></div>
-					<div class="lesson-description"><%= lesson['description'] %></div>
-					<div class="lesson-progress"><b><%= lesson['total_count'] %></b> items
-						<% if (lesson['known_count'] > 0) { %>
-						&bull; <b><%= lesson['known_count'] %></b> learned
-						<% } %>
-						<% if (lesson['reviewable_count'] > 0) { %>
-						&bull; <b><%= lesson['reviewable_count'] %></b> now up for review
-						<% } %>
-					</div>
+				<% for (const i in courses) {
+					const course = courses[i]; %>
+				<a class="lesson-container learn-link" href="/study/course?course=<%= i %>">
+					<div class="lesson-name"><%= course['name'] %></div>
+					<div class="lesson-description"><%= course['description'] %></div>
+					<div class="lesson-progress"><b><%= course['lesson_count'] %></b> lessons</div>
 				</a>
 				<% } %>
 			</div>
