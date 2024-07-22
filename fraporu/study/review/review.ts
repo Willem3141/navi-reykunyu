@@ -320,7 +320,7 @@ class ReviewPage {
 	showResults(): void {
 		$('#done-dialog-item-count').text(this.currentItemIndex);
 		$('#dialog-layer').show();
-		$('#to-review-button').attr('href', '/study/review/?lesson=' + this.lessonId);
+		$('#back-button').attr('href', '/study/course?course=' + this.courseId);
 	}
 
 	addToLearnedList(correct: boolean): void {

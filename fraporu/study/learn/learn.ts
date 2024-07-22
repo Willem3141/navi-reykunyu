@@ -214,7 +214,7 @@ class LearnPage {
 	showResults(): void {
 		$('#done-dialog-item-count').text(this.currentItemIndex);
 		$('#dialog-layer').show();
-		$('#to-review-button').attr('href', '/study/review/?lesson=' + this.lessonId);
+		$('#to-review-button').attr('href', '/study/review/?course=' + this.courseId + '&lesson=' + this.lessonId);
 	}
 
 	addToLearnedList(): void {
