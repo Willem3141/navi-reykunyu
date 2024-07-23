@@ -148,22 +148,11 @@ router.get('/rhymes', cors(), function(req, res) {
 
 router.get('/srs/learnable', function(req, res) {
 	if (!req.user) {
-		res.status(403);
-		res.send('403 Forbidden');
+		send403(res);
 		return;
 	}
-	if (!req.query.hasOwnProperty('courseId') || !req.query.hasOwnProperty('lessonId')) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	const courseId = parseInt(req.query['courseId'], 10);
-	const lessonId = parseInt(req.query['lessonId'], 10);
-	if (isNaN(courseId) || isNaN(lessonId)) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res);
 	zeykerokyu.getLearnableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});
@@ -171,22 +160,11 @@ router.get('/srs/learnable', function(req, res) {
 
 router.get('/srs/reviewable', function(req, res) {
 	if (!req.user) {
-		res.status(403);
-		res.send('403 Forbidden');
+		send403(res);
 		return;
 	}
-	if (!req.query.hasOwnProperty('courseId') || !req.query.hasOwnProperty('lessonId')) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	const courseId = parseInt(req.query['courseId'], 10);
-	const lessonId = parseInt(req.query['lessonId'], 10);
-	if (isNaN(courseId) || isNaN(lessonId)) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res);
 	zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});
@@ -194,21 +172,10 @@ router.get('/srs/reviewable', function(req, res) {
 
 router.post('/srs/mark-correct', function(req, res) {
 	if (!req.user) {
-		res.status(403);
-		res.send('403 Forbidden');
+		send403(res);
 		return;
 	}
-	if (!req.body.hasOwnProperty('vocab')) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	const vocab = parseInt(req.body['vocab'], 10);
-	if (isNaN(vocab)) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
+	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processCorrectAnswer(req.user, vocab, (items) => {
 		res.send();
 	});
@@ -216,21 +183,10 @@ router.post('/srs/mark-correct', function(req, res) {
 
 router.post('/srs/mark-incorrect', function(req, res) {
 	if (!req.user) {
-		res.status(403);
-		res.send('403 Forbidden');
+		send403(res);
 		return;
 	}
-	if (!req.body.hasOwnProperty('vocab')) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	const vocab = parseInt(req.body['vocab'], 10);
-	if (isNaN(vocab)) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
+	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processIncorrectAnswer(req.user, vocab, (items) => {
 		res.send();
 	});
@@ -238,22 +194,35 @@ router.post('/srs/mark-incorrect', function(req, res) {
 
 router.post('/srs/mark-known', function(req, res) {
 	if (!req.user) {
-		res.status(403);
-		res.send('403 Forbidden');
+		send403(res);
 		return;
 	}
-	if (!req.body.hasOwnProperty('vocab')) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	const vocab = parseInt(req.body['vocab'], 10);
-	if (isNaN(vocab)) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
+	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processKnownAnswer(req.user, vocab, (items) => {
 		res.send();
 	});
 });
+
+function send403(res) {
+	res.status(403);
+	res.send('403 Forbidden');
+}
+
+/// Retrieves an integer argument from the query or body arguments.
+///
+/// Sends a HTTP 400 response if the argument does not exist or is not an
+/// integer.
+function getIntegerArgumentOr400(name, args, res) {
+	if (!args.hasOwnProperty(name)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const arg = parseInt(args[name], 10);
+	if (isNaN(arg)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	return arg;
+}
