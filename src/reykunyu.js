@@ -35,9 +35,6 @@ const rhymes = require('./rhymes');
 const verbs = require('./verbs');
 const wordLinks = require('./wordLinks');
 
-const matchAll = require('string.prototype.matchall');
-matchAll.shim();
-
 try {
 	var sentences = JSON.parse(fs.readFileSync("./data/corpus.json"));
 } catch (e) {
