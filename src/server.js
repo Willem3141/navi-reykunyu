@@ -722,35 +722,6 @@ app.use((err, req, res, next) => {
 	res.render('500', { user: req.user, _: translations._, error: err });
 })
 
-app.get('/api/message-stats', function(req, res) {
-	let query = req.query['query'];
-	if (req.query['type'] === 'discord') {
-		// filter out spoilers and emoji
-		query = query.replace(/(\|\|[^|]+\|\||:[^ :]+:)/g, '');
-	}
-	const responses = reykunyu.getResponsesFor(query);
-	let naviWordCount = 0;
-	let totalWordCount = 0;
-	let naviLetterCount = 0;
-	let totalLetterCount = 0;
-	for (let response of responses) {
-		responseWords = response['tìpawm'].split(' ').length;
-		responseLetters = response['tìpawm'].length;
-		totalWordCount += responseWords;
-		totalLetterCount += responseLetters;
-		if (response["sì'eyng"].length > 0) {
-			naviWordCount += responseWords;
-			naviLetterCount += responseLetters;
-		}
-	}
-	res.json({
-		'naviWordCount': naviWordCount,
-		'totalWordCount': totalWordCount,
-		'naviLetterCount': naviLetterCount,
-		'totalLetterCount': totalLetterCount
-	});
-});
-
 http.listen(config["port"], function() {
 	console.log('listening on *:' + config["port"]);
 });
