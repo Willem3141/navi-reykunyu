@@ -1,7 +1,8 @@
 // Reykunyu's user and session database
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
-const reykunyu = require('./reykunyu');
+const dictionary = require('./dictionary');
+const output = require('./output');
 
 const db = new sqlite3.Database('./data/reykunyu.db');
 
@@ -25,41 +26,52 @@ function compareNaviWords(a, b, i) {
 }
 
 db.serialize(() => {
-	// tables storing the lessons
-	// (we regenerate these from lessons.json on each Reykunyu startup)
+	// tables storing the courses and lessons
+	// (we regenerate these from courses.json on each Reykunyu startup)
+	db.run(`drop table if exists course`);
 	db.run(`drop table if exists lesson`);
 	db.run(`drop table if exists vocab_in_lesson`);
-	db.run(`create table lesson (
+	db.run(`create table course (
 		id integer primary key,
 		name text not null,
 		description text not null
 	)`);
-	db.run(`create table vocab_in_lesson (
-		lesson_id integer,
+	db.run(`create table lesson (
+		course_id integer,
 		id integer,
-		vocab text not null,
-		primary key (lesson_id, id)
-		foreign key (lesson_id) references lesson(id)
+		name text not null,
+		introduction text,
+		conclusion text,
+		primary key (course_id, id),
+		foreign key (course_id) references course(id)
+	)`);
+	db.run(`create table vocab_in_lesson (
+		course_id integer,
+		lesson_id integer,
+		order_in_lesson integer,
+		vocab integer,
+		primary key (course_id, lesson_id, order_in_lesson),
+		foreign key (course_id, lesson_id) references lesson(course_id, id)
 	)`);
 	db.run(`begin transaction`);
 	db.parallelize(() => {
-		const lessonData = JSON.parse(fs.readFileSync("./data/lessons.json"));
-		for (let i = 0; i < lessonData.length; i++) {
-			const lesson = lessonData[i];
-			db.run(`insert into lesson values (?, ?, ?)`, i, lesson['name'], lesson['description']);
-			if (lesson.hasOwnProperty('words')) {
-				words = lesson['words'];
-			} else {
-				words = reykunyu.getAllKeys();
-				words.sort(function (a, b) {
-					return compareNaviWords(reykunyu.getWord(a), reykunyu.getWord(b), 0);
-				});
+		const coursesData = JSON.parse(fs.readFileSync("./data/courses.json"));
+		for (let i = 0; i < coursesData.length; i++) {
+			const course = coursesData[i];
+			db.run(`insert into course values (?, ?, ?)`, i, course['name'], course['description']);
+			const lessons = course['lessons'];
+			for (let j = 0; j < lessons.length; j++) {
+				const lesson = lessons[j];
+				db.run(`insert into lesson values (?, ?, ?, ?, ?)`,
+					i, j, lesson['name'], lesson['introduction'], lesson['conclusion']);
+				
+				const wordIDs = getWordIDsForLesson(lesson);
+				const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?)`);
+				for (let k = 0; k < wordIDs.length; k++) {
+					vocabInsert.run(i, j, k, wordIDs[k]);
+				}
+				vocabInsert.finalize();
 			}
-			const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?)`);
-			for (let j = 0; j < words.length; j++) {
-				vocabInsert.run(i, j, words[j]);
-			}
-			vocabInsert.finalize();
 		}
 	});
 	db.run(`commit`);
@@ -68,11 +80,35 @@ db.serialize(() => {
 	// stage and when the next review will be
 	db.run(`create table if not exists vocab_status (
 		user text not null,
-		vocab text not null,
+		vocab integer,
 		srs_stage integer,
 		next_review integer,
 		primary key (user, vocab)
 	)`);
 });
+
+function getWordIDsForLesson(lesson) {
+	let wordIDs = [];
+	if (lesson.hasOwnProperty('words')) {
+		const words = lesson['words'];
+		wordIDs = words.map((w) => {
+			const [word, type] = dictionary.splitWordAndType(w);
+			const entry = dictionary.get(word, type, 'FN');
+			if (!entry) {
+				output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w);
+			}
+			return entry['id'];
+		});
+	} else {
+		const words = dictionary.getAll();
+		wordIDs = words.map((w) => w['id']);
+		wordIDs.sort(function (a, b) {
+			return compareNaviWords(
+				dictionary.getById(a)['word_raw']['FN'],
+				dictionary.getById(b)['word_raw']['FN'], 0);
+		});
+	}
+	return wordIDs;
+}
 
 module.exports = db;

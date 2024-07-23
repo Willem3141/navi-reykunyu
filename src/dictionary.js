@@ -14,7 +14,8 @@ module.exports = {
 	'getEditable': getEditable,
 	'getOfTypes': getOfTypes,
 	'getNotOfTypes': getNotOfTypes,
-	'getAll': getAll
+	'getAll': getAll,
+	'splitWordAndType': splitWordAndType
 }
 
 const fs = require('fs');
@@ -171,4 +172,9 @@ function getAll() {
 
 function deepCopy(object) {
 	return JSON.parse(JSON.stringify(object));
+}
+
+function splitWordAndType(wordType) {
+	let i = wordType.indexOf(':');
+	return [wordType.substring(0, i), wordType.substring(i + 1)];
 }

@@ -37,6 +37,7 @@ var verbs = require('./verbs');
 var edit = require('./edit');
 var output = require('./output');
 var dialect = require('./dialect');
+var zeykerokyu = require('./zeykerokyu');
 
 var tslamyu;
 try {
@@ -46,7 +47,6 @@ try {
 	output.hint(`Reykunyu can use navi-tslamyu to parse sentences.`);
 }
 
-//var zeykerokyu = require('./zeykerokyu'); // TODO
 
 const ejs = require('ejs');
 
@@ -427,10 +427,28 @@ app.get('/untranslated', function(req, res) {
 });
 
 app.get('/study', function(req, res) {
-	//zeykerokyu.getLessons(req.user, (lessonData) => {  // TODO
-	const lessonData = [];
-		res.render('study', { user: req.user, lessons: lessonData });
-	//});
+	zeykerokyu.getCourses(req.user, (courseData) => {
+		res.render('study', { user: req.user, courses: courseData });
+	});
+});
+
+app.get('/study/course', function(req, res) {
+	if (!req.query.hasOwnProperty('course')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const courseId = parseInt(req.query['course'], 10);
+	if (isNaN(courseId)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	zeykerokyu.getCourseData(req.user, courseId, (courseData) => {
+		zeykerokyu.getLessons(req.user, courseId, (lessonData) => {
+			res.render('study-course', { user: req.user, course: courseData, lessons: lessonData });
+		});
+	});
 });
 
 app.get('/words.json', function(req, res) {
@@ -574,68 +592,114 @@ app.get('/api/rhymes', cors(), function(req, res) {
 	res.json(reykunyu.getRhymes(req.query["tìpawm"], req.query['dialect']));
 });
 
-app.get('/api/srs/lessons', function(req, res) {
+app.get('/api/srs/learnable', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		res.send('403 Forbidden');
 		return;
 	}
-	zeykerokyu.getLessons(req.user, (lessons) => {
-		res.json(lessons);
-	});
-});
-
-app.get('/api/srs/learnable', function(req, res) {
-	if (!req.user || !req.query.hasOwnProperty('lessonId')) {
-		res.status(403);
-		res.send('403 Forbidden');
+	if (!req.query.hasOwnProperty('courseId') || !req.query.hasOwnProperty('lessonId')) {
+		res.status(400);
+		res.send('400 Bad Request');
 		return;
 	}
-	zeykerokyu.getLearnableItemsForLesson(req.query['lessonId'], req.user, (items) => {
+	const courseId = parseInt(req.query['courseId'], 10);
+	const lessonId = parseInt(req.query['lessonId'], 10);
+	if (isNaN(courseId) || isNaN(lessonId)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	zeykerokyu.getLearnableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});
 });
 
 app.get('/api/srs/reviewable', function(req, res) {
-	if (!req.user || !req.query.hasOwnProperty('lessonId')) {
+	if (!req.user) {
 		res.status(403);
 		res.send('403 Forbidden');
 		return;
 	}
-	zeykerokyu.getReviewableItemsForLesson(req.query['lessonId'], req.user, (items) => {
+	if (!req.query.hasOwnProperty('courseId') || !req.query.hasOwnProperty('lessonId')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const courseId = parseInt(req.query['courseId'], 10);
+	const lessonId = parseInt(req.query['lessonId'], 10);
+	if (isNaN(courseId) || isNaN(lessonId)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});
 });
 
 app.post('/api/srs/mark-correct', function(req, res) {
-	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+	if (!req.user) {
 		res.status(403);
 		res.send('403 Forbidden');
 		return;
 	}
-	zeykerokyu.processCorrectAnswer(req.user, req.body['vocab'], (items) => {
+	if (!req.body.hasOwnProperty('vocab')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const vocab = parseInt(req.body['vocab'], 10);
+	if (isNaN(vocab)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	zeykerokyu.processCorrectAnswer(req.user, vocab, (items) => {
 		res.send();
 	});
 });
 
 app.post('/api/srs/mark-incorrect', function(req, res) {
-	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+	if (!req.user) {
 		res.status(403);
 		res.send('403 Forbidden');
 		return;
 	}
-	zeykerokyu.processIncorrectAnswer(req.user, req.body['vocab'], (items) => {
+	if (!req.body.hasOwnProperty('vocab')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const vocab = parseInt(req.body['vocab'], 10);
+	if (isNaN(vocab)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	zeykerokyu.processIncorrectAnswer(req.user, vocab, (items) => {
 		res.send();
 	});
 });
 
 app.post('/api/srs/mark-known', function(req, res) {
-	if (!req.user || !req.body.hasOwnProperty('vocab')) {
+	if (!req.user) {
 		res.status(403);
 		res.send('403 Forbidden');
 		return;
 	}
-	zeykerokyu.processKnownAnswer(req.user, req.body['vocab'], (items) => {
+	if (!req.body.hasOwnProperty('vocab')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	const vocab = parseInt(req.body['vocab'], 10);
+	if (isNaN(vocab)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	zeykerokyu.processKnownAnswer(req.user, vocab, (items) => {
 		res.send();
 	});
 });

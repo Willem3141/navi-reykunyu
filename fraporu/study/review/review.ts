@@ -1,6 +1,7 @@
 class ReviewPage {
+	courseId: number;
 	lessonId: number;
-	items: string[] = [];
+	items: number[] = [];
 	currentItemIndex = 0;
 	currentItem: any = null;
 	correctAnswer = '';
@@ -12,6 +13,13 @@ class ReviewPage {
 
 	constructor() {
 		const url = new URL(window.location.href);
+		if (!url.searchParams.has('course')) {
+			throw Error('course parameter not set');
+		}
+		this.courseId = parseInt(url.searchParams.get('course')!, 10);
+		if (isNaN(this.courseId)) {
+			throw Error('course parameter is not an integer');
+		}
 		if (!url.searchParams.has('lesson')) {
 			throw Error('lesson parameter not set');
 		}
@@ -19,7 +27,7 @@ class ReviewPage {
 		if (isNaN(this.lessonId)) {
 			throw Error('lesson parameter is not an integer');
 		}
-		$.getJSON('/api/srs/reviewable', { 'lessonId': this.lessonId }).done((data) => {
+		$.getJSON('/api/srs/reviewable', { 'courseId': this.courseId, 'lessonId': this.lessonId }).done((data) => {
 			this.items = data;
 			this.fetchAndSetUp();
 		});
@@ -37,10 +45,8 @@ class ReviewPage {
 	}
 
 	fetchAndSetUp(): void {
-		const itemString = this.items[this.currentItemIndex];
-		const word = itemString.substring(0, itemString.indexOf(':'));
-		const type = itemString.substring(itemString.indexOf(':') + 1);
-		$.getJSON('/api/word', { 'word': word, 'type': type }).done((wordData) => {
+		const itemID = this.items[this.currentItemIndex];
+		$.getJSON('/api/word', { 'id': itemID }).done((wordData) => {
 			this.currentItem = wordData;
 			this.setUpQuestion();
 		});
@@ -314,7 +320,7 @@ class ReviewPage {
 	showResults(): void {
 		$('#done-dialog-item-count').text(this.currentItemIndex);
 		$('#dialog-layer').show();
-		$('#to-review-button').attr('href', '/study/review/?lesson=' + this.lessonId);
+		$('#back-button').attr('href', '/study/course?course=' + this.courseId);
 	}
 
 	addToLearnedList(correct: boolean): void {
