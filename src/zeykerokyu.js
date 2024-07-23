@@ -18,7 +18,6 @@ module.exports = {
 	'getCourses': getCourses,
 	'getCourseData': getCourseData,
 	'getLessons': getLessons,
-	'getLessonItems': getLessonItems,
 	'getLearnableItemsForLesson': getLearnableItemsForLesson,
 	'getReviewableItemsForLesson': getReviewableItemsForLesson,
 	'processCorrectAnswer': processCorrectAnswer,
@@ -82,10 +81,6 @@ function getLessons(user, courseId, cb) {
 			cb(lessons);
 		});
 	}
-}
-
-function getLessonItems() {
-	// TODO
 }
 
 function getLearnableItemsForLesson(courseId, lessonId, user, cb) {

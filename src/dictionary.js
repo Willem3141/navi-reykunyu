@@ -113,18 +113,14 @@ function getById(id) {
 // The returned object is a deep copy. Editing it won't change the data in the
 // dictionary itself (see also getEditable).
 function get(word, type, dialect) {
-	//console.log('GETTING', word, type, dialect);
 	if (searchables[dialect].hasOwnProperty(word)) {
-		//console.log('FINDING', searchables[dialect][word]);
 		for (let id of searchables[dialect][word]) {
 			let result = words[id];
-			//console.log('ID', result);
 			if (result['type'] === type) {
 				return deepCopy(result);
 			}
 		}
 	}
-	//console.log('NOPE');
 	return null;
 }
 
