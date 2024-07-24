@@ -421,6 +421,10 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 				let verbResults = [];
 				lookUpVerb(possibleVerb, verbResults, dialect);
 				verbResults.forEach(function (verb) {
+					// don't allow this on the auxiliary verb si
+					if (verb["type"] === 'v:si') {
+						return;
+					}
 					const conjugated = verb["conjugated"];
 					const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
 					// allow these affixes only if there are no infixes in the verb
@@ -514,6 +518,10 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 			let verbResults = [];
 			lookUpVerb(possibleVerb, verbResults, dialect, true);
 			verbResults.forEach(function (verb) {
+				// don't allow this on the auxiliary verb si
+				if (verb["type"] === 'v:si') {
+					return;
+				}
 				const conjugated = verb["conjugated"];
 				const infixes = conjugated[conjugated.length - 1]["conjugation"]["infixes"];
 				// we're only interested in a word starting with tì- if its
