@@ -37,6 +37,12 @@ $(function () {
 	$('.ui.checkbox').checkbox();
 	$('#infix-details-modal').modal();
 	$('#infix-details-modal button').popup();
+
+	$('#login-modal').modal();
+	$('#login-button').on("click", function () {
+		$('#login-modal').modal("show");
+	});
+
 	$('#settings-modal').modal({
 		onApprove: function () {
 			setUpAutocomplete();

@@ -56,7 +56,7 @@
 						</div>
 					</div>
 					<% } else { %>
-					<a class="ui icon basic button" href="/login"><i class="user icon"></i><span class="button-label"><%- _("menu-login") %></span></a>
+					<div id="login-button" class="ui icon basic button"><i class="user icon"></i><span class="button-label"><%- _("menu-login") %></span></div>
 					<% } %>
 					<div id="settings-button" class="ui icon basic button"><i class="cogs icon"></i><span class="button-label"><%- _("menu-settings") %></span></div>
 					<a id="help-button" class="ui icon basic button" href="/help"><i class="question icon"></i><span class="button-label"><%- _("menu-help") %></span></a>
@@ -219,6 +219,31 @@
 			</div>
 		</div>
 
+		<form id="login-modal" class="ui modal form" method="POST" action="/login">
+			<div class="header"><%- _("login") %></div>
+			<div class="scrolling content">
+				<p><%- _("login-explanation") %></p>
+				<div class="ui fields">
+					<div class="field">
+						<label for="username"><%- _('login-username') %></label>
+						<input name="username" type="text">
+					</div>
+					<div class="field">
+						<label for="password"><%- _('login-password') %></label>
+						<input name="password" type="password">
+					</div>
+				</div>
+			</div>
+			<div class="actions">
+				<div class="ui basic deny button">
+					<i class="close icon"></i> <%- _("dialog-cancel") %>
+				</div>
+				<button type="submit" class="ui primary submit button">
+					<i class="checkmark icon"></i> <%- _("dialog-login") %>
+				</button>
+			</div>
+		</form>
+		
 		<div id="settings-modal" class="ui modal">
 			<div class="header"><%- _("settings") %></div>
 			<div class="scrolling content">

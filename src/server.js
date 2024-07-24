@@ -111,10 +111,6 @@ app.get('/all', function(req, res) {
 	res.render("fralì'u", { user: req.user, _: translations._ });
 });
 
-app.get('/login', function(req, res) {
-	res.render('login');
-});
-
 app.post('/login', passport.authenticate('local', {
 	'successRedirect': '/',
 	'failureRedirect': '/login'
