@@ -632,12 +632,17 @@
 
 				<h2>/api/rhymes <span class="type ui label horizontal">GET</span></h2>
 				<p>Finds rhymes of the given word.</p>
-				<form action="/api/random" class="ui form">
+				<form action="/api/rhymes" class="ui form">
 					<table>
 						<tr>
 							<td><b>tìpawm</b></td>
 							<td>The word to find rhymes for.</td>
 							<td><input name="tìpawm" value="kaltxì"></td>
+						</tr>
+						<tr>
+							<td><b>dialect</b></td>
+							<td>The dialect to use for sorting the results ("FN", "combined", or "RN"). Does not currently influence the rhyme detection logic.</td>
+							<td><input name="dialect" value="FN"></td>
 						</tr>
 						<tr>
 							<td></td>
