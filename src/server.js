@@ -113,7 +113,7 @@ app.get('/all', function(req, res) {
 
 app.post('/login', passport.authenticate('local', {
 	'successRedirect': '/',
-	'failureRedirect': '/login'
+	'failureRedirect': '/'
 }/*, function(err, user, info) {
 	console.log(err, user, info);
 }*/));
