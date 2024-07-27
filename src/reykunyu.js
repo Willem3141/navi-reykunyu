@@ -407,12 +407,14 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 	nounResults.forEach(function (nounResult) {
 		let nouns = dictionary.getOfTypes(nounResult["root"], ['n', 'n:pr'], dialect);
 		for (let noun of nouns) {
-			noun["conjugated"] = [{
-				"type": "n",
-				"conjugation": nounResult
-			}];
-			affixList.addAffixList(noun, dictionary, dialect);
-			wordResults.push(noun);
+			if (noun['status'] !== 'loan') {  // loanwords are handled later
+				noun["conjugated"] = [{
+					"type": "n",
+					"conjugation": nounResult
+				}];
+				affixList.addAffixList(noun, dictionary, dialect);
+				wordResults.push(noun);
+			}
 		}
 		const suffixes = ['yu', 'tswo'];
 		for (const suffix of suffixes) {
@@ -550,6 +552,22 @@ function lookUpNoun(queryWord, wordResults, dialect) {
 					wordResults.push(verb);
 				}
 			});
+		}
+	});
+
+	// finally, handle loanwords
+	let nounLoanResults = nouns.parse(queryWord, dialect, true);
+	nounLoanResults.forEach(function (nounResult) {
+		let nouns = dictionary.getOfTypes(nounResult["root"], ['n', 'n:pr'], dialect);
+		for (let noun of nouns) {
+			if (noun['status'] === 'loan') {
+				noun["conjugated"] = [{
+					"type": "n",
+					"conjugation": nounResult
+				}];
+				affixList.addAffixList(noun, dictionary, dialect);
+				wordResults.push(noun);
+			}
 		}
 	});
 }

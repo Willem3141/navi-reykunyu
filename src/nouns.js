@@ -452,7 +452,7 @@ function voice(word) {
  * Returns all possible conjugations that could have resulted in the given
  * word.
  */
-function parse(word, dialect) {
+function parse(word, dialect, assumeLoanword) {
 
 	// step 1: generate a set of candidates
 	let candidates = getCandidates(word, dialect);
@@ -464,7 +464,7 @@ function parse(word, dialect) {
 		if (!candidatePossible(candidate)) {
 			continue;
 		}
-		let conjugation = conjugate(candidate["root"], candidate["affixes"], false, dialect);  // TODO add isLoanword
+		let conjugation = conjugate(candidate["root"], candidate["affixes"], false, dialect, assumeLoanword);
 		if (!conjugationString.stringAdmits(conjugation, candidate["result"])) {
 			candidate["correction"] = candidate["result"];
 		}
