@@ -642,13 +642,16 @@ function tryCaseSuffixes(candidate, dialect) {
 	let candidates = [];
 
 	candidates.push({ ...candidate });
-	let tryEnding = function (suffix, name) {
+	let tryEnding = function (suffix, name, replacement) {
+		if (!replacement) {
+			replacement = '';
+		}
 		if (candidate["root"].endsWith(suffix)) {
 			let newAffixes = [...candidate["affixes"]];
 			newAffixes[5] = name;
 			candidates.push({
 				"result": candidate["result"],
-				"root": candidate["root"].slice(0, -suffix.length),
+				"root": candidate["root"].slice(0, -suffix.length) + replacement,
 				"affixes": newAffixes
 			});
 		}
@@ -663,19 +666,11 @@ function tryCaseSuffixes(candidate, dialect) {
 	tryEnding("ru", "r");
 	tryEnding("ä", "ä");
 	tryEnding("yä", "ä");
+	tryEnding("iä", "ä", "ia");
 	tryEnding("e", "ä");
 	tryEnding("ye", "ä");
 	tryEnding("ri", "ri");
 	tryEnding("ìri", "ri");
-	if (candidate["root"].endsWith("iä")) {
-		let newAffixes = [...candidate["affixes"]];
-		newAffixes[5] = "ä";
-		candidates.push({
-			"result": candidate["result"],
-			"root": candidate["root"].slice(0, -1) + "a",
-			"affixes": newAffixes
-		});
-	}
 
 	if (dialect === 'combined') {
 		dialect = 'FN';
