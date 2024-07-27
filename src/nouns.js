@@ -87,7 +87,7 @@ let pluralFunctions = {
  *          present, and returns a simplified version of the conjugation string
  *          with only these parts.
  */
-function conjugate(noun, affixes, simple, dialect) {
+function conjugate(noun, affixes, simple, dialect, isLoanword) {
 
 	const upperCase = noun.length > 0 && noun[0] !== noun[0].toLowerCase();
 	noun = noun.toLowerCase();
@@ -143,14 +143,13 @@ function conjugate(noun, affixes, simple, dialect) {
 	// suffixes
 	let caseSuffix = "";
 	if (caseFunctions.hasOwnProperty(affixes[5])) {
-		caseSuffix = caseFunctions[affixes[5]](noun + stemSuffix + determinerSuffix, dialect);
+		caseSuffix = caseFunctions[affixes[5]](noun + stemSuffix + determinerSuffix, dialect, isLoanword);
 	} else {
 		caseSuffix = affixes[5];
 	}
-
-	// special case for genitive -ia -> -iä - see genitiveSuffix()
-	if (noun.slice(-2) === "ia" && affixes[5] === "ä") {
-		noun = noun.slice(0, -1);
+	if (caseSuffix.hasOwnProperty('dropCount')) {
+		noun = noun.slice(0, -caseSuffix['dropCount']);
+		caseSuffix = caseSuffix['suffix'];
 	}
 
 	let finalSuffix = convert.compress(affixes[6]);
@@ -257,7 +256,13 @@ function subjectiveSuffix(noun) {
 	return '';
 }
 
-function agentiveSuffix(noun) {
+function agentiveSuffix(noun, dialect, isLoanword) {
+	if (isLoanword && noun.endsWith('ì')) {
+		return {
+			'suffix': 'ìl',
+			'dropCount': 1
+		};
+	}
 	if (phonology.endsInVowel(noun)) {
 		return 'l';
 	} else {
@@ -265,7 +270,22 @@ function agentiveSuffix(noun) {
 	}
 }
 
-function patientiveSuffix(noun) {
+function patientiveSuffix(noun, dialect, isLoanword) {
+	if (isLoanword && noun.endsWith('ì')) {
+		// if the loanword ends in -fì, -sì, or -tsì, then phonologically we can
+		// replace the -ì by -ti
+		if (['f', 's', 'c'].includes(noun[noun.length - 2])) {
+			return {
+				'suffix': 'it/ti',
+				'dropCount': 1
+			};
+		} else {
+			return {
+				'suffix': 'it',
+				'dropCount': 1
+			};
+		}
+	}
 	if (phonology.endsInVowel(noun)) {
 		return 't(i)';
 	} else {
@@ -283,7 +303,13 @@ function patientiveSuffix(noun) {
 	}
 }
 
-function dativeSuffix(noun) {
+function dativeSuffix(noun, dialect, isLoanword) {
+	if (isLoanword && noun.endsWith('ì')) {
+		return {
+			'suffix': 'ur',
+			'dropCount': 1
+		};
+	}
 	if (phonology.endsInVowel(noun)) {
 		return 'r(u)';
 	} else {
@@ -305,15 +331,24 @@ function dativeSuffix(noun) {
 	}
 }
 
-function genitiveSuffix(noun, dialect) {
+function genitiveSuffix(noun, dialect, isLoanword) {
 	const äOrE = dialect === 'RN' ? 'ä/e' : 'ä';
 	const yäOrYe = dialect === 'RN' ? 'yä/ye' : 'yä';
+	if (isLoanword && noun.endsWith('ì')) {
+		return {
+			'suffix': äOrE,
+			'dropCount': 1
+		};
+	}
 	if (phonology.endsInVowel(noun)) {
 		if (noun.slice(-1) === "o" || noun.slice(-1) === "u") {
 			return äOrE;
 		} else {
 			if (noun.slice(-2) === "ia") {
-				return äOrE;  // note: in this case, drop the a from the stem
+				return {
+					suffix: äOrE,
+					dropCount: 1
+				};
 			} else {
 				if (noun === "omatik2a") {
 					return äOrE;
@@ -327,7 +362,13 @@ function genitiveSuffix(noun, dialect) {
 	}
 }
 
-function topicalSuffix(noun) {
+function topicalSuffix(noun, dialect, isLoanword) {
+	if (isLoanword && noun.endsWith('ì')) {
+		return {
+			'suffix': 'ìri',
+			'dropCount': 1
+		};
+	}
 	if (phonology.endsInConsonant(noun)) {
 		return 'ìri';
 	} else {
@@ -423,7 +464,7 @@ function parse(word, dialect) {
 		if (!candidatePossible(candidate)) {
 			continue;
 		}
-		let conjugation = conjugate(candidate["root"], candidate["affixes"], false, dialect);
+		let conjugation = conjugate(candidate["root"], candidate["affixes"], false, dialect);  // TODO add isLoanword
 		if (!conjugationString.stringAdmits(conjugation, candidate["result"])) {
 			candidate["correction"] = candidate["result"];
 		}
@@ -660,15 +701,21 @@ function tryCaseSuffixes(candidate, dialect) {
 	tryEnding("ìl", "l");
 	tryEnding("t", "t");
 	tryEnding("it", "t");
+	tryEnding("it", "t", "ì");
 	tryEnding("ti", "t");
+	tryEnding("ti", "t", "ì");
 	tryEnding("r", "r");
 	tryEnding("ur", "r");
+	tryEnding("ur", "r", "ì");
 	tryEnding("ru", "r");
 	tryEnding("ä", "ä");
+	tryEnding("ä", "ä", "ì");
 	tryEnding("yä", "ä");
 	tryEnding("iä", "ä", "ia");
 	tryEnding("e", "ä");
+	tryEnding("e", "ä", "ì");
 	tryEnding("ye", "ä");
+	tryEnding("ie", "ä", "ia");
 	tryEnding("ri", "ri");
 	tryEnding("ìri", "ri");
 
