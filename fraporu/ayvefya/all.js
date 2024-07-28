@@ -247,6 +247,8 @@ function loadWordList() {
 		.fail(function() {
 			$results.empty();
 			$('#spinner').hide();
+			$('#toc-bar').hide();
+			$('#no-results').hide();
 			$results.append(createErrorBlock(_('word-list-error'), _('searching-error-description')));
 		});
 	return false;
