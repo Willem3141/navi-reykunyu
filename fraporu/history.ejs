@@ -35,12 +35,13 @@
 					<% for (let h in history) {
 						let item = history[h];
 					%>
+					<% const htmlMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '<span class="stressed">').replaceAll(']', '</span>'); %>
 					<tr>
 						<td><%= item['user'] %></td>
 						<% let date = new Date(item['date']);
 						let parts = date.toISOString().split('T') %>
 						<td><%= parts[0] %> <span class="muted"><%= parts[1].split('.')[0] %></span></td>
-						<td><%= item['data']['na\'vi'] %> <span class="muted">(<%= item['data']['type'] %>)</span></td>
+						<td><%- htmlMarkup(item['data']['na\'vi']) %> <span class="muted">(<%= item['data']['type'] %>)</span></td>
 						<% if (item['old']) { %>
 							<td><span class="muted">edited</span></td>
 						<% } else { %>
