@@ -246,7 +246,8 @@ function loadWordList() {
 		})
 		.fail(function() {
 			$results.empty();
-			$results.append(createErrorBlock("Something went wrong while loading the word list", "Please try again later. If the problem persists, please <a href='//wimiso.nl/contact'>contact</a> me."));
+			$('#spinner').hide();
+			$results.append(createErrorBlock(_('word-list-error'), _('searching-error-description')));
 		});
 	return false;
 }
@@ -263,6 +264,8 @@ function runFilter() {
 		filter = /.*/;
 	}
 	const typeFilter = new RegExp('^' + $('#type-filter-dropdown').dropdown('get value') + '$');
+	let anyMatches = false;
+
 	$('.letter-block').each((i, block) => {
 		const $block = $(block);
 		let anyMatchesInBlock = false;
@@ -281,9 +284,13 @@ function runFilter() {
 		const $header = $block.prev();
 		$header.toggle(anyMatchesInBlock);
 		$('#button-' + $.escapeSelector($header.attr('id'))).toggle(anyMatchesInBlock);
+		anyMatches = anyMatches || anyMatchesInBlock;
 	});
 
 	updateToC();
+
+	$('#toc-bar').toggle(anyMatches);
+	$('#no-results').toggle(!anyMatches);
 }
 
 

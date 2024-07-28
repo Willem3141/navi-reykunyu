@@ -137,6 +137,7 @@
 		"searching-error": "Something went wrong while searching",
 		"searching-error-description": "Please try again later. If the problem persists, please <a href='//wimiso.nl/contact'>contact</a> me.",
 		"parsing-error": "Something went wrong while analyzing your sentence",
+		"word-list-error": "Something went wrong while load the word list",
 		"syllable": "syllable",
 		"syllables": "syllables",
 		"stressed-on": "stressed on syllable",
