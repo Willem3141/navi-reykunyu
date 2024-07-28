@@ -624,26 +624,34 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 		lookUpVerb(adjResult["root"], verbResults, dialect, true);
 		verbResults.forEach(function (verb) {
 			const infixes = verb['conjugated'][0]['conjugation']['infixes'];
-			if (infixes[1] === 'us' || infixes[1] === 'awn') {
-				let infixesWithoutFirst = [infixes[0], '', infixes[2]];
-				let conjugatedWithoutFirst = conjugationString.formsFromString(verbs.conjugate(verb["infixes"], infixesWithoutFirst));
-				verb['conjugated'][0]['conjugation']['result'] = conjugatedWithoutFirst;
-				verb['conjugated'][0]['conjugation']['infixes'] = infixesWithoutFirst;
-				verb["conjugated"].push({
-					"type": "v_to_part",
-					"conjugation": {
-						"result": [adjResult["root"]],
-						"root": conjugatedWithoutFirst[0],
-						"affixes": [infixes[1]]
-					}
-				});
-				verb["conjugated"].push({
-					"type": "adj",
-					"conjugation": adjResult
-				});
-				affixList.addAffixList(verb, dictionary, dialect);
-				wordResults.push(verb);
+			if (infixes[1] !== 'us' && infixes[1] !== 'awn') {
+				return;
 			}
+			if (infixes[2] !== '') {
+				// can't combine participles with other infixes
+				return;
+			}
+			if (infixes[1] === 'awn' && (infixes[0] === 'äp' || infixes[0] === 'äpeyk')) {
+				return;
+			}
+			let infixesWithoutFirst = [infixes[0], '', infixes[2]];
+			let conjugatedWithoutFirst = conjugationString.formsFromString(verbs.conjugate(verb["infixes"], infixesWithoutFirst));
+			verb['conjugated'][0]['conjugation']['result'] = conjugatedWithoutFirst;
+			verb['conjugated'][0]['conjugation']['infixes'] = infixesWithoutFirst;
+			verb["conjugated"].push({
+				"type": "v_to_part",
+				"conjugation": {
+					"result": [adjResult["root"]],
+					"root": conjugatedWithoutFirst[0],
+					"affixes": [infixes[1]]
+				}
+			});
+			verb["conjugated"].push({
+				"type": "adj",
+				"conjugation": adjResult
+			});
+			affixList.addAffixList(verb, dictionary, dialect);
+			wordResults.push(verb);
 		});
 
 		// (ke)tsuk- + <verb>
