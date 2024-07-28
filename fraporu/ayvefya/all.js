@@ -1,7 +1,5 @@
 $(function() {
-	loadWordList();
-
-	$('#type-filter-dropdown').dropdown('set selected', 'all');
+	$('#type-filter-dropdown').dropdown('set selected', '.*');
 	$('#type-filter-dropdown').dropdown({
 		onChange: runFilter
 	});
@@ -14,6 +12,8 @@ $(function() {
 			return false;
 		}
 	});
+
+	loadWordList();
 });
 
 function createErrorBlock(text, subText) {
@@ -262,14 +262,14 @@ function runFilter() {
 		// TODO provide proper error
 		filter = /.*/;
 	}
-	let typeFilter = $('#type-filter-dropdown').dropdown('get value');
+	const typeFilter = new RegExp('^' + $('#type-filter-dropdown').dropdown('get value') + '$');
 	$('.letter-block').each((i, block) => {
 		const $block = $(block);
 		let anyMatchesInBlock = false;
 		$block.find('.entry').each((i, e) => {
 			const $e = $(e);
 			const type = $e.attr('data-type');
-			if (typeFilter === "all" || typeFilter === type) {
+			if (typeFilter.test(type)) {
 				const lemma = $e.attr('data-lemma');
 				const matches = filter.test(lemma);
 				$e.toggle(matches);

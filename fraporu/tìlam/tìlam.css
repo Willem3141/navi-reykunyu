@@ -666,7 +666,11 @@ table.conjugation-table {
 }
 
 .word-list-toc #type-filter-dropdown {
-	width: 200px;
+	width: 220px;
+}
+
+.word-list-toc #type-filter-dropdown > .menu > .subitem {
+	margin-left: 25px;
 }
 
 .word-list-toc #toc-bar {
