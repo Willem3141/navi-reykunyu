@@ -374,6 +374,9 @@ function verbToParticipleConjugationExplanation(conjugation) {
 	$('<span/>').addClass('infix').html("&#x2039;" + conjugation["affixes"][0] + "&#x203a;").appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	if (conjugation["correction"]) {
+		$('<span/>').addClass('correction').text(conjugation["correction"]).appendTo($conjugation);
+	}
 	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 	typeBadge('adj', true).appendTo($conjugation);
 
