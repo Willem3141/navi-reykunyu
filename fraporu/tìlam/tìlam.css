@@ -460,10 +460,6 @@ h1::after {
 	margin-bottom: 20px;
 }
 
-.result .result-item.note {
-	font-style: italic;
-}
-
 .result .result-item .header {
 	font-weight: 700;
 }
