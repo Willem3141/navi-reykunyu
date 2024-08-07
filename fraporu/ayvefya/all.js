@@ -151,6 +151,12 @@ function createWordBlock(word) {
 		}
 		$block.append($('<span/>').addClass('definition').html(getTranslation(word["translations"][i])));
 	}
+	if (word.hasOwnProperty('meaning_note') && word['meaning_note'].length > 0) {
+		$block.append('. ');
+		const $meaningNote = $('<span/>').addClass('meaning-note');
+		appendLinkString(word['meaning_note'], $meaningNote);
+		$block.append($meaningNote);
+	}
 	if (word.hasOwnProperty('source')) {
 		for (const s of word['source']) {
 			if (s.length < 3 || s[1].length == 0) {
@@ -165,6 +171,18 @@ function createWordBlock(word) {
 		}
 	}
 	return $block;
+}
+
+function appendLinkString(linkString, $div) {
+	for (let piece of linkString) {
+		if (typeof piece === 'string') {
+			$div.append(piece);
+		} else {
+			const $piece = $('<span/>').addClass('reference').html(lemmaForm(piece['na\'vi'], piece['type']));
+			addLemmaClass($piece, piece['type']);
+			$div.append($piece);
+		}
+	}
 }
 
 // tìng fnelä tstxoti angim

@@ -764,6 +764,10 @@ h2[id]::before {
 	text-decoration: none;
 }
 
+.word-list .reference {
+	font-weight: 600;
+}
+
 .word-list.explanation {
 	margin-bottom: 110px;
 }
