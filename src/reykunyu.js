@@ -636,7 +636,7 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 			}
 			let infixesWithoutFirst = [infixes[0], '', infixes[2]];
 			let conjugatedWithoutFirst = conjugationString.formsFromString(verbs.conjugate(verb["infixes"], infixesWithoutFirst));
-			verb["conjugated"] = [
+			const newConjugated =  [
 				{
 					"type": "v",
 					"conjugation": {
@@ -650,8 +650,7 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 					"conjugation": {
 						"result": verb['conjugated'][0]['conjugation']['result'],
 						"root": conjugatedWithoutFirst[0],
-						"affixes": [infixes[1]],
-						"correction": verb['conjugated'][0]['conjugation']['correction']
+						"affixes": [infixes[1]]
 					}
 				},
 				{
@@ -659,6 +658,10 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 					"conjugation": adjResult
 				}
 			];
+			if (verb['conjugated'][0]['conjugation'].hasOwnProperty('correction')) {
+				newConjugated[1]['conjugation']['correction'] = verb['conjugated'][0]['conjugation']['correction'];
+			}
+			verb["conjugated"] = newConjugated;
 			affixList.addAffixList(verb, dictionary, dialect);
 			wordResults.push(verb);
 		});
