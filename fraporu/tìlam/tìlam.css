@@ -1110,8 +1110,17 @@ h2[id]::before {
 		background-color: #1a1606;
 	}
 
-	.word-link:before {
-		text-decoration: underline black;
+	.word-link {
+		background-color: #222;
+		color: #eee;
+	}
+	.word-link:hover {
+		background-color: #333;
+		color: #eee;
+	}
+
+	.word-link .translation {
+		color: #777;
 	}
 
 	.word-list-toc {
