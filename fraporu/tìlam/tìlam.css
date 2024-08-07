@@ -32,7 +32,7 @@ body {
 	color: #222;
 	padding: 0 15px;
 	width: 100%;
-	line-height: 1.5;
+	line-height: 1.6;
 	height: auto;
 	min-width: 300px;
 	overflow-x: auto;
@@ -642,14 +642,24 @@ table.conjugation-table {
 }
 
 .word-link {
+	border-radius: 4px;
+	background-color: #f0f0f0;
+	padding: 2px 4px;
+	color: #222;
+	white-space: nowrap;
+}
+.word-link:hover {
+	background-color: #e0e0e0;
+	color: #222;
+	text-decoration: none;
+}
+
+.word-link .navi {
 	font-weight: 700;
 }
 
-.word-link:before {
-	content: '→ ';
-	font-weight: 700;
-	color: #222;
-	text-decoration: underline white;
+.word-link .translation {
+	color: #777;
 }
 
 /* word list */

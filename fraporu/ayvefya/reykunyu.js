@@ -695,20 +695,21 @@ function createWordLink(link) {
 	if (typeof link === "string") {
 		return $('<b/>').text(link);
 	} else {
-		let $link = $('<span/>');
-		let $word = $('<a/>')
+		let $link = $('<a/>')
 			.addClass('word-link')
-			.attr('href', "/?q=" + link["word_raw"][getDialect()])
+			.attr('href', "/?q=" + link["word_raw"][getDialect()]);
+		let $word = $('<span/>')
+			.addClass('navi')
 			.html(lemmaForm(link));
 		addLemmaClass($word, link["type"]);
 		$link.append($word);
 
 		let translation = getShortTranslation(link);
-		// avoid double parentheses
-		if (translation.startsWith('(') && translation.endsWith(')')) {
-			translation = translation.substring(1, translation.length - 1);
-		}
-		$link.append(' (' + translation + ')');
+		let $translation = $('<span/>')
+			.addClass('translation')
+			.text(translation);
+		$link.append(' ');
+		$link.append($translation);
 		return $link;
 	}
 }
@@ -740,7 +741,7 @@ function derivedSection(derived) {
 	let first = true;
 	for (let word of derived) {
 		if (!first) {
-			$derived.append(', ');
+			$derived.append(' ');
 		}
 		$derived.append(createWordLink(word));
 		first = false;
