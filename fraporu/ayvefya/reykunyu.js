@@ -57,8 +57,8 @@ $(function () {
 	$('#ipa-checkbox').prop('checked',
 		localStorage.getItem('reykunyu-ipa') === '1');
 	const dialect = localStorage.getItem('reykunyu-dialect');
-	$('#dialect-fn-radiobutton').prop('checked', dialect === 'FN');
-	$('#dialect-both-radiobutton').prop('checked', dialect !== 'FN' && dialect !== 'RN');
+	$('#dialect-fn-radiobutton').prop('checked', dialect !== 'combined' && dialect !== 'RN');
+	$('#dialect-both-radiobutton').prop('checked', dialect === 'combined');
 	$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
 	$('#dialect-rn-warning').toggle(dialect === 'RN');
 	$('#settings-button').on("click", function () {
