@@ -122,6 +122,9 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 		if (word.hasOwnProperty('meaning_note')) {
 			word['meaning_note'] = wordLinks.enrichWordLinks(word['meaning_note'], dictionary);
 		}
+		if (word.hasOwnProperty('conjugation_note')) {
+			word['conjugation_note'] = wordLinks.enrichWordLinks(word['conjugation_note'], dictionary);
+		}
 
 		// see also
 		if (word.hasOwnProperty('seeAlso')) {

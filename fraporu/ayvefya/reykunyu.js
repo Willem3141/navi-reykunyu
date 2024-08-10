@@ -847,7 +847,9 @@ function nounConjugationSection(conjugation, note) {
 	$headerHide.append(hideString);
 
 	if (note) {
-		$body.append($('<div/>').addClass("conjugation-note").html(note));
+		const $note = $('<div/>').addClass("conjugation-note");
+		appendLinkString(note, $note);
+		$body.append($note);
 	}
 
 	return $section;
@@ -890,7 +892,9 @@ function adjectiveConjugationSection(conjugation, note) {
 	$body.html(html);
 
 	if (note) {
-		$body.append($('<div/>').addClass("conjugation-note").html(note));
+		const $note = $('<div/>').addClass("conjugation-note");
+		appendLinkString(note, $note);
+		$body.append($note);
 	}
 
 	return $section;
@@ -918,7 +922,9 @@ function infixesSection(word, infixes, note) {
 	});
 	$body.append($infixDetailsButton);
 	if (note) {
-		$body.append($('<div/>').addClass("conjugation-note").html(note));
+		const $note = $('<div/>').addClass("conjugation-note");
+		appendLinkString(note, $note);
+		$body.append($note);
 	}
 	return $section;
 }
