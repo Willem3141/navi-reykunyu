@@ -172,15 +172,9 @@ function conjugate(noun, affixes, simple, dialect, isLoanword) {
 	if (needsLenition) {
 		[lenitedConsonant, restOfStem] = lenite(noun);
 		restOfStem = convert.decompress(restOfStem);
-		if (upperCase) {
-			lenitedConsonant = lenitedConsonant.toUpperCase();
-		}
 	} else {
 		lenitedConsonant = '';
 		restOfStem = convert.decompress(noun);
-		if (upperCase) {
-			noun = noun[0].toUpperCase() + noun.slice(1);
-		}
 	}
 
 	// for RN, we need to change a final ejective to a voiced stop if the
@@ -232,7 +226,7 @@ function conjugate(noun, affixes, simple, dialect, isLoanword) {
 				stem +
 				(voiced === '' ? '' : '{' + voiced + '}'),
 				caseSuffix
-			].join('-'));
+			]);
 		} else {
 			options.push([
 				convert.decompress(determinerPrefix),
@@ -245,11 +239,33 @@ function conjugate(noun, affixes, simple, dialect, isLoanword) {
 				convert.decompress(determinerSuffix),
 				caseSuffix,
 				convert.decompress(finalSuffix)
-			].join('-'));
+			]);
 		}
 	}
 
-	return options.join(';');
+	if (upperCase) {
+		applyUpperCase(options);
+	}
+
+	return options.map((option) => option.join('-')).join(';');
+}
+
+function applyUpperCase(options) {
+	for (let i = 0; i < options.length; i++) {
+		let option = options[i];
+
+		if (option.length === 3) {
+			// find the first alphabetic character in option[1] and uppercase it
+			option[1] = option[1].replace(/([^\{\}\[\]\/])/, (letter) => letter.toUpperCase());
+
+		} else if (option.length === 10) {
+			if (option[3] !== '') {
+				option[3] = option[3].replace(/./, (letter) => letter.toUpperCase());
+			} else {
+				option[4] = option[4].replace(/./, (letter) => letter.toUpperCase());
+			}
+		}
+	}
 }
 
 function subjectiveSuffix(noun) {
