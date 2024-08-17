@@ -1300,7 +1300,7 @@ function createResultBlock(i, r) {
 	}
 
 	if (r["conjugation"]) {
-		if (r["type"] === "n" || r["type"] === "pn" || r["type"] === "n:pr") {
+		if (r["type"] === "n" || r["type"] === "pn" || r["type"] === "n:pr" || r["type"] === "ctr") {
 			$result.append(nounConjugationSection(r["conjugation"][getDialect()], r["conjugation_note"]));
 		} else if (r["type"] === "adj") {
 			$result.append(adjectiveConjugationSection(r["conjugation"][getDialect()], r["conjugation_note"]));
