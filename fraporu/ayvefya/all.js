@@ -225,7 +225,11 @@ function compareNaviWords(a, b, i) {
 	return naviSortAlphabet.indexOf(first) - naviSortAlphabet.indexOf(second);
 }
 
-const sections = "'aäbdefghiìklmnoprstuùvwyz".split('');
+const sections = {
+	'FN': "'aäefhiìklmnoprstuvwxyz".split(''),
+	'combined': "'aäefhiìklmnoprstuùvwxyz".split(''),
+	'RN': "'aäbdefghiìklmnoprstuùvwyz".split('')
+};
 
 function loadWordList() {
 	let $results = $('#word-list-result');
@@ -237,7 +241,7 @@ function loadWordList() {
 			$('#spinner').hide();
 			const $tocBar = $('#toc-bar');
 			$tocBar.empty();
-			for (const section of sections) {
+			for (const section of sections[getDialect()]) {
 				$('<a/>')
 					.addClass('ui compact button')
 					.text(section)
@@ -335,7 +339,7 @@ function runFilter() {
 // table of contents handling
 
 function updateToC() {
-	for (const section of sections) {
+	for (const section of sections[getDialect()]) {
 		let $block = $('#block-' + $.escapeSelector(section));
 		let $button = $('#button-' + $.escapeSelector(section));
 
