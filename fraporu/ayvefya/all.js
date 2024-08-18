@@ -116,6 +116,8 @@ function sourceAbbreviation(source) {
 		return 'ln';
 	} else if (source[1].includes('wiki.learnnavi.org')) {
 		return 'wiki';
+	} else if (source[0].includes('Activist Survival Guide')) {
+		return 'asg';
 	} else {
 		return 'o';
 	}
