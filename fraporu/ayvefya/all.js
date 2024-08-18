@@ -161,6 +161,12 @@ function createWordBlock(word) {
 		appendLinkString(word['meaning_note'], $meaningNote);
 		$block.append($meaningNote);
 	}
+	if (word.hasOwnProperty('etymology') && word['etymology'].length > 0) {
+		$block.append('. ');
+		const $etymology = $('<span/>').addClass('etymology');
+		appendLinkString(word['etymology'], $etymology);
+		$block.append($etymology);
+	}
 	if (word.hasOwnProperty('source')) {
 		for (const s of word['source']) {
 			if (s.length < 3 || s[1].length == 0) {
@@ -277,7 +283,7 @@ function loadWordList() {
 }
 
 function getDialect() {
-	const dialect = localStorage.getItem('reykunyu-dialect');
+	let dialect = localStorage.getItem('reykunyu-dialect');
 	if (dialect !== 'combined' && dialect !== 'RN') {
 		dialect = 'FN';
 	}
