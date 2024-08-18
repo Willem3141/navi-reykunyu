@@ -65,19 +65,23 @@ function getTranslation(tìralpeng) {
 	}
 }
 
-function lemmaForm(word, type) {
+function lemmaForm(word) {
+	let type = word['type'];
+	let lemma = word['word'][getDialect()];
+	lemma = lemma.replaceAll('/', '');
+	lemma = lemma.replace(/\[([^\]]*)\]/g, '<span class="stressed">$1</span>');
 	if (type === "n:si" || type === "nv:si") {
-		return word + ' si';
+		return lemma + ' si';
 	} else if (type === 'aff:pre') {
-		return word + "-";
+		return lemma + "-";
 	} else if (type === 'aff:pre:len') {
-		return word + "+";
+		return lemma + "+";
 	} else if (type === 'aff:in') {
-		return '&#x2039;' + word + '&#x203a;';
+		return '&#x2039;' + lemma + '&#x203a;';
 	} else if (type === 'aff:suf') {
-		return '-' + word;
+		return '-' + lemma;
 	}
-	return word;
+	return lemma;
 }
 
 function addLemmaClass($element, type) {
@@ -120,10 +124,10 @@ function sourceAbbreviation(source) {
 function createWordBlock(word) {
 	let $block = $("<div/>")
 		.addClass('entry')
-		.attr('data-lemma', word['na\'vi'])
+		.attr('data-lemma', word['word_raw'][getDialect()])
 		.attr('data-type', word['type']);
 
-	const $word = $('<span/>').addClass('word').html(lemmaForm(word["na'vi"], word["type"]));
+	const $word = $('<span/>').addClass('word').html(lemmaForm(word));
 	addLemmaClass($word, word["type"]);
 	$block.append($word);
 	$block.append(' (');
@@ -178,7 +182,7 @@ function appendLinkString(linkString, $div) {
 		if (typeof piece === 'string') {
 			$div.append(piece);
 		} else {
-			const $piece = $('<span/>').addClass('reference').html(lemmaForm(piece['na\'vi'], piece['type']));
+			const $piece = $('<span/>').addClass('reference').html(lemmaForm(piece));
 			addLemmaClass($piece, piece['type']);
 			$div.append($piece);
 		}
@@ -196,7 +200,7 @@ function tstxoFnelä(fnel, traditional) {
 	return "no idea.../ngaytxoa";
 }
 
-const naviSortAlphabet = " 'aäeéfghiìklmnoprstuvwxyz";
+const naviSortAlphabet = " 'aäbdeéfghiìklmnoprstuùvwxyz";
 
 // Compares Na'vi words a and b according to Na'vi ‘sorting rules’ (ä after a, ì
 // after i, digraphs sorted as if they were two letters using English spelling,
@@ -215,7 +219,7 @@ function compareNaviWords(a, b, i) {
 	return naviSortAlphabet.indexOf(first) - naviSortAlphabet.indexOf(second);
 }
 
-const sections = "'aäefhiìklmnoprstuvwyz".split('');
+const sections = "'aäbdefghiìklmnoprstuùvwyz".split('');
 
 function loadWordList() {
 	let $results = $('#word-list-result');
@@ -237,12 +241,12 @@ function loadWordList() {
 			}
 
 			dictionary.sort(function (a, b) {
-				return compareNaviWords(a['word_raw']['FN'], b['word_raw']['FN'], 0);
+				return compareNaviWords(a['word_raw'][getDialect()], b['word_raw'][getDialect()], 0);
 			});
 			let section = '';
 			let block = null;
 			for (let word of dictionary) {
-				const initial = word['word_raw']['FN'][0].toLowerCase();
+				const initial = word['word_raw'][getDialect()][0].toLowerCase();
 				if (initial !== section) {
 					let $header = $('<h2/>')
 						.append(initial)
@@ -270,6 +274,14 @@ function loadWordList() {
 			$results.append(createErrorBlock(_('word-list-error'), _('searching-error-description')));
 		});
 	return false;
+}
+
+function getDialect() {
+	const dialect = localStorage.getItem('reykunyu-dialect');
+	if (dialect !== 'combined' && dialect !== 'RN') {
+		dialect = 'FN';
+	}
+	return dialect;
 }
 
 
