@@ -14,7 +14,7 @@ let translators = {
 		'eyk': (t) => 'cause (someone) to ' + t,
 		'äpeyk': (t) => 'cause oneself to ' + t,
 
-		'iv': (t) => t + ' (subj.)',
+		'iv': (t) => t,
 
 		'am': (t) => toPast(t),
 		'ìm': (t) => 'just ' + toPast(t),
@@ -33,10 +33,10 @@ let translators = {
 		'ìry': (t) => 'will soon have been ' + toPresentParticiple(t),
 		'ary': (t) => 'will have been ' + toPresentParticiple(t),
 
-		'imv': (t) => toPast(t) + ' (subj.)',
-		'ìyev': (t) => 'will ' + t + ' (subj.)',
-		'ilv': (t) => 'have ' + toPastParticiple(t) + ' (subj.)',
-		'irv': (t) => 'be ' + toPresentParticiple(t) + ' (subj.)',
+		'imv': (t) => toPast(t),
+		'ìyev': (t) => 'will ' + t,
+		'ilv': (t) => 'have ' + toPastParticiple(t),
+		'irv': (t) => 'be ' + toPresentParticiple(t),
 
 		'ei': (t) => t + ' :)',
 		'äng': (t) => t + ' :(',
@@ -159,7 +159,8 @@ function pluralize(noun) {
 	if (plurals.hasOwnProperty(noun)) {
 		return plurals[noun];
 	}
-	if (noun.endsWith('y')) {
+	let secondLast = noun[noun.length - 2];
+	if (noun.endsWith('y') && !'aeiou'.includes(secondLast)) {
 		return noun.substring(0, noun.length - 1) + 'ies';
 	}
 	return noun + 's';
