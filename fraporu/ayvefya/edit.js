@@ -45,6 +45,7 @@ $(function() {
 		const english = $field.val();
 		$('#translation-en-field').text(english);
 
+		$('#translations-modal input').val('');
 		const languages = $field.data();
 		for (let lang of Object.keys(languages)) {
 			$('#translation-' + lang + '-field').val(languages[lang]);
