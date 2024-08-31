@@ -140,7 +140,8 @@ app.get('/add', function(req, res) {
 		'word': {
 			"na'vi": '',
 			"translations": [{'en': ''}]
-		}
+		},
+		_: translations._
 	});
 });
 
@@ -196,7 +197,8 @@ app.get('/edit', function(req, res) {
 	res.render('leykatem', {
 		'user': req.user,
 		'post_url': '/edit',
-		'word': wordData
+		'word': wordData,
+		_: translations._
 	});
 });
 
@@ -222,7 +224,8 @@ app.get('/edit/raw', function(req, res) {
 	res.render('leykatem-yrr', {
 		'user': req.user,
 		'post_url': '/edit',
-		'word': wordData
+		'word': wordData,
+		_: translations._
 	});
 });
 
@@ -264,7 +267,7 @@ app.get('/history', function(req, res) {
 	let historyData = JSON.parse(fs.readFileSync("./data/history.json"));
 	historyData = historyData.slice(Math.max(1, historyData.length - 50));  // 50 last elements
 	historyData.reverse();
-	res.render('history', { user: req.user, history: historyData });
+	res.render('history', { user: req.user, history: historyData, _: translations._ });
 });
 
 app.get('/etymology-editor', function(req, res) {
@@ -277,7 +280,8 @@ app.get('/etymology-editor', function(req, res) {
 	res.render('etymologyEditor', {
 		'user': req.user,
 		'post_url': '/edit',
-		'words': edit.getAll()
+		'words': edit.getAll(),
+		_: translations._
 	});
 });
 
@@ -291,7 +295,8 @@ app.get('/sources-editor', function(req, res) {
 	res.render('sourcesEditor', {
 		'user': req.user,
 		'post_url': '/edit',
-		'words': edit.getAll()
+		'words': edit.getAll(),
+		_: translations._
 	});
 });
 
@@ -304,7 +309,8 @@ app.get('/corpus-editor', function(req, res) {
 	}
 	res.render('corpusEditor', {
 		'user': req.user,
-		'sentences': reykunyu.getAllSentences()
+		'sentences': reykunyu.getAllSentences(),
+		_: translations._
 	});
 });
 
@@ -317,7 +323,8 @@ app.get('/corpus-editor/add', function(req, res) {
 	}
 	res.render('corpusEditorAdd', {
 		'user': req.user,
-		'post_url': '/corpus-editor/add'
+		'post_url': '/corpus-editor/add',
+		_: translations._
 	});
 });
 
@@ -339,7 +346,8 @@ app.get('/corpus-editor/edit', function(req, res) {
 		'user': req.user,
 		'post_url': '/corpus-editor/edit',
 		'key': key,
-		'sentence': sentence
+		'sentence': sentence,
+		_: translations._
 	});
 });
 
@@ -419,12 +427,18 @@ app.get('/untranslated', function(req, res) {
 	}
 	setLanguage(req);
 	let untranslated = edit.getUntranslated(translations.getLanguage());
-	res.render('untranslated', { user: req.user, untranslated: untranslated, language: translations.getLanguage() });
+		
+	res.render('untranslated', {
+		user: req.user,
+		untranslated: untranslated,
+		language: translations.getLanguage(),
+		_: translations._
+	});
 });
 
 app.get('/study', function(req, res) {
 	zeykerokyu.getCourses(req.user, (courseData) => {
-		res.render('study', { user: req.user, courses: courseData });
+		res.render('study', { user: req.user, courses: courseData, _: translations._ });
 	});
 });
 
@@ -442,7 +456,7 @@ app.get('/study/course', function(req, res) {
 	}
 	zeykerokyu.getCourseData(req.user, courseId, (courseData) => {
 		zeykerokyu.getLessons(req.user, courseId, (lessonData) => {
-			res.render('study-course', { user: req.user, course: courseData, lessons: lessonData });
+			res.render('study-course', { user: req.user, course: courseData, lessons: lessonData, _: translations._ });
 		});
 	});
 });

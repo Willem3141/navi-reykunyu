@@ -11,33 +11,7 @@
 	</head>
 	<body data-url="<%= post_url %>">
 		<div class="container">
-			<h1>
-				<span class="muted">Reykunyu &rarr;</span> Etymology editor
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> Back to Reykunyu
-				</a>
-				<div id="language-dropdown" class="ui icon right floated top right dropdown basic button">
-					<i class="globe icon"></i>
-					<span class="text">English</span>
-					&nbsp;<i class="dropdown icon"></i>
-					<div class="menu">
-						<div class="item" data-value="de">Deutsch</div>
-						<div class="item" data-value="et">Eesti</div>
-						<div class="item" data-value="en">English</div>
-						<div class="item" data-value="fr">Français</div>
-						<div class="item" data-value="hu">Magyar</div>
-						<div class="item" data-value="nl">Nederlands</div>
-						<div class="item" data-value="pl">Polski</div>
-						<div class="item" data-value="ru">Русский</div>
-						<div class="item" data-value="sv">Svenska</div>
-					</div>
-				</div>
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kxì ma <%= user.username %>!
-				</div>
-				<% } %>
-			</h1>
+			<%- include('header.ejs') %>
 
 			<p>On this page, you can edit Reykunyu's etymology data. To edit, just type in a text field. Then as soon as you move to another text field, the text you typed will be stored automatically (so you don't need to click a save button). Some random suggestions to try to keep the etymology data consistent:</p>
 			<ul>
@@ -85,6 +59,7 @@
 		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
 		<script src="ayvefya/etymologyEditor.js"></script>
+		<script src="ayvefya/ui-translations.js"></script>
 	</body>
 </html>
 

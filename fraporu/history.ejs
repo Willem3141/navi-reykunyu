@@ -10,17 +10,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>
-				Recent edits
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kxì ma <%= user.username %>!
-				</div>
-				<% } %>
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> Back to Reykunyu
-				</a>
-			</h1>
+			<%- include('header.ejs') %>
 
 			<table class="ui table">
 				<thead>
@@ -55,6 +45,7 @@
 
 		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
+		<script src="ayvefya/ui-translations.js"></script>
 	</body>
 </html>
 

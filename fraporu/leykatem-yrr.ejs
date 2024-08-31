@@ -10,20 +10,8 @@
 	</head>
 	<body data-url="<%= post_url %>">
 		<div class="container">
-			<h1>
-				Word editor
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kxì ma <%= user.username %>!
-				</div>
-				<% } %>
-				<a href="/edit?word=<%= word['id'] %>" class="ui icon right floated top right basic button">
-					<i class="edit icon"></i> Edit in visual editor
-				</a>
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> Back to Reykunyu
-				</a>
-			</h1>
+			<%- include('header.ejs') %>
+
 			<div class="ui form">
 				<h2>Raw editor</h2>
 				<p>On this page, you can edit the raw JSON definition of a word. This can be useful for technical reasons, but is usually not necessary.</p>
@@ -34,19 +22,23 @@
 
 				<div class="ui section divider"></div>
 
-				<a href="/" class="ui floated right submit button">
-					Cancel
-				</a>
 				<div id="save-button" class="ui floated right primary submit icon labeled button">
 					<i class="check icon"></i>
 					Save
 				</div>
+				<a href="/edit?word=<%= word['id'] %>" class="ui icon button">
+					<i class="edit icon"></i> Edit in visual editor
+				</a>
+				<a href="/" class="ui floated right submit button">
+					Cancel
+				</a>
 			</div>
 		</div>
 
 		<script src="../aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="../aysrungsiyu/semantic/dist/semantic.js"></script>
 		<script src="../ayvefya/editRaw.js"></script>
+		<script src="ayvefya/ui-translations.js"></script>
 	</body>
 </html>
 

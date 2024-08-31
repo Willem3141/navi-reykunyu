@@ -1,0 +1,54 @@
+<h1>
+	<a class="logo" href="/"></a>
+	<% if (user) { %>
+	<div id="user-label" class="ui left pointing basic label">
+		Kxì ma <%= user.username %>!
+	</div>
+	<% } %>
+	<div id="language-dropdown" class="ui icon right floated top right pointing dropdown basic button">
+		<i class="globe icon"></i>
+		<span class="text">English</span>
+		&nbsp;<i class="dropdown icon"></i>
+		<div class="menu">
+			<div class="item" data-value="de">Deutsch</div>
+			<div class="item" data-value="et">Eesti</div>
+			<div class="item" data-value="en">English</div>
+			<div class="item" data-value="fr">Français</div>
+			<div class="item" data-value="hu">Magyar</div>
+			<div class="item" data-value="nl">Nederlands</div>
+			<div class="item" data-value="pl">Polski</div>
+			<div class="item" data-value="ru">Русский</div>
+			<div class="item" data-value="sv">Svenska</div>
+			<div class="divider"></div>
+			<div class="item" data-value="x-navi">Na’vi</div>
+		</div>
+	</div>
+	<% if (locals['isMainPage']) { %>
+	<div class="ui buttons main-menu">
+		<a class="ui icon basic button" href="/all"><i class="book icon"></i><span class="button-label"><%- _("menu-all-words") %></span></a>
+		<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i><span class="button-label"><%- _("menu-study") %></span></a>
+		<% if (user) { %>
+		<div class="ui icon top right pointing dropdown basic button">
+			<i class="wrench icon"></i><span class="button-label"><%- _("menu-administration") %></span><i class="dropdown icon"></i>
+			<div class="menu">
+				<a href="/add" class="item"><%- _("menu-add-new-word") %></a>
+				<a href="/history" class="item"><%- _("menu-recent-edits") %></a>
+				<a href="/untranslated" class="item"><%- _("menu-untranslated-words") %></a>
+				<a href="/etymology-editor" class="item"><%- _("menu-etymology-editor") %></a>
+				<a href="/sources-editor" class="item"><%- _("menu-sources-editor") %></a>
+				<a href="/corpus-editor" class="item"><%- _("menu-corpus-editor") %></a>
+				<a href="/logout" class="item"><%- _("menu-logout") %></a>
+			</div>
+		</div>
+		<% } else { %>
+		<div id="login-button" class="ui icon basic button"><i class="user icon"></i><span class="button-label"><%- _("menu-login") %></span></div>
+		<% } %>
+		<div id="settings-button" class="ui icon basic button"><i class="cogs icon"></i><span class="button-label"><%- _("menu-settings") %></span></div>
+		<a id="help-button" class="ui icon basic button" href="/help"><i class="question icon"></i><span class="button-label"><%- _("menu-help") %></span></a>
+	</div>
+	<% } else { %>
+	<a href="/" class="ui icon right floated top right basic button">
+		<i class="arrow left icon"></i> <%- _('menu-back-to-reykunyu') %>
+	</a>
+	<% } %>
+</h1>

@@ -14,35 +14,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>
-				<a class="logo" href="/"></a>
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kxì ma <%= user.username %>!
-				</div>
-				<% } %>
-				<div id="language-dropdown" class="ui icon right floated top right pointing dropdown basic button">
-					<i class="globe icon"></i>
-					<span class="text">English</span>
-					&nbsp;<i class="dropdown icon"></i>
-					<div class="menu">
-						<div class="item" data-value="de">Deutsch</div>
-						<div class="item" data-value="et">Eesti</div>
-						<div class="item" data-value="en">English</div>
-						<div class="item" data-value="fr">Français</div>
-						<div class="item" data-value="hu">Magyar</div>
-						<div class="item" data-value="nl">Nederlands</div>
-						<div class="item" data-value="pl">Polski</div>
-						<div class="item" data-value="ru">Русский</div>
-						<div class="item" data-value="sv">Svenska</div>
-						<div class="divider"></div>
-						<div class="item" data-value="x-navi">Na’vi</div>
-					</div>
-				</div>
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> <%- _('menu-back-to-reykunyu') %>
-				</a>
-			</h1>
+			<%- include('header.ejs') %>
 
 			<div id="tab-help-page-bar">
 				<div class="ui top attached tabular menu">
