@@ -92,6 +92,8 @@ $(function() {
 			let value = $(this).val();
 			if (value.length) {
 				$field.data()[lang] = value;
+			} else {
+				$field.removeData(lang);
 			}
 		});
 		$('#translations-modal').modal('hide');
