@@ -182,6 +182,18 @@ function createWordBlock(word) {
 				.attr('href', s[1]));
 		}
 	}
+	if (word.hasOwnProperty('seeAlso') && word['seeAlso'].length > 0) {
+		const $seeAlso = $('<span/>').addClass('see-also');
+		$seeAlso.append(' (&rarr; ');
+		for (let i = 0; i < word['seeAlso'].length; i++) {
+			if (i > 0) {
+				$seeAlso.append(', ');
+			}
+			appendLinkString([word['seeAlso'][i]], $seeAlso);
+		}
+		$seeAlso.append(')');
+		$block.append($seeAlso);
+	}
 	return $block;
 }
 
