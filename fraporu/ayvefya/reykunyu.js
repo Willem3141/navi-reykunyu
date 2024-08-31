@@ -81,6 +81,9 @@ $(function () {
 		if (href.startsWith('/?q=')) {
 			const q = href.substring(4);
 			$('#search-box').val(q);
+			if (getMode() === 'rhymes') {
+				$('#mode-direction').dropdown('set selected', 'reykunyu');
+			}
 			sngäiTìfwusew(false);
 			e.preventDefault();
 		}
