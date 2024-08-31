@@ -24,7 +24,8 @@ $(function() {
 
 	$('#definition-field').on('click', '.add-meaning-button', function () {
 		const $tr = $(this).closest('tr');
-		$tr.clone().insertAfter($tr);
+		const $newTr = $tr.clone().insertAfter($tr);
+		$($newTr.children()[1]).empty().html('<input type="text" placeholder="hunt">');
 		if ($('#definition-field tbody tr').length >= 2) {
 			$('.delete-meaning-button').removeClass('disabled');
 		}
