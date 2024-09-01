@@ -38,7 +38,9 @@ function reload() {
 					if (!searchables[language].hasOwnProperty(w)) {
 						searchables[language][w] = [];
 					}
-					searchables[language][w].push(word['id']);
+					if (!searchables[language][w].includes(word['id'])) {
+						searchables[language][w].push(word['id']);
+					}
 				}
 			}
 		}
