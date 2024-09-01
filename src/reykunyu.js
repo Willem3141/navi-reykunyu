@@ -1011,7 +1011,7 @@ function getReverseResponsesFor(query, language) {
 			}
 
 			// is the query completely equal to the translation?
-			if (t === query) {
+			if (t.replace(/^to /, '') === query) {
 				score -= 1;
 				continue;
 			}
@@ -1027,17 +1027,23 @@ function getReverseResponsesFor(query, language) {
 			// is our query one of these pieces
 			// (this is to rank "be, am, is, are" over "be quiet")
 			let pieces = mainPart.split(/[,;!?"\/]/);
+			let shortestPiece = Infinity;
 			for (let piece of pieces) {
-				if (piece.replace(/'^to '/, '').trim() === query) {
-					score -= 0.5;
-					break;
+				piece = piece.replace(/^to /, '').trim();
+				if (piece.includes(query)) {
+					shortestPiece = Math.min(shortestPiece, piece.length);
+					if (piece === query) {
+						score -= 0.5;
+					}
 				}
 			}
 
 			// the longer the translation, the lower it should be sorted because
 			// in long translations, it is likely that the searched word is only
 			// a small, irrelevant part of the translation
-			if (t.includes(query)) {
+			if (shortestPiece < Infinity) {
+				score += shortestPiece / 1000;
+			} else {
 				score += t.length / 1000;
 			}
 		}
