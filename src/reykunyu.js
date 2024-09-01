@@ -993,17 +993,56 @@ function getReverseResponsesFor(query, language) {
 		}
 	}
 
+	for (let result of results) {
+		postprocessResult(result);
+	}
+
 	// sort on result relevancy
 	// higher scores result in being sorted lower
 	let resultScore = function (result) {
-		let translation = result['translations'][0][language];
-		if (translation.toLowerCase() !== query) {
+		let score = 0;
+		for (let translation of result['translations']) {
+			if (!translation.hasOwnProperty(language)) {
+				continue;
+			}
+			const t = translation[language];
+			if (!t.includes(query)) {
+				continue;
+			}
+
+			// is the query completely equal to the translation?
+			if (t === query) {
+				score -= 1;
+				continue;
+			}
+
+			// is the query at least a part of the "main part" of the
+			// translation, i.e., not in a parenthesized part?
+			let mainPart = t.replace(/\([^)]+\)/g, '');
+			if (mainPart.includes(query)) {
+				score -= 0.25;
+			}
+
+			// if we cut up the translation into pieces separated by commas,
+			// is our query one of these pieces
+			// (this is to rank "be, am, is, are" over "be quiet")
+			let pieces = mainPart.split(/[,;!?"\/]/);
+			for (let piece of pieces) {
+				if (piece.replace(/'^to '/, '').trim() === query) {
+					score -= 0.5;
+					break;
+				}
+			}
+
 			// the longer the translation, the lower it should be sorted because
 			// in long translations, it is likely that the searched word is only
 			// a small, irrelevant part of the translation
-			return translation.length;
+			if (t.includes(query)) {
+				score += t.length / 1000;
+			}
 		}
-		return 0;
+
+		return score;
 	}
 
 	results.sort((a, b) => {
@@ -1011,10 +1050,6 @@ function getReverseResponsesFor(query, language) {
 		scoreB = resultScore(b);
 		return scoreA - scoreB;
 	});
-
-	for (let result of results) {
-		postprocessResult(result);
-	}
 
 	return results;
 }
