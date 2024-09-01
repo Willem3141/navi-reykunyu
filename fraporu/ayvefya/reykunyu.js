@@ -454,11 +454,11 @@ function getTranslation(tìralpeng) {
 function translationSection(sìralpeng) {
 	let $section = $('<div/>').addClass('result-item definition');
 	if (sìralpeng.length === 1) {
-		$section.html(getTranslation(sìralpeng[0]));
+		$section.text(getTranslation(sìralpeng[0]));
 	} else {
 		let $list = $('<ol/>').addClass('meaning-list').appendTo($section);
 		for (let i = 0; i < sìralpeng.length; i++) {
-			$('<li/>').html(getTranslation(sìralpeng[i])).appendTo($list);
+			$('<li/>').text(getTranslation(sìralpeng[i])).appendTo($list);
 		}
 	}
 	return $section;
