@@ -240,8 +240,8 @@ function compareNaviWords(a, b, i) {
 }
 
 const sections = {
-	'FN': "'aäefhiìklmnoprstuvwxyz".split(''),
-	'combined': "'aäefhiìklmnoprstuùvwxyz".split(''),
+	'FN': "'aäefhiìklmnoprstuvwyz".split(''),
+	'combined': "'aäefhiìklmnoprstuùvwyz".split(''),
 	'RN': "'aäbdefghiìklmnoprstuùvwyz".split('')
 };
 
