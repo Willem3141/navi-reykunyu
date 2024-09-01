@@ -31,6 +31,7 @@ const numbers = require('./numbers');
 const output = require('./output');
 const preprocess = require('./preprocess');
 const pronouns = require('./pronouns');
+const reverseDictionary = require('./reverseDictionary');
 const rhymes = require('./rhymes');
 const verbs = require('./verbs');
 const wordLinks = require('./wordLinks');
@@ -56,6 +57,7 @@ reloadData();
 
 function reloadData() {
 	dictionary.reload();
+	reverseDictionary.reload();
 
 	pronounForms = pronouns.getConjugatedForms(dictionary);
 
@@ -973,8 +975,6 @@ function getReverseResponsesFor(query, language) {
 		return [];
 	}
 
-	let results = [];
-
 	if (!language) {
 		language = "en";
 	}
@@ -982,20 +982,7 @@ function getReverseResponsesFor(query, language) {
 	query = query.trim();
 	query = query.toLowerCase();
 
-	for (let word of dictionary.getAll()) {
-		for (let translation of word['translations']) {
-			if (translation[language]) {
-				// split translation into words
-				let t = translation[language].replace(/[.,:;\(\)\[\]\<\>/\\-]/g, ' ');
-				t = t.split(' ').map((v) => v.toLowerCase());
-				if (t.includes(query)) {
-					let result = JSON.parse(JSON.stringify(word));
-					results.push(result);
-				}
-				break;
-			}
-		}
-	}
+	let results = reverseDictionary.search(query, language);
 
 	// special case: numbers
 	if (/^\d+$/.test(query)) {
