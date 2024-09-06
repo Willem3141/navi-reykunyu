@@ -15,55 +15,8 @@
 	</head>
 	<body<%- user ? ' class="editable"' : '' %>>
 		<div class="container">
-			<h1>
-				<a class="logo" href="/"></a>
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kaltxì ma <%= user.username %>!
-				</div>
-				<% } %>
-				<div id="language-dropdown" class="ui icon right floated top right pointing dropdown basic button">
-					<i class="globe icon"></i>
-					<span class="text">English</span>
-					&nbsp;<i class="dropdown icon"></i>
-					<div class="menu">
-						<div class="item" data-value="de">Deutsch</div>
-						<div class="item" data-value="et">Eesti</div>
-						<div class="item" data-value="en">English</div>
-						<div class="item" data-value="fr">Français</div>
-						<div class="item" data-value="hu">Magyar</div>
-						<div class="item" data-value="nl">Nederlands</div>
-						<div class="item" data-value="pl">Polski</div>
-						<div class="item" data-value="ru">Русский</div>
-						<div class="item" data-value="sv">Svenska</div>
-						<div class="divider"></div>
-						<div class="item" data-value="x-navi">Na’vi</div>
-					</div>
-				</div>
-				<a class="ui icon basic button right floated" id="snow-button"><i class="snowflake icon"></i></a>
-				<div class="ui buttons main-menu">
-					<a class="ui icon basic button" href="/all"><i class="book icon"></i><span class="button-label">All words</span></a>
-					<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i><span class="button-label">Study</span></a>
-					<% if (user) { %>
-					<div class="ui icon top right pointing dropdown basic button">
-						<i class="wrench icon"></i><span class="button-label">Administration</span><i class="dropdown icon"></i>
-						<div class="menu">
-							<a href="/add" class="item">Add new word</a>
-							<a href="/history" class="item">Recent edits</a>
-							<a href="/untranslated" class="item">Untranslated words</a>
-							<a href="/etymology-editor" class="item">Etymology editor</a>
-							<a href="/sources-editor" class="item">Sources editor</a>
-							<a href="/corpus-editor" class="item">Corpus editor</a>
-							<a href="/logout" class="item">Logout</a>
-						</div>
-					</div>
-					<% } else { %>
-					<a class="ui icon basic button" href="/login"><i class="user icon"></i><span class="button-label">Login</span></a>
-					<% } %>
-					<div id="settings-button" class="ui icon basic button" href="/all"><i class="cogs icon"></i><span class="button-label">Settings</span></div>
-					<div id="credits-button" class="ui icon basic button" href="/all"><i class="question icon"></i><span class="button-label">Help</span></div>
-			</div>
-			</h1>
+			<%- include('header.ejs', { 'isMainPage': true }) %>
+
 			<form id="search-form">
 				<div class="ui search fluid">
 					<div class="ui right action left icon input fluid">
@@ -75,7 +28,7 @@
 							<div class="menu">
 								<div class="item" data-value="reykunyu">Na'vi &harr; <span class="current-lang">English</span></div>
 								<div class="item" data-value="annotated">Annotated Dictionary</div>
-								<div class="item" data-value="rhymes">Rhymes</div>
+								<div class="item" data-value="rhymes"><%- _("menu-rhymes") %></div>
 							</div>
 						</div>
 					</div>
@@ -218,75 +171,96 @@
 			</div>
 			<div class="actions">
 				<div class="ui basic deny button">
-					<i class="close icon"></i> Close
+					<i class="close icon"></i> <%- _("dialog-close") %>
 				</div>
 			</div>
 		</div>
 
-		<div id="settings-modal" class="ui modal">
-			<div class="header">Settings</div>
+		<form id="login-modal" class="ui modal form" method="POST" action="/login">
+			<div class="header"><%- _("login") %></div>
 			<div class="scrolling content">
-				<div class="ui small header">
-					Pronunciation
+				<p><%- _("login-explanation") %></p>
+				<div class="ui fields">
+					<div class="field">
+						<label for="username"><%- _('login-username') %></label>
+						<input name="username" type="text">
+					</div>
+					<div class="field">
+						<label for="password"><%- _('login-password') %></label>
+						<input name="password" type="password">
+					</div>
 				</div>
-				<p>By default, Reykunyu shows the pronunciation of words in Na'vi spelling, with the stressed syllable underlined (nay-<u>weng</u>). If you prefer IPA (International Phonetic Alphabet) notation (<span class="ipa">naj.ˈwɛŋ</span>) instead, check the checkbox below.</p>
-				<div class="ui checkbox">
-					<input id="ipa-checkbox" type="checkbox" name="ipa">
-					<label for="ipa">
-						Use IPA for pronunciation
-					</label>
-				</div>
-				<div class="ui small header">
-					Theme
-				</div>
-				<p>Reykunyu supports light and dark themes. It automatically follows your browser settings, so if you want to switch, look in your browser's settings panel (for example in Firefox: <i>Settings &gt; Language and Appearance &gt; Website appearance</i>).</p>
 			</div>
 			<div class="actions">
 				<div class="ui basic deny button">
-					<i class="close icon"></i> Cancel
+					<i class="close icon"></i> <%- _("dialog-cancel") %>
 				</div>
-				<div class="ui primary approve button">
-					<i class="checkmark icon"></i> Save
-				</div>
+				<button type="submit" class="ui primary submit button">
+					<i class="checkmark icon"></i> <%- _("dialog-login") %>
+				</button>
 			</div>
-		</div>
-
-		<div id="credits-modal" class="ui modal basic">
-			<div class="ui icon header">
-				<i class="star icon"></i>
-				Credits
-			</div>
-			<div class="content">
-				<p>Reykunyu was created by Wllìm, but would not have been possible without the help of the following community members and other people.</p>
-				<p><i>Irayo nìtxan ma frapo!</i></p>
-				<div class="ui small inverted header">
-					Dictionary data
+		</form>
+		
+		<div id="settings-modal" class="ui modal">
+			<div class="header"><%- _("settings") %></div>
+			<div class="scrolling content">
+				<div class="ui small header">
+					<%- _("settings-pronunciation") %>
 				</div>
-				<p>The base dictionary data was taken from Eana Eltu by Mark Miller, Tirea Aean, and others, and then edited further by Eana Unil, Tekre, and Wllìm. The Annotated Dictionary definitions were taken from the Annotated Dictionary project by Plumps.</p>
-				<div class="ui small inverted header">
-					Audio
+				<p><%- _("settings-pronunciation-explanation") %></p>
+				<div class="ui checkbox">
+					<input id="ipa-checkbox" type="checkbox" name="ipa">
+					<label for="ipa">
+						<%- _("settings-pronunciation-ipa") %>
+					</label>
 				</div>
-				<p>The voice clips were provided by Plumps (who recorded them for <a href="https://dict-navi.com/">dict-na'vi</a>) and tsyili (who recorded them for <a href="https://learnnavi.org/navi-vocabulary/">Learn Na'vi</a>).</p>
-				<div class="ui small inverted header">
-					Artwork
+				<div class="ui small header">
+					<%- _("settings-dialect") %>
 				</div>
-				<p>The drawings of Pandoran animals were made by Eana Unil. (Haven’t encountered one yet? Try searching for ‘toruk’!) Reykunyu’s logo was drawn by Eana Unil, and the calligraphy in the header was made by Nahura.</p>
-				<div class="ui small inverted header">
-					Libraries
+				<p><%- _("settings-dialect-explanation") %></p>
+				<div class="ui radio checkbox">
+					<input id="dialect-fn-radiobutton" name="dialect" type="radio">
+					<label for="dialect-fn-radiobutton">
+						<%- _("settings-dialect-fn") %>
+						<br>
+						<p class="explanation">
+							<%- _("settings-dialect-fn-explanation") %>
+						</p>
+					</label>
 				</div>
-				<p>Reykunyu uses <a href="https://jquery.com">jQuery</a> and <a href="https://semantic-ui.com">Semantic UI</a> for the frontend, and <a href="https://nodejs.org">Node.js</a> for the backend.</p>
-				<div class="ui small inverted header">
-					Sources
+				<div class="ui radio checkbox">
+					<input id="dialect-both-radiobutton" name="dialect" type="radio">
+					<label for="dialect-both-radiobutton">
+						<%- _("settings-dialect-both") %>
+						<p class="explanation">
+							<%- _("settings-dialect-both-explanation") %>
+						</p>
+					</label>
 				</div>
-				<p>Reykunyu is licensed under the GPLv3, and the source code can be found on <a href="https://github.com/Willem3141/navi-reykunyu">GitHub</a>. The main dictionary data (which you can get in JSON form <a href="/api/list/all">here</a>) is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC-BY-SA-NC 3.0</a>. This excludes the Annotated Dictionary data, the audio files, and the animal drawings&mdash;these are copyrighted by their respective authors.</p>
-				<div class="ui small inverted header">
-					Interested in learning Na’vi?
+				<div class="ui radio disabled checkbox">
+					<input id="dialect-rn-radiobutton" name="dialect" type="radio" disabled="disabled">
+					<label for="dialect-rn-radiobutton">
+						<%- _("settings-dialect-rn") %>
+						<i><%- _("coming-soon") %></i>
+						<p class="explanation">
+							<%- _("settings-dialect-rn-explanation") %>
+						</p>
+					</label>
 				</div>
-				<p>A dictionary like Reykunyu is great for reference, but not so great to actually study a language. For proper learning materials (grammar guides, lessons, word lists for beginners, etc.) please visit one of the websites dedicated to learning Na’vi: <a href="https://www.kelutral.org/">Kelutral</a> or <a href="https://learnnavi.org/">Learn Na’vi</a>.</p>
+				<div id="dialect-rn-warning" class="warning-block" style="display: none;">
+					<%- _("settings-dialect-rn-warning") %>
+				</div>
+				<div class="ui small header">
+					<%- _("settings-theme") %>
+				</div>
+				<p><%- _("settings-theme-explanation") %></p>
 			</div>
 			<div class="actions">
-				<div class="ui green ok inverted button">
-					<i class="close icon"></i> Done
+				<div class="ui basic deny button">
+					<i class="close icon"></i> <%- _("dialog-cancel") %>
+				</div>
+				<div class="ui primary approve button">
+					<i class="checkmark icon"></i> <%- _("dialog-save") %>
 				</div>
 			</div>
 		</div>

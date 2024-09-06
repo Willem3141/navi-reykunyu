@@ -10,42 +10,35 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>
-				Untranslated words
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kaltxì ma <%= user.username %>!
-				</div>
-				<% } %>
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> Back to Reykunyu
-				</a>
-			</h1>
+			<%- include('header.ejs') %>
 
-			<p>The following words do not have a French translation at all:</p>
+			<p>The following words do not have a translation in your selected language:</p>
 
 			<table class="ui table">
 				<thead>
 					<tr>
 						<th>Word</th>
 						<th>English</th>
-						<th>French</th>
+						<th>Translation (<%= language %>)</th>
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
+					<%
+						const htmlMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '<span class="stressed">').replaceAll(']', '</span>');
+					%>
 					<% for (let word of untranslated) { %>
 					<% let first = true; %>
 					<% for (let translation of word['translations']) { %>
 					<tr>
 						<% if (first) {
 						first = false; %>
-						<td rowspan="<%= word['translations'].length %>"><%= word["na'vi"] %> <span class="muted">(<%= word['type'] %>)</span></td>
+						<td rowspan="<%= word['translations'].length %>"><%- htmlMarkup(word["na'vi"]) %> <span class="muted">(<%= word['type'] %>)</span></td>
 						<% } %>
 						<td><%= translation["en"] %></td>
-						<td><% if (translation["fr"]) { %><%= translation["fr"] %><% } else { %><span class='muted'>(none)</span><% } %></td>
+						<td><% if (translation[language]) { %><%= translation[language] %><% } else { %><span class='muted'>(none)</span><% } %></td>
 						<td>
-							<a class="ui icon basic button edit-button" href="/edit?word=<%= word['na\'vi'] %>&type=<%= word['type'] %>">
+							<a class="ui icon basic button edit-button" href="/edit?word=<%= word['id'] %>">
 								<i class="pencil icon"></i>
 							</a>
 						</td>
@@ -58,6 +51,8 @@
 
 		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
+		<script src="ayvefya/ui-translations.js"></script>
+		<script src="ayvefya/untranslated.js"></script>
 	</body>
 </html>
 

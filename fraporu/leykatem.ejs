@@ -48,26 +48,15 @@ const types = [
 	</head>
 	<body data-url="<%= post_url %>">
 		<div class="container">
-			<h1>
-				Word editor
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kaltxì ma <%= user.username %>!
-				</div>
-				<% } %>
-				<a href="/edit/raw?word=<%= word['na\'vi'] %>&type=<%= word['type'] %>" class="ui icon right floated top right basic button">
-					<i class="edit icon"></i> Edit raw JSON
-				</a>
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> Back to Reykunyu
-				</a>
-			</h1>
+			<%- include('header.ejs') %>
+
 			<div class="ui form">
 				<h2>Base information</h2>
 				<div class="fields">
 					<div class="eight wide field">
 						<label>Root word</label>
-						<input id="root-field" type="text" placeholder="taron" value="<%= word['na\'vi'] %>">
+						<input id="root-field" type="text" placeholder="[ta]/ron" value="<%= word['na\'vi'] %>">
+						<span class="muted">Use FN spelling, but with <b>ù</b> where applicable. For multi-syllable words: mark syllable boundaries with <b>/</b> and the stressed syllable with <b>[...]</b>.</span>
 					</div>
 					<div class="eight wide field">
 						<label>Type</label>
@@ -82,7 +71,7 @@ const types = [
 					<div class="eight wide field">
 						<label>Pronunciation</label>
 						<% if (!word.hasOwnProperty('pronunciation')) {
-							word['pronunciation'] = [['', '']];
+							word['pronunciation'] = [];
 						} %>
 						<table id="pronunciation-field" class="ui compact table">
 							<tbody>
@@ -279,13 +268,16 @@ const types = [
 
 				<div class="ui section divider"></div>-->
 
-				<a href="/" class="ui floated right submit button">
-					Cancel
-				</a>
 				<div id="save-button" class="ui floated right primary submit icon labeled button">
 					<i class="check icon"></i>
 					Save
 				</div>
+				<a href="/edit/raw?word=<%= word['id'] %>" class="ui icon button">
+					<i class="edit icon"></i> Edit raw JSON
+				</a>
+				<a href="/" class="ui floated right submit button">
+					Cancel
+				</a>
 			</div>
 		</div>
 
@@ -326,6 +318,7 @@ const types = [
 		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
 		<script src="ayvefya/edit.js"></script>
+		<script src="ayvefya/ui-translations.js"></script>
 	</body>
 </html>
 

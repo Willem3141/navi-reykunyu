@@ -1,0 +1,639 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Reykunyu &ndash; Online Na'vi dictionary</title>
+		<link rel="stylesheet" type="text/css" href="aysrungsiyu/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Reykunyu is a user-friendly online Na'vi dictionary, supporting translations to and from English, German, French, and other languages.">
+		<link href="tìlam/tìlam.css" rel="stylesheet">
+		<link rel="manifest" href="manifest.webmanifest">
+		<link rel="icon" type="image/png" href="/ayrel/favicon.png">
+		<link rel="search" type="application/opensearchdescription+xml" title="Reykunyu" href="/opensearch.xml">
+	</head>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+
+			<div id="tab-help-page-bar">
+				<div class="ui top attached tabular menu">
+					<div class="item active" id="help-tab"><%- _('help') %></div>
+					<div class="item" id="credits-tab"><%- _('credits') %></div>
+					<div class="item" id="api-tab"><%- _('api-documentation') %></div>
+				</div>
+			</div>
+
+			<div class="page" id="help-page">
+				<p><%- _('help-text-1') %></p>
+				<p><%- _('help-text-2') %></p>
+
+				<div class="note-box">
+					<h3><%- _('help-learning') %></h3>
+					<p><%- _('help-learning-text') %></p>
+				</div>
+
+				<h2><%- _('help-looking-up') %></h2>
+				<p><%- _('help-looking-up-text-1') %></p>
+				<form id="search-form" style="padding-bottom: 20px;">
+					<div class="ui search fluid focus">
+						<div class="ui right action left icon input fluid">
+							<i class="search icon"></i>
+							<input id="search-box" type="search" autofocus="" value="" autocomplete="off">
+							<div id="mode-direction" class="ui compact selection dropdown" tabindex="0">
+								<span class="text">Na'vi ↔ <%- _('language') %></span>
+								<i class="dropdown icon"></i>
+							</div>
+						</div>
+					</div>
+				</form>
+				<p><%- _('help-looking-up-text-2') %></p>
+				<div id="tab-mode-bar" class="ui top attached tabular menu"><div class="item active">Na'vi&nbsp;→&nbsp;<%- _('language') %><div class="result-count-tag">1</div></div><div class="item"><%- _('language') %>&nbsp;→&nbsp;Na'vi<div class="result-count-tag">2</div></div></div>
+				<p><%- _('help-looking-up-text-3') %></p>
+
+				<h3><%- _('help-from-navi') %></h3>
+				<p><%- _('help-from-navi-text-1') %></p>
+				<div class="ui pointing menu" id="sentence-bar"><a class="item active"><div><div class="navi">oe</div><div class="definition"><span class="type ui label type-badge horizontal" data-tooltip="pronoun">pn.</span>I</div></div></a><a class="item"><div><div class="navi">kaltxì si</div><div class="definition"><span class="type ui label type-badge horizontal" data-tooltip="intransitive verb">vin.</span>greet</div></div></a><a class="item"><div><div class="navi">ngaru</div><div class="definition"><span class="type ui label type-badge horizontal" data-tooltip="pronoun">pn.</span>to you</div></div></a></div>
+				<p><%- _('help-from-navi-text-2') %></p>
+
+				<h3><%- _('help-to-navi') %></h3>
+				<p><%- _('help-to-navi-text') %></p>
+
+				<h2><%- _('help-results') %></h2>
+				<h3><%- _('help-word-types') %></h3>
+				<p><%- _('help-word-types-text') %></p>
+				<table>
+					<tr>
+						<td><%- _('type-traditional-n') %></td>
+						<td><%- _('type-n') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-n:pr') %></td>
+						<td><%- _('type-n:pr') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-pn') %></td>
+						<td><%- _('type-pn') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-adj') %></td>
+						<td><%- _('type-adj') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-num') %></td>
+						<td><%- _('type-num') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-adv') %></td>
+						<td><%- _('type-adv') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-adp') %></td>
+						<td><%- _('type-adp') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-adp:len') %></td>
+						<td><%- _('type-adp:len') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-intj') %></td>
+						<td><%- _('type-intj') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-part') %></td>
+						<td><%- _('type-part') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-conj') %></td>
+						<td><%- _('type-conj') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-ctr') %></td>
+						<td><%- _('type-ctr') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-v:in') %></td>
+						<td><%- _('type-v:in') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-v:tr') %></td>
+						<td><%- _('type-v:tr') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-v:m') %></td>
+						<td><%- _('type-v:m') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-v:cp') %></td>
+						<td><%- _('type-v:cp') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-inter') %></td>
+						<td><%- _('type-inter') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-aff:pre') %></td>
+						<td><%- _('type-aff:pre') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-aff:in') %></td>
+						<td><%- _('type-aff:in') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-aff:suf') %></td>
+						<td><%- _('type-aff:suf') %></td>
+					</tr>
+					<tr>
+						<td><%- _('type-traditional-phr') %></td>
+						<td><%- _('type-phr') %></td>
+					</tr>
+				</table>
+
+				<h2><%- _('help-other-modes') %></h2>
+				<p><%- _('help-other-modes-text-1') %></p>
+				<p><%- _('help-other-modes-text-2') %></p>
+				<p><%- _('help-other-modes-text-3') %></p>
+			</div>
+
+			<div class="page" id="credits-page" style="display: none;">
+				<p>Reykunyu was created by Wllìm, but would not have been possible without the help of the following community members and other people.</p>
+				<p><i>Irayo nìtxan ma frapo!</i></p>
+
+				<h2>Dictionary data</h2>
+				<p>The base dictionary data was taken from Eana Eltu by Mark Miller, Tirea Aean, and others, and then edited further by Eana Unil, Tekre, and Wllìm. The Annotated Dictionary definitions were taken from the Annotated Dictionary project by Plumps.</p>
+
+				<h2>Audio</h2>
+				<p>The voice clips were provided by Plumps (who recorded them for <a href="https://dict-navi.com/">dict-na'vi</a>) and tsyili (who recorded them for <a href="https://learnnavi.org/navi-vocabulary/">Learn Na'vi</a>).</p>
+				
+				<h2>Artwork</h2>
+				<p>The drawings of Pandoran animals were made by Eana Unil. (Haven’t encountered one yet? Try searching for ‘toruk’!) Reykunyu’s logo was drawn by Eana Unil, and the calligraphy in the header was made by Nahura.</p>
+
+				<h2>Libraries</h2>
+				<p>Reykunyu uses <a href="https://jquery.com">jQuery</a> and <a href="https://semantic-ui.com">Semantic UI</a> for the frontend, and <a href="https://nodejs.org">Node.js</a> for the backend.</p>
+
+				<h2>Source code and data</h2>
+				<p>Reykunyu is licensed under the GPLv3, and the source code can be found on <a href="https://github.com/Willem3141/navi-reykunyu">GitHub</a>. The main dictionary data (which you can get in JSON form <a href="/api/list/all">here</a> – see also the API documentation) is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC-BY-SA-NC 3.0</a>. This excludes the Annotated Dictionary data, the audio files, and the animal drawings; these are copyrighted by their respective authors.</p>
+			</div>
+
+			<div class="page" id="api-page" style="display: none;">
+				<p>Reykunyu has a JSON-based API that can be used to do searches programmatically. The API is useful if you are a developer and you'd like to integrate Na’vi searches in your website or app.</p>
+				<p>The API is free to use: there are no API keys and no (formal) usage limitations. Please don't abuse the server though; I reserve the right to cut users off the API if their usage disproportionately impacts server resources. (This has never happened before and I don't expect it to happen anytime soon: it's not like the Na’vi language is a super popular target for app developers …) On the other hand, Reykunyu doesn't make guarantees regarding uptime and compatibility: the API may sometimes change.</p>
+				<div class="note-box">
+					<p>Fun fact: Reykunyu's website itself uses the same API for its searches, so any data you can see on the website can be retrieved using the API too.</p>
+				</div>
+
+				<h2>/api/fwew-search <span class="type ui label horizontal">GET</span></h2>
+				<p>The main endpoint for searching. This is the same endpoint that gets called when you search via the web interface.</p>
+				<form action="/api/fwew-search" class="ui form">
+					<table>
+						<tr>
+							<td><b>query</b></td>
+							<td>The query to search for.</td>
+							<td><input name="query" value="run"></td>
+						</tr>
+						<tr>
+							<td><b>language</b> (optional)</td>
+							<td>Two-letter ISO code of the natural language for reverse searching.</td>
+							<td><input name="language" value="en"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td><button class="ui button">Try it out!</button></td>
+						</tr>
+					</table>
+				</form>
+
+				<h3>Response</h3>
+				<table class="api-output-description-table">
+					<tr>
+						<td><b>fromNa'vi</b></td>
+						<td>
+							<p>Results of searching for <b>query</b> in Na’vi.</p>
+							<p>Reykunyu splits the query into separate Na’vi &ldquo;words&rdquo; and returns results for each of them in an array. If Reykunyu detects a si-verb or multi-word phrase in the query, it is counted as one &ldquo;word&rdquo;. For each &ldquo;word&rdquo;, the following is returned:</p>
+							<table>
+								<tr>
+									<td><b>tìpawm</b></td>
+									<td>The part of your query that makes up this &ldquo;word&rdquo;.</td>
+								</tr>
+								<tr>
+									<td><b>sì'eyng</b></td>
+									<td>The results for this &ldquo;word&rdquo;, as an array of <b>WordData</b>.</td>
+								</tr>
+								<tr>
+									<td><b>aysämok</b></td>
+									<td>If there are no results, an array of suggestions (to be used to implement &ldquo;did you mean …?&rdquo; functionality).</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><b>toNa'vi</b></td>
+						<td>Results of searching for <b>query</b> in the <b>language</b> you specified, as an array of <b>WordData</b>.</td>
+					</tr>
+				</table>
+
+				<h3>WordData</h3>
+				<p>Each individual result is returned as a <b>WordData</b>, an object containing all information about a single Na’vi word. It has a large number of properties describing the word, most of which are optional.</p>
+				<table class="api-output-description-table">
+					<tr>
+						<td><b>word</b></td>
+						<td>
+							<p>The Na’vi word in question, with syllable separators (<b>/</b>) and stressed syllable markers (<b>[...]</b>). For si-verbs this does not contain <b>si</b>, and for affixes this does not contain the hyphen or angle brackets; see <a href="https://github.com/Willem3141/navi-reykunyu/blob/f3888656df67990afd6d92aad58ac8320cec3f4c/fraporu/ayvefya/reykunyu.js#L1184-L1197">here</a> for how to do the postprocessing.</p>
+							<table>
+								<tr>
+									<td><b>FN</b></td>
+									<td>The word in Forest Na’vi spelling.</td>
+								</tr>
+								<tr>
+									<td><b>combined</b></td>
+									<td>The word in Forest Na’vi spelling, but with <b>ù</b> marked.</td>
+								</tr>
+								<tr>
+									<td><b>RN</b></td>
+									<td>The word in Reef Na’vi spelling.</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><b>word_raw</b></td>
+						<td>Like <b>word</b>, but without the syllable separators and stressed syllable markers.</td>
+					</tr>
+					<tr>
+						<td class="muted"><b>na'vi</b></td>
+						<td class="muted">
+							<p>The Na’vi word in FN spelling.</p>
+							<p><em>Deprecated; equivalent to <b>word_raw["FN"]</b>. Before Reykunyu gained full RN support, this was the main way to access the Na’vi word. For now, this key is still provided for backwards compatibility.</em></p>
+						</td>
+					</tr>
+					<tr>
+						<td><b>type</b></td>
+						<td>The word type: <b>n</b> (noun), <b>v:in</b> (intransitive verb), <b>v:tr</b> (transitive verb), etc.; see the list <a href="https://github.com/Willem3141/navi-reykunyu/blob/f3888656df67990afd6d92aad58ac8320cec3f4c/src/translations.json#L27-L53">here</a>. Especially note <b>v:si</b> (the verb <b>si</b> on its own), <b>n:si</b> (a word that can combine with <b>si</b> to create a si-verb), and <b>nv:si</b> (the combination of an <b>n:si</b> and a <b>v:si</b>, i.e., a complete si-verb).</td>
+					</tr>
+					<tr>
+						<td><b>pronunciation</b></td>
+						<td>
+							A description of the pronunciation. This is an array, one for each known pronunciation of the word, containing:
+							<table>
+								<tr>
+									<td><b>syllables</b></td>
+									<td>The word in phonetic spelling, where syllables are separated by dashes and <b>ù</b> is indicated for RN.</td>
+								</tr>
+								<tr>
+									<td><b>stressed</b></td>
+									<td>Integer (1-based) indicating which of the syllables in <b>syllables</b> is stressed.</td>
+								</tr>
+								<tr>
+									<td><b>audio</b></td>
+									<td>
+										An array of audio files:
+										<table>
+											<tr>
+												<td><b>file</b></td>
+												<td>Name of the audio file (you can fetch the file from <b>/fam/&lt;file&gt;</b>).</td>
+											</tr>
+											<tr>
+												<td><b>speaker</b></td>
+												<td>Name of the speaker. <em>Note: make sure to obtain permission of the speaker before using the audio files in an external project.<em></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td><b>ipa</b></td>
+									<td>
+										The pronunciation expressed in IPA notation:
+										<table>
+											<tr>
+												<td><b>FN</b></td>
+												<td>IPA for Forest Na’vi.</td>
+											</tr>
+											<tr>
+												<td><b>RN</b></td>
+												<td>IPA for Reef Na’vi.</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><b>translations</b></td>
+						<td>An array of translations, one for each major meaning of the word (most words have just one). Each meaning is represented by an object that maps each two-letter ISO language code to the corresponding translation.</td>
+					</tr>
+					<tr>
+						<td><b>short_translation</b></td>
+						<td>By default Reykunyu takes the part of the translation in <b>translations</b> until the first comma as a &ldquo;short translation&rdquo;. For the few words for which this isn't desirable, <b>short_translation</b> is used to override this (for the English translation only).</td>
+					</tr>
+					<tr>
+						<td><b>meaning_note</b></td>
+						<td>A free-form note on the meaning or usage of the word, as a <b>LinkString</b>.</td>
+					</tr>
+					<tr>
+						<td><b>infixes</b></td>
+						<td>For verbs, a description of the infix positions. The two positions are marked as dots (<b>.</b>) in the verb. Note one special case: <b>zenke</b> has its infixes indicated as <b>z.en.(e)ke</b> to indicate the <b>e</b> that shows up if certain infixes are placed in the second infix slots.</td>
+					</tr>
+					<tr>
+						<td><b>conjugation</b></td>
+						<td>
+							<p>For nouns, a conjugation table, encoded as a 2D array of 4 rows (singular, dual, trial, plural) and 6 columns (the cases). Each entry is marked up in a certain way to aid coloring pre- and suffixes in the output: the part until the first dash is the plural prefix, the part from the second dash is the case suffix, and the lenited consonant (if any) is enclosed in braces (e.g., <b>pxe-{s}oruk-it/ti</b>).</p>
+							<p>For adjectives, the two forms with <b>a-</b> and <b>-a</b> applied:</p>
+							<table>
+								<tr>
+									<td><b>prefixed</b></td>
+									<td>The form with <b>a-</b>.</td>
+								</tr>
+								<tr>
+									<td><b>suffixed</b></td>
+									<td>The form with <b>-a</b>.</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><b>conjugation_note</b></td>
+						<td>A free-form note on the conjugation of the word, as a <b>LinkString</b>.</td>
+					</tr>
+					<tr>
+						<td><b>conjugated</b></td>
+						<td>
+							<p>An explanation of the infixes present in the query word. This is expressed as an array of conjugation steps needed to go from this word to the query word. We use an array because there may be more than one step. See, for example, what happens when you search for <a href="/?q=tìsluseleti" class="word-link">tìsluseleti</a>: the first step makes <b>slele</b> into a noun, and the second step applies affixes to the noun.</p>
+							<p>Each conjugation step looks as follows:</p>
+							<table>
+								<tr>
+									<td><b>type</b></td>
+									<td>
+										The type of conjugation step, one of:
+										<ul>
+											<li><b>n</b>: applying affixes to a noun;</li>
+											<li><b>v</b>: applying infixes to a verb;</li>
+											<li><b>adj</b>: applying <b>a-</b> or <b>-a</b> to an adjective;</li>
+											<li><b>v_to_n</b>: applying <b>-yu</b> or <b>-tswo</b> to a verb, resulting in a noun;</li>
+											<li><b>v_to_adj</b>: applying <b>(ke)tsuk-</b> to a verb, resulting in an adjctive;</li>
+											<li><b>v_to_part</b>: applying <b>‹us›</b> or <b>‹awn›</b> to a verb, resulting in a participle;</li>
+											<li><b>adj_to_adv</b>: applying <b>nì</b> to an adjective, resulting in an adverb;</li>
+											<li><b>gerund</b>: applying <b>tì</b> + <b>‹us›</b> to a verb, resulting in a gerund.</li>
+										</ul>
+									</td>
+								</tr>
+								<tr>
+									<td><b>conjugation</b></td>
+									<td>
+										A description of the conjugation step:
+										<table>
+											<tr>
+												<td><b>root</b></td>
+												<td>The original form of the word, before the conjugation step.</td>
+											</tr>
+											<tr>
+												<td><b>result</b></td>
+												<td>An array of possible results of this conjugation step. There may be more than one; this contains all correct ways to apply the affixes, not only the one that results in the query word.</td>
+											</tr>
+											<tr>
+												<td><b>affixes</b></td>
+												<td>Only for conjugation steps with <b>n</b> as their <b>type</b>: an array of 7 strings which describe the affixes placed in the 7 possible locations: [<sup>0</sup>fì-/tsa-/pe-/fra-][<sup>1</sup>me-/pxe-/ay-][<sup>2</sup>fne-]<b>noun</b>[<sup>3</sup>-tsyìp/-fkeyk][<sup>4</sup>-pe/-o][<sup>5</sup>-l/-t/-r/-ä/-ri/<i>adp.</i>][<sup>6</sup>-sì/-to].</td>
+											</tr>
+											<tr>
+												<td><b>infixes</b></td>
+												<td>Only for conjugation steps with <b>v</b> as their <b>type</b>: an array of 3 strings which describe the infixes placed in the pre-first, first, and second infix slots.</td>
+											</tr>
+											<tr>
+												<td><b>form</b></td>
+												<td>Only for conjugation steps with <b>adj</b> as their <b>type</b>: either <b>predicative</b> (no <b>a-</b>/<b>-a</b> applied), <b>prenoun</b> (<b>a-</b> applied), or <b>postnoun</b> (<b>-a</b> applied).</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td><b>affixes</b></td>
+									<td>
+										An array of affixes that was applied in this conjugation step. For each affix:
+										<table>
+											<tr>
+												<td><b>type</b></td>
+												<td>The type of affix: <b>prefix</b>, <b>infix</b>, or <b>suffix</b>.</td>
+											</tr>
+											<tr>
+												<td><b>affix</b></td>
+												<td>The affix, either a string (if it is a combined infix) or a <b>WordData</b> (in all other cases).</td>
+											</tr>
+											<tr>
+												<td><b>combinedFrom</b></td>
+												<td>Only if it is a combined infix: an array of <b>WordData</b> describing the infixes this infix was combined from.</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td><b>translation</b></td>
+									<td>An automatically-generated translation of the result of this conjugation step.</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><b>image</b></td>
+						<td>Name of an image file illustrating the word (you can fetch the file from <b>/ayrel/&lt;image&gt;</b>). <em>Note: make sure to obtain permission of Eana Unil before using the artwork in an external project.<em></td>
+					</tr>
+					<tr>
+						<td><b>source</b></td>
+						<td>
+							An array of sources for this word, where each source is an array of at most four elements:
+							<table>
+								<tr>
+									<td><b>[0]</b></td>
+									<td>The title of the source.</td>
+								</tr>
+								<tr>
+									<td><b>[1]</b></td>
+									<td>An URL pointing at the source, if applicable (otherwise it can be an empty string).</td>
+								</tr>
+								<tr>
+									<td><b>[2]</b></td>
+									<td>The date of the source, in yyyy-mm-dd format.</td>
+								</tr>
+								<tr>
+									<td><b>[3]</b></td>
+									<td>An optional note on the content of the source.</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><b>status</b></td>
+						<td>
+							An optional status flag for this word:
+							<ul>
+								<li><b>loan</b> if it is a loanword;</li>
+								<li><b>unconfirmed</b> if the word has not been officially confirmed as correct Na’vi;</li>
+								<li><b>unofficial</b> if the word has been confirmed as a non-official word.</li>
+							</ul>
+							<em>Note: you should make sure to clearly mark unconfirmed and unofficial words (or hide them), to avoid spreading confusion about unconfirmed words. For example, Reykunyu places this marker in the word list:</em> <span class="word-list"><span class="status-badge unconfirmed">unconfirmed word</span></span>
+						</td>
+					</tr>
+					<tr>
+						<td><b>etymology</b></td>
+						<td>An explanation of the etymology of the word, as a <b>LinkString</b>.</td>
+					</tr>
+					<tr>
+						<td><b>derived</b></td>
+						<td>An array of other words (as <b>TruncatedWordData</b>) that are derived from this word (i.e., that refer to this word in their <b>etymology</b> explanation).</td>
+					</tr>
+					<tr>
+						<td><b>seeAlso</b></td>
+						<td>An array of other words (as <b>TruncatedWordData</b>) that have something to do with this word (shown under "See also" in Reykunyu).</td>
+					</tr>
+				</table>
+
+				<h3>LinkString</h3>
+				<p>A <b>LinkString</b> is used to allow writing free-form notes that contain links to other words. A <b>LinkString</b> is implemented as an array whose elements can be two types of objects:</p>
+				<ul>
+					<li>a string, this represents plain text which is part of the note;</li>
+					<li>a <b>TruncatedWordData</b>, which represents a link to another word.</li>
+				</ul>
+
+				<h3>TruncatedWordData</h3>
+				<p>Words that refer to other words, use <b>TruncatedWordData</b> to do so. This is simply <b>WordData</b> where all fields except <b>word</b>, <b>word_raw</b>, <b>na'vi</b>, <b>type</b>, <b>translations</b>, and <b>short_translation</b> have been removed. (This is done to limit the size of API responses, and to avoid infinite loops if two words refer to each other.)</p>
+
+				<h2>/api/fwew <span class="type ui label horizontal">GET</span></h2>
+				<p>Like <b>/api/fwew-search</b>, but provides only results for Na’vi words.</p>
+				<form action="/api/fwew" class="ui form">
+					<table>
+						<tr>
+							<td><b>tìpawm</b></td>
+							<td>The query to search for.</td>
+							<td><input name="tìpawm" value="run"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td><button class="ui button">Try it out!</button></td>
+						</tr>
+					</table>
+				</form>
+
+				<h3>Response</h3>
+				Like <b>fromNa'vi</b> above.
+
+				<h2>/api/search <span class="type ui label horizontal">GET</span></h2>
+				<p>Like <b>/api/fwew-search</b>, but provides only results for natural language words.</p>
+				<form action="/api/search" class="ui form">
+					<table>
+						<tr>
+							<td><b>query</b></td>
+							<td>The query to search for.</td>
+							<td><input name="query" value="run"></td>
+						</tr>
+						<tr>
+							<td><b>language</b> (optional)</td>
+							<td>Two-letter ISO code of the natural language for reverse searching.</td>
+							<td><input name="language" value="en"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td><button class="ui button">Try it out!</button></td>
+						</tr>
+					</table>
+				</form>
+
+				<h3>Response</h3>
+				Like <b>toNa'vi</b> above.
+
+				<h2>/api/conjugate/verb <span class="type ui label horizontal">GET</span></h2>
+				<p>Applies infixes to a verb. The API does not validate the infixes provided, so client code has to ensure only valid infixes get passed.</p>
+				<form action="/api/conjugate/verb" class="ui form">
+					<table>
+						<tr>
+							<td><b>verb</b></td>
+							<td>The verb to apply infixes to.</td>
+							<td><input name="verb" value="näk"></td>
+						</tr>
+						<tr>
+							<td><b>prefirst</b></td>
+							<td>The infix to place in the prefirst infix slot.</td>
+							<td><input name="prefirst" value="äpeyk"></td>
+						</tr>
+						<tr>
+							<td><b>first</b></td>
+							<td>The infix to place in the first infix slot.</td>
+							<td><input name="first" value="ìyev"></td>
+						</tr>
+						<tr>
+							<td><b>second</b></td>
+							<td>The infix to place in the second infix slot.</td>
+							<td><input name="second" value="ei"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td><button class="ui button">Try it out!</button></td>
+						</tr>
+					</table>
+				</form>
+
+				<h3>Response</h3>
+				<p>An array of strings, representing possible conjugations.</p>
+
+				<h2>/api/random <span class="type ui label horizontal">GET</span></h2>
+				<p>Returns a set of random words of the given type.</p>
+				<form action="/api/random" class="ui form">
+					<table>
+						<tr>
+							<td><b>holpxay</b></td>
+							<td>An integer indicating how many random words we want.</td>
+							<td><input name="holpxay" value="5"></td>
+						</tr>
+						<tr>
+							<td><b>fnel</b> (optional)</td>
+							<td>The type of words requested, one of <b>n</b>, <b>adj</b>, <b>v:in</b>, <b>v:tr</b>, <b>adv</b>, <b>adp</b>, and <b>aff:in</b>. If omitted, any word type may be returned.</td>
+							<td><input name="fnel" value="n"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td><button class="ui button">Try it out!</button></td>
+						</tr>
+					</table>
+				</form>
+
+				<h3>Response</h3>
+				<p>An array of <b>WordData</b>.</p>
+
+				<h2>/api/rhymes <span class="type ui label horizontal">GET</span></h2>
+				<p>Finds rhymes of the given word.</p>
+				<form action="/api/rhymes" class="ui form">
+					<table>
+						<tr>
+							<td><b>tìpawm</b></td>
+							<td>The word to find rhymes for.</td>
+							<td><input name="tìpawm" value="kaltxì"></td>
+						</tr>
+						<tr>
+							<td><b>dialect</b></td>
+							<td>The dialect to use for sorting the results ("FN", "combined", or "RN"). Does not currently influence the rhyme detection logic.</td>
+							<td><input name="dialect" value="FN"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td><button class="ui button">Try it out!</button></td>
+						</tr>
+					</table>
+				</form>
+
+				<h3>Response</h3>
+				<p>An array <b>result</b> of arrays of arrays of <b>WordData</b>, such that <b>result[i][j]</b> is an array of <b>WordData</b> containing the words with <b>i</b> syllables, stressed on the <b>j</b>-th syllable.</p>
+			</div>
+			</div>
+		</div>
+
+		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
+		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
+		<script src="ayvefya/ui-translations.js"></script>
+		<script src="ayvefya/help.js"></script>
+	</body>
+</html>
+

@@ -1,4 +1,18 @@
 $(function() {
+	$('#type-filter-dropdown').dropdown('set selected', '.*');
+	$('#type-filter-dropdown').dropdown({
+		onChange: runFilter
+	});
+	$('#filter-box').on('input', runFilter);
+
+	$('#language-dropdown').dropdown({
+		onChange: function (value) {
+			setNewLanguage(value);
+			loadWordList();
+			return false;
+		}
+	});
+
 	loadWordList();
 });
 
@@ -51,23 +65,27 @@ function getTranslation(tìralpeng) {
 	}
 }
 
-function lemmaForm(word, type) {
+function lemmaForm(word) {
+	let type = word['type'];
+	let lemma = word['word'][getDialect()];
+	lemma = lemma.replaceAll('/', '');
+	lemma = lemma.replace(/\[([^\]]*)\]/g, '<span class="stressed">$1</span>');
 	if (type === "n:si" || type === "nv:si") {
-		return word + ' si';
+		return lemma + ' si';
 	} else if (type === 'aff:pre') {
-		return word + "-";
+		return lemma + "-";
 	} else if (type === 'aff:pre:len') {
-		return word + "+";
+		return lemma + "+";
 	} else if (type === 'aff:in') {
-		return '&#x2039;' + word + '&#x203a;';
+		return '&#x2039;' + lemma + '&#x203a;';
 	} else if (type === 'aff:suf') {
-		return '-' + word;
+		return '-' + lemma;
 	}
-	return word;
+	return lemma;
 }
 
 function addLemmaClass($element, type) {
-	if (type === 'aff:pre') {
+	if (type === 'aff:pre' || type === 'aff:pre:len') {
 		$element.addClass('prefix');
 	} else if (type === 'aff:in') {
 		$element.addClass('infix');
@@ -98,6 +116,8 @@ function sourceAbbreviation(source) {
 		return 'ln';
 	} else if (source[1].includes('wiki.learnnavi.org')) {
 		return 'wiki';
+	} else if (source[0].includes('Activist Survival Guide')) {
+		return 'asg';
 	} else {
 		return 'o';
 	}
@@ -105,8 +125,11 @@ function sourceAbbreviation(source) {
 
 function createWordBlock(word) {
 	let $block = $("<div/>")
-		.addClass('entry');
-	const $word = $('<span/>').addClass('word').html(lemmaForm(word["na'vi"], word["type"]));
+		.addClass('entry')
+		.attr('data-lemma', word['word_raw'][getDialect()])
+		.attr('data-type', word['type']);
+
+	const $word = $('<span/>').addClass('word').html(lemmaForm(word));
 	addLemmaClass($word, word["type"]);
 	$block.append($word);
 	$block.append(' (');
@@ -132,7 +155,19 @@ function createWordBlock(word) {
 		if (word["translations"].length > 1) {
 			$block.append($('<span/>').addClass('number').html(' ' + (parseInt(i, 10) + 1) + '. '));
 		}
-		$block.append($('<span/>').addClass('translation').html(getTranslation(word["translations"][i])));
+		$block.append($('<span/>').addClass('definition').html(getTranslation(word["translations"][i])));
+	}
+	if (word.hasOwnProperty('meaning_note') && word['meaning_note'].length > 0) {
+		$block.append('. ');
+		const $meaningNote = $('<span/>').addClass('meaning-note');
+		appendLinkString(word['meaning_note'], $meaningNote);
+		$block.append($meaningNote);
+	}
+	if (word.hasOwnProperty('etymology') && word['etymology'].length > 0) {
+		$block.append('. ');
+		const $etymology = $('<span/>').addClass('etymology');
+		appendLinkString(word['etymology'], $etymology);
+		$block.append($etymology);
 	}
 	if (word.hasOwnProperty('source')) {
 		for (const s of word['source']) {
@@ -147,7 +182,31 @@ function createWordBlock(word) {
 				.attr('href', s[1]));
 		}
 	}
+	if (word.hasOwnProperty('seeAlso') && word['seeAlso'].length > 0) {
+		const $seeAlso = $('<span/>').addClass('see-also');
+		$seeAlso.append(' (&rarr; ');
+		for (let i = 0; i < word['seeAlso'].length; i++) {
+			if (i > 0) {
+				$seeAlso.append(', ');
+			}
+			appendLinkString([word['seeAlso'][i]], $seeAlso);
+		}
+		$seeAlso.append(')');
+		$block.append($seeAlso);
+	}
 	return $block;
+}
+
+function appendLinkString(linkString, $div) {
+	for (let piece of linkString) {
+		if (typeof piece === 'string') {
+			$div.append(piece);
+		} else {
+			const $piece = $('<span/>').addClass('reference').html(lemmaForm(piece));
+			addLemmaClass($piece, piece['type']);
+			$div.append($piece);
+		}
+	}
 }
 
 // tìng fnelä tstxoti angim
@@ -161,7 +220,7 @@ function tstxoFnelä(fnel, traditional) {
 	return "no idea.../ngaytxoa";
 }
 
-const naviSortAlphabet = " 'aäeéfghiìklmnoprstuvwxyz";
+const naviSortAlphabet = " 'aäbdeéfghiìklmnoprstuùvwxyz";
 
 // Compares Na'vi words a and b according to Na'vi ‘sorting rules’ (ä after a, ì
 // after i, digraphs sorted as if they were two letters using English spelling,
@@ -180,16 +239,23 @@ function compareNaviWords(a, b, i) {
 	return naviSortAlphabet.indexOf(first) - naviSortAlphabet.indexOf(second);
 }
 
-const sections = "'aäefhiìklmnoprstuvwyz".split('');
+const sections = {
+	'FN': "'aäefhiìklmnoprstuvwyz".split(''),
+	'combined': "'aäefhiìklmnoprstuùvwyz".split(''),
+	'RN': "'aäbdefghiìklmnoprstuùvwyz".split('')
+};
 
 function loadWordList() {
 	let $results = $('#word-list-result');
-	$.getJSON('/api/frau')
-		.done(function(dictionary) {
-			$results.empty();
+	$results.empty();
+	$('#spinner').show();
 
+	$.getJSON('/api/list/all')
+		.done(function(dictionary) {
+			$('#spinner').hide();
 			const $tocBar = $('#toc-bar');
-			for (const section of sections) {
+			$tocBar.empty();
+			for (const section of sections[getDialect()]) {
 				$('<a/>')
 					.addClass('ui compact button')
 					.text(section)
@@ -198,17 +264,13 @@ function loadWordList() {
 					.appendTo($tocBar);
 			}
 
-			let keys = []
-			for (let key in dictionary) {
-				keys.push(key);
-			}
-			keys.sort(function (a, b) {
-				return compareNaviWords(a, b, 0);
+			dictionary.sort(function (a, b) {
+				return compareNaviWords(a['word_raw'][getDialect()], b['word_raw'][getDialect()], 0);
 			});
 			let section = '';
 			let block = null;
-			for (let i in keys) {
-				const initial = keys[i][0].toLowerCase();
+			for (let word of dictionary) {
+				const initial = word['word_raw'][getDialect()][0].toLowerCase();
 				if (initial !== section) {
 					let $header = $('<h2/>')
 						.append(initial)
@@ -223,19 +285,75 @@ function loadWordList() {
 					$results.append($block);
 					section = initial;
 				}
-				let word = dictionary[keys[i]];
 				$block.append(createWordBlock(word));
 			}
+
+			runFilter();
 		})
 		.fail(function() {
 			$results.empty();
-			$results.append(createErrorBlock("Something went wrong while loading the word list", "Please try again later. If the problem persists, please <a href='//wimiso.nl/contact'>contact</a> me."));
+			$('#spinner').hide();
+			$('#toc-bar').hide();
+			$('#no-results').hide();
+			$results.append(createErrorBlock(_('word-list-error'), _('searching-error-description')));
 		});
 	return false;
 }
 
+function getDialect() {
+	let dialect = localStorage.getItem('reykunyu-dialect');
+	if (dialect !== 'combined' && dialect !== 'RN') {
+		dialect = 'FN';
+	}
+	return dialect;
+}
+
+
+// filtering
+
+function runFilter() {
+	let filter;
+	try {
+		filter = new RegExp($('#filter-box').val());
+	} catch (e) {
+		// TODO provide proper error
+		filter = /.*/;
+	}
+	const typeFilter = new RegExp('^' + $('#type-filter-dropdown').dropdown('get value') + '$');
+	let anyMatches = false;
+
+	$('.letter-block').each((i, block) => {
+		const $block = $(block);
+		let anyMatchesInBlock = false;
+		$block.find('.entry').each((i, e) => {
+			const $e = $(e);
+			const type = $e.attr('data-type');
+			if (typeFilter.test(type)) {
+				const lemma = $e.attr('data-lemma');
+				const matches = filter.test(lemma);
+				$e.toggle(matches);
+				anyMatchesInBlock = anyMatchesInBlock || matches;
+			} else {
+				$e.toggle(false);
+			}
+		});
+		const $header = $block.prev();
+		$header.toggle(anyMatchesInBlock);
+		$('#button-' + $.escapeSelector($header.attr('id'))).toggle(anyMatchesInBlock);
+		anyMatches = anyMatches || anyMatchesInBlock;
+	});
+
+	updateToC();
+
+	$('#toc-bar').toggle(anyMatches);
+	$('#no-results').toggle(!anyMatches);
+}
+
+
+// table of contents handling
+
 function updateToC() {
-	for (const section of sections) {
+	for (const section of sections[getDialect()]) {
 		let $block = $('#block-' + $.escapeSelector(section));
 		let $button = $('#button-' + $.escapeSelector(section));
 

@@ -1,10 +1,14 @@
 $('.ui.checkbox').checkbox();
 $('.ui.dropdown').dropdown();
 
+var id = -1;
+
 $(function() {
 	const getParams = new URLSearchParams(window.location.search);
-	const word = getParams.get('word');
-	const type = getParams.get('type');
+	id = parseInt(getParams.get('word'), 10);
+	if (isNaN(id)) {
+		id = -1;  // adding new word
+	}
 
 	showHideInfixes();
 	$('#type-field').on('change', showHideInfixes);
@@ -20,7 +24,8 @@ $(function() {
 
 	$('#definition-field').on('click', '.add-meaning-button', function () {
 		const $tr = $(this).closest('tr');
-		$tr.clone().insertAfter($tr);
+		const $newTr = $tr.clone().insertAfter($tr);
+		$($newTr.children()[1]).empty().html('<input type="text" placeholder="hunt">');
 		if ($('#definition-field tbody tr').length >= 2) {
 			$('.delete-meaning-button').removeClass('disabled');
 		}
@@ -40,6 +45,7 @@ $(function() {
 		const english = $field.val();
 		$('#translation-en-field').text(english);
 
+		$('#translations-modal input').val('');
 		const languages = $field.data();
 		for (let lang of Object.keys(languages)) {
 			$('#translation-' + lang + '-field').val(languages[lang]);
@@ -59,19 +65,20 @@ $(function() {
 	});
 
 	$('#save-button').on('click', function () {
-		//try {
+		try {
+			$('#save-button').addClass('loading');
 			const wordData = generateWordData();
 			const url = $('body').data('url');
 			$.post(url, {
-				'word': word,
-				'type': type,
+				'id': id,
 				'data': JSON.stringify(wordData)
-			}, function () {
-				document.location.href = '/?q=' + wordData["na'vi"];
+			}, function (data) {
+				document.location.href = data['url'];
 			});
-		//} catch (e) {
-		//	alert(e);
-		//}
+		} catch (e) {
+			$('#save-button').removeClass('loading');
+			alert(e);
+		}
 	});
 
 	$('#translations-modal-cancel-button').on('click', function () {
@@ -87,6 +94,8 @@ $(function() {
 			let value = $(this).val();
 			if (value.length) {
 				$field.data()[lang] = value;
+			} else {
+				$field.removeData(lang);
 			}
 		});
 		$('#translations-modal').modal('hide');
@@ -104,6 +113,7 @@ function showHideInfixes() {
 
 function generateWordData() {
 	word = {};
+	word['id'] = id;
 	word["na'vi"] = preprocess($('#root-field').val());
 	word["type"] = $('#type-field').val();
 	if (word["type"].startsWith('v:')) {

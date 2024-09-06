@@ -65,7 +65,7 @@ function syllableToIpa(text, dialect, lastOfPrevious, nextStartsWithEjective, st
 			}
 		},
 		'c': 't͡s',
-		'g': 'ŋ',
+		'G': 'ŋ',
 		'r': 'ɾ',
 		'y': 'j',
 		'ì': 'ɪ',

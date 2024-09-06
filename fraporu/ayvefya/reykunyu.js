@@ -3,22 +3,11 @@ $(function () {
 	$('.ui.dropdown').dropdown();
 
 	// language dropdown
-	if (localStorage.getItem('reykunyu-language')) {
-		$('#language-dropdown').dropdown('set selected',
-			localStorage.getItem('reykunyu-language'));
-	} else {
-		localStorage.setItem('reykunyu-language', 'en');
-		$('#language-dropdown').dropdown('set selected', 'en');
-	}
-	$('.current-lang').text(_('language'));
 	$('#language-dropdown').dropdown({
 		onChange: function (value) {
-			localStorage.setItem('reykunyu-language', value);
+			setNewLanguage(value);
 			sngäiTìfwusew(false);
-			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
-			$('.current-lang').text(_('language'));
-			$('.mode-english-item').toggle(value !== 'x-navi');  // for Na’vi it makes no sense to reverse search
 			return false;
 		}
 	});
@@ -35,7 +24,6 @@ $(function () {
 		onChange: function (value) {
 			localStorage.setItem('reykunyu-mode', value);
 			sngäiTìfwusew(false);
-			$('.ui.search').search('clear cache');
 			setUpAutocomplete();
 			return false;
 		}
@@ -46,33 +34,40 @@ $(function () {
 		localStorage.setItem('reykunyu-ipa', false);
 	}
 
-	// if there's already something in the search field, then just start a
-	// search immediately
-	if ($('#search-box').val().length) {
-		sngäiTìfwusew(true);
-	}
-
-	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
-
-	setUpAutocomplete();
-
 	$('.ui.checkbox').checkbox();
 	$('#infix-details-modal').modal();
 	$('#infix-details-modal button').popup();
-	$('#settings-modal').modal({
-		onApprove: function () {
-			localStorage.setItem('reykunyu-ipa',
-				$('#ipa-checkbox').prop('checked') ? '1' : '0');
-		},
+
+	$('#login-modal').modal();
+	$('#login-button').on("click", function () {
+		$('#login-modal').modal("show");
 	});
 
+	$('#settings-modal').modal({
+		onApprove: function () {
+			setUpAutocomplete();
+			sngäiTìfwusew(true);
+			localStorage.setItem('reykunyu-ipa',
+				$('#ipa-checkbox').prop('checked') ? '1' : '0');
+			localStorage.setItem('reykunyu-dialect', getDialect());
+		},
+	});
+	$('#settings-modal button').popup();
+
+	$('#ipa-checkbox').prop('checked',
+		localStorage.getItem('reykunyu-ipa') === '1');
+	const dialect = localStorage.getItem('reykunyu-dialect');
+	$('#dialect-fn-radiobutton').prop('checked', dialect !== 'combined' && dialect !== 'RN');
+	$('#dialect-both-radiobutton').prop('checked', dialect === 'combined');
+	$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
+	$('#dialect-rn-warning').toggle(dialect === 'RN');
 	$('#settings-button').on("click", function () {
-		$('#ipa-checkbox').prop('checked',
-			localStorage.getItem('reykunyu-ipa') === '1');
 		$('#settings-modal').modal("show");
 	});
-	$('#credits-button').on("click", function () {
-		$('#credits-modal').modal("show");
+
+	// TODO temporary: show the RN warning iff RN is selected
+	$('#settings-modal .ui.radio.checkbox').on('click', () => {
+		$('#dialect-rn-warning').toggle($('#dialect-rn-radiobutton').prop('checked'));
 	});
 
 	$('.infix-button').on('click', function () {
@@ -86,6 +81,9 @@ $(function () {
 		if (href.startsWith('/?q=')) {
 			const q = href.substring(4);
 			$('#search-box').val(q);
+			if (getMode() === 'rhymes') {
+				$('#mode-direction').dropdown('set selected', 'reykunyu');
+			}
 			sngäiTìfwusew(false);
 			e.preventDefault();
 		}
@@ -95,6 +93,16 @@ $(function () {
 		$('#search-box').val(event.state['query']);
 		sngäiTìfwusew(true);
 	});
+
+	// if there's already something in the search field, then just start a
+	// search immediately
+	if ($('#search-box').val().length) {
+		sngäiTìfwusew(true);
+	}
+
+	$('#search-form').on('submit', () => { sngäiTìfwusew(false); return false; });
+
+	setUpAutocomplete();
 });
 
 function getMode() {
@@ -105,12 +113,27 @@ function getLanguage() {
 	return $('#language-dropdown').dropdown('get value');
 }
 
+function getDialect() {
+	if ($('#dialect-fn-radiobutton').is(':checked')) {
+		return 'FN';
+	} else if ($('#dialect-rn-radiobutton').is(':checked')) {
+		return 'RN';
+	} else {
+		return 'combined';
+	}
+}
+
+function getIPASetting() {
+	return $('#ipa-checkbox').is(':checked');
+}
+
 function setUpAutocomplete() {
 	let url = null;
+	$('.ui.search').search('clear cache');
 	if (getMode() === 'reykunyu') {
-		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}';
+		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}&dialect=' + getDialect();
 	} else if (getMode() === 'rhymes') {
-		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}';
+		url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}&dialect=' + getDialect();
 	} else if (getMode() === 'annotated') {
 		url = 'api/annotated/suggest?' + '&query={query}';
 	} else {
@@ -127,7 +150,7 @@ function setUpAutocomplete() {
 		},
 		showNoResults: false,
 		onSelect: function (result) {
-			$('#search-box').val(result['title']);
+			$('#search-box').val(result['title'].replace(/\<[^\>]*\>/g, ''));
 			sngäiTìfwusew();
 			return false;
 		}
@@ -174,9 +197,16 @@ function statusBadge(wordStatus) {
 	return $pätsì;
 }
 
-function conjugationExplanation(conjugation) {
-	let $explanation = $('<div/>');
+// creates a box showing the conjugated form of a word
+function conjugatedBox(conjugation) {
+	let $conjugatedBox = $('<div/>')
+		.addClass('result-item conjugated-box');
+	let boxIsEmpty = true;
+
 	for (let i = 0; i < conjugation.length; i++) {
+		let $item = $('<div/>')
+			.addClass('conjugated-box-item');
+
 		let type = conjugation[i]["type"];
 		let c = conjugation[i]["conjugation"];
 		if (c["result"].length == 1
@@ -184,42 +214,59 @@ function conjugationExplanation(conjugation) {
 			&& !c.hasOwnProperty("correction")) {
 			continue;
 		}
+		boxIsEmpty = false;
 
+		let $explanation;
 		switch (type) {
 			case "n":
-				$explanation.append(nounConjugationExplanation(c));
+				$explanation = nounConjugationExplanation(c);
 				break;
 			case "v":
-				$explanation.append(verbConjugationExplanation(c));
+				$explanation = verbConjugationExplanation(c);
 				break;
 			case "adj":
-				$explanation.append(adjectiveConjugationExplanation(c));
+				$explanation = adjectiveConjugationExplanation(c);
 				break;
 			case "v_to_n":
-				$explanation.append(verbToNounConjugationExplanation(c));
+				$explanation = verbToNounConjugationExplanation(c);
 				break;
 			case "v_to_adj":
-				$explanation.append(verbToAdjectiveConjugationExplanation(c));
+				$explanation = verbToAdjectiveConjugationExplanation(c);
 				break;
 			case "v_to_part":
-				$explanation.append(verbToParticipleConjugationExplanation(c));
+				$explanation = verbToParticipleConjugationExplanation(c);
 				break;
 			case "adj_to_adv":
-				$explanation.append(adjectiveToAdverbConjugationExplanation(c));
+				$explanation = adjectiveToAdverbConjugationExplanation(c);
 				break;
 			case "gerund":
-				$explanation.append(gerundConjugationExplanation(c));
+				$explanation = gerundConjugationExplanation(c);
 				break;
 		}
-	}
+		if (getLanguage() == "en" && conjugation[i].hasOwnProperty('translation')) {
+			$explanation.append($('<span/>')
+				.addClass('operator')
+				.html('&rarr;'));
+			$explanation.append($('<span/>')
+				.addClass('translation')
+				.html('&ldquo;' + conjugation[i]['translation'] + '&rdquo;'));
+		}
+		$item.append($explanation);
 
-	return $explanation;
+		if (conjugation[i].hasOwnProperty("affixes") && conjugation[i]["affixes"].length) {
+			$item.append(affixesSection(conjugation[i]["affixes"]));
+		}
+
+		$conjugatedBox.append($item);
+	}
+	if (boxIsEmpty) {
+		return null;
+	}
+	return $conjugatedBox;
 }
 
 function nounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	for (let i = 0; i <= 2; i++) {
 		if (conjugation["affixes"][i]) {
@@ -249,8 +296,6 @@ function nounConjugationExplanation(conjugation) {
 function verbConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	for (let i = 0; i < 3; i++) {
@@ -271,8 +316,6 @@ function verbConjugationExplanation(conjugation) {
 
 function adjectiveConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	if (conjugation["form"] === "postnoun") {
 		$('<span/>').addClass('prefix').html("a").appendTo($conjugation);
@@ -298,8 +341,6 @@ function adjectiveConjugationExplanation(conjugation) {
 function verbToNounConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -314,8 +355,6 @@ function verbToNounConjugationExplanation(conjugation) {
 
 function verbToAdjectiveConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -332,14 +371,15 @@ function verbToAdjectiveConjugationExplanation(conjugation) {
 function verbToParticipleConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
-
 	$('<span/>').text(conjugation["root"]).appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
 	$('<span/>').addClass('infix').html("&#x2039;" + conjugation["affixes"][0] + "&#x203a;").appendTo($conjugation);
 
 	$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+	if (conjugation["correction"]) {
+		$('<span/>').addClass('correction').text(conjugation["correction"]).appendTo($conjugation);
+	}
 	$('<span/>').addClass('word').text(conjugation["result"].join(' / ')).appendTo($conjugation);
 	typeBadge('adj', true).appendTo($conjugation);
 
@@ -348,8 +388,6 @@ function verbToParticipleConjugationExplanation(conjugation) {
 
 function adjectiveToAdverbConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').addClass('prefix').text(conjugation["affixes"][0]).appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -365,7 +403,6 @@ function adjectiveToAdverbConjugationExplanation(conjugation) {
 
 function gerundConjugationExplanation(conjugation) {
 	let $conjugation = $('<div/>').addClass('conjugation-explanation');
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($conjugation);
 
 	$('<span/>').addClass('prefix').text('tì').appendTo($conjugation);
 	$('<span/>').addClass('operator').text('+').appendTo($conjugation);
@@ -385,8 +422,6 @@ function gerundConjugationExplanation(conjugation) {
 function externalLenitionExplanation(lenition) {
 	let $lenition = $('<div/>').addClass('lenition-explanation');
 
-	$('<span/>').addClass('operator').html('&rarr;').appendTo($lenition);
-
 	$('<span/>').text(lenition["by"]).appendTo($lenition);
 	$('<span/>').addClass('operator').text('+').appendTo($lenition);
 	$('<span/>').text(lenition["from"]).appendTo($lenition);
@@ -398,12 +433,12 @@ function externalLenitionExplanation(lenition) {
 	return $lenition;
 }
 
-function imageSection(name, image) {
+function imageSection(word, image) {
 	let $section = $('<div/>').addClass('definition-image');
 	$('<img/>').attr('src', '/ayrel/' + image)
 		.appendTo($section);
 	$('<div/>').addClass('credit')
-		.text(name + ' ' + _('image-drawn-by') + ' Eana Unil')
+		.html(lemmaForm(word) + ' ' + _('image-drawn-by') + ' Eana Unil')
 		.appendTo($section);
 	return $section;
 }
@@ -419,11 +454,11 @@ function getTranslation(tìralpeng) {
 function translationSection(sìralpeng) {
 	let $section = $('<div/>').addClass('result-item definition');
 	if (sìralpeng.length === 1) {
-		$section.html(getTranslation(sìralpeng[0]));
+		$section.text(getTranslation(sìralpeng[0]));
 	} else {
 		let $list = $('<ol/>').addClass('meaning-list').appendTo($section);
 		for (let i = 0; i < sìralpeng.length; i++) {
-			$('<li/>').html(getTranslation(sìralpeng[i])).appendTo($list);
+			$('<li/>').text(getTranslation(sìralpeng[i])).appendTo($list);
 		}
 	}
 	return $section;
@@ -434,12 +469,11 @@ function translationSection(sìralpeng) {
 // lìupam[1] - holpxay lì'kongä a takuk lì'upam tsatseng ('awvea lì'kong: 1, muvea lì'kong: 2, saylahe)
 // fnel - fnel lì'uä (kin taluna txo fnel livu "n:si", tsakrr zene sivung lì'ut alu " si")
 function pronunciationSection(lìupam, fnel) {
-	let $tìlam = $('<span/>').addClass('stress');
 	if (!lìupam || lìupam.length === 0) {
-		$tìlam.append(_("stress-unknown"));
-		return $tìlam;
+		return null;
 	}
 
+	let $tìlam = $('<span/>').addClass('stress');
 	$tìlam.append("(");
 	for (let i = 0; i < lìupam.length; i++) {
 		if (i > 0) {
@@ -472,43 +506,41 @@ function pronunciationSection(lìupam, fnel) {
 }
 
 function pronunciationSectionIpa(pronunciation, fnel) {
-	let $result = $('<span/>').addClass('stress');
 	if (!pronunciation || pronunciation.length === 0) {
-		$result.append(_("stress-unknown"));
-		return $result;
+		return null;
 	}
 
-	//$result.addClass('ipa');
-	$result.text("(");
+	let $result = $('<span/>').addClass('stress');
 	for (let i = 0; i < pronunciation.length; i++) {
 		if (i > 0) {
 			$result.append(' ' + _('or') + ' ');
 		}
-		const fnIpa = pronunciation[i]['ipa']['FN'];
-		const rnIpa = pronunciation[i]['ipa']['RN'];
-		if (fnIpa === rnIpa) {
-			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
-			$result.append('/');
-			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
-			$result.append(' ');
-			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
-			if (pronunciation[i].hasOwnProperty('audio')) {
-				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
-			}
-		} else {
+		const ipa = pronunciation[i]['ipa'];
+		if (getDialect() === 'combined' && ipa['FN'] !== ipa['RN']) {
 			$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
 			$result.append(' ');
-			$result.append($('<span/>').text(fnIpa).addClass('ipa'));
+			$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
 			if (pronunciation[i].hasOwnProperty('audio')) {
 				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
 			}
 			$result.append(' / ');
 			$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
 			$result.append(' ');
-			$result.append($('<span/>').text(rnIpa).addClass('ipa'));
+			$result.append($('<span/>').text(ipa['RN']).addClass('ipa'));
+
+		} else if (getDialect() === 'combined') {
+			$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
+			if (pronunciation[i].hasOwnProperty('audio')) {
+				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+			}
+
+		} else {
+			$result.append($('<span/>').text(ipa[getDialect()]).addClass('ipa'));
+			if (ipa[getDialect()] === ipa['FN'] && pronunciation[i].hasOwnProperty('audio')) {
+				$result.append(pronunciationAudioButtons(pronunciation[i]['audio']));
+			}
 		}
 	}
-	$result.append(")");
 
 	return $result;
 }
@@ -544,9 +576,9 @@ function pronunciationAudioButtons(audioData) {
 	return $buttons;
 }
 
-function editButton(word, type) {
+function editButton(id) {
 	let $button = $('<a/>').addClass('ui icon basic button edit-button');
-	const url = "/edit?word=" + word + "&type=" + type;
+	const url = "/edit?word=" + id;
 	$button.attr('href', url);
 	$('<i/>').addClass('pencil icon').appendTo($button);
 	return $button;
@@ -580,16 +612,19 @@ function noteSection(note) {
 }
 
 function affixesSection(affixes) {
-	let $affixesSection = $('<div/>').addClass('result-item affixes');
-	let $affixes = $('<div/>').addClass('body');
+	let $affixes = $('<div/>').addClass('affixes');
 
 	let $table = $('<table/>').appendTo($affixes);
+	$('<tr/>')
+		.append($('<th/>').attr('colspan', 2).text('Affix'))
+		.append($('<th/>').text('Meaning'))
+		.appendTo($table);
 	for (let a of affixes) {
 		const affix = a['affix'];
+		let $tr = $('<tr/>').appendTo($table);
 		if (a.hasOwnProperty('combinedFrom')) {
-			let $tr = $('<tr/>').appendTo($table);
 			let $affixSpan = $('<span/>')
-				.html(lemmaForm(affix, 'aff:in'));
+				.html(lemmaForm({'word': {'FN': affix, 'combined': affix, 'RN': affix}, 'type': 'aff:in'}));
 			addLemmaClass($affixSpan, 'aff:in');
 			$('<td/>')
 				.append($affixSpan)
@@ -608,19 +643,18 @@ function affixesSection(affixes) {
 				}
 				let $affixLink = $('<a/>')
 					.addClass('word-link')
-					.html(lemmaForm(c['affix']["na'vi"], c['affix']['type']))
-					.attr('href', '/?q=' + affix["na'vi"]);
+					.html(lemmaForm(c['affix']))
+					.attr('href', '/?q=' + c['affix']["word_raw"][getDialect()]);
 				addLemmaClass($affixLink, c['affix']['type']);
 				$componentsCell.append($affixLink);
 				$meaningCell.append($('<span/>').text(getTranslation(c['affix']["translations"][0])));
 			}
 		} else {
-			let $tr = $('<tr/>').appendTo($table);
 			let $affixLink = $('<a/>')
 				.addClass('word-link')
-				.html(lemmaForm(affix["na'vi"], affix['type']))
+				.html(lemmaForm(affix))
 				//.addClass(a['type'])
-				.attr('href', '/?q=' + affix["na'vi"]);
+				.attr('href', '/?q=' + affix["word_raw"][getDialect()]);
 			addLemmaClass($affixLink, affix['type']);
 			$('<td/>').append($affixLink)
 				.append(typeBadge(affix['type'], true))
@@ -631,8 +665,7 @@ function affixesSection(affixes) {
 		}
 	}
 
-	$affixesSection.append($affixes);
-	return $affixesSection;
+	return $affixes;
 }
 
 function sourceSection(sources) {
@@ -640,7 +673,7 @@ function sourceSection(sources) {
 	$sourceSection.append($('<div/>').addClass('header').text(_('source')));
 	for (let source of sources) {
 		let $source = $('<div/>').addClass('body');
-		if (source.length == 1) {
+		if (source.length === 1 || source[1].length === 0) {
 			let $sourceText = $('<div/>');
 			$sourceText.text(source[0]);
 			$source.append($sourceText);
@@ -665,14 +698,21 @@ function createWordLink(link) {
 	if (typeof link === "string") {
 		return $('<b/>').text(link);
 	} else {
-		let $link = $('<span/>');
-		let $word = $('<a/>')
+		let $link = $('<a/>')
 			.addClass('word-link')
-			.attr('href', "/?q=" + link["na'vi"])
-			.html(lemmaForm(link["na'vi"], link["type"]));
+			.attr('href', "/?q=" + link["word_raw"][getDialect()]);
+		let $word = $('<span/>')
+			.addClass('navi')
+			.html(lemmaForm(link));
 		addLemmaClass($word, link["type"]);
 		$link.append($word);
-		$link.append(' (' + getShortTranslation(link) + ')');
+
+		let translation = getShortTranslation(link);
+		let $translation = $('<span/>')
+			.addClass('translation')
+			.text(translation);
+		$link.append(' ');
+		$link.append($translation);
 		return $link;
 	}
 }
@@ -704,7 +744,7 @@ function derivedSection(derived) {
 	let first = true;
 	for (let word of derived) {
 		if (!first) {
-			$derived.append(', ');
+			$derived.append(' ');
 		}
 		$derived.append(createWordLink(word));
 		first = false;
@@ -810,7 +850,9 @@ function nounConjugationSection(conjugation, note) {
 	$headerHide.append(hideString);
 
 	if (note) {
-		$body.append($('<div/>').addClass("conjugation-note").html(note));
+		const $note = $('<div/>').addClass("conjugation-note");
+		appendLinkString(note, $note);
+		$body.append($note);
 	}
 
 	return $section;
@@ -830,7 +872,7 @@ function nounConjugationString(c) {
 			if (m[1] !== "-") {
 				formatted += "<span class='prefix'>" + m[1] + "</span>";
 			}
-			formatted += m[2].replace(/\{(.*)\}/, "<span class='lenition'>$1</span>");
+			formatted += m[2].replace(/\{([^}]*)\}/g, "<span class='lenition'>$1</span>");
 			if (m[3] !== "-") {
 				formatted += "<span class='suffix'>" + m[3] + "</span>";
 			}
@@ -853,7 +895,9 @@ function adjectiveConjugationSection(conjugation, note) {
 	$body.html(html);
 
 	if (note) {
-		$body.append($('<div/>').addClass("conjugation-note").html(note));
+		const $note = $('<div/>').addClass("conjugation-note");
+		appendLinkString(note, $note);
+		$body.append($note);
 	}
 
 	return $section;
@@ -881,7 +925,9 @@ function infixesSection(word, infixes, note) {
 	});
 	$body.append($infixDetailsButton);
 	if (note) {
-		$body.append($('<div/>').addClass("conjugation-note").html(note));
+		const $note = $('<div/>').addClass("conjugation-note");
+		appendLinkString(note, $note);
+		$body.append($note);
 	}
 	return $section;
 }
@@ -1162,25 +1208,27 @@ function sentencesSection(sentences, lemma) {
 	return $section;
 }
 
-function lemmaForm(word, type) {
+function lemmaForm(word) {
+	let type = word['type'];
+	let lemma = word['word'][getDialect()];
+	lemma = lemma.replaceAll('/', '');
+	lemma = lemma.replace(/\[([^\]]*)\]/g, '<span class="stressed">$1</span>');
 	if (type === "n:si" || type === "nv:si") {
-		return word + ' si';
+		return lemma + ' si';
 	} else if (type === 'aff:pre') {
-		return word + "-";
+		return lemma + "-";
 	} else if (type === 'aff:pre:len') {
-		return word + "+";
+		return lemma + "+";
 	} else if (type === 'aff:in') {
-		return '&#x2039;' + word + '&#x203a;';
+		return '&#x2039;' + lemma + '&#x203a;';
 	} else if (type === 'aff:suf') {
-		return '-' + word;
+		return '-' + lemma;
 	}
-	return word;
+	return lemma;
 }
 
 function addLemmaClass($element, type) {
-	if (type === 'aff:pre') {
-		$element.addClass('prefix');
-	} else if (type === 'aff:pre:len') {
+	if (type === 'aff:pre' || type === 'aff:pre:len') {
 		$element.addClass('prefix');
 	} else if (type === 'aff:in') {
 		$element.addClass('infix');
@@ -1202,14 +1250,14 @@ function createResultBlock(i, r) {
 
 	$lemma = $('<span/>').addClass('lemma').appendTo($resultWord);
 	addLemmaClass($lemma, r['type']);
-	$lemma.html(lemmaForm(r["na'vi"], r['type']));
+	$lemma.html(lemmaForm(r));
 	$resultWord.append(typeBadge(r["type"], true));
 
 	if (r["status"]) {
 		$resultWord.append(statusBadge(r["status"]));
 	}
 
-	if (localStorage.getItem('reykunyu-ipa') === '1') {
+	if (getIPASetting()) {
 		$resultWord.append(pronunciationSectionIpa(r["pronunciation"], r["type"]));
 	} else {
 		$resultWord.append(pronunciationSection(r["pronunciation"], r["type"]));
@@ -1217,26 +1265,13 @@ function createResultBlock(i, r) {
 
 	const showEditButton = $('body').hasClass('editable');
 	if (showEditButton) {
-		$resultWord.append(editButton(r["na'vi"], r["type"]));
+		$resultWord.append(editButton(r["id"]));
 	}
 
 	$resultWord.appendTo($result);
 
-	if (r.hasOwnProperty("conjugated")) {
-		$explanation = conjugationExplanation(r["conjugated"]);
-		$result.append($explanation);
-	}
-
-	if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
-		$result.append(externalLenitionExplanation(r["externalLenition"]));
-	}
-
-	if (r["affixes"] && r["affixes"].length) {
-		$result.append(affixesSection(r["affixes"]));
-	}
-
 	if (r["image"]) {
-		$result.append(imageSection(r["na'vi"], r["image"]));
+		$result.append(imageSection(r, r["image"]));
 	}
 
 	$result.append(translationSection(r["translations"]));
@@ -1249,6 +1284,17 @@ function createResultBlock(i, r) {
 		$result.append(statusNoteSection(r["status"], r["status_note"]));
 	}
 
+	if (r.hasOwnProperty("conjugated") && r["conjugated"].length > 0) {
+		$conjugatedBox = conjugatedBox(r["conjugated"]);
+		if ($conjugatedBox) {
+			$result.append($conjugatedBox);
+		}
+	}
+
+	//if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
+	//	$result.append(externalLenitionExplanation(r["externalLenition"]));
+	//}
+
 	if (r["etymology"]) {
 		$result.append(etymologySection(r["etymology"]));
 	}
@@ -1257,10 +1303,10 @@ function createResultBlock(i, r) {
 	}
 
 	if (r["conjugation"]) {
-		if (r["type"] === "n" || r["type"] === "pn") {
-			$result.append(nounConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
+		if (r["type"] === "n" || r["type"] === "pn" || r["type"] === "n:pr" || r["type"] === "ctr") {
+			$result.append(nounConjugationSection(r["conjugation"][getDialect()], r["conjugation_note"]));
 		} else if (r["type"] === "adj") {
-			$result.append(adjectiveConjugationSection(r["conjugation"]["forms"], r["conjugation_note"]));
+			$result.append(adjectiveConjugationSection(r["conjugation"][getDialect()], r["conjugation_note"]));
 		}
 	}
 
@@ -1286,8 +1332,8 @@ function createResultBlock(i, r) {
 function createErrorBlock(text, subText) {
 	let $error = $('<div/>').addClass('error');
 	$('<p/>').addClass('error-text').html(text).appendTo($error);
-	$('<img/>').addClass('error-icon').attr("src", "/ayrel/ke'u.svg").appendTo($error);
 	$('<p/>').addClass('error-subText').html(subText).appendTo($error);
+	$('<img/>').addClass('error-icon').attr("src", "/ayrel/ke'u.svg").appendTo($error);
 	return $error;
 }
 
@@ -1297,15 +1343,23 @@ function createResults(results, $block) {
 			$block.append(createResultBlock(i, results["sì'eyng"][i]));
 		}
 	} else if (results["aysämok"].length) {
-		const suggestions = results["aysämok"].map(a => "<b>" + a + "</b>");
-		$block.append(createErrorBlock(_("no-results"), _("did-you-mean") + " " + suggestions.join(', ').replace(/, ([^,]*)$/, " " + _("or") + " $1") + "?"));
+		const suggestions = results["aysämok"].map(a => '<a class="word-link" href="/?q=' + a + '">' + a + '</a>');
+		$block.append(createErrorBlock(_("no-results"),
+			_("did-you-mean") + " " +
+			suggestions.join(', ').replace(/, ([^,]*)$/, " " + _("or") + " $1") + "?"));
 	} else {
 		$block.append(createErrorBlock(_("no-results"), _("no-results-description-navi")));
 	}
 }
 
+// TODO remove as soon as the server sends this
 function getShortTranslation(result) {
-	if (result["short_translation"]) {
+	const language = getLanguage();
+
+	if (language == "en" && result["short_translation_conjugated"]) {
+		return result["short_translation_conjugated"];
+	}
+	if (language == "en" && result["short_translation"]) {
 		return result["short_translation"];
 	}
 
@@ -1315,11 +1369,7 @@ function getShortTranslation(result) {
 	translation = translation.split(' | ')[0];
 	translation = translation.split(' (')[0];
 
-	if (translation.startsWith('(') && translation.endsWith(')')) {
-		translation = translation.substring(1, translation.length - 1);
-	}
-
-	if (result["type"][0] === "v"
+	if (language == "en" && result["type"][0] === "v"
 		&& translation.indexOf("to ") === 0) {
 		translation = translation.substr(3);
 	}
@@ -1371,6 +1421,13 @@ function sngäiTìfwusew(initial) {
 	$modeTabs = $('#tab-mode-bar');
 	$modeTabs.hide();
 	const query = $('#search-box').val();
+
+	// TODO temporary easter egg to enable RN mode
+	if (query === "lu oe tsùlfätu lì'fyaye wione") {
+		const $rnButton = $('#dialect-rn-radiobutton');
+		$rnButton.parent().checkbox('set enabled');
+	}
+
 	if (initial) {
 		history.replaceState({ 'query': query, 'mode': getMode() }, '', '/?q=' + query);
 	} else {
@@ -1397,7 +1454,7 @@ function sngäiTìfwusew(initial) {
 
 function doSearchNavi() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': getLanguage() })
+	$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': getLanguage(), 'dialect': getDialect() })
 		.done(function (tìeyng) {
 			const fromNaviResult = tìeyng['fromNa\'vi'];
 			const toNaviResult = tìeyng['toNa\'vi'];
@@ -1448,60 +1505,63 @@ function doSearchNavi() {
 				}
 			}
 
-			// set up tabs
 			$results.append($fromNaviResult);
-			$results.append($toNaviResult);
-			$modeTabs.empty();
-			$modeTabs.show();
-			let $fromNaviTab = $('<div/>')
-				.addClass('item')
-				.html("Na'vi&nbsp;&rarr;&nbsp;" + _('language'))
-				.appendTo($modeTabs);
-			$fromNaviTab.append($('<div/>')
-				.text(fromNaviResultCount)
-				.addClass('result-count-tag'));
-			if (fromNaviResultCount === 0) {
-				$fromNaviTab.addClass('gray');
-			}
-			$fromNaviTab.on('click', function () {
-				mode = 'fromNa\'vi';
-				$fromNaviTab.addClass('active');
-				$toNaviTab.removeClass('active');
-				$fromNaviResult.show();
-				$toNaviResult.hide();
-			});
-			let $toNaviTab = $('<div/>')
-				.addClass('item')
-				.html(_('language') + "&nbsp;&rarr;&nbsp;Na'vi")
-				.appendTo($modeTabs);
-			$toNaviTab.append($('<div/>')
-				.text(toNaviResult.length)
-				.addClass('result-count-tag'));
-			if (toNaviResult.length === 0) {
-				$toNaviTab.addClass('gray');
-			}
-			$toNaviTab.on('click', function () {
-				mode = 'toNa\'vi';
-				$toNaviTab.addClass('active');
-				$fromNaviTab.removeClass('active');
-				$toNaviResult.show();
-				$fromNaviResult.hide();
-			});
 
-			if (mode === 'fromNa\'vi' &&
-					fromNaviResultCount === 0 && toNaviResult.length > 0) {
-				mode = 'toNa\'vi';
-			} else if (mode === 'toNa\'vi' &&
-					toNaviResult.length === 0 && fromNaviResultCount > 0) {
-				mode = 'fromNa\'vi';
-			}
+			// set up tabs
+			if (getLanguage() !== "x-navi") {
+				$results.append($toNaviResult);
+				$modeTabs.empty();
+				$modeTabs.show();
+				let $fromNaviTab = $('<div/>')
+					.addClass('item')
+					.html("Na'vi&nbsp;&rarr;&nbsp;" + _('language'))
+					.appendTo($modeTabs);
+				$fromNaviTab.append($('<div/>')
+					.text(fromNaviResultCount)
+					.addClass('result-count-tag'));
+				if (fromNaviResultCount === 0) {
+					$fromNaviTab.addClass('gray');
+				}
+				$fromNaviTab.on('click', function () {
+					mode = 'fromNa\'vi';
+					$fromNaviTab.addClass('active');
+					$toNaviTab.removeClass('active');
+					$fromNaviResult.show();
+					$toNaviResult.hide();
+				});
+				let $toNaviTab = $('<div/>')
+					.addClass('item')
+					.html(_('language') + "&nbsp;&rarr;&nbsp;Na'vi")
+					.appendTo($modeTabs);
+				$toNaviTab.append($('<div/>')
+					.text(toNaviResult.length)
+					.addClass('result-count-tag'));
+				if (toNaviResult.length === 0) {
+					$toNaviTab.addClass('gray');
+				}
+				$toNaviTab.on('click', function () {
+					mode = 'toNa\'vi';
+					$toNaviTab.addClass('active');
+					$fromNaviTab.removeClass('active');
+					$toNaviResult.show();
+					$fromNaviResult.hide();
+				});
 
-			if (mode === 'fromNa\'vi') {
-				$fromNaviTab.addClass('active');
-				$toNaviResult.hide();
-			} else {
-				$toNaviTab.addClass('active');
-				$fromNaviResult.hide();
+				if (mode === 'fromNa\'vi' &&
+						fromNaviResultCount === 0 && toNaviResult.length > 0) {
+					mode = 'toNa\'vi';
+				} else if (mode === 'toNa\'vi' &&
+						toNaviResult.length === 0 && fromNaviResultCount > 0) {
+					mode = 'fromNa\'vi';
+				}
+
+				if (mode === 'fromNa\'vi') {
+					$fromNaviTab.addClass('active');
+					$toNaviResult.hide();
+				} else {
+					$toNaviTab.addClass('active');
+					$fromNaviResult.hide();
+				}
 			}
 		})
 		.fail(function () {
@@ -1521,7 +1581,7 @@ function createAnnotatedBlock(definition) {
 function createAnnotatedFooter() {
 	let block = $('<div/>')
 		.addClass('credits-footer')
-		.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2023-02-06');
+		.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2024-07-13');
 	return block;
 }
 
@@ -1584,7 +1644,7 @@ function rhymesWithSyllableCountSection(syllableCount, rhymes) {
 
 function doSearchRhymes() {
 	let tìpawm = $('#search-box').val();
-	$.getJSON('/api/rhymes', { 'tìpawm': tìpawm })
+	$.getJSON('/api/rhymes', { 'tìpawm': tìpawm, 'dialect': getDialect() })
 		.done(function (response) {
 			$results.empty();
 

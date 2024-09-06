@@ -11,14 +11,16 @@
 		<nav class="top-bar">
 			<div class="score"><span id="score-field">0/0</span> correct</div>
 			<div class="title">Stress game <span class="beta-tag">beta</span></div>
+			<div class="score-popout" style="display: none;">
+				<p><b>Words you got wrong:</b> <span id="mistakes-list">(none yet!)</span></p>
+			</div>
 		</nav>
 		<div class="game-container">
 			<div id="syllables">
 			</div>
 			<div id="definition"></div>
 		</div>
-		<div class="dialog-layer">
-		</div>
+		<div id="overlay"></div>
 		<script src="../../aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="stress-game.js"></script>
 	</body>

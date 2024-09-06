@@ -10,17 +10,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>
-				Recent edits
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kaltxì ma <%= user.username %>!
-				</div>
-				<% } %>
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> Back to Reykunyu
-				</a>
-			</h1>
+			<%- include('header.ejs') %>
 
 			<table class="ui table">
 				<thead>
@@ -35,13 +25,18 @@
 					<% for (let h in history) {
 						let item = history[h];
 					%>
+					<% const htmlMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '<span class="stressed">').replaceAll(']', '</span>'); %>
 					<tr>
 						<td><%= item['user'] %></td>
 						<% let date = new Date(item['date']);
 						let parts = date.toISOString().split('T') %>
 						<td><%= parts[0] %> <span class="muted"><%= parts[1].split('.')[0] %></span></td>
-						<td><%= item['word'] %><% if (item['word'] !== item['data']['na\'vi']) { %> &rarr; <%= item['data']['na\'vi'] %><% } %> <span class="muted">(<%= item['type'] %><% if (item['type'] !== item['data']['type']) { %> &rarr; <%= item['data']['type'] %><% } %>)</span></td>
-						<td><span class="muted"><%= item['old'] ? 'edited' : 'added' %></span></td>
+						<td><%- htmlMarkup(item['data']['na\'vi']) %> <span class="muted">(<%= item['data']['type'] %>)</span></td>
+						<% if (item['old']) { %>
+							<td><span class="muted">edited</span></td>
+						<% } else { %>
+							<td><span class="muted">added</span></td>
+						<% } %>
 					</tr>
 					<% } %>
 				</tbody>
@@ -50,6 +45,7 @@
 
 		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
+		<script src="ayvefya/ui-translations.js"></script>
 	</body>
 </html>
 

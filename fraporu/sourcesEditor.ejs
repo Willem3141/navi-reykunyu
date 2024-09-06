@@ -11,33 +11,7 @@
 	</head>
 	<body data-url="<%= post_url %>">
 		<div class="container">
-			<h1>
-				<span class="muted">Reykunyu &rarr;</span> Sources editor
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> Back to Reykunyu
-				</a>
-				<div id="language-dropdown" class="ui icon right floated top right dropdown basic button">
-					<i class="globe icon"></i>
-					<span class="text">English</span>
-					&nbsp;<i class="dropdown icon"></i>
-					<div class="menu">
-						<div class="item" data-value="de">Deutsch</div>
-						<div class="item" data-value="et">Eesti</div>
-						<div class="item" data-value="en">English</div>
-						<div class="item" data-value="fr">Français</div>
-						<div class="item" data-value="hu">Magyar</div>
-						<div class="item" data-value="nl">Nederlands</div>
-						<div class="item" data-value="pl">Polski</div>
-						<div class="item" data-value="ru">Русский</div>
-						<div class="item" data-value="sv">Svenska</div>
-					</div>
-				</div>
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kaltxì ma <%= user.username %>!
-				</div>
-				<% } %>
-			</h1>
+			<%- include('header.ejs') %>
 
 			<p>On this page, you can edit Reykunyu's source data. To edit, just type in a text field. Then as soon as you move to another text field, the text you typed will be stored automatically (so you don't need to click a save button).</p>
 			<p>The source data is represented as follows:</p>
@@ -53,7 +27,7 @@
 					<thead>
 						<tr>
 							<th class="four wide">Word</th>
-							<th>Source</th>
+							<th style="min-width: 66%;">Source</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -69,20 +43,40 @@
 							return sources.join(' || ');
 						}
 						%>
-						<% let keys = [];
-						for (let key in words) {
-							keys.push(key);
+						<% let ids = [];
+						for (let id in words) {
+							ids.push(id);
 						}
-						keys.sort(Intl.Collator().compare);
-						keys.sort(function(a, b) {
-							return getSourceString(words[a]['source']).localeCompare(getSourceString(words[b]['source']));
+						const collator = new Intl.Collator();
+						const removeMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '').replaceAll(']', '');
+						const htmlMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '<span class="stressed">').replaceAll(']', '</span>');
+						const sourceDate = (word) => {
+							if (!word.hasOwnProperty('source')) {
+								return '';
+							}
+							if (word['source'].length === 0) {
+								return '';
+							}
+							if (word['source'][0].length < 3) {
+								return '';
+							}
+							return word['source'][0][2];
+						};
+						ids.sort((a, b) => {
+							const firstDate = sourceDate(words[a]);
+							const secondDate = sourceDate(words[b]);
+							const result = collator.compare(firstDate, secondDate);
+							if (result !== 0) {
+								return result;
+							}
+							return collator.compare(removeMarkup(words[a]["na'vi"]), removeMarkup(words[b]["na'vi"]));
 						});
-						for (let w of keys) {
-							const word = words[w];
+						for (let id of ids) {
+							const word = words[id];
 						%>
 						<tr>
 							<td>
-								<%= word["na'vi"] %><span class="muted">:<%= word['type'] %></span>
+								<%- htmlMarkup(word["na'vi"]) %><span class="muted"> (<%= word['type'] %>)</span>
 							</td>
 							<td>
 								<input class="source-field" data-json="<%= JSON.stringify(word) %>" value="<%= getSourceString(word['source']) %>">
@@ -97,6 +91,7 @@
 		<script src="aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="aysrungsiyu/semantic/dist/semantic.js"></script>
 		<script src="ayvefya/sourcesEditor.js"></script>
+		<script src="ayvefya/ui-translations.js"></script>
 	</body>
 </html>
 

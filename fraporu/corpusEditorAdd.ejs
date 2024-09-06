@@ -10,17 +10,7 @@
 	</head>
 	<body data-url="<%= post_url %>">
 		<div class="container">
-			<h1>
-				<span class="muted">Reykunyu &rarr;</span> Corpus editor
-				<a href="/" class="ui icon right floated top right basic button">
-					<i class="arrow left icon"></i> Back to Reykunyu
-				</a>
-				<% if (user) { %>
-				<div id="user-label" class="ui left pointing basic label">
-					Kaltxì ma <%= user.username %>!
-				</div>
-				<% } %>
-			</h1>
+			<%- include('header.ejs') %>
 
 			<div class="ui form">
 				<div class="field">
@@ -45,5 +35,6 @@
 		<script src="/aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="/aysrungsiyu/semantic/dist/semantic.js"></script>
 		<script src="/ayvefya/corpusEditorAdd.js"></script>
+		<script src="/ayvefya/ui-translations.js"></script>
 	</body>
 </html>
