@@ -15,30 +15,23 @@
 		</div>
 
 		<div class="container">
-			<p>Welcome to <b>Zeykerokyu</b>, Reykunyu’s vocab study tool!</p>
-		</div>
-
-		<% if (!user) { %>
-		<div class="container">
-			<p>Reykunyu’s study tool allows you to learn and review Na’vi vocabulary. It has a built-in <i>spaced repetition system</i> (SRS). This means that Reykunyu remembers which words you know well and which words you find difficult, and will make sure difficult words end up in your review sessions more often.</p>
-			<p>At the moment, the study tool is in closed beta, to make sure it is bug-free before its release. <i>Rutxe maweypivey</i> &ndash; please be patient: the tool will soon become available to everyone!</p>
-			<p class="muted">(If the tool is already supposed to be available to you and you are wondering why you're seeing this text rather than the tool itself: please <a href="/login">login</a> to Reykunyu.)</p>
-		</div>
-		<% } else { %>
-		<div class="container">
-			<h2>Courses</h2>
-			<div class="lessons-container">
-				<% for (const i in courses) {
-					const course = courses[i]; %>
-				<a class="lesson-container learn-link" href="/study/course?course=<%= i %>">
-					<div class="lesson-name"><%= course['name'] %></div>
-					<div class="lesson-description"><%= course['description'] %></div>
-					<div class="lesson-progress"><b><%= course['lesson_count'] %></b> lessons</div>
-				</a>
+			<p>Reykunyu’s study tool allows you to learn and review Na’vi vocabulary. It has a built-in spaced repetition system (SRS), meaning that Reykunyu remembers which words you know well and which words you find difficult, and will make sure difficult words end up in your review sessions more often.</p>
+			<% if (!user) { %>
+				<p><a href="/login">Login</a> to Reykunyu to use the vocab tool.</p>
+			<% } else { %>
+				<h2>Courses</h2>
+				<div class="lessons-container">
+					<% for (const i in courses) {
+						const course = courses[i]; %>
+						<a class="lesson-container learn-link" href="/study/course?course=<%= i %>">
+							<div class="lesson-name"><%= course['name'] %></div>
+							<div class="lesson-description"><%= course['description'] %></div>
+							<div class="lesson-progress"><b><%= course['lesson_count'] %></b> lessons</div>
+						</a>
+					<% } %>
 				<% } %>
 			</div>
 		</div>
-		<% } %>
 
 		<script src="/aysrungsiyu/jquery/jquery-3.3.1.js"></script>
 		<script src="/aysrungsiyu/semantic/dist/semantic.js"></script>

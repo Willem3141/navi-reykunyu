@@ -50,6 +50,7 @@ db.serialize(() => {
 		lesson_id integer,
 		order_in_lesson integer,
 		vocab integer,
+		description text,
 		primary key (course_id, lesson_id, order_in_lesson),
 		foreign key (course_id, lesson_id) references lesson(course_id, id)
 	)`);
@@ -66,9 +67,13 @@ db.serialize(() => {
 					i, j, lesson['name'], lesson['introduction'], lesson['conclusion']);
 				
 				const wordIDs = getWordIDsForLesson(lesson);
-				const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?)`);
+				const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?, ?)`);
 				for (let k = 0; k < wordIDs.length; k++) {
-					vocabInsert.run(i, j, k, wordIDs[k]);
+					if (typeof wordIDs[k] === 'string') {
+						vocabInsert.run(i, j, k, null, wordIDs[k]);
+					} else {
+						vocabInsert.run(i, j, k, wordIDs[k], null);
+					}
 				}
 				vocabInsert.finalize();
 			}
@@ -92,10 +97,15 @@ function getWordIDsForLesson(lesson) {
 	if (lesson.hasOwnProperty('words')) {
 		const words = lesson['words'];
 		wordIDs = words.map((w) => {
+			console.log(w);
+			if (w.startsWith('<')) {
+				return w;
+			}
 			const [word, type] = dictionary.splitWordAndType(w);
 			const entry = dictionary.get(word, type, 'FN');
 			if (!entry) {
 				output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w);
+				return '<p>Missing word: <b>' + w + '</b></p>';
 			}
 			return entry['id'];
 		});
