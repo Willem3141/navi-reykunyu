@@ -2,6 +2,10 @@
   "name": "reykunyu",
   "version": "0.0.1",
   "description": "Na'vi dictionary website",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
@@ -21,8 +25,5 @@
     "chai": "^4.2.0",
     "mocha": "^6.0.2",
     "typescript": "^4.6.4"
-  },
-  "scripts": {
-    "test": "mocha sìfmetok"
   }
 }
