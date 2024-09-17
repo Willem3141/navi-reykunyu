@@ -752,6 +752,12 @@ h1::after {
 	margin: 20px auto;
 }
 
+@media (prefers-color-scheme: dark) {
+	.error .error-icon {
+		opacity: 0.15;
+	}
+}
+
 .error pre {
 	text-align: left;
 }
