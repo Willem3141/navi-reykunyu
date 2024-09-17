@@ -1,7 +1,7 @@
 class LearnPage {
 	courseId: number;
 	lessonId: number;
-	items: number[] = [];
+	items: (number|string)[] = [];
 	currentItemIndex = 0;
 	currentItem: any = null;
 
@@ -56,11 +56,11 @@ class LearnPage {
 		const itemID = this.items[this.currentItemIndex];
 		$.getJSON('/api/word', { 'id': itemID }).done((wordData) => {
 			this.currentItem = wordData;
-			this.setUpQuestion();
+			this.setUpItem();
 		});
 	}
 
-	setUpQuestion(): void {
+	setUpItem(): void {
 		const word = this.currentItem;
 		let navi = word["na'vi"];
 		let pronunciation = '';

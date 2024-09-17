@@ -8,7 +8,24 @@
 		<link href="/tìlam/study-session.css" rel="stylesheet">
 	</head>
 	<body>
+		<header>
+			<div class="title-bar">
+				<div class="lesson-title">
+					Lesson 1: <b>Introduction</b>
+				</div>
+				<div class="activity-title">
+					Studying
+				</div>
+			</div>
+			<div class="progress-bar">
+				<div class="filled-part"></div>
+			</div>
+		</header>
 		<div class="main-container">
+			<div id="description-card" class="card">
+				<div id="description">
+				</div>
+			</div>
 			<div id="navi-card" class="card">
 				<div id="navi">
 				</div>
@@ -37,9 +54,6 @@
 				<button class="button secondary-button" id="known-button" data-text="Click this button if you already know this word. Reykunyu will still review the word once. If you get it right, Reykunyu will not bother you with it again.">Already known &rarr;</button>
 				<button class="button secondary-button" id="exit-button" data-text="This button exits your learning session. Your progress so far will still be saved.">Exit session &rarr;</button>
 			</div>
-		</div>
-		<div class="progress-bar">
-			<div class="filled-part"></div>
 		</div>
 		<div id="dialog-layer" style="display: none;">
 			<div id="done-dialog" class="dialog">

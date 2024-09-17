@@ -303,11 +303,17 @@ button {
 	text-overflow: ellipsis;
 }
 
+header {
+	box-shadow: 0 0 6px rgba(0, 0, 0, 0.16), 0 0 6px rgba(0, 0, 0, 0.23);
+}
+
+.title-bar {
+	background-color: #d3d4d7;
+}
+
 .progress-bar {
-	position: fixed;
 	left: 0;
 	right: 0;
-	bottom: 0;
 	height: 5px;
 	background-color: black;
 }
