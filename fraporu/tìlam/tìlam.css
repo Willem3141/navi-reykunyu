@@ -565,8 +565,9 @@ h1::after {
 	top: -5px;
 }
 
-.conjugated-box {
-	margin-top: 20px;
+.result .result-item.conjugated-box {
+	margin-top: 5px;
+	margin-bottom: 20px;
 	border-radius: 4px;
 	border: 1px solid var(--border-color);
 }

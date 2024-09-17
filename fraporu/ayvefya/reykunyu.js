@@ -1270,6 +1270,13 @@ function createResultBlock(i, r) {
 
 	$resultWord.appendTo($result);
 
+	if (r.hasOwnProperty("conjugated") && r["conjugated"].length > 0) {
+		$conjugatedBox = conjugatedBox(r["conjugated"]);
+		if ($conjugatedBox) {
+			$result.append($conjugatedBox);
+		}
+	}
+
 	if (r["image"]) {
 		$result.append(imageSection(r, r["image"]));
 	}
@@ -1282,13 +1289,6 @@ function createResultBlock(i, r) {
 
 	if (r["status"]) {
 		$result.append(statusNoteSection(r["status"], r["status_note"]));
-	}
-
-	if (r.hasOwnProperty("conjugated") && r["conjugated"].length > 0) {
-		$conjugatedBox = conjugatedBox(r["conjugated"]);
-		if ($conjugatedBox) {
-			$result.append($conjugatedBox);
-		}
 	}
 
 	//if (r["externalLenition"] && r["externalLenition"]["from"].toLowerCase() !== r["externalLenition"]["to"].toLowerCase()) {
