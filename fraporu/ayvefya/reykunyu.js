@@ -717,10 +717,23 @@ function createWordLink(link) {
 	}
 }
 
+function processMarkdownLinks(text) {
+	let $result = $();
+	let pieces = text.split(/\[([^\]]+)\]\(([^)]+)\)/);
+	for (let i = 0; i < pieces.length; i++) {
+		if (i % 3 === 0) {
+			$result = $result.add($('<span/>').text(pieces[i]));
+		} else if (i % 3 === 1) {
+			$result = $result.add($('<a/>').text(pieces[i]).attr('href', pieces[i + 1]));
+		}
+	}
+	return $result;
+}
+
 function appendLinkString(linkString, $div) {
 	for (let piece of linkString) {
 		if (typeof piece === 'string') {
-			$div.append(piece);
+			$div.append(processMarkdownLinks(piece));
 		} else {
 			$div.append(createWordLink(piece));
 		}
