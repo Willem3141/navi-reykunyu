@@ -70,13 +70,13 @@ passport.deserializeUser(function (id, cb) {
 	}
 });
 
-const staticRoot = './fraporu';
+const staticRoot = './frontend/dist';
 app.use(express.static(staticRoot));
 
 app.use('/ayrel', express.static('./data/ayrel'));
 app.use('/fam', express.static('./data/fam'));
 
-app.set('views', './fraporu');
+app.set('views', './frontend/dist/ejs');
 app.set('view engine', 'ejs');
 
 function pageVariables(req, toAdd) {
@@ -89,7 +89,7 @@ function pageVariables(req, toAdd) {
 
 app.get('/', function(req, res) {
 	setLanguage(req);
-	res.render('txin', pageVariables(req, { query: req.query['q'] }));
+	res.render('index', pageVariables(req, { query: req.query['q'] }));
 });
 
 app.get('/help', function(req, res) {

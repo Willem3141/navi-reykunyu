@@ -1,0 +1,449 @@
+<?xml version="1.0"?>
+<!DOCTYPE ipe SYSTEM "ipe.dtd">
+<ipe version="70218" creator="Ipe 7.2.24">
+<info created="D:20220914235400" modified="D:20220914235400" tex="xetex"/>
+<preamble>\usepackage{fontspec}
+\setmainfont{Recursive Sn Lnr St}</preamble>
+<ipestyle name="bettinacolors">
+<color name="Bettina blue" value="0 0.4 0.796"/>
+<color name="Bettina green" value="0.282 0.557 0"/>
+<color name="Bettina red" value="0.836 0 0"/>
+<color name="Bettina yellow" value="1 0.604 0"/>
+</ipestyle>
+<ipestyle name="tuecolors">
+<color name="TUe aqua" value="0 0.675 0.51"/>
+<color name="TUe blue" value="0 0.4 0.8"/>
+<color name="TUe cyan" value="0 0.635 0.871"/>
+<color name="TUe darkblue" value="0.063 0.063 0.451"/>
+<color name="TUe darkpink" value="0.839 0 0.482"/>
+<color name="TUe darkred" value="0.839 0 0.29"/>
+<color name="TUe green" value="0.518 0.824 0"/>
+<color name="TUe lime" value="0.808 0.875 0"/>
+<color name="TUe marine" value="0 0.573 0.71"/>
+<color name="TUe orange" value="1 0.604 0"/>
+<color name="TUe purple" value="0.678 0.125 0.678"/>
+<color name="TUe red" value="0.967 0.192 0.192"/>
+<color name="TUe yellow" value="1 0.867 0"/>
+</ipestyle>
+<ipestyle name="extendedcolors">
+<color name="CART 1" value="0.145 0.737 0.612"/>
+<color name="CART 10" value="0.996 0.965 0.608"/>
+<color name="CART 11" value="0.996 0.859 0.706"/>
+<color name="CART 12" value="0.98 0.714 0.58"/>
+<color name="CART 13" value="1 0.8 0.302"/>
+<color name="CART 2" value="0.533 0.78 0.396"/>
+<color name="CART 3" value="0.561 0.737 0.757"/>
+<color name="CART 4" value="0.604 0.839 0.741"/>
+<color name="CART 5" value="0.706 0.592 0.506"/>
+<color name="CART 6" value="0.733 0.718 0.349"/>
+<color name="CART 7" value="0.831 0.878 0.353"/>
+<color name="CART 8" value="0.835 0.725 0.541"/>
+<color name="CART 9" value="0.867 0.529 0.475"/>
+<color name="CB brown" value="0.694 0.349 0.157"/>
+<color name="CB dark blue" value="0.121 0.47 0.705"/>
+<color name="CB dark green" value="0.2 0.627 0.172"/>
+<color name="CB dark orange" value="1 0.498 0"/>
+<color name="CB dark purple" value="0.415 0.239 0.603"/>
+<color name="CB dark red" value="0.89 0.102 0.109"/>
+<color name="CB light blue" value="0.651 0.807 0.89"/>
+<color name="CB light green" value="0.698 0.874 0.541"/>
+<color name="CB light orange" value="0.992 0.749 0.435"/>
+<color name="CB light purple" value="0.792 0.698 0.839"/>
+<color name="CB light red" value="0.984 0.603 0.6"/>
+<color name="CB yellow" value="1 1 0.6"/>
+<color name="Gray 0.0" value="0"/>
+<color name="Gray 0.1" value="0.1"/>
+<color name="Gray 0.2" value="0.2"/>
+<color name="Gray 0.3" value="0.3"/>
+<color name="Gray 0.4" value="0.4"/>
+<color name="Gray 0.5" value="0.5"/>
+<color name="Gray 0.6" value="0.6"/>
+<color name="Gray 0.7" value="0.7"/>
+<color name="Gray 0.8" value="0.8"/>
+<color name="Gray 0.9" value="0.9"/>
+<color name="Gray 1.0" value="1"/>
+<dashstyle name="W dashed fat" value="[3 5.1] 0"/>
+<dashstyle name="W dashed heavier" value="[2 3] 0"/>
+<dashstyle name="W dashed normal" value="[1 1.7] 0"/>
+<dashstyle name="W dashed ultrafat" value="[5 8.5] 0"/>
+<dashstyle name="W dot fat" value="[0.01 2.4] 0"/>
+<dashstyle name="W dot heavier" value="[0.01 1.6] 0"/>
+<dashstyle name="W dot normal" value="[0.01 0.8] 0"/>
+<dashstyle name="W dot ultrafat" value="[0.01 4] 0"/>
+</ipestyle>
+<ipestyle name="pptcolors">
+<color name="PPT blue" value="0 0.459 0.965"/>
+<color name="PPT gray" value="0.647"/>
+<color name="PPT green" value="0 0.69 0.314"/>
+<color name="PPT purple" value="0.439 0.188 0.627"/>
+<color name="PPT red" value="0.753 0 0"/>
+<color name="PPT yellow" value="1 0.753 0"/>
+</ipestyle>
+<ipestyle name="arrows">
+<symbol name="arrow/circle(spx)" transformations="translations">
+<path stroke="sym-stroke" pen="sym-pen">
+0.5 0 0 0.5 0 0 e
+</path>
+</symbol>
+<symbol name="arrow/disk(spx)" transformations="translations">
+<group>
+<path fill="sym-stroke">
+0.5 0 0 0.5 0 0 e
+</path>
+<path stroke="sym-stroke" pen="sym-pen">
+0.5 0 0 0.5 0 0 e
+</path>
+</group>
+</symbol>
+<symbol name="arrow/fdisk(spx)" transformations="translations">
+<group>
+<path fill="white">
+0.5 0 0 0.5 0 0 e
+</path>
+<path stroke="sym-stroke" pen="sym-pen">
+0.5 0 0 0.5 0 0 e
+</path>
+</group>
+</symbol>
+<symbol name="arrow/box(spx)" transformations="translations">
+<path stroke="sym-stroke" pen="sym-pen">
+-0.5 -0.5 m
+0.5 -0.5 l
+0.5 0.5 l
+-0.5 0.5 l
+h
+</path>
+</symbol>
+<symbol name="arrow/square(spx)" transformations="translations">
+<path fill="sym-stroke">
+-0.5 -0.5 m
+0.5 -0.5 l
+0.5 0.5 l
+-0.5 0.5 l
+h
+</path>
+</symbol>
+<symbol name="arrow/fsquare(spx)" transformations="translations">
+<group>
+<path fill="white">
+-0.5 -0.5 m
+0.5 -0.5 l
+0.5 0.5 l
+-0.5 0.5 l
+h
+</path>
+<path stroke="sym-stroke" pen="sym-pen">
+-0.5 -0.5 m
+0.5 -0.5 l
+0.5 0.5 l
+-0.5 0.5 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="arrow/cross(spx)" transformations="translations">
+<group>
+<path stroke="sym-stroke" pen="sym-pen">
+-0.5 -0.5 m
+0.5 0.5 l
+h
+</path>
+<path stroke="sym-stroke" pen="sym-pen">
+-0.5 0.5 m
+0.5 -0.5 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="arrow/whiskers(spx)" transformations="translations">
+<path stroke="sym-stroke" pen="sym-pen">
+0 -0.5 m
+0 0.5 l
+h
+</path>
+</symbol>
+</ipestyle>
+<ipestyle name="grids">
+<anglesize name="10 deg" value="10"/>
+<anglesize name="22.5 deg" value="22.5"/>
+<anglesize name="30 deg" value="30"/>
+<anglesize name="45 deg" value="45"/>
+<anglesize name="5 deg" value="5"/>
+<anglesize name="60 deg" value="60"/>
+<anglesize name="90 deg" value="90"/>
+<gridsize name="1 pt" value="1"/>
+<gridsize name="10 pts (~3.5 mm)" value="10"/>
+<gridsize name="14 pts (~5 mm)" value="14"/>
+<gridsize name="16 pts (~6 mm)" value="16"/>
+<gridsize name="2 pts" value="2"/>
+<gridsize name="20 pts (~7 mm)" value="20"/>
+<gridsize name="28 pts (~10 mm)" value="28"/>
+<gridsize name="32 pts (~12 mm)" value="32"/>
+<gridsize name="4 pts" value="4"/>
+<gridsize name="56 pts (~20 mm)" value="56"/>
+<gridsize name="8 pts (~3 mm)" value="8"/>
+</ipestyle>
+<ipestyle name="sizes">
+<arrowsize name="large" value="10"/>
+<arrowsize name="small" value="5"/>
+<arrowsize name="tiny" value="3"/>
+<pen name="1" value="1"/>
+<pen name="10" value="10"/>
+<pen name="2" value="2"/>
+<pen name="3" value="3"/>
+<pen name="4" value="4"/>
+<pen name="5" value="5"/>
+<pen name="6" value="6"/>
+<pen name="7" value="7"/>
+<pen name="8" value="8"/>
+<pen name="9" value="9"/>
+<pen name="fat" value="1.2"/>
+<pen name="heavier" value="0.8"/>
+<pen name="ultrafat" value="2"/>
+<symbolsize name="1" value="1"/>
+<symbolsize name="10" value="10"/>
+<symbolsize name="2" value="2"/>
+<symbolsize name="3" value="3"/>
+<symbolsize name="4" value="4"/>
+<symbolsize name="5" value="5"/>
+<symbolsize name="6" value="6"/>
+<symbolsize name="7" value="7"/>
+<symbolsize name="8" value="8"/>
+<symbolsize name="9" value="9"/>
+<symbolsize name="large" value="5"/>
+<symbolsize name="small" value="2"/>
+<symbolsize name="tiny" value="1.1"/>
+</ipestyle>
+<ipestyle name="text">
+<textsize name="Huge" value="\Huge"/>
+<textsize name="LARGE" value="\LARGE"/>
+<textsize name="Large" value="\Large"/>
+<textsize name="footnote" value="\footnotesize"/>
+<textsize name="huge" value="\huge"/>
+<textsize name="large" value="\large"/>
+<textsize name="small" value="\small"/>
+<textsize name="tiny" value="\tiny"/>
+<textstyle name="center" begin="\begin{center}" end="\end{center}"/>
+<textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
+<textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
+</ipestyle>
+<ipestyle name="transparency">
+<opacity name="10%" value="0.1"/>
+<opacity name="20%" value="0.2"/>
+<opacity name="30%" value="0.3"/>
+<opacity name="40%" value="0.4"/>
+<opacity name="50%" value="0.5"/>
+<opacity name="60%" value="0.6"/>
+<opacity name="70%" value="0.7"/>
+<opacity name="80%" value="0.8"/>
+<opacity name="90%" value="0.9"/>
+</ipestyle>
+<ipestyle name="trimmed">
+<symbol name="arrow/arc(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/farc(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/ptarc(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/fptarc(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="mark/circle(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+</symbol>
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path>
+</symbol>
+<symbol name="mark/fdisk(sfx)" transformations="translations">
+<group>
+<path fill="sym-fill">
+0.5 0 0 0.5 0 0 e
+</path>
+<path fill="sym-stroke" fillrule="eofill">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+</group>
+</symbol>
+<symbol name="mark/box(sx)" transformations="translations">
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</symbol>
+<symbol name="mark/square(sx)" transformations="translations">
+<path fill="sym-stroke">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+</path>
+</symbol>
+<symbol name="mark/fsquare(sfx)" transformations="translations">
+<group>
+<path fill="sym-fill">
+-0.5 -0.5 m
+0.5 -0.5 l
+0.5 0.5 l
+-0.5 0.5 l
+h
+</path>
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="mark/cross(sx)" transformations="translations">
+<group>
+<path fill="sym-stroke">
+-0.43 -0.57 m
+0.57 0.43 l
+0.43 0.57 l
+-0.57 -0.43 l
+h
+</path>
+<path fill="sym-stroke">
+-0.43 0.57 m
+0.57 -0.43 l
+0.43 -0.57 l
+-0.57 0.43 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="arrow/fnormal(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/pointed(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/fpointed(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/linear(spx)">
+<path stroke="sym-stroke" pen="sym-pen">
+-1 0.333 m
+0 0 l
+-1 -0.333 l
+</path>
+</symbol>
+<symbol name="arrow/fdouble(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+-1 0 m
+-2 0.333 l
+-2 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/double(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+-1 0 m
+-2 0.333 l
+-2 -0.333 l
+h
+</path>
+</symbol>
+<tiling name="falling" angle="-60" step="4" width="1"/>
+<tiling name="rising" angle="30" step="4" width="1"/>
+</ipestyle>
+<page>
+<layer name="alpha"/>
+<layer name="beta"/>
+<layer name="gamma"/>
+<layer name="delta"/>
+<view layers="alpha" active="alpha"/>
+<text layer="delta" matrix="1 0 0 1 36.7229 20.9826" transformations="translations" pos="208 672" stroke="black" type="label" width="55.89" height="7.721" depth="0.1" valign="baseline">translation</text>
+<path matrix="1 0 0 1 48 0" stroke="black" pen="heavier" cap="1" join="1" arrow="arc/normal">
+192 696 m
+24 0 0 -24 192 720 168 720 a
+</path>
+<text layer="gamma" matrix="1 0 0 1 4.7229 4.9826" transformations="translations" pos="208 672" stroke="black" type="label" width="72.428" height="7.714" depth="1.99" valign="baseline">infix positions</text>
+<path matrix="1 0 0 1 48 0" stroke="black" pen="heavier" cap="1" join="1" arrow="arc/normal">
+160 680 m
+40 0 0 -40 160 720 120 720 a
+</path>
+<text layer="beta" matrix="1 0 0 1 -51.2771 -11.0174" transformations="translations" pos="208 672" stroke="black" type="label" width="68.643" height="7.714" depth="1.99" valign="baseline">pronunciation</text>
+<path matrix="1 0 0 1 48 0" stroke="black" pen="heavier" cap="1" join="1" arrow="arc/normal">
+104 664 m
+56 0 0 -56 104 720 48 720 a
+</path>
+<text layer="alpha" matrix="1 0 0 1 -99.2771 -27.0174" transformations="translations" pos="208 672" stroke="black" type="label" width="50.212" height="7.475" depth="1.99" valign="baseline">word type</text>
+<path matrix="1 0 0 1 48 0" stroke="black" pen="heavier" cap="1" join="1" arrow="arc/normal">
+56 648 m
+72 0 0 -72 56 720 -16 720 a
+</path>
+</page>
+</ipe>

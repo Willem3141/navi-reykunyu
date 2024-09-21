@@ -21,11 +21,19 @@
     "sqlite3": "^5.1.2"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.14",
+    "@types/jquery": "^3.5.30",
+    "@types/semantic-ui": "^2.2.9",
     "chai": "^4.2.0",
     "gulp": "^5.0.0",
     "gulp-less": "^5.0.0",
+    "html-loader": "^5.1.0",
+    "html-webpack-plugin": "^5.6.0",
+    "less": "^4.2.0",
+    "less-loader": "^12.2.0",
+    "mini-css-extract-plugin": "^2.9.1",
     "mocha": "^6.0.2",
-    "typescript": "^4.6.4"
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^4.9.5"
   }
 }

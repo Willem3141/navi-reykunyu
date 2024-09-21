@@ -1,0 +1,16 @@
+{
+  "background_color": "#349DEC",
+  "description": "Online Na'vi dictionary",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "ayrel/reykunyu.png",
+      "sizes": "405x405",
+      "type": "image/png"
+    }
+  ],
+  "name": "Reykunyu",
+  "short_name": "Reykunyu",
+  "start_url": "/"
+}
+
