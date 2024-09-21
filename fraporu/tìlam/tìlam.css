@@ -1127,7 +1127,7 @@ h2[id]::before {
 /* development banner */
 .development-banner {
 	position: absolute;
-	left: 0;
+	left: -100px;
 	right: 0;
 	top: 0;
 	padding-top: 10px;
@@ -1142,6 +1142,17 @@ h2[id]::before {
 				var(--background-color) 20px,
 				var(--background-color) 40px);
 	z-index: -1;
+	perspective: 200px;
+	animation: banner-move linear 1s infinite;
+}
+
+@keyframes banner-move {
+	0% {
+		background-position: 0 0;
+	}
+	100% {
+		background-position: 50px 0;
+	}
 }
 
 .development {
