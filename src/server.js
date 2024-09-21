@@ -79,14 +79,22 @@ app.use('/fam', express.static('./data/fam'));
 app.set('views', './fraporu');
 app.set('view engine', 'ejs');
 
+function pageVariables(req, toAdd) {
+	let variables = { ...toAdd };
+	variables['user'] = req.user;
+	variables['_'] = translations._;
+	variables['development'] = config.hasOwnProperty('development') && config['development'];
+	return variables;
+}
+
 app.get('/', function(req, res) {
 	setLanguage(req);
-	res.render('txin', { user: req.user, query: req.query['q'], _: translations._ });
+	res.render('txin', pageVariables(req, { query: req.query['q'] }));
 });
 
 app.get('/help', function(req, res) {
 	setLanguage(req);
-	res.render('help', { user: req.user, _: translations._ });
+	res.render('help', pageVariables(req));
 });
 
 function setLanguage(req) {
@@ -108,7 +116,7 @@ app.get('/ayvefya/ui-translations.js', function(req, res) {
 
 app.get('/all', function(req, res) {
 	setLanguage(req);
-	res.render("fralì'u", { user: req.user, _: translations._ });
+	res.render("fralì'u", pageVariables(req));
 });
 
 app.post('/login', passport.authenticate('local', {
@@ -131,25 +139,23 @@ app.get('/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
-	res.render('leykatem', {
-		'user': req.user,
+	res.render('leykatem', pageVariables(req, {
 		'post_url': '/add',
 		'word': {
 			"na'vi": '',
 			"translations": [{'en': ''}]
-		},
-		_: translations._
-	});
+		}
+	}));
 });
 
 app.post('/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
 
@@ -179,7 +185,7 @@ app.get('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
 	if (!req.query.hasOwnProperty('word')) {
@@ -194,19 +200,17 @@ app.get('/edit', function(req, res) {
 		return;
 	}
 	const wordData = edit.getWordData(id);
-	res.render('leykatem', {
-		'user': req.user,
+	res.render('leykatem', pageVariables(req, {
 		'post_url': '/edit',
-		'word': wordData,
-		_: translations._
-	});
+		'word': wordData
+	}));
 });
 
 app.get('/edit/raw', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
 	if (!req.query.hasOwnProperty('word')) {
@@ -221,19 +225,17 @@ app.get('/edit/raw', function(req, res) {
 		return;
 	}
 	const wordData = edit.getWordData(id);
-	res.render('leykatem-yrr', {
-		'user': req.user,
+	res.render('leykatem-yrr', pageVariables(req, {
 		'post_url': '/edit',
-		'word': wordData,
-		_: translations._
-	});
+		'word': wordData
+	}));
 });
 
 app.post('/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
 	if (!req.body.hasOwnProperty('id') || !req.body.hasOwnProperty('data')) {
@@ -267,72 +269,64 @@ app.get('/history', function(req, res) {
 	let historyData = JSON.parse(fs.readFileSync("./data/history.json"));
 	historyData = historyData.slice(Math.max(1, historyData.length - 50));  // 50 last elements
 	historyData.reverse();
-	res.render('history', { user: req.user, history: historyData, _: translations._ });
+	res.render('history', pageVariables(req, { history: historyData }));
 });
 
 app.get('/etymology-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
-	res.render('etymologyEditor', {
-		'user': req.user,
+	res.render('etymologyEditor', pageVariables(req, {
 		'post_url': '/edit',
-		'words': edit.getAll(),
-		_: translations._
-	});
+		'words': edit.getAll()
+	}));
 });
 
 app.get('/sources-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
-	res.render('sourcesEditor', {
-		'user': req.user,
+	res.render('sourcesEditor', pageVariables(req, {
 		'post_url': '/edit',
-		'words': edit.getAll(),
-		_: translations._
-	});
+		'words': edit.getAll()
+	}));
 });
 
 app.get('/corpus-editor', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
-	res.render('corpusEditor', {
-		'user': req.user,
-		'sentences': reykunyu.getAllSentences(),
-		_: translations._
-	});
+	res.render('corpusEditor', pageVariables(req, {
+		'sentences': reykunyu.getAllSentences()
+	}));
 });
 
 app.get('/corpus-editor/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
-	res.render('corpusEditorAdd', {
-		'user': req.user,
-		'post_url': '/corpus-editor/add',
-		_: translations._
-	});
+	res.render('corpusEditorAdd', pageVariables(req, {
+		'post_url': '/corpus-editor/add'
+	}));
 });
 
 app.get('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
 	const key = req.query["sentence"];
@@ -342,20 +336,18 @@ app.get('/corpus-editor/edit', function(req, res) {
 		return;
 	}
 	const sentence = reykunyu.getAllSentences()[key];
-	res.render('corpusEditorEdit', {
-		'user': req.user,
+	res.render('corpusEditorEdit', pageVariables(req, {
 		'post_url': '/corpus-editor/edit',
 		'key': key,
-		'sentence': sentence,
-		_: translations._
-	});
+		'sentence': sentence
+	}));
 });
 
 app.post('/corpus-editor/add', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
 	let key, sentence;
@@ -399,7 +391,7 @@ app.post('/corpus-editor/edit', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
 	let key, sentence;
@@ -422,23 +414,21 @@ app.get('/untranslated', function(req, res) {
 	if (!req.user) {
 		res.status(403);
 		setLanguage(req);
-		res.render('403', { user: req.user, _: translations._ });
+		res.render('403', pageVariables(req));
 		return;
 	}
 	setLanguage(req);
 	let untranslated = edit.getUntranslated(translations.getLanguage());
 		
-	res.render('untranslated', {
-		user: req.user,
+	res.render('untranslated', pageVariables(req, {
 		untranslated: untranslated,
-		language: translations.getLanguage(),
-		_: translations._
-	});
+		language: translations.getLanguage()
+	}));
 });
 
 app.get('/study', function(req, res) {
 	zeykerokyu.getCourses(req.user, (courseData) => {
-		res.render('study', { user: req.user, courses: courseData, _: translations._ });
+		res.render('study', pageVariables(req, { courses: courseData }));
 	});
 });
 
@@ -456,7 +446,7 @@ app.get('/study/course', function(req, res) {
 	}
 	zeykerokyu.getCourseData(req.user, courseId, (courseData) => {
 		zeykerokyu.getLessons(req.user, courseId, (lessonData) => {
-			res.render('study-course', { user: req.user, course: courseData, lessons: lessonData, _: translations._ });
+			res.render('study-course', pageVariables(req, { course: courseData, lessons: lessonData }));
 		});
 	});
 });
@@ -471,7 +461,7 @@ app.use('/api', apiRouter);
 app.use((req, res, next) => {
 	res.status(404);
 	setLanguage(req);
-	res.render('404', { user: req.user, _: translations._ });
+	res.render('404', pageVariables(req));
 })
 
 app.use((err, req, res, next) => {
@@ -479,7 +469,7 @@ app.use((err, req, res, next) => {
 	setLanguage(req);
 	output.error('Uncaught exception when handling a request; responding with HTTP 500');
 	console.log(err.stack);
-	res.render('500', { user: req.user, _: translations._, error: err });
+	res.render('500', pageVariables(req, { error: err }));
 })
 
 http.listen(config["port"], function() {
