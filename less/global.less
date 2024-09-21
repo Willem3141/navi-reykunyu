@@ -1,0 +1,234 @@
+@font-face {
+	font-family: 'Recursive';
+	font-weight: 300 1000;
+	font-style: oblique 0deg 14deg;
+	src: url('/fonts/Recursive_VF_1.078.woff2');
+}
+@font-face {
+	font-family: 'Gentium Plus';
+	src: url('/fonts/GentiumPlus-Regular.woff2');
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+body {
+	font-size: 14px;
+	background-color: var(--background-color);
+	padding: 0 15px;
+	width: 100%;
+	line-height: 1.6;
+	height: auto;
+	min-width: 300px;
+	overflow-x: auto;
+}
+
+.container {
+	margin: 0px auto;
+	max-width: 1000px;
+	padding: 20px 0px;
+}
+
+body.wide .container,
+.container.wide {
+	max-width: none;
+}
+
+/* errors */
+
+.error {
+	color: var(--muted-color);
+	text-align: center;
+}
+
+.error p {
+	width: 80%;
+	min-width: 270px;
+	margin: 20px auto;
+}
+
+.error .error-text {
+	font-size: 30px;
+	color: var(--muted-color);
+}
+
+.error .error-subtext {
+	font-style: italic;
+}
+
+.error .error-icon {
+	margin: 20px auto;
+}
+
+@media (prefers-color-scheme: dark) {
+	.error .error-icon {
+		opacity: 0.15;
+	}
+}
+
+.error pre {
+	text-align: left;
+}
+
+
+
+/* tables */
+
+table {
+	margin-top: 8px;
+	width: 100%;
+}
+
+table tr {
+	border-top: 1px solid var(--border-color);
+}
+
+table tr td,
+table tr th {
+	padding: 5px 10px;
+}
+
+table tr td.column-title {
+	text-align: center;
+	font-style: italic;
+}
+
+table tr td.row-title {
+	text-align: right;
+	font-style: italic;
+}
+
+table.conjugation-table {
+	min-width: 800px;
+}
+
+.prefix,
+.word-link.prefix,
+.word-link .prefix {
+	color: var(--prefix-color);
+	font-weight: bold;
+}
+
+.lenition {
+	color: var(--lenition-color);
+	font-weight: bold;
+}
+
+.infix,
+.word-link.infix,
+.word-link .infix {
+	color: var(--infix-color);
+	font-weight: bold;
+}
+
+.suffix,
+.word-link.suffix,
+.word-link .suffix {
+	color: var(--suffix-color);
+	font-weight: bold;
+}
+
+.root-infix {
+	font-weight: bold;
+	padding-left: 1px;
+	padding-right: 1px;
+}
+
+.muted {
+	color: var(--muted-color);
+}
+
+.highlight {
+	color: var(--translation-highlight-color);
+}
+
+.result a {
+	cursor: pointer;
+}
+
+.word-link {
+	border-radius: 4px;
+	background-color: var(--shaded-background-color);
+	padding: 2px 4px;
+	color: var(--primary-color);
+	white-space: nowrap;
+}
+.word-link:hover {
+	background-color: var(--hovered-background-color);
+	color: var(--primary-color);
+	text-decoration: none;
+}
+
+.word-link .navi {
+	font-weight: 700;
+}
+
+.word-link .translation {
+	color: var(--muted-color);
+}
+
+/* TODO I don't know what this is used for */
+.warning {
+	background-image: url('/ayrel/tsahey.svg');
+	background-repeat: no-repeat;
+	background-size: 1em;
+	background-position: 0 5px;
+	font-weight: 700;
+	padding-left: 22px;
+}
+
+/* infix details dialog */
+#infix-details-input,
+#infix-details-result {
+	text-align: center;
+	font-weight: 700;
+	font-size: 125%;
+}
+
+#infix-details-input-translation,
+#infix-details-result-translation {
+	text-align: center;
+	color: var(--muted-color);
+}
+
+/* settings modal */
+#settings-modal .explanation {
+	line-height: 1.4285em;
+	padding-top: 2px;
+	padding-bottom: 5px;
+	color: var(--muted-color);
+}
+
+/* sentence analysis */
+.beta-notice-block,
+.error-block,
+.warning-block,
+.result-block {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	padding: 15px 20px;
+}
+.beta-notice-block {
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	margin-bottom: 40px;
+}
+.error-block {
+	background-color: var(--error-background-color);
+	border-left: 2px solid var(--error-color);
+}
+.warning-block {
+	background-color: var(--warning-background-color);
+	border-left: 2px solid var(--warning-color);
+}
+.result-block .header,
+.error-block .header,
+.warning-block .header {
+	font-weight: 700;
+}
+.result-block .body,
+.error-block .body,
+.warning-block .body {
+	margin-left: 20px;
+}

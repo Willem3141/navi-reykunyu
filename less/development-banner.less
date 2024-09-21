@@ -1,0 +1,39 @@
+.development-banner {
+	position: absolute;
+	left: -100px;
+	right: 0;
+	top: 0;
+	padding-top: 10px;
+	padding-bottom: 25px;
+	display: flex;
+	justify-content: center;
+	background:
+			linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--background-color) 50%),
+			repeating-linear-gradient(-55deg,
+				var(--warning-background-color),
+				var(--warning-background-color) 20px,
+				var(--background-color) 20px,
+				var(--background-color) 40px);
+	z-index: -1;
+	perspective: 200px;
+	animation: banner-move linear 1s infinite;
+}
+
+@keyframes banner-move {
+	0% {
+		background-position: 0 0;
+	}
+	100% {
+		background-position: 50px 0;
+	}
+}
+
+.development {
+	display: inline-block;
+	background-color: var(--warning-color);
+	font-weight: 600;
+	color: var(--background-color);
+	padding: 2px 10px;
+	margin-bottom: 25px;
+	border-radius: 100px;
+}

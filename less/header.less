@@ -1,0 +1,135 @@
+h1 {
+	padding-bottom: 5px;
+	border-bottom: 1px solid var(--border-color);
+}
+
+h1 #user-label {
+	position: relative;
+	top: -5px;
+}
+
+h1 .logo {
+	background-image: url('/ayrel/reykunyu.svg');
+	background-repeat: no-repeat;
+	background-size: contain;
+	width: 150px;
+	height: 50px;
+	display: inline-block;
+	vertical-align: middle;
+}
+@media (prefers-color-scheme: dark) {
+	h1 .logo {
+		background-image: url('/ayrel/reykunyu-dark.svg');
+	}
+}
+
+#language-dropdown {
+	margin-left: 10px;
+}
+
+h1::after {
+	content: ".";
+	visibility: hidden;
+	clear: both;
+	display: block;
+	height: 0px;
+	width: 0px;
+}
+
+.main-menu {
+	width: 100%;
+}
+
+.main-menu > .button > .button-label {
+	padding-left: 6px;
+}
+.main-menu > .button > .icon.dropdown {
+	padding-left: 6px;
+}
+
+.main-menu > .button.dropdown {
+	text-align: center;
+}
+
+.main-menu > .button.dropdown .menu .item {
+	text-decoration: none;
+}
+
+@media (max-width: 600px) {
+	.main-menu > .button {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.main-menu > .button > .button-label {
+		padding-left: 0;
+		padding-top: 6px;
+	}
+
+	.main-menu > .button > .icon.dropdown {
+		padding-left: 0;
+		padding-top: 3px;
+	}
+
+	/* put the mode dropdown below the search field */
+	#search-form .ui.input {
+		flex-wrap: wrap;
+	}
+	#search-form .search.icon {
+		height: 38px;
+	}
+	#search-form #search-box {
+		border-top-right-radius: 0.28571429rem !important;
+		border-right-color: rgba(34, 36, 38, 0.15) !important;
+		border-bottom-left-radius: 0px !important;
+		border-bottom-color: transparent !important;
+	}
+	@media (prefers-color-scheme: dark) {
+		#search-form #search-box {
+			border-right-color: #555 !important;
+		}
+	}
+	#search-form #search-box:focus {
+		border-right-color: var(--focus-color) !important;
+		border-bottom-color: var(--focus-color) !important;
+	}
+	#search-form #mode-direction {
+		width: 100%;
+		border-top-right-radius: 0px !important;
+		border-bottom-left-radius: 0.28571429rem !important;
+	}
+}
+
+@media (max-width: 460px) {
+	.main-menu > .button > .button-label {
+		font-weight: 475;
+		font-size: 85%;
+		padding-top: 5px;
+	}
+
+	#language-dropdown .text {
+		display: none;
+	}
+}
+
+@media (max-width: 400px) {
+	.main-menu > .button > .button-label {
+		font-weight: 550;
+		font-size: 70%;
+		padding-top: 4px;
+	}
+}
+
+@media (max-width: 340px) {
+	.main-menu > .button > .button-label {
+		display: none;
+	}
+}
+
+@media (min-width: 1000px) {
+	.main-menu {
+		width: auto;
+		float: right;
+	}
+}
