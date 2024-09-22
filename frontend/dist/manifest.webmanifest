@@ -4,7 +4,7 @@
   "display": "standalone",
   "icons": [
     {
-      "src": "ayrel/reykunyu.png",
+      "src": "images/reykunyu.png",
       "sizes": "405x405",
       "type": "image/png"
     }

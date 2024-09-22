@@ -19,7 +19,7 @@ $(function() {
 function createErrorBlock(text, subText) {
 	let $error = $('<div/>').addClass('error');
 	$('<p/>').addClass('error-text').html(text).appendTo($error);
-	$('<img/>').addClass('error-icon').attr("src", "/ayrel/ke'u.svg").appendTo($error);
+	$('<img/>').addClass('error-icon').attr("src", "/images/ke'u.svg").appendTo($error);
 	$('<p/>').addClass('error-subText').html(subText).appendTo($error);
 	return $error;
 }
