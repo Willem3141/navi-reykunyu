@@ -44,6 +44,8 @@ declare type WordData = {
 	sentences?: Sentence[]
 };
 
+declare type Dialect = 'FN' | 'combined' | 'RN';
+
 declare type Pronunciation = {
 	syllables: string,
 	stressed: number,

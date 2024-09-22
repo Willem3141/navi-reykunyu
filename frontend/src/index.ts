@@ -1,4 +1,4 @@
-import { lemmaForm, addLemmaClass } from './lib';
+import { lemmaForm, addLemmaClass, getTranslation, getShortTranslation, createWordLink, appendLinkString } from './lib';
 
 class Reykunyu {
 
@@ -121,7 +121,7 @@ class Reykunyu {
 		return $('#language-dropdown').dropdown('get value');
 	}
 
-	getDialect(): 'FN' | 'combined' | 'RN' {
+	getDialect(): Dialect {
 		if ($('#dialect-fn-radiobutton').is(':checked')) {
 			return 'FN';
 		} else if ($('#dialect-rn-radiobutton').is(':checked')) {
@@ -437,22 +437,14 @@ class Reykunyu {
 		return $section;
 	}
 
-	getTranslation<T>(tìralpeng: Translated<T>): T {
-		if (tìralpeng.hasOwnProperty(this.getLanguage())) {
-			return tìralpeng[this.getLanguage()];
-		} else {
-			return tìralpeng['en'];
-		}
-	}
-
 	translationSection(sìralpeng: Translated<string>[]): JQuery {
 		let $section = $('<div/>').addClass('result-item definition');
 		if (sìralpeng.length === 1) {
-			$section.text(this.getTranslation(sìralpeng[0]));
+			$section.text(getTranslation(sìralpeng[0], this.getLanguage()));
 		} else {
 			let $list = $('<ol/>').addClass('meaning-list').appendTo($section);
 			for (let i = 0; i < sìralpeng.length; i++) {
-				$('<li/>').text(this.getTranslation(sìralpeng[i])).appendTo($list);
+				$('<li/>').text(getTranslation(sìralpeng[i], this.getLanguage())).appendTo($list);
 			}
 		}
 		return $section;
@@ -602,7 +594,7 @@ class Reykunyu {
 
 	noteSection(note: LinkString) {
 		let $noteSection = $('<div/>').addClass('result-item note');
-		this.appendLinkString(note, $noteSection);
+		appendLinkString(note, $noteSection, this.getDialect(), this.getLanguage());
 		return $noteSection;
 	}
 
@@ -644,7 +636,7 @@ class Reykunyu {
 						.attr('href', '/?q=' + c['affix']["word_raw"][this.getDialect()]);
 					addLemmaClass($affixLink, c['affix']['type']);
 					$componentsCell.append($affixLink);
-					$meaningCell.append($('<span/>').text(this.getTranslation(c['affix']["translations"][0])));
+					$meaningCell.append($('<span/>').text(getTranslation(c['affix']["translations"][0], this.getLanguage())));
 				}
 			} else {
 				let $affixLink = $('<a/>')
@@ -658,7 +650,7 @@ class Reykunyu {
 					.attr('colspan', 2)
 					.appendTo($tr);
 				let $meaningCell = $('<td/>').appendTo($tr);
-				$meaningCell.append($('<span/>').text(this.getTranslation((<WordData>affix)["translations"][0])));
+				$meaningCell.append($('<span/>').text(getTranslation((<WordData>affix)["translations"][0], this.getLanguage())));
 			}
 		}
 
@@ -691,57 +683,11 @@ class Reykunyu {
 		return $sourceSection;
 	}
 
-	createWordLink(link: LinkStringPiece): JQuery {
-		if (typeof link === "string") {
-			return $('<b/>').text(link);
-		} else {
-			let $link = $('<a/>')
-				.addClass('word-link')
-				.attr('href', "/?q=" + link["word_raw"][this.getDialect()]);
-			let $word = $('<span/>')
-				.addClass('navi')
-				.html(lemmaForm(link, this.getDialect()));
-			addLemmaClass($word, link["type"]);
-			$link.append($word);
-
-			let translation = this.getShortTranslation(link);
-			let $translation = $('<span/>')
-				.addClass('translation')
-				.text(translation);
-			$link.append(' ');
-			$link.append($translation);
-			return $link;
-		}
-	}
-
-	processMarkdownLinks(text: string): JQuery {
-		let $result = $();
-		let pieces = text.split(/\[([^\]]+)\]\(([^)]+)\)/);
-		for (let i = 0; i < pieces.length; i++) {
-			if (i % 3 === 0) {
-				$result = $result.add($('<span/>').text(pieces[i]));
-			} else if (i % 3 === 1) {
-				$result = $result.add($('<a/>').text(pieces[i]).attr('href', pieces[i + 1]));
-			}
-		}
-		return $result;
-	}
-
-	appendLinkString(linkString: LinkString, $div: JQuery) {
-		for (let piece of linkString) {
-			if (typeof piece === 'string') {
-				$div.append(this.processMarkdownLinks(piece));
-			} else {
-				$div.append(this.createWordLink(piece));
-			}
-		}
-	}
-
 	etymologySection(etymology: LinkString) {
 		let $etymologySection = $('<div/>').addClass('result-item etymology');
 		$etymologySection.append($('<div/>').addClass('header').text(_('etymology')));
 		let $etymology = $('<div/>').addClass('body');
-		this.appendLinkString(etymology, $etymology);
+		appendLinkString(etymology, $etymology, this.getDialect(), this.getLanguage());
 		$etymologySection.append($etymology);
 		return $etymologySection;
 	}
@@ -756,7 +702,7 @@ class Reykunyu {
 			if (!first) {
 				$derived.append(' ');
 			}
-			$derived.append(this.createWordLink(word));
+			$derived.append(createWordLink(word, this.getDialect(), this.getLanguage()));
 			first = false;
 		}
 
@@ -776,7 +722,7 @@ class Reykunyu {
 				$aysätareTxin.append(', ');
 			}
 			let link = seeAlso[i];
-			$aysätareTxin.append(this.createWordLink(link));
+			$aysätareTxin.append(createWordLink(link, this.getDialect(), this.getLanguage()));
 		}
 
 		$aysätare.append($aysätareTxin);
@@ -861,7 +807,7 @@ class Reykunyu {
 
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			this.appendLinkString(note, $note);
+			appendLinkString(note, $note, this.getDialect(), this.getLanguage());
 			$body.append($note);
 		}
 
@@ -906,7 +852,7 @@ class Reykunyu {
 
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			this.appendLinkString(note, $note);
+			appendLinkString(note, $note, this.getDialect(), this.getLanguage());
 			$body.append($note);
 		}
 
@@ -936,7 +882,7 @@ class Reykunyu {
 		$body.append($infixDetailsButton);
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			this.appendLinkString(note, $note);
+			appendLinkString(note, $note, this.getDialect(), this.getLanguage());
 			$body.append($note);
 		}
 		return $section;
@@ -1162,7 +1108,7 @@ class Reykunyu {
 		let $translation = $('<div/>').addClass("translation").appendTo($sentence);
 
 		let translationHighlights: number[] = [];
-		const translation = this.getTranslation(sentence['translations']);
+		const translation = getTranslation(sentence['translations'], this.getLanguage());
 
 		for (let i = 0; i < sentence["na'vi"].length; i++) {
 			if (i > 0) {
@@ -1346,30 +1292,6 @@ class Reykunyu {
 		}
 	}
 
-	// TODO remove as soon as the server sends this
-	getShortTranslation(result: WordData): string {
-		const language = this.getLanguage();
-
-		if (language == "en" && result["short_translation_conjugated"]) {
-			return result["short_translation_conjugated"];
-		}
-		if (language == "en" && result["short_translation"]) {
-			return result["short_translation"];
-		}
-
-		let translation = this.getTranslation(result["translations"][0]);
-		translation = translation.split(',')[0];
-		translation = translation.split(';')[0];
-		translation = translation.split(' | ')[0];
-		translation = translation.split(' (')[0];
-
-		if (language == "en" && result["type"][0] === "v"
-			&& translation.indexOf("to ") === 0) {
-			translation = translation.substr(3);
-		}
-
-		return translation;
-	}
 
 	createSentenceBarItem(result: FromNaviResultPiece): JQuery {
 		let $item = $('<a/>').addClass('item');
@@ -1390,7 +1312,7 @@ class Reykunyu {
 			let $definitionLabel = $('<div/>').addClass('definition')
 				.appendTo($itemContainer);
 			this.typeBadge((<WordData> result["sì'eyng"][i])["type"], true).appendTo($definitionLabel);
-			$definitionLabel.append(this.getShortTranslation(result["sì'eyng"][i]));
+			$definitionLabel.append(getShortTranslation(result["sì'eyng"][i], this.getLanguage()));
 		}
 
 		if (definitionCount > 2) {
@@ -1625,7 +1547,7 @@ class Reykunyu {
 					if (needsComma) {
 						$cell.append(', ');
 					}
-					$cell.append(this.createWordLink(word));
+					$cell.append(createWordLink(word, this.getDialect(), this.getLanguage()));
 					needsComma = true;
 				}
 				$row.append($cell);
