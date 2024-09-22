@@ -82,7 +82,7 @@ class Reykunyu {
 		});
 
 		$('html').on('click', 'a.word-link', (e) => {
-			const href = $(e.target).attr('href');
+			const href = $(e.currentTarget).attr('href');
 			if (!href) {
 				return;
 			}
