@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Reykunyu &bull; Sentence corpus</title>
+		<link rel="stylesheet" type="text/css" href="/vendor/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/css/tìlam.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<h1>
+				<span class="muted">Reykunyu &rarr;</span> Sentence corpus
+				<a href="/" class="ui icon right floated top right basic button">
+					<i class="arrow left icon"></i> Back to Reykunyu
+				</a>
+			</h1>
+			<form id="search-form">
+				<div class="ui search fluid">
+					<div class="ui right action left icon input fluid">
+						<i class="search icon"></i>
+						<input id="search-box" type="search" placeholder="Word to search for...">
+						<select id="mode-dropdown" class="ui compact selection dropdown">
+							<option selected value="conjugated">Also conjugated forms</option>
+							<option value="exact">Exact matches only</option>
+						</select>
+					</div>
+				</div>
+			</form>
+
+			<div id="results">
+			</div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="corpus.js"></script>
+	</body>
+</html>
+

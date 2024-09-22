@@ -1,0 +1,61 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Review</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/css/study-session.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="main-container">
+			<div id="english-card" class="card">
+				<div id="english">
+				</div>
+			</div>
+			<input id="navi-card" class="card">
+			</input>
+			<div id="correction-card" class="semicard" style="display: none;">
+				<div class="semicard-header">
+					Correct answer:
+				</div>
+				<div id="correction">
+				</div>
+			</div>
+			<div id="stress-card" class="semicard" style="display: none;">
+				<div class="semicard-header">
+					What is the stressed syllable?
+				</div>
+				<div id="syllables">
+				</div>
+			</div>
+			<div id="buttons-card" class="semicard">
+				<button class="button primary-button" id="check-button">Check &rarr;</button>
+				<button class="button secondary-button" id="exit-button" data-text="This button exits your reviewing session. Your progress so far will still be saved.">Exit session &rarr;</button>
+			</div>
+		</div>
+		<div class="progress-bar">
+			<div class="filled-part"></div>
+		</div>
+		<div id="dialog-layer" style="display: none;">
+			<div id="done-dialog" class="dialog">
+				<div class="dialog-header">
+					Congratulations, you've reviewed <span id="done-dialog-item-count">?</span> words!
+				</div>
+				<div class="dialog-body">
+					<div id="learned-words"></div>
+					<p>Click the button below to go back to the overview. There may be more reviews for this lesson!</p>
+					<p class="speed-tip" id="enter-tip"><b>Tip for speed demons:</b> Want to go through your reviews faster? You can press Enter instead of clicking the Check button.</p>
+					<p class="speed-tip" id="stress-tip"><b>Tip for speed demons:</b> When Reykunyu asks for the stressed syllable, you can type the number of the stressed syllable rather than clicking it.</p>
+					<p class="speed-tip" id="stress-pro-tip"><b>Tip for speed demons:</b> To avoid Reykunyu having to ask separately for the stressed syllable, you can also type it directly behind your original answer. For example, write <i>'angtsìk1</i> or <i>meoauniaea7</i>.</p>
+					<p class="speed-tip" id="all-done-tip"><b>Seykxel sì nitram!</b> You're a true speed demon now! :D</p>
+				</div>
+				<div class="dialog-buttons">
+					<a class="button primary-button" id="back-button" href="/study">Back &rarr;</a>
+				</div>
+			</div>
+		</div>
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="review.js"></script>
+	</body>
+</html>
