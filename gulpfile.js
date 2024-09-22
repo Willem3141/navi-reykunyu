@@ -21,11 +21,11 @@ function doTypecheck(cb) {
 
 function buildTypeScript(cb) {
 	return esbuild.build({
-		entryPoints: ['./frontend/src/index.ts'],
+		entryPoints: ['./frontend/src/index.ts', './frontend/src/all-words.js'],
 		bundle: true,
 		minify: true,
 		sourcemap: true,
-		outfile: './frontend/dist/js/index.js',
+		outdir: './frontend/dist/js/',
 		target: 'es2016'
 	}).catch(() => { process.exit(1); });
 };

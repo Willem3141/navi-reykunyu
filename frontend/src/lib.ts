@@ -58,9 +58,15 @@ export function getTranslation<T>(tìralpeng: Translated<T>, language: string): 
 	}
 }
 
-export function createWordLink(link: LinkStringPiece, dialect: Dialect, language: string): JQuery {
+export function createWordLink(link: LinkStringPiece, dialect: Dialect, language: string, referenceRatherThanLink?: boolean): JQuery {
 	if (typeof link === "string") {
 		return $('<b/>').text(link);
+
+	} else if (referenceRatherThanLink) {
+		const $piece = $('<span/>').addClass('reference').html(lemmaForm(link, dialect));
+		addLemmaClass($piece, link['type']);
+		return $piece;
+
 	} else {
 		let $link = $('<a/>')
 			.addClass('word-link')
@@ -94,12 +100,12 @@ function processMarkdownLinks(text: string): JQuery {
 	return $result;
 }
 
-export function appendLinkString(linkString: LinkString, $div: JQuery, dialect: Dialect, language: string) {
+export function appendLinkString(linkString: LinkString, $div: JQuery, dialect: Dialect, language: string, referenceRatherThanLink?: boolean) {
 	for (let piece of linkString) {
 		if (typeof piece === 'string') {
 			$div.append(processMarkdownLinks(piece));
 		} else {
-			$div.append(createWordLink(piece, dialect, language));
+			$div.append(createWordLink(piece, dialect, language, referenceRatherThanLink));
 		}
 	}
 }
