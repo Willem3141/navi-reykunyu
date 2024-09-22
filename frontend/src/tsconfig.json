@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"module": "amd",
+		"target": "es2016",
+		"noEmit": true
+	},
+	"files": [
+		"index.ts",
+	],
+	"include": [
+		"*.d.ts"
+	]
+}

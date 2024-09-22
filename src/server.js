@@ -70,14 +70,17 @@ passport.deserializeUser(function (id, cb) {
 	}
 });
 
-const staticRoot = './fraporu';
+const staticRoot = './frontend/dist';
 app.use(express.static(staticRoot));
 
 app.use('/ayrel', express.static('./data/ayrel'));
 app.use('/fam', express.static('./data/fam'));
 
-app.set('views', './fraporu');
+app.set('views', './frontend/templates');
 app.set('view engine', 'ejs');
+
+const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json'));
+const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
 function pageVariables(req, toAdd) {
 	let variables = { ...toAdd };
@@ -89,7 +92,7 @@ function pageVariables(req, toAdd) {
 
 app.get('/', function(req, res) {
 	setLanguage(req);
-	res.render('txin', pageVariables(req, { query: req.query['q'] }));
+	res.render('index', pageVariables(req, { query: req.query['q'] }));
 });
 
 app.get('/help', function(req, res) {
@@ -110,8 +113,9 @@ function setLanguage(req) {
 	translations.setLanguage(lang);
 }
 
-app.get('/ayvefya/ui-translations.js', function(req, res) {
-	res.render('ayvefya/ui-translations', { strings_json: translations.getStringsJSON() });
+app.get('/js/ui-translations.js', function(req, res) {
+	res.setHeader('Content-Type', 'text/javascript');
+	res.send(uiTranslationsJs);
 });
 
 app.get('/all', function(req, res) {

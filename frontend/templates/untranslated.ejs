@@ -1,0 +1,58 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Untranslated words &bull; Reykunyu</title>
+		<link rel="stylesheet" type="text/css" href="/vendor/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/css/tìlam.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+
+			<p>The following words do not have a translation in your selected language:</p>
+
+			<table class="ui table">
+				<thead>
+					<tr>
+						<th>Word</th>
+						<th>English</th>
+						<th>Translation (<%= language %>)</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<%
+						const htmlMarkup = (word) => word.replaceAll('/', '').replaceAll('[', '<span class="stressed">').replaceAll(']', '</span>');
+					%>
+					<% for (let word of untranslated) { %>
+					<% let first = true; %>
+					<% for (let translation of word['translations']) { %>
+					<tr>
+						<% if (first) {
+						first = false; %>
+						<td rowspan="<%= word['translations'].length %>"><%- htmlMarkup(word["na'vi"]) %> <span class="muted">(<%= word['type'] %>)</span></td>
+						<% } %>
+						<td><%= translation["en"] %></td>
+						<td><% if (translation[language]) { %><%= translation[language] %><% } else { %><span class='muted'>(none)</span><% } %></td>
+						<td>
+							<a class="ui icon basic button edit-button" href="/edit?word=<%= word['id'] %>">
+								<i class="pencil icon"></i>
+							</a>
+						</td>
+					</tr>
+					<% } %>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/untranslated.js"></script>
+	</body>
+</html>
+
