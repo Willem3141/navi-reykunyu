@@ -1257,6 +1257,14 @@ class Reykunyu {
 			$resultWord.append(this.editButton(r["id"]));
 		}
 
+		if (r['id'] == 2772) {
+			$resultWord.on('click', () => {
+				if ($('.development-banner').length === 0) {
+					$('<div/>').addClass('development-banner colorful').prependTo($('body'));
+				}
+			});
+		}
+
 		$resultWord.appendTo($result);
 
 		if (r["conjugated"] && r["conjugated"].length > 0) {

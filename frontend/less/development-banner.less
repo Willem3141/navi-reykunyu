@@ -1,6 +1,6 @@
 .development-banner {
 	position: absolute;
-	left: -100px;
+	left: -300px;
 	right: 0;
 	top: 0;
 	padding-top: 10px;
@@ -16,7 +16,42 @@
 				var(--background-color) 40px);
 	z-index: -1;
 	perspective: 200px;
-	animation: banner-move linear 1s infinite;
+	animation: banner-move linear 6s infinite;
+
+	@media (prefers-reduced-motion) {
+		animation: none;
+	}
+
+	&.colorful {
+		background:
+				linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--background-color) 50%),
+				repeating-linear-gradient(-55deg,
+					#aedafc,
+					#aedafc 20px,
+					var(--background-color) 20px,
+					var(--background-color) 40px,
+					#bdfcae 40px,
+					#bdfcae 60px,
+					var(--background-color) 60px,
+					var(--background-color) 80px,
+					#fcfbae 80px,
+					#fcfbae 100px,
+					var(--background-color) 100px,
+					var(--background-color) 120px,
+					#fcd5ae 120px,
+					#fcd5ae 140px,
+					var(--background-color) 140px,
+					var(--background-color) 160px,
+					#fcaeae 160px,
+					#fcaeae 180px,
+					var(--background-color) 180px,
+					var(--background-color) 200px,
+					#deaefc 200px,
+					#deaefc 220px,
+					var(--background-color) 220px,
+					var(--background-color) 240px
+					);
+	}
 }
 
 @keyframes banner-move {
@@ -24,7 +59,7 @@
 		background-position: 0 0;
 	}
 	100% {
-		background-position: 50px 0;
+		background-position: 293px 0;
 	}
 }
 
