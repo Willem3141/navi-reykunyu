@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Na'vi dictionary website",
   "scripts": {
+    "build": "npx gulp",
     "start": "node src/server.js",
     "test": "node --test"
   },

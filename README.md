@@ -20,6 +20,7 @@ npm run start  # to run the server
 
 To be able to actually use this, you'll need not only the dictionary here, but also the list of words (`data/words.json`). If you'd like to mirror the instance at https://reykunyu.lu, you can run
 ```sh
+mkdir data
 wget -O data/words.json https://reykunyu.lu/words.json
 ```
 and then restart the server.
