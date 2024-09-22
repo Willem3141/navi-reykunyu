@@ -75,14 +75,14 @@ class Reykunyu {
 		});
 
 		const self: Reykunyu = this;
-		$('.infix-button').on('click', () => {
-			$(this).addClass('active').siblings().removeClass('active');
+		$('.infix-button').on('click', (e) => {
+			$(e.target).addClass('active').siblings().removeClass('active');
 			self.updateInfixDisabledButtons();
 			self.updateInfixResults();
 		});
 
 		$('html').on('click', 'a.word-link', (e) => {
-			const href = $(this).attr('href');
+			const href = $(e.target).attr('href');
 			if (!href) {
 				return;
 			}
