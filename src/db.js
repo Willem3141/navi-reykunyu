@@ -85,6 +85,15 @@ db.serialize(() => {
 		next_review integer,
 		primary key (user, vocab)
 	)`);
+
+	// table containing users
+	db.run(`create table if not exists users (
+		id integer primary key,
+		username text unique not null,
+		password_hash blob,
+		salt blob,
+		is_admin integer
+	)`);
 });
 
 function getWordIDsForLesson(lesson) {

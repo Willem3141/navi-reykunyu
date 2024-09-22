@@ -3,6 +3,7 @@ module.exports = {
 	setLanguage: setLanguage,
 	getLanguage: getLanguage,
 	getStringsJSON: getStringsJSON,
+	'span_': span_
 };
 
 const fs = require('fs');
@@ -25,7 +26,7 @@ function getLanguage(l) {
 	return lang;
 }
 
-function getTranslation(key) {
+function _(key) {
 	if (strings.hasOwnProperty(lang) && strings[lang].hasOwnProperty(key)) {
 		return strings[lang][key];
 	} else if (strings['en'].hasOwnProperty(key)) {
@@ -35,8 +36,8 @@ function getTranslation(key) {
 	}
 }
 
-function _(key) {
-	return '<span class="translation" data-key="' + key + '">' + getTranslation(key) + '</span>';
+function span_(key) {
+	return '<span class="translation" data-key="' + key + '">' + _(key) + '</span>';
 }
 
 function getStringsJSON() {

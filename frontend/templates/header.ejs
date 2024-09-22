@@ -40,7 +40,8 @@
 				<a href="/etymology-editor" class="item"><%- _("menu-etymology-editor") %></a>
 				<a href="/sources-editor" class="item"><%- _("menu-sources-editor") %></a>
 				<a href="/corpus-editor" class="item"><%- _("menu-corpus-editor") %></a>
-				<a href="/logout" class="item"><%- _("menu-logout") %></a>
+				<a onclick="document.getElementById('logout-form').submit();" class="item"><%- _("menu-logout") %></a>
+				<form id="logout-form" action="/auth/logout" method="post"></form>
 			</div>
 		</div>
 		<% } else { %>

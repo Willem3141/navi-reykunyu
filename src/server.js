@@ -8,20 +8,7 @@ var express = require('express');
 var compression = require('compression');
 var session = require('express-session');
 var sqliteSession = require('connect-sqlite3')(session);
-
-var user = require('./user');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-passport.use(new LocalStrategy(
-	function (username, password, done) {
-		const foundUser = user.findUser(username, password);
-		if (foundUser) {
-			return done(null, foundUser);
-		} else {
-			return done(null, false);
-		}
-	}
-));
+const passport = require('passport');
 
 var app = express();
 app.use(compression());
@@ -43,12 +30,10 @@ try {
 	output.hint(`Reykunyu can use navi-tslamyu to parse sentences.`);
 }
 
-
 const ejs = require('ejs');
 
-var translations = require('./translations');
-
 app.use(require('body-parser').urlencoded({ extended: true }));
+
 app.use(session({
 	store: new sqliteSession(),
 	secret: config["secret"],
@@ -57,18 +42,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-passport.serializeUser(function (user, cb) {
-	cb(null, user.id);
-});
-
-passport.deserializeUser(function (id, cb) {
-	if (user.users.hasOwnProperty(id)) {
-		cb(null, user.users[id]);
-	} else {
-		cb('User not found');
-	}
-});
 
 const staticRoot = './frontend/dist';
 app.use(express.static(staticRoot));
@@ -79,13 +52,14 @@ app.use('/fam', express.static('./data/fam'));
 app.set('views', './frontend/templates');
 app.set('view engine', 'ejs');
 
+const translations = require('./translations');
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json'));
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
 function pageVariables(req, toAdd) {
 	let variables = { ...toAdd };
 	variables['user'] = req.user;
-	variables['_'] = translations._;
+	variables['_'] = translations.span_;
 	variables['development'] = config.hasOwnProperty('development') && config['development'];
 	return variables;
 }
@@ -121,22 +95,6 @@ app.get('/js/ui-translations.js', function(req, res) {
 app.get('/all', function(req, res) {
 	setLanguage(req);
 	res.render("fralì'u", pageVariables(req));
-});
-
-app.post('/login', passport.authenticate('local', {
-	'successRedirect': '/',
-	'failureRedirect': '/'
-}/*, function(err, user, info) {
-	console.log(err, user, info);
-}*/));
-
-app.get('/logout', function(req, res, next) {
-	req.logout(function(err) {
-		if (err) {
-			return next(err);
-		}
-		res.redirect('/');
-	});
 });
 
 app.get('/add', function(req, res) {
@@ -430,6 +388,11 @@ app.get('/untranslated', function(req, res) {
 	}));
 });
 
+app.get('/signup', function(req, res) {
+	setLanguage(req);
+	res.render('signup', pageVariables(req));
+});
+
 app.get('/study', function(req, res) {
 	zeykerokyu.getCourses(req.user, (courseData) => {
 		res.render('study', pageVariables(req, { courses: courseData }));
@@ -461,6 +424,9 @@ app.get('/words.json', function(req, res) {
 
 const apiRouter = require('./api');
 app.use('/api', apiRouter);
+
+const authRouter = require('./auth');
+app.use('/auth', authRouter);
 
 app.use((req, res, next) => {
 	res.status(404);
