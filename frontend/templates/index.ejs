@@ -12,7 +12,7 @@
 		<link rel="icon" type="image/png" href="/images/favicon.png">
 		<link rel="search" type="application/opensearchdescription+xml" title="Reykunyu" href="/opensearch.xml">
 	</head>
-	<body<%- user ? ' class="editable"' : '' %>>
+	<body<%- (user && user['is_admin']) ? ' class="editable"' : '' %>>
 		<div class="container">
 			<%- include('header.ejs', { 'isMainPage': true }) %>
 

@@ -98,7 +98,7 @@ app.get('/all', function(req, res) {
 });
 
 app.get('/add', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -114,7 +114,7 @@ app.get('/add', function(req, res) {
 });
 
 app.post('/add', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -144,7 +144,7 @@ app.post('/add', function(req, res) {
 });
 
 app.get('/edit', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -169,7 +169,7 @@ app.get('/edit', function(req, res) {
 });
 
 app.get('/edit/raw', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -194,7 +194,7 @@ app.get('/edit/raw', function(req, res) {
 });
 
 app.post('/edit', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -235,7 +235,7 @@ app.get('/history', function(req, res) {
 });
 
 app.get('/etymology-editor', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -248,7 +248,7 @@ app.get('/etymology-editor', function(req, res) {
 });
 
 app.get('/sources-editor', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -261,7 +261,7 @@ app.get('/sources-editor', function(req, res) {
 });
 
 app.get('/corpus-editor', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -273,7 +273,7 @@ app.get('/corpus-editor', function(req, res) {
 });
 
 app.get('/corpus-editor/add', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -285,7 +285,7 @@ app.get('/corpus-editor/add', function(req, res) {
 });
 
 app.get('/corpus-editor/edit', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -306,7 +306,7 @@ app.get('/corpus-editor/edit', function(req, res) {
 });
 
 app.post('/corpus-editor/add', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -350,7 +350,7 @@ app.post('/corpus-editor/add', function(req, res) {
 });
 
 app.post('/corpus-editor/edit', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
@@ -373,7 +373,7 @@ app.post('/corpus-editor/edit', function(req, res) {
 });
 
 app.get('/untranslated', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		setLanguage(req);
 		res.render('403', pageVariables(req));
