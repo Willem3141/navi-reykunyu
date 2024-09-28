@@ -66,20 +66,47 @@ router.post('/logout', function (req, res, next) {
 });
 
 router.post('/signup', (req, res, next) => {
-	const salt = crypto.randomBytes(16);
-	crypto.pbkdf2(req.body['password'], salt, hashIterationCount, keyLength, digestMethod, (err, hash) => {
+	if (!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('password')) {
+		req.session.messages = [_('missing-username-or-password')];
+		res.redirect('/signup');
+		return;
+	}
+	const username = req.body['username'];
+	const password = req.body['password'];
+	if (username === '' || password === '') {
+		req.session.messages = [_('missing-username-or-password')];
+		res.redirect('/signup');
+		return;
+	}
+	db.get(`select * from users where username = ?;`, username, (err, row) => {
 		if (err) {
 			return next(err);
 		}
-		db.run(`insert into users (username, password_hash, salt, is_admin)
-			values (?, ?, ?, false);`,
-			[req.body['username'], hash, salt],
-			(err) => {
-				if (err) {
-					return next(err);
-				}
-				res.redirect('/');
+		if (row) {
+			req.session.messages = [_('username-already-exists')];
+			res.redirect('/signup');
+			return;
+		}
+		if (password.length < 8) {
+			req.session.messages = [_('password-too-short')];
+			res.redirect('/signup');
+			return;
+		}
+		const salt = crypto.randomBytes(16);
+		crypto.pbkdf2(password, salt, hashIterationCount, keyLength, digestMethod, (err, hash) => {
+			if (err) {
+				return next(err);
 			}
-		);
+			db.run(`insert into users (username, password_hash, salt, is_admin)
+				values (?, ?, ?, false);`,
+				[username, hash, salt],
+				(err) => {
+					if (err) {
+						return next(err);
+					}
+					res.redirect('/');
+				}
+			);
+		});
 	});
 });

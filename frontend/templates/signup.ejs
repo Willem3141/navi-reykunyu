@@ -14,6 +14,9 @@
 			<%- include('header.ejs') %>
 
 			<p><%- _("signup-explanation") %></p>
+			<% for (let message of messages) { %>
+				<div class="login-error-message error-block"><%- message %></div>
+			<% } %>
 			<form id="signup-form" class="ui form" method="POST" action="/auth/signup">
 					<div class="ui field">
 						<label for="username"><%- _('login-username') %></label>
