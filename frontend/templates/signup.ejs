@@ -6,13 +6,10 @@
 		<title>Reykunyu &ndash; Online Na'vi dictionary</title>
 		<link rel="stylesheet" type="text/css" href="/vendor/semantic/dist/semantic.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="Reykunyu is a user-friendly online Na'vi dictionary, supporting translations to and from English, German, French, and other languages.">
 		<link href="/css/tìlam.css" rel="stylesheet">
-		<link rel="manifest" href="/manifest.webmanifest">
 		<link rel="icon" type="image/png" href="/images/favicon.png">
-		<link rel="search" type="application/opensearchdescription+xml" title="Reykunyu" href="/opensearch.xml">
 	</head>
-	<body<%- user ? ' class="editable"' : '' %>>
+	<body>
 		<div class="container">
 			<%- include('header.ejs') %>
 
@@ -36,7 +33,6 @@
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
 		<script src="/vendor/semantic/dist/semantic.js"></script>
 		<script src="/js/ui-translations.js"></script>
-		<script src="/js/index.js"></script>
 	</body>
 </html>
 
