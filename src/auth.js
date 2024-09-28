@@ -51,8 +51,9 @@ passport.deserializeUser((user, done) => {
 });
 
 router.post('/login/password', passport.authenticate('local', {
-	'successRedirect': '/',
-	'failureRedirect': '/'
+	'failureRedirect': '/',
+	'failureMessage': true,
+	'successRedirect': '/'
 }));
 
 router.post('/logout', function (req, res, next) {

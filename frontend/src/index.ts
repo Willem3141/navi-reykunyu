@@ -44,8 +44,16 @@ class Reykunyu {
 
 		$('#login-modal').modal();
 		$('#login-button').on("click", () => {
-			$('#login-modal').modal("show");
+			$('.login-error-message').remove();
+			$('#login-modal')
+				.modal("show");
 		});
+		if ($('.login-error-message').length > 0) {
+			$('#login-modal')
+				.modal('setting', 'duration', 0)
+				.modal('show')
+				.modal('setting', 'duration', 400);
+		}
 
 		$('#settings-modal').modal({
 			onApprove: () => {

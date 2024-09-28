@@ -60,17 +60,22 @@ function pageVariables(req, toAdd) {
 	let variables = { ...toAdd };
 	variables['user'] = req.user;
 	variables['_'] = translations.span_;
+	variables['messages'] = req.session.messages;
+	req.session.messages = [];
 	variables['development'] = config.hasOwnProperty('development') && config['development'];
 	return variables;
 }
 
-app.get('/', function(req, res) {
+app.use((req, res, next) => {
 	setLanguage(req);
+	next();
+});
+
+app.get('/', function(req, res) {
 	res.render('index', pageVariables(req, { query: req.query['q'] }));
 });
 
 app.get('/help', function(req, res) {
-	setLanguage(req);
 	res.render('help', pageVariables(req));
 });
 
@@ -93,14 +98,12 @@ app.get('/js/ui-translations.js', function(req, res) {
 });
 
 app.get('/all', function(req, res) {
-	setLanguage(req);
 	res.render("fralì'u", pageVariables(req));
 });
 
 app.get('/add', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -116,7 +119,6 @@ app.get('/add', function(req, res) {
 app.post('/add', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -146,7 +148,6 @@ app.post('/add', function(req, res) {
 app.get('/edit', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -171,7 +172,6 @@ app.get('/edit', function(req, res) {
 app.get('/edit/raw', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -196,7 +196,6 @@ app.get('/edit/raw', function(req, res) {
 app.post('/edit', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -237,7 +236,6 @@ app.get('/history', function(req, res) {
 app.get('/etymology-editor', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -250,7 +248,6 @@ app.get('/etymology-editor', function(req, res) {
 app.get('/sources-editor', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -263,7 +260,6 @@ app.get('/sources-editor', function(req, res) {
 app.get('/corpus-editor', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -275,7 +271,6 @@ app.get('/corpus-editor', function(req, res) {
 app.get('/corpus-editor/add', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -287,7 +282,6 @@ app.get('/corpus-editor/add', function(req, res) {
 app.get('/corpus-editor/edit', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -308,7 +302,6 @@ app.get('/corpus-editor/edit', function(req, res) {
 app.post('/corpus-editor/add', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -352,7 +345,6 @@ app.post('/corpus-editor/add', function(req, res) {
 app.post('/corpus-editor/edit', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -375,11 +367,9 @@ app.post('/corpus-editor/edit', function(req, res) {
 app.get('/untranslated', function(req, res) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
-	setLanguage(req);
 	let untranslated = edit.getUntranslated(translations.getLanguage());
 		
 	res.render('untranslated', pageVariables(req, {
@@ -389,7 +379,6 @@ app.get('/untranslated', function(req, res) {
 });
 
 app.get('/signup', function(req, res) {
-	setLanguage(req);
 	res.render('signup', pageVariables(req));
 });
 
@@ -418,6 +407,15 @@ app.get('/study/course', function(req, res) {
 	});
 });
 
+app.get('/study/learn', function(req, res) {
+	if (!req.query.hasOwnProperty('course') || !req.query.hasOwnProperty('lesson')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	res.render('learn', pageVariables(req));
+});
+
 app.get('/words.json', function(req, res) {
 	res.sendFile('words.json', { root: process.cwd() + '/data' });
 });
@@ -430,13 +428,11 @@ app.use('/auth', authRouter);
 
 app.use((req, res, next) => {
 	res.status(404);
-	setLanguage(req);
 	res.render('404', pageVariables(req));
 })
 
 app.use((err, req, res, next) => {
 	res.status(500);
-	setLanguage(req);
 	output.error('Uncaught exception when handling a request; responding with HTTP 500');
 	console.log(err.stack);
 	res.render('500', pageVariables(req, { error: err }));
