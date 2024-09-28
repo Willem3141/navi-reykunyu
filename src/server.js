@@ -60,8 +60,12 @@ function pageVariables(req, toAdd) {
 	let variables = { ...toAdd };
 	variables['user'] = req.user;
 	variables['_'] = translations.span_;
-	variables['messages'] = req.session.messages;
-	req.session.messages = [];
+	if (req.session.messages) {
+		variables['messages'] = req.session.messages;
+		req.session.messages = [];
+	} else {
+		variables['messages'] = [];
+	}
 	variables['development'] = config.hasOwnProperty('development') && config['development'];
 	return variables;
 }
