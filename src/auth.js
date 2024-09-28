@@ -42,8 +42,11 @@ passport.deserializeUser((user, done) => {
 	db.get(`select * from users where id = ?;`, user['id'], (err, row) => {
 		if (err) {
 			done(err);
+		} else if (row === undefined) {
+			done(null, false);
+		} else {
+			done(null, row);
 		}
-		done(null, row);
 	});
 });
 
