@@ -146,7 +146,7 @@ router.get('/rhymes', cors(), function(req, res) {
 	res.json(reykunyu.getRhymes(req.query["tìpawm"], req.query['dialect']));
 });
 
-router.get('/srs/learnable', function(req, res) {
+/*router.get('/srs/learnable', function(req, res) {
 	if (!req.user) {
 		send403(res);
 		return;
@@ -201,7 +201,7 @@ router.post('/srs/mark-known', function(req, res) {
 	zeykerokyu.processKnownAnswer(req.user, vocab, (items) => {
 		res.send();
 	});
-});
+});*/
 
 function send403(res) {
 	res.status(403);

@@ -8,20 +8,7 @@ var express = require('express');
 var compression = require('compression');
 var session = require('express-session');
 var sqliteSession = require('connect-sqlite3')(session);
-
-var user = require('./user');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-passport.use(new LocalStrategy(
-	function (username, password, done) {
-		const foundUser = user.findUser(username, password);
-		if (foundUser) {
-			return done(null, foundUser);
-		} else {
-			return done(null, false);
-		}
-	}
-));
+const passport = require('passport');
 
 var app = express();
 app.use(compression());
@@ -43,12 +30,10 @@ try {
 	output.hint(`Reykunyu can use navi-tslamyu to parse sentences.`);
 }
 
-
 const ejs = require('ejs');
 
-var translations = require('./translations');
-
 app.use(require('body-parser').urlencoded({ extended: true }));
+
 app.use(session({
 	store: new sqliteSession(),
 	secret: config["secret"],
@@ -57,18 +42,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-passport.serializeUser(function (user, cb) {
-	cb(null, user.id);
-});
-
-passport.deserializeUser(function (id, cb) {
-	if (user.users.hasOwnProperty(id)) {
-		cb(null, user.users[id]);
-	} else {
-		cb('User not found');
-	}
-});
 
 const staticRoot = './frontend/dist';
 app.use(express.static(staticRoot));
@@ -79,24 +52,34 @@ app.use('/fam', express.static('./data/fam'));
 app.set('views', './frontend/templates');
 app.set('view engine', 'ejs');
 
+const translations = require('./translations');
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json'));
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
 function pageVariables(req, toAdd) {
 	let variables = { ...toAdd };
 	variables['user'] = req.user;
-	variables['_'] = translations._;
+	variables['_'] = translations.span_;
+	if (req.session.messages) {
+		variables['messages'] = req.session.messages;
+		req.session.messages = [];
+	} else {
+		variables['messages'] = [];
+	}
 	variables['development'] = config.hasOwnProperty('development') && config['development'];
 	return variables;
 }
 
-app.get('/', function(req, res) {
+app.use((req, res, next) => {
 	setLanguage(req);
+	next();
+});
+
+app.get('/', function(req, res) {
 	res.render('index', pageVariables(req, { query: req.query['q'] }));
 });
 
 app.get('/help', function(req, res) {
-	setLanguage(req);
 	res.render('help', pageVariables(req));
 });
 
@@ -119,30 +102,12 @@ app.get('/js/ui-translations.js', function(req, res) {
 });
 
 app.get('/all', function(req, res) {
-	setLanguage(req);
 	res.render("fralì'u", pageVariables(req));
 });
 
-app.post('/login', passport.authenticate('local', {
-	'successRedirect': '/',
-	'failureRedirect': '/'
-}/*, function(err, user, info) {
-	console.log(err, user, info);
-}*/));
-
-app.get('/logout', function(req, res, next) {
-	req.logout(function(err) {
-		if (err) {
-			return next(err);
-		}
-		res.redirect('/');
-	});
-});
-
 app.get('/add', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -156,9 +121,8 @@ app.get('/add', function(req, res) {
 });
 
 app.post('/add', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -186,9 +150,8 @@ app.post('/add', function(req, res) {
 });
 
 app.get('/edit', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -211,9 +174,8 @@ app.get('/edit', function(req, res) {
 });
 
 app.get('/edit/raw', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -236,9 +198,8 @@ app.get('/edit/raw', function(req, res) {
 });
 
 app.post('/edit', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -277,9 +238,8 @@ app.get('/history', function(req, res) {
 });
 
 app.get('/etymology-editor', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -290,9 +250,8 @@ app.get('/etymology-editor', function(req, res) {
 });
 
 app.get('/sources-editor', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -303,9 +262,8 @@ app.get('/sources-editor', function(req, res) {
 });
 
 app.get('/corpus-editor', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -315,9 +273,8 @@ app.get('/corpus-editor', function(req, res) {
 });
 
 app.get('/corpus-editor/add', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -327,9 +284,8 @@ app.get('/corpus-editor/add', function(req, res) {
 });
 
 app.get('/corpus-editor/edit', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -348,9 +304,8 @@ app.get('/corpus-editor/edit', function(req, res) {
 });
 
 app.post('/corpus-editor/add', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -392,9 +347,8 @@ app.post('/corpus-editor/add', function(req, res) {
 });
 
 app.post('/corpus-editor/edit', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
@@ -415,13 +369,11 @@ app.post('/corpus-editor/edit', function(req, res) {
 });
 
 app.get('/untranslated', function(req, res) {
-	if (!req.user) {
+	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
-		setLanguage(req);
 		res.render('403', pageVariables(req));
 		return;
 	}
-	setLanguage(req);
 	let untranslated = edit.getUntranslated(translations.getLanguage());
 		
 	res.render('untranslated', pageVariables(req, {
@@ -430,7 +382,11 @@ app.get('/untranslated', function(req, res) {
 	}));
 });
 
-app.get('/study', function(req, res) {
+app.get('/signup', function(req, res) {
+	res.render('signup', pageVariables(req));
+});
+
+/*app.get('/study', function(req, res) {
 	zeykerokyu.getCourses(req.user, (courseData) => {
 		res.render('study', pageVariables(req, { courses: courseData }));
 	});
@@ -455,6 +411,15 @@ app.get('/study/course', function(req, res) {
 	});
 });
 
+app.get('/study/learn', function(req, res) {
+	if (!req.query.hasOwnProperty('course') || !req.query.hasOwnProperty('lesson')) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	res.render('learn', pageVariables(req));
+});*/
+
 app.get('/words.json', function(req, res) {
 	res.sendFile('words.json', { root: process.cwd() + '/data' });
 });
@@ -462,15 +427,16 @@ app.get('/words.json', function(req, res) {
 const apiRouter = require('./api');
 app.use('/api', apiRouter);
 
+const authRouter = require('./auth');
+app.use('/auth', authRouter);
+
 app.use((req, res, next) => {
 	res.status(404);
-	setLanguage(req);
 	res.render('404', pageVariables(req));
 })
 
 app.use((err, req, res, next) => {
 	res.status(500);
-	setLanguage(req);
 	output.error('Uncaught exception when handling a request; responding with HTTP 500');
 	console.log(err.stack);
 	res.render('500', pageVariables(req, { error: err }));
