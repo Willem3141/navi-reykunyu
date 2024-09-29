@@ -160,6 +160,11 @@ declare type Course = {
 declare type Lesson = {
 	id: number,
 	name: string,
-	introduction: string,
-	conclusion: string
+	introduction?: string,
+	conclusion?: string
+}
+
+declare type LearnableItem = {
+	vocab: number,
+	comment: string
 }

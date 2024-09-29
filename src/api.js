@@ -151,7 +151,7 @@ router.get('/srs/courses', function(req, res) {
 		send403(res);
 		return;
 	}
-	zeykerokyu.getCourses(req.user, (courses) => {
+	zeykerokyu.getCourses((courses) => {
 		res.json(courses);
 	});
 });
@@ -161,9 +161,33 @@ router.get('/srs/lessons', function(req, res) {
 		send403(res);
 		return;
 	}
-	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
 	zeykerokyu.getLessons(req.user, courseId, (lessons) => {
 		res.json(lessons);
+	});
+});
+
+router.get('/srs/lesson', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
+	zeykerokyu.getLessonData(courseId, lessonId, (lessons) => {
+		res.json(lessons);
+	});
+});
+
+router.get('/srs/items', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
+	zeykerokyu.getItemsForLesson(courseId, lessonId, req.user, (items) => {
+		res.json(items);
 	});
 });
 
@@ -172,8 +196,8 @@ router.get('/srs/learnable', function(req, res) {
 		send403(res);
 		return;
 	}
-	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
-	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res);
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
 	zeykerokyu.getLearnableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});
@@ -184,8 +208,8 @@ router.get('/srs/reviewable', function(req, res) {
 		send403(res);
 		return;
 	}
-	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
-	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res);
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
 	zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});

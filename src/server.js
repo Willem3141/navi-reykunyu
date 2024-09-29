@@ -392,7 +392,7 @@ app.get('/study', function(req, res) {
 		res.render('403', pageVariables(req));
 		return;
 	}
-	zeykerokyu.getCourses(req.user, (courses) => {
+	zeykerokyu.getCourses((courses) => {
 		res.render('study', pageVariables(req, { courses: courses }));
 	});
 });
@@ -409,7 +409,7 @@ app.get('/study/course', function(req, res) {
 		res.send('400 Bad Request');
 		return;
 	}
-	zeykerokyu.getCourseData(req.user, courseId - 1, (courseData) => {
+	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
 		zeykerokyu.getLessons(req.user, courseId - 1, (lessons) => {
 			res.render('study-course', pageVariables(req, { course: courseData, lessons: lessons }));
 		});
@@ -429,7 +429,7 @@ app.get('/study/lesson', function(req, res) {
 		res.send('400 Bad Request');
 		return;
 	}
-	zeykerokyu.getCourseData(req.user, courseId - 1, (courseData) => {
+	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
 		zeykerokyu.getLessons(req.user, courseId - 1, (lessons) => {
 			res.render('study-session', pageVariables(req, { course: courseData, lessons: lessons }));
 		});
