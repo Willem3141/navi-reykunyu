@@ -29,7 +29,7 @@
 	<% if (locals['isMainPage']) { %>
 	<div class="ui buttons main-menu">
 		<a class="ui icon basic button" href="/all"><i class="book icon"></i><span class="button-label"><%- _("menu-all-words") %></span></a>
-		<% if (0) { %>
+		<% if (user) { %>
 		<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i><span class="button-label"><%- _("menu-study") %></span></a>
 		<% } %>
 		<% if (user && user['is_admin']) { %>

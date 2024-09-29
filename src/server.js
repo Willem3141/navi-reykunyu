@@ -386,7 +386,7 @@ app.get('/signup', function(req, res) {
 	res.render('signup', pageVariables(req));
 });
 
-/*app.get('/study', function(req, res) {
+app.get('/study', function(req, res) {
 	zeykerokyu.getCourses(req.user, (courseData) => {
 		res.render('study', pageVariables(req, { courses: courseData }));
 	});
@@ -418,7 +418,7 @@ app.get('/study/learn', function(req, res) {
 		return;
 	}
 	res.render('learn', pageVariables(req));
-});*/
+});
 
 app.get('/words.json', function(req, res) {
 	res.sendFile('words.json', { root: process.cwd() + '/data' });
