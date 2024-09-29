@@ -182,7 +182,9 @@
 		"error-404-text": "Reykunyu couldn't find the page you're looking for. You can go back to the homepage with the button above.",
 		"error-500-text": "You encountered an internal server error. Sorry!",
 		"pick-a-course": "Which course would you like to learn?",
-		"pick-a-course-note": "If you are just starting out, we strongly recommend starting with the Beginner Vocabulary course. Reykunyu remembers which words you've already learned, so if you want to do another course later, it won't make you repeat words you already know from the Beginner Vocabulary course."
+		"pick-a-course-note": "If you are just starting out, we strongly recommend starting with the Beginner Vocabulary course. Reykunyu remembers which words you've already learned, so if you want to do another course later, it won't make you repeat words you already know from the Beginner Vocabulary course.",
+		"lessons": "Lessons",
+		"lesson": "Lesson"
 	},
 	"de": {
 		"language": "Deutsch",

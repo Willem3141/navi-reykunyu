@@ -156,6 +156,17 @@ router.get('/srs/courses', function(req, res) {
 	});
 });
 
+router.get('/srs/lessons', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
+	zeykerokyu.getLessons(req.user, courseId, (lessons) => {
+		res.json(lessons);
+	});
+});
+
 router.get('/srs/learnable', function(req, res) {
 	if (!req.user) {
 		send403(res);

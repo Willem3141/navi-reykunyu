@@ -56,7 +56,7 @@ function getCourseData(user, courseId, cb) {
 /// statistics for the given user.
 function getLessons(user, courseId, cb) {
 	if (user) {
-		db.all(`select l.name, l.introduction, l.conclusion,
+		db.all(`select l.id, l.name, l.introduction, l.conclusion,
 			(select count() from vocab_in_lesson v
 				where l.course_id == v.course_id and l.id == v.lesson_id) as total_count,
 			(select count() from vocab_in_lesson v, vocab_status s
@@ -74,7 +74,7 @@ function getLessons(user, courseId, cb) {
 		});
 
 	} else {
-		db.all(`select l.name, l.description,
+		db.all(`select l.id, l.name, l.description,
 			(select count() from vocab_in_lesson v where l.id == v.lesson_id) as total_count,
 		from lesson l
 		where l.course_id = ?`, courseId, (err, lessons) => {

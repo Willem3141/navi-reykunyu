@@ -9,14 +9,14 @@
 	</head>
 	<body>
 		<div id="main-container" class="container">
-			<h3><%- _('pick-a-course') %></h3>
-			<p><%- _('pick-a-course-note') %></p>
-			<ul class="cards-list">
-				<% for (let course of courses) { %>
+			<h3><%- course['name'] %></h3>
+			<p><%- course['description'] %></p>
+			<ul class="vertical-list">
+				<% for (let lesson of lessons) { %>
 					<li>
-						<a href="/study/course?c=<%= course['id'] + 1 %>">
-							<div class="card-title"><%= course['name'] %></div>
-							<div class="card-description"><%= course['description'] %></div>
+						<a href="/study/lesson?c=<%= course['id'] + 1 %>&l=<%= lesson['id'] + 1 %>">
+							<div class="card-title"><%- _('lesson') %> <%= lesson['id'] + 1 %></div>
+							<div class="card-description"><%= lesson['name'] %></div>
 						</a>
 					</li>
 				<% } %>

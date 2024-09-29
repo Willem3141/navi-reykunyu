@@ -1,13 +1,11 @@
-import { ChooseCoursePage } from './choose-course-page';
-import { ChooseLessonPage } from './choose-lesson-page';
 import { LearnPage } from './learn-page';
 
 class Zeykerokyu {
 	activePage!: Page;
 
 	constructor() {
-		this.switchToPage(new ChooseCoursePage((course: Course) => {
-			this.switchToPage(new ChooseLessonPage());
+		this.switchToPage(new LearnPage((course: Course) => {
+			this.switchToPage(new ChooseLessonPage(course));
 		}));
 	}
 

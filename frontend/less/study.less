@@ -10,30 +10,59 @@ body {
 	box-sizing: border-box;
 }
 
-.courses-list {
+a {
+	color: var(--primary-color);
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: none;
+	}
+}
+
+.cards-list {
 	list-style: none;
 	padding-left: 0;
 	padding-right: 0;
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap;
 	gap: 20px;
 
 	li {
+		flex-grow: 1;
+		width: 44%;
+		cursor: pointer;
 		.shadow();
 		.shadow-drops-on-hover();
-		padding: 14px 18px;
-		width: 50%;
-		cursor: pointer;
-
-		.course-name {
-			font-weight: bold;
-			margin-bottom: 10px;
+		&>a {
+			display: inline-block;
+			padding: 14px 18px;
 		}
 	}
 }
 
-a {
-	text-decoration: none;
+.vertical-list {
+	.shadow();
+	list-style: none;
+	padding-left: 0;
+	padding-right: 0;
+	display: flex;
+	flex-direction: column;
+
+	li {
+		padding: 14px 18px;
+		cursor: pointer;
+		border-top: 1px solid var(--border-color);
+
+		&:first-child {
+			border-top: none;
+		}
+	}
+}
+
+.card-title {
+	font-weight: bold;
+	margin-bottom: 10px;
 }
 
 .score {

@@ -216,12 +216,14 @@ table.conjugation-table {
   --background-color: #f9f9f9;
   --card-background-color: #fff;
   --primary-color: #222;
+  --border-color: #ddd;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --background-color: #222;
     --card-background-color: #444;
     --primary-color: #eee;
+    --border-color: #444;
   }
 }
 body {
@@ -231,33 +233,61 @@ body {
   margin: 0;
   box-sizing: border-box;
 }
-.courses-list {
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+}
+.cards-list {
   list-style: none;
   padding-left: 0;
   padding-right: 0;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 20px;
 }
-.courses-list li {
+.cards-list li {
+  flex-grow: 1;
+  width: 44%;
+  cursor: pointer;
   background-color: var(--card-background-color);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
   border: none;
   border-radius: 4px;
   transition: box-shadow 0.25s;
-  padding: 14px 18px;
-  width: 50%;
-  cursor: pointer;
 }
-.courses-list li:hover {
+.cards-list li:hover {
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25), 0 6px 10px rgba(0, 0, 0, 0.22);
 }
-.courses-list li .course-name {
+.cards-list li > a {
+  display: inline-block;
+  padding: 14px 18px;
+}
+.vertical-list {
+  background-color: var(--card-background-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+  border: none;
+  border-radius: 4px;
+  list-style: none;
+  padding-left: 0;
+  padding-right: 0;
+  display: flex;
+  flex-direction: column;
+}
+.vertical-list li {
+  padding: 14px 18px;
+  cursor: pointer;
+  border-top: 1px solid var(--border-color);
+}
+.vertical-list li:first-child {
+  border-top: none;
+}
+.card-title {
   font-weight: bold;
   margin-bottom: 10px;
-}
-a {
-  text-decoration: none;
 }
 .score {
   float: right;
