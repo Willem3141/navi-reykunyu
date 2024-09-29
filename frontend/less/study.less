@@ -216,7 +216,7 @@ button {
 	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25), 0 6px 10px rgba(0, 0, 0, 0.22);
 }
 
-.button.secondary-button::before {
+.button.secondary-button[data-text]::before {
 	content: attr(data-text);
 	pointer-events: none;
 	opacity: 0;
