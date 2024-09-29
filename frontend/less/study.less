@@ -7,7 +7,12 @@ body {
 	font-family: 'Recursive' !important;
 	font-variation-settings: "MONO" 0;
 	margin: 0;
+	padding: 0;
 	box-sizing: border-box;
+}
+
+.container {
+	padding: 0 15px;
 }
 
 a {
@@ -33,6 +38,7 @@ a {
 		width: 44%;
 		cursor: pointer;
 		.shadow();
+		.rounded();
 		.shadow-drops-on-hover();
 		&>a {
 			display: inline-block;
@@ -43,6 +49,7 @@ a {
 
 .vertical-list {
 	.shadow();
+	.rounded();
 	list-style: none;
 	padding-left: 0;
 	padding-right: 0;
@@ -81,11 +88,14 @@ a {
 	transition: scale 0.25s;
 }
 
+.rounded() {
+	border-radius: 4px;
+}
+
 .shadow() {
 	background-color: var(--card-background-color);
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
 	border: none;
-	border-radius: 4px;
 }
 
 .shadow-drops-on-hover() {
@@ -358,16 +368,34 @@ button {
 	text-overflow: ellipsis;
 }
 
-.progress-bar {
-	position: fixed;
+header {
+	background-color: var(--header-background-color);
+	color: var(--header-primary-color);
+	position: relative;
 	left: 0;
 	right: 0;
-	bottom: 0;
-	height: 5px;
-	background-color: black;
+	top: 0;
+	flex-direction: column;
+	padding: 10px 15px;
+
+	#lesson-information {
+		margin: 0 auto;
+		max-width: 1000px;
+
+		.lesson-number {
+			font-weight: bold;
+		}
+	}
 }
 
-.progress-bar .filled-part {
+#progress-bar {
+	.shadow();
+	height: 5px;
+	background-color: black;
+	margin-bottom: 40px;
+}
+
+#progress-bar .filled-part {
 	background-color: #3a9550;
 	width: 0%;
 	height: 100%;

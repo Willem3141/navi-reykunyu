@@ -8,38 +8,21 @@
 		<link href="/css/study.css" rel="stylesheet">
 	</head>
 	<body>
+		<header>
+			<div id="lesson-information">
+				<div class="lesson-number"><%- _('lesson') %> <%= lesson['id'] + 1 %></div>
+				<div class="lesson-name"><%= lesson['name'] %></div>
+			</div>
+		</header>
+		<div id="progress-bar">
+			<div class="filled-part"></div>
+		</div>
 		<div id="main-container" class="container">
-			<!--<div id="navi-card" class="card">
-				<div id="navi">
-				</div>
-			</div>
-			<div id="english-card" class="card">
-				<div id="english">
-				</div>
-				<img id="word-image"></img>
-			</div>
-			<div id="meaning-note-card" class="semicard" style="display: none;">
-				<div class="semicard-header">
-					Usage note:
-				</div>
-				<div id="meaning-note">
-				</div>
-			</div>
-			<div id="etymology-card" class="semicard" style="display: none;">
-				<div class="semicard-header">
-					Etymology:
-				</div>
-				<div id="etymology">
-				</div>
-			</div>
-			<div id="buttons-card" class="semicard">
+			<!--<div id="buttons-card" class="semicard">
 				<button class="button primary-button" id="next-button">Learned &rarr;</button>
 				<button class="button secondary-button" id="known-button" data-text="Click this button if you already know this word. Reykunyu will still review the word once. If you get it right, Reykunyu will not bother you with it again.">Already known &rarr;</button>
 				<button class="button secondary-button" id="exit-button" data-text="This button exits your learning session. Your progress so far will still be saved.">Exit session &rarr;</button>
 			</div>-->
-		</div>
-		<div id="progress-bar" style="display: none;">
-			<div class="filled-part"></div>
 		</div>
 		<div id="dialog-layer" style="display: none;">
 			<!--<div id="done-dialog" class="dialog">

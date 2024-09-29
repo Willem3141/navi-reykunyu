@@ -32,11 +32,6 @@ class LearnPage {
 		}
 	}
 
-	render(): void {
-		// TODO
-		this.fetchAndSetUp();
-	}
-
 	fetchAndSetUp(): void {
 		const item = this.items[this.currentItemIndex];
 		if (typeof item === 'number') {
@@ -54,24 +49,21 @@ class LearnPage {
 			this.currentSlide.renderIn($container);
 		}
 	}
-
-	setUpQuestion(): void {
-	}
-
-	setUpComment(): void {
-		// TODO
-	}
 }
 
-interface Slide {
-	renderIn($container: JQuery): void;
+abstract class Slide {
+	abstract renderIn($container: JQuery): void;
 };
 
-class QuestionSlide implements Slide {
+class QuestionSlide extends Slide {
 	word: WordData;
 	$navi?: JQuery;
+	$english?: JQuery;
+	$meaningNote?: JQuery;
+	$etymology?: JQuery;
 
 	constructor(word: WordData) {
+		super();
 		this.word = word;
 	}
 
@@ -127,42 +119,44 @@ class QuestionSlide implements Slide {
 		this.$navi.append(' ');
 		this.$navi.append($('<span/>').addClass('type').text('(' + toReadableType(this.word['type']) + ')'));
 
-		const $english = $('#english');
-		$english.empty();
-		$english.append($('<span/>').addClass('meaning').html(english));
+		const $englishCard = $('<div/>').addClass('card')
+			.appendTo($container);
+		this.$english = $('<div/>')
+			.attr('id', 'english')
+			.appendTo($englishCard);
+		this.$english.append($('<span/>').addClass('meaning').html(english));
 
 		if (this.word['meaning_note']) {
-			$('#meaning-note-card').show();
-			const $meaningNote = $('#meaning-note');
-			$meaningNote.empty();
-			appendLinkString(this.word['meaning_note'], $meaningNote, 'FN', 'en');
-		} else {
-			$('#meaning-note-card').hide();
+			const $meaningNoteCard = $('<div/>').addClass('semicard')
+				.appendTo($container);
+			$('<div/>').addClass('semicard-header')
+				.text(_('study-section-usage-note'))
+				.appendTo($meaningNoteCard);
+			this.$meaningNote = $('<div/>').attr('id', 'meaning-note-card').appendTo($meaningNoteCard);
+			appendLinkString(this.word['meaning_note'], this.$meaningNote, 'FN', 'en');
 		}
 
 		if (this.word['etymology']) {
-			$('#etymology-card').show();
-			const $etymology = $('#etymology');
-			$etymology.empty();
-			appendLinkString(this.word['etymology'], $etymology, 'FN', 'en');
-		} else {
-			$('#etymology-card').hide();
+			const $etymologyCard = $('<div/>').addClass('semicard')
+				.appendTo($container);
+			$('<div/>').addClass('semicard-header')
+				.text(_('study-section-etymology'))
+				.appendTo($etymologyCard);
+			this.$etymology = $('<div/>').attr('id', 'etymology-card').appendTo($etymologyCard);
+			appendLinkString(this.word['etymology'], this.$etymology, 'FN', 'en');
 		}
 
-		const $image = $('#word-image');
-		if (this.word.hasOwnProperty('image')) {
-			$image.show();
-			$image.attr('src', '/ayrel/' + this.word['image']);
-		} else {
-			$image.hide();
+		if (this.word['image']) {
+			$('<img/>').attr('src', '/ayrel/' + this.word['image']).appendTo($englishCard);
 		}
 	}
 }
 
-class CommentSlide implements Slide {
+class CommentSlide extends Slide {
 	comment: string;
 
 	constructor(comment: string) {
+		super();
 		this.comment = comment;
 	}
 
@@ -205,7 +199,7 @@ $(() => {
 		$.getJSON('/api/srs/items', { 'courseId': courseId, 'lessonId': lessonId }).done((items) => {
 			$.getJSON('/api/srs/learnable', { 'courseId': courseId, 'lessonId': lessonId }).done((learnableItems) => {
 				if (learnableItems.length > 0) {
-					new LearnPage(courseId, lessonId, lessonData, learnableItems).render();
+					new LearnPage(courseId, lessonId, lessonData, learnableItems).fetchAndSetUp();
 				} else {
 					new OverviewPage(courseId, lessonId, lessonData, items).render();
 				}

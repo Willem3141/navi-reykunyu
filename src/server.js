@@ -430,8 +430,8 @@ app.get('/study/lesson', function(req, res) {
 		return;
 	}
 	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
-		zeykerokyu.getLessons(req.user, courseId - 1, (lessons) => {
-			res.render('study-session', pageVariables(req, { course: courseData, lessons: lessons }));
+		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson) => {
+			res.render('study-session', pageVariables(req, { course: courseData, lesson: lesson }));
 		});
 	});
 });
