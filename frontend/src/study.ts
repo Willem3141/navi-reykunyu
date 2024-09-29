@@ -50,7 +50,7 @@ class LearnPage {
 		if (typeof item === 'number') {
 			const itemID = this.items[this.currentItemIndex];
 			$.getJSON('/api/word', { 'id': itemID }).done((wordData) => {
-				this.currentSlide = new QuestionSlide(wordData, this.toNextItem.bind(this));
+				this.currentSlide = new QuestionSlide(wordData, this.courseId, this.toNextItem.bind(this));
 				const $container = $('#main-container');
 				$container.empty();
 				this.currentSlide.renderIn($container);
@@ -64,8 +64,6 @@ class LearnPage {
 	}
 
 	toNextItem(): void {
-		//$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
-		//this.addToLearnedList();
 		this.currentItemIndex++;
 		this.updateProgress();
 		if (this.currentItemIndex >= this.items.length) {
@@ -94,6 +92,8 @@ abstract class Slide {
 
 class QuestionSlide extends Slide {
 	word: WordData;
+	courseId: number;
+
 	$navi?: JQuery;
 	$english?: JQuery;
 	$meaningNote?: JQuery;
@@ -102,9 +102,10 @@ class QuestionSlide extends Slide {
 	$knownButton?: JQuery;
 	$exitButton?: JQuery;
 
-	constructor(word: WordData, toNextItem: () => void) {
+	constructor(word: WordData, courseId: number, toNextItem: () => void) {
 		super(toNextItem);
 		this.word = word;
+		this.courseId = courseId;
 	}
 
 	htmlFromNavi(navi: string): string {
@@ -126,7 +127,7 @@ class QuestionSlide extends Slide {
 				}
 			}
 		}
-		return result.replace('/ù/g', 'u');
+		return result.replace(/ù/g, 'u');
 	}
 
 	renderIn($container: JQuery): void {
@@ -222,7 +223,7 @@ class QuestionSlide extends Slide {
 			.text(_('exit-button') + ' →')
 			.attr('data-text', _('exit-button-tooltip'))
 			.on('click', () => {
-				showDialog($('#lesson-done-dialog'));
+				window.location.href = '/study/course?c=' + this.courseId;
 			})
 			.appendTo($buttonsCard);
 	}
