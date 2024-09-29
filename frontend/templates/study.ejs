@@ -14,10 +14,6 @@
 			<%- include('header.ejs') %>
 		</div>
 
-		<div class="container">
-			<p>Welcome to <b>Zeykerokyu</b>, Reykunyu’s vocab study tool!</p>
-		</div>
-
 		<% if (!user) { %>
 		<div class="container">
 			<p>Reykunyu’s study tool allows you to learn and review Na’vi vocabulary. It has a built-in <i>spaced repetition system</i> (SRS). This means that Reykunyu remembers which words you know well and which words you find difficult, and will make sure difficult words end up in your review sessions more often.</p>
@@ -26,7 +22,7 @@
 		</div>
 		<% } else { %>
 		<div class="container">
-			<h2>Courses</h2>
+			<h2>What would you like to learn?</h2>
 			<div class="lessons-container">
 				<% for (const i in courses) {
 					const course = courses[i]; %>
