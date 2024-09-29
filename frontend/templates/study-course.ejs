@@ -17,6 +17,9 @@
 						<a href="/study/lesson?c=<%= course['id'] + 1 %>&l=<%= lesson['id'] + 1 %>">
 							<div class="card-title"><%- _('lesson') %> <%= lesson['id'] + 1 %></div>
 							<div class="card-description"><%= lesson['name'] %></div>
+							<b><%= lesson['known_count'] - lesson['reviewable_count'] %></b> known,
+							<b><%= lesson['reviewable_count'] %></b> up for review,
+							<b><%= lesson['total_count'] - lesson['known_count'] %></b> unknown
 						</a>
 					</li>
 				<% } %>
