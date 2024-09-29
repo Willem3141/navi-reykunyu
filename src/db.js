@@ -60,16 +60,16 @@ db.serialize(() => {
 		for (let i = 0; i < coursesData.length; i++) {
 			const course = coursesData[i];
 			db.run(`insert into course values (?, ?, ?)`, i, course['name'], course['description']);
+			preprocessLessons(course);
 			const lessons = course['lessons'];
 			for (let j = 0; j < lessons.length; j++) {
 				const lesson = lessons[j];
 				db.run(`insert into lesson values (?, ?, ?, ?, ?)`,
 					i, j, lesson['name'], lesson['introduction'], lesson['conclusion']);
 				
-				const wordIDs = getWordsForLesson(lesson);
 				const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?, ?)`);
-				for (let k = 0; k < wordIDs.length; k++) {
-					vocabInsert.run(i, j, k, wordIDs[k]['id'], wordIDs[k]['comment']);
+				for (let k = 0; k < lesson['words'].length; k++) {
+					vocabInsert.run(i, j, k, lesson['words'][k]['id'], lesson['words'][k]['comment']);
 				}
 				vocabInsert.finalize();
 			}
@@ -97,34 +97,52 @@ db.serialize(() => {
 	)`);
 });
 
-function getWordsForLesson(lesson) {
-	let words = [];
-	if (lesson.hasOwnProperty('words')) {
-		words = lesson['words'];
-		words = words.map((w) => {
-			if (typeof w === 'string') {
-				w = { 'word': w };
+function preprocessLessons(course) {
+	if (course.hasOwnProperty('rule')) {
+		let lessons = [];
+		if (course['rule'] === 'all') {
+			let words = dictionary.getAll();
+			words = words.map((w) => { return { 'id': w['id'] } });
+			words.sort(function (a, b) {
+				return compareNaviWords(
+					dictionary.getById(a['id'])['word_raw']['FN'],
+					dictionary.getById(b['id'])['word_raw']['FN'], 0);
+			});
+			// group into sets of 25 words
+			for (let i = 0; i < words.length; i += 25) {
+				const end = Math.min(i + 25, words.length);
+				lessons.push({
+					'name': dictionary.getById(words[i + 1]['id'])['word_raw']['FN'] + ' – ' +
+						dictionary.getById(words[end - 1]['id'])['word_raw']['FN'],
+					'words': words.slice(i, end)
+				});
 			}
-			const [word, type] = dictionary.splitWordAndType(w['word']);
-			const entry = dictionary.get(word, type, 'FN');
-			if (!entry) {
-				output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w['word']);
-			}
-			return {
-				'id': entry['id'],
-				'comment': w['comment']
-			};
-		});
-	} else {
-		words = dictionary.getAll();
-		words = words.map((w) => { return { 'id': w['id'] } });
-		words.sort(function (a, b) {
-			return compareNaviWords(
-				dictionary.getById(a['id'])['word_raw']['FN'],
-				dictionary.getById(b['id'])['word_raw']['FN'], 0);
-		});
+		}
+		course['lessons'] = lessons;
+		return;
 	}
-	return words;
+
+	for (let lesson of course['lessons']) {
+		let words = [];
+		if (lesson.hasOwnProperty('words')) {
+			words = lesson['words'];
+			words = words.map((w) => {
+				if (typeof w === 'string') {
+					w = { 'word': w };
+				}
+				const [word, type] = dictionary.splitWordAndType(w['word']);
+				const entry = dictionary.get(word, type, 'FN');
+				if (!entry) {
+					output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w['word']);
+				}
+				return {
+					'id': entry['id'],
+					'comment': w['comment']
+				};
+			});
+		}
+		lesson['words'] = words;
+	}
 }
 
 module.exports = db;

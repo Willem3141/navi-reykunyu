@@ -4,7 +4,7 @@ class Zeykerokyu {
 	activePage!: Page;
 
 	constructor() {
-		this.switchToPage(new LearnPage());
+		//this.switchToPage(new LearnPage());
 	}
 
 	switchToPage(page: Page): void {
