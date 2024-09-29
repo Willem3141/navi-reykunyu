@@ -109,3 +109,7 @@ export function appendLinkString(linkString: LinkString, $div: JQuery, dialect: 
 		}
 	}
 }
+
+export function toReadableType(type: string): string {
+	return _('type-traditional-' + type);
+}

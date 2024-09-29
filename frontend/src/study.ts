@@ -1,3 +1,5 @@
+import { appendLinkString, toReadableType } from "./lib";
+
 class LearnPage {
 	courseId: number;
 	lessonId: number;
@@ -8,7 +10,9 @@ class LearnPage {
 	items: (number | string)[];
 	
 	/// The index of the item we're currently showing.
-	currentItemIndex = 0;
+	currentItemIndex = 0;  // TODO
+
+	currentItemWordData: WordData | null = null;
 
 	constructor(courseId: number, lessonId: number, lesson: Lesson, items: LearnableItem[]) {
 		this.courseId = courseId;
@@ -26,7 +30,6 @@ class LearnPage {
 		if (lesson.conclusion) {
 			this.items.push(lesson.conclusion);
 		}
-		console.log(this.items);
 	}
 
 	render(): void {
@@ -35,11 +38,107 @@ class LearnPage {
 	}
 
 	fetchAndSetUp(): void {
-		/*const itemID = this.items[this.currentItemIndex].vocab;
-		$.getJSON('/api/word', { 'id': itemID }).done((wordData) => {
-			this.currentItem = wordData;
-			this.setUpQuestion();
-		});*/
+		const item = this.items[this.currentItemIndex];
+		if (typeof item === 'number') {
+			const itemID = this.items[this.currentItemIndex];
+			$.getJSON('/api/word', { 'id': itemID }).done((wordData) => {
+				this.currentItemWordData = wordData;
+				this.setUpQuestion();
+			});
+		} else {
+			this.currentItemWordData = null;
+			this.setUpComment();
+		}
+	}
+
+	setUpQuestion(): void {
+		const word = this.currentItemWordData!;
+		let navi = word['word']['FN'];
+		let pronunciation = '';
+		if (word['pronunciation']) {
+			for (let i = 0; i < word['pronunciation'].length; i++) {
+				if (i > 0) {
+					pronunciation += ' or ';
+				}
+				const syllables = word['pronunciation'][i]['syllables'].split('-');
+				for (let j = 0; j < syllables.length; j++) {
+					if (syllables.length > 1 && j + 1 == word['pronunciation'][i]['stressed']) {
+						pronunciation += '<u>' + syllables[j] + '</u>';
+					} else {
+						pronunciation += syllables[j];
+					}
+				}
+			}
+		}
+		if (word['type'] == 'n:si') {
+			navi += ' si';
+			pronunciation += ' si';
+		}
+		if (word['pronunciation']) {
+			if (word['pronunciation'].length === 1 &&
+				word['pronunciation'][0]['syllables'].split('-').join('').replace(/ù/g, 'u') === word['word_raw']['FN']) {
+				navi = pronunciation;
+			} else {
+				navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
+			}
+		}
+		let english = '';
+		if (word['translations'].length > 1) {
+			for (let i = 0; i < word['translations'].length; i++) {
+				if (i > 0) {
+					english += '<br>';
+				}
+				english += '<b>' + (i + 1) + '.</b> ' + word['translations'][i]['en'];
+			}
+		} else {
+			english = word['translations'][0]['en'];
+		}
+
+		const $container = $('#main-container');
+		$container.empty();
+
+		const $naviCard = $('<div/>').addClass('card')
+			.appendTo($container);
+		const $navi = $('<div/>')
+			.attr('id', 'navi')
+			.appendTo($naviCard);
+		$navi.append($('<span/>').addClass('word').html(navi));
+		$navi.append(' ');
+		$navi.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
+
+		const $english = $('#english');
+		$english.empty();
+		$english.append($('<span/>').addClass('meaning').html(english));
+
+		if (word['meaning_note']) {
+			$('#meaning-note-card').show();
+			const $meaningNote = $('#meaning-note');
+			$meaningNote.empty();
+			appendLinkString(word['meaning_note'], $meaningNote, 'FN', 'en');
+		} else {
+			$('#meaning-note-card').hide();
+		}
+
+		if (word['etymology']) {
+			$('#etymology-card').show();
+			const $etymology = $('#etymology');
+			$etymology.empty();
+			appendLinkString(word['etymology'], $etymology, 'FN', 'en');
+		} else {
+			$('#etymology-card').hide();
+		}
+
+		const $image = $('#word-image');
+		if (word.hasOwnProperty('image')) {
+			$image.show();
+			$image.attr('src', '/ayrel/' + word['image']);
+		} else {
+			$image.hide();
+		}
+	}
+
+	setUpComment(): void {
+		// TODO
 	}
 }
 
