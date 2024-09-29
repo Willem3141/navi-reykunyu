@@ -189,7 +189,7 @@
 		"study-section-etymology": "Etymology:",
 		"learned-button": "Learned",
 		"known-button": "Already known",
-		"known-button-tooltip": "Click this button if you already know this word. Reykunyu will still review the word once. If you get it right, Reykunyu will not bother you with it again.",
+		"known-button-tooltip": "Click this button if you already know this word. It will still appear in your reviews once, but if you get it right, Reykunyu will not bother you with it again.",
 		"exit-button": "Exit session",
 		"exit-button-tooltip": "This button exits your learning session. Your progress so far will still be saved.",
 		"continue-button": "Continue"
