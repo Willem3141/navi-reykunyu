@@ -25,6 +25,61 @@ function showDialog($dialog: JQuery): void {
 	$dialogLayer.fadeIn(250);
 }
 
+function htmlFromNavi(navi: string): string {
+	return navi.replace(/\//g, '').replace(/\[/, '<u>').replace(/\]/, '</u>');
+}
+
+function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
+	let result = '';
+	for (let i = 0; i < pronunciation.length; i++) {
+		if (i > 0) {
+			result += ' or ';
+		}
+		const syllables = pronunciation[i]['syllables'].split('-');
+		for (let j = 0; j < syllables.length; j++) {
+			if (syllables.length > 1 && j + 1 == pronunciation[i]['stressed']) {
+				result += '<u>' + syllables[j] + '</u>';
+			} else {
+				result += syllables[j];
+			}
+		}
+	}
+	return result.replace(/ù/g, 'u');
+}
+
+function getDisplayedNavi(word: WordData) {
+	let navi = htmlFromNavi(word['word']['FN']);
+	let pronunciation = '';
+	if (word['pronunciation']) {
+		pronunciation = htmlFromPronunciation(word['pronunciation']);
+	}
+	if (word['type'] == 'n:si') {
+		navi += ' si';
+		pronunciation += ' si';
+	}
+	if (word['pronunciation']) {
+		if (navi !== pronunciation) {
+			navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
+		}
+	}
+	return navi;
+}
+
+function getDisplayedEnglish(word: WordData) {
+	let english = '';
+	if (word['translations'].length > 1) {
+		for (let i = 0; i < word['translations'].length; i++) {
+			if (i > 0) {
+				english += '<br>';
+			}
+			english += '<b>' + (i + 1) + '.</b> ' + word['translations'][i]['en'];
+		}
+	} else {
+		english = word['translations'][0]['en'];
+	}
+	return english;
+}
+
 class LearnPage {
 	courseId: number;
 	lessonId: number;
@@ -108,55 +163,9 @@ class QuestionSlide extends Slide {
 		this.courseId = courseId;
 	}
 
-	htmlFromNavi(navi: string): string {
-		return navi.replace(/\//g, '').replace(/\[/, '<u>').replace(/\]/, '</u>');
-	}
-
-	htmlFromPronunciation(pronunciation: Pronunciation[]): string {
-		let result = '';
-		for (let i = 0; i < pronunciation.length; i++) {
-			if (i > 0) {
-				result += ' or ';
-			}
-			const syllables = pronunciation[i]['syllables'].split('-');
-			for (let j = 0; j < syllables.length; j++) {
-				if (syllables.length > 1 && j + 1 == pronunciation[i]['stressed']) {
-					result += '<u>' + syllables[j] + '</u>';
-				} else {
-					result += syllables[j];
-				}
-			}
-		}
-		return result.replace(/ù/g, 'u');
-	}
-
 	renderIn($container: JQuery): void {
-		let navi = this.htmlFromNavi(this.word['word']['FN']);
-		let pronunciation = '';
-		if (this.word['pronunciation']) {
-			pronunciation = this.htmlFromPronunciation(this.word['pronunciation']);
-		}
-		if (this.word['type'] == 'n:si') {
-			navi += ' si';
-			pronunciation += ' si';
-		}
-		if (this.word['pronunciation']) {
-			if (navi !== pronunciation) {
-				navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
-			}
-		}
-
-		let english = '';
-		if (this.word['translations'].length > 1) {
-			for (let i = 0; i < this.word['translations'].length; i++) {
-				if (i > 0) {
-					english += '<br>';
-				}
-				english += '<b>' + (i + 1) + '.</b> ' + this.word['translations'][i]['en'];
-			}
-		} else {
-			english = this.word['translations'][0]['en'];
-		}
+		let navi = getDisplayedNavi(this.word);
+		let english = getDisplayedEnglish(this.word);
 		$container.empty();
 
 		const $naviCard = $('<div/>').addClass('card')
@@ -181,7 +190,7 @@ class QuestionSlide extends Slide {
 			$('<div/>').addClass('semicard-header')
 				.text(_('study-section-meaning-note'))
 				.appendTo($meaningNoteCard);
-			this.$meaningNote = $('<div/>').attr('id', 'meaning-note-card').appendTo($meaningNoteCard);
+			this.$meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($meaningNoteCard);
 			appendLinkString(this.word['meaning_note'], this.$meaningNote, 'FN', 'en');
 		}
 
@@ -191,7 +200,7 @@ class QuestionSlide extends Slide {
 			$('<div/>').addClass('semicard-header')
 				.text(_('study-section-etymology'))
 				.appendTo($etymologyCard);
-			this.$etymology = $('<div/>').attr('id', 'etymology-card').appendTo($etymologyCard);
+			this.$etymology = $('<div/>').attr('id', 'etymology').appendTo($etymologyCard);
 			appendLinkString(this.word['etymology'], this.$etymology, 'FN', 'en');
 		}
 

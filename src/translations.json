@@ -191,7 +191,7 @@
 		"known-button": "Already known",
 		"known-button-tooltip": "Click this button if you already know this word. It will still appear in your reviews once, but if you get it right, Reykunyu will not bother you with it again.",
 		"exit-button": "Exit session",
-		"exit-button-tooltip": "This button exits your learning session. Your progress so far will still be saved.",
+		"exit-button-tooltip": "This button exits your learning session. Your progress so far will be saved.",
 		"continue-button": "Continue"
 	},
 	"de": {
@@ -453,7 +453,17 @@
 		"error-404-text": "Reykunyu heeft de gezochte pagina niet kunnen vinden. Je kunt terug naar de startpagina gaan met de knop hierboven.",
 		"error-500-text": "Je bent tegen een interne serverfout aangelopen. Sorry!",
 		"pick-a-course": "Welke cursus wil je volgen?",
-		"pick-a-course-note": "Ben je een beginner, dan raden we sterk aan om als eerste de cursus Beginner Vocabulary te doen. Reykunyu onthoudt welke woorden je al geleerd hebt, dus als je later een andere cursus wil doen, dan hoef je woorden die je al kent van Beginner Vocabulary niet opnieuw te doen."
+		"pick-a-course-note": "Ben je een beginner, dan raden we sterk aan om als eerste de cursus Beginner Vocabulary te doen. Reykunyu onthoudt welke woorden je al geleerd hebt, dus als je later een andere cursus wil doen, dan hoef je woorden die je al kent van Beginner Vocabulary niet opnieuw te doen.",
+		"lessons": "Lessen",
+		"lesson": "Les",
+		"study-section-meaning-note": "Opmerking:",
+		"study-section-etymology": "Etymologie:",
+		"learned-button": "Geleerd",
+		"known-button": "Al bekend",
+		"known-button-tooltip": "Klik op deze knop als je dit woord al kent. Het woord zal dan één keer in je reviews verschijnen, maar als je hem dan correct beantwoordt, zal Reykunyu je er verder niet meer mee lastigvallen.",
+		"exit-button": "Sessie beëindigen",
+		"exit-button-tooltip": "Deze knop beëindigt de les. Je voortgang wordt opgeslagen.",
+		"continue-button": "Verder"
 	},
 	"x-navi": {
 		"language": "Na’vi",

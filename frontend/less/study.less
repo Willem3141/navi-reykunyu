@@ -10,6 +10,10 @@ body {
 	padding: 0;
 	box-sizing: border-box;
 	text-decoration-skip-ink: none;
+
+	@media (max-width: 512px) {
+		font-size: 14px;
+	}
 }
 
 .container {
@@ -111,7 +115,7 @@ a {
 	.rounded();
 	width: 100%;
 	box-sizing: border-box;
-	font-size: 25px;
+	font-size: 150%;
 	margin: auto;
 	max-width: 600px;
 	min-height: 120px;
@@ -153,12 +157,14 @@ input.card.incorrect,
 }
 
 .semicard {
-	font-size: 18px;
 	margin: auto;
 	max-width: 1000px;
 	text-align: center;
 	margin-bottom: 50px;
 	color: #333;
+	&>* {
+		font-size: 112%;
+	}
 }
 
 .semicard-header {
@@ -167,7 +173,7 @@ input.card.incorrect,
 }
 
 #correction {
-	font-size: 25px;
+	font-size: 150%;
 }
 
 #word-image {
@@ -194,8 +200,8 @@ button {
 	border-radius: 4px;
 	padding: 10px 15px;
 	margin: 0px 10px;
-	font-size: 25px;
 	border: none;
+	font-size: 112%;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
 	transition: box-shadow 0.25s;
 	position: relative;
@@ -224,7 +230,7 @@ button {
 	left: -60px;
 	right: -60px;
 	bottom: 70px;
-	font-size: 15px;
+	font-size: 70%;
 	line-height: 1.4;
 	background-color: #222;
 	color: white;
@@ -261,14 +267,23 @@ button {
 }
 
 .dialog-header {
-	font-size: 30px;
+	font-size: 180%;
 	text-align: center;
 	font-weight: 700;
 	padding-bottom: 25px;
 }
 
+.dialog-image {
+	img {
+		width: 300px;
+		max-width: 50%;
+		margin: auto;
+		display: block;
+	}
+}
+
 .dialog-body {
-	font-size: 18px;
+	font-size: 112%;
 }
 
 .dialog-buttons {
@@ -277,12 +292,6 @@ button {
 	padding-top: 25px;
 	text-align: center;
 	border-top: 1px solid #ddd;
-}
-
-.speed-tip {
-	font-size: 70%;
-	color: #888;
-	display: none;
 }
 
 #definition .lemma {
@@ -312,11 +321,11 @@ button {
 }
 
 .syllable .navi, .separator {
-	font-size: 25px;
+	font-size: 150%;
 }
 
 .syllable .index {
-	font-size: 18px;
+	font-size: 112%;
 	color: #888;
 	padding-top: 5px;
 	margin-bottom: -5px;
