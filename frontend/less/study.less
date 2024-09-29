@@ -9,6 +9,7 @@ body {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	text-decoration-skip-ink: none;
 }
 
 .container {
@@ -107,6 +108,7 @@ a {
 
 .card {
 	.shadow();
+	.rounded();
 	width: 100%;
 	box-sizing: border-box;
 	font-size: 25px;
@@ -153,8 +155,7 @@ input.card.incorrect,
 .semicard {
 	font-size: 18px;
 	margin: auto;
-	max-width: 900px;
-	padding: 0 25px;
+	max-width: 1000px;
 	text-align: center;
 	margin-bottom: 50px;
 	color: #333;
@@ -366,6 +367,10 @@ button {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+.comment {
+	text-align: left;
 }
 
 header {

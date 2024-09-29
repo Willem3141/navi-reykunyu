@@ -37,21 +37,46 @@ class LearnPage {
 		if (typeof item === 'number') {
 			const itemID = this.items[this.currentItemIndex];
 			$.getJSON('/api/word', { 'id': itemID }).done((wordData) => {
-				this.currentSlide = new QuestionSlide(wordData);
+				this.currentSlide = new QuestionSlide(wordData, this.toNextItem.bind(this));
 				const $container = $('#main-container');
 				$container.empty();
 				this.currentSlide.renderIn($container);
 			});
 		} else {
-			this.currentSlide = new CommentSlide(item);
+			this.currentSlide = new CommentSlide(item, this.toNextItem.bind(this));
 			const $container = $('#main-container');
 			$container.empty();
 			this.currentSlide.renderIn($container);
 		}
 	}
+
+	toNextItem(): void {
+		//$.post('/api/srs/mark-correct', { 'vocab': this.items[this.currentItemIndex] });
+		//this.addToLearnedList();
+		this.currentItemIndex++;
+		this.updateProgress();
+		if (this.currentItemIndex >= this.items.length) {
+			//this.showResults();
+			alert("DONE");  // TODO
+		} else {
+			this.fetchAndSetUp();
+		}
+	}
+
+	updateProgress(): void {
+		const $progressBar = $('#progress-bar .filled-part');
+		$progressBar
+			.css('width', (100.0 * this.currentItemIndex / this.items.length) + '%');
+	}
 }
 
 abstract class Slide {
+	toNextItem: () => void;
+
+	constructor(toNextItem: () => void) {
+		this.toNextItem = toNextItem;
+	}
+
 	abstract renderIn($container: JQuery): void;
 };
 
@@ -61,42 +86,53 @@ class QuestionSlide extends Slide {
 	$english?: JQuery;
 	$meaningNote?: JQuery;
 	$etymology?: JQuery;
+	$learnedButton?: JQuery;
+	$knownButton?: JQuery;
+	$exitButton?: JQuery;
 
-	constructor(word: WordData) {
-		super();
+	constructor(word: WordData, toNextItem: () => void) {
+		super(toNextItem);
 		this.word = word;
 	}
 
-	renderIn($container: JQuery): void {
-		let navi = this.word['word']['FN'];
-		let pronunciation = '';
-		if (this.word['pronunciation']) {
-			for (let i = 0; i < this.word['pronunciation'].length; i++) {
-				if (i > 0) {
-					pronunciation += ' or ';
-				}
-				const syllables = this.word['pronunciation'][i]['syllables'].split('-');
-				for (let j = 0; j < syllables.length; j++) {
-					if (syllables.length > 1 && j + 1 == this.word['pronunciation'][i]['stressed']) {
-						pronunciation += '<u>' + syllables[j] + '</u>';
-					} else {
-						pronunciation += syllables[j];
-					}
+	htmlFromNavi(navi: string): string {
+		return navi.replace(/\//g, '').replace(/\[/, '<u>').replace(/\]/, '</u>');
+	}
+
+	htmlFromPronunciation(pronunciation: Pronunciation[]): string {
+		let result = '';
+		for (let i = 0; i < pronunciation.length; i++) {
+			if (i > 0) {
+				result += ' or ';
+			}
+			const syllables = pronunciation[i]['syllables'].split('-');
+			for (let j = 0; j < syllables.length; j++) {
+				if (syllables.length > 1 && j + 1 == pronunciation[i]['stressed']) {
+					result += '<u>' + syllables[j] + '</u>';
+				} else {
+					result += syllables[j];
 				}
 			}
+		}
+		return result.replace('/ù/g', 'u');
+	}
+
+	renderIn($container: JQuery): void {
+		let navi = this.htmlFromNavi(this.word['word']['FN']);
+		let pronunciation = '';
+		if (this.word['pronunciation']) {
+			pronunciation = this.htmlFromPronunciation(this.word['pronunciation']);
 		}
 		if (this.word['type'] == 'n:si') {
 			navi += ' si';
 			pronunciation += ' si';
 		}
 		if (this.word['pronunciation']) {
-			if (this.word['pronunciation'].length === 1 &&
-				this.word['pronunciation'][0]['syllables'].split('-').join('').replace(/ù/g, 'u') === this.word['word_raw']['FN']) {
-				navi = pronunciation;
-			} else {
+			if (navi !== pronunciation) {
 				navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
 			}
 		}
+
 		let english = '';
 		if (this.word['translations'].length > 1) {
 			for (let i = 0; i < this.word['translations'].length; i++) {
@@ -130,7 +166,7 @@ class QuestionSlide extends Slide {
 			const $meaningNoteCard = $('<div/>').addClass('semicard')
 				.appendTo($container);
 			$('<div/>').addClass('semicard-header')
-				.text(_('study-section-usage-note'))
+				.text(_('study-section-meaning-note'))
 				.appendTo($meaningNoteCard);
 			this.$meaningNote = $('<div/>').attr('id', 'meaning-note-card').appendTo($meaningNoteCard);
 			appendLinkString(this.word['meaning_note'], this.$meaningNote, 'FN', 'en');
@@ -149,20 +185,57 @@ class QuestionSlide extends Slide {
 		if (this.word['image']) {
 			$('<img/>').attr('src', '/ayrel/' + this.word['image']).appendTo($englishCard);
 		}
+		
+		// buttons
+		const $buttonsCard = $('<div/>').addClass('semicard')
+			.appendTo($container);
+		this.$learnedButton = $('<button/>').addClass('button primary-button')
+			.text(_('learned-button') + ' →')
+			.on('click', () => {
+				$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
+					this.toNextItem();
+				});
+			})
+			.appendTo($buttonsCard);
+		this.$knownButton = $('<button/>').addClass('button secondary-button')
+			.text(_('known-button') + ' →')
+			.attr('data-text', _('known-button-tooltip'))
+			.on('click', () => {
+				$.post('/api/srs/mark-known', { 'vocab': this.word['id'] }, () => {
+					this.toNextItem();
+				});
+			})
+			.appendTo($buttonsCard);
+		this.$exitButton = $('<button/>').addClass('button secondary-button')
+			.text(_('exit-button') + ' →')
+			.attr('data-text', _('exit-button-tooltip'))
+			.appendTo($buttonsCard);
 	}
 }
 
 class CommentSlide extends Slide {
 	comment: string;
+	$continueButton?: JQuery;
 
-	constructor(comment: string) {
-		super();
+	constructor(comment: string, toNextItem: () => void) {
+		super(toNextItem);
 		this.comment = comment;
 	}
 
 	renderIn($container: JQuery): void {
-		$('<p/>').html(this.comment)
+		$('<div/>').addClass('semicard comment')
+			.html(this.comment)
 			.appendTo($container);
+
+		// buttons
+		const $buttonsCard = $('<div/>').addClass('semicard')
+			.appendTo($container);
+		this.$continueButton = $('<button/>').addClass('button primary-button')
+			.text(_('continue-button') + ' →')
+			.on('click', () => {
+				this.toNextItem();
+			})
+			.appendTo($buttonsCard);
 	}
 }
 
