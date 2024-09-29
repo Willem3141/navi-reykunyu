@@ -1,5 +1,30 @@
 import { appendLinkString, toReadableType } from "./lib";
 
+function buildItemList(lesson: Lesson, items: LearnableItem[]): (number | string)[] {
+	let result = [];
+	if (lesson.introduction) {
+		result.push(lesson.introduction);
+	}
+	for (let item of items) {
+		result.push(item.vocab);
+		if (item.comment) {
+			result.push(item.comment);
+		}
+	}
+	if (lesson.conclusion) {
+		result.push(lesson.conclusion);
+	}
+	return result;
+}
+
+function showDialog($dialog: JQuery): void {
+	const $dialogLayer = $('#dialog-layer');
+	$dialogLayer.hide();
+	$dialogLayer.find('.dialog').hide();
+	$dialog.show();
+	$dialogLayer.fadeIn(250);
+}
+
 class LearnPage {
 	courseId: number;
 	lessonId: number;
@@ -17,19 +42,7 @@ class LearnPage {
 	constructor(courseId: number, lessonId: number, lesson: Lesson, items: LearnableItem[]) {
 		this.courseId = courseId;
 		this.lessonId = lessonId;
-		this.items = [];
-		if (lesson.introduction) {
-			this.items.push(lesson.introduction);
-		}
-		for (let item of items) {
-			this.items.push(item.vocab);
-			if (item.comment) {
-				this.items.push(item.comment);
-			}
-		}
-		if (lesson.conclusion) {
-			this.items.push(lesson.conclusion);
-		}
+		this.items = buildItemList(lesson, items);
 	}
 
 	fetchAndSetUp(): void {
@@ -56,8 +69,7 @@ class LearnPage {
 		this.currentItemIndex++;
 		this.updateProgress();
 		if (this.currentItemIndex >= this.items.length) {
-			//this.showResults();
-			alert("DONE");  // TODO
+			showDialog($('#lesson-done-dialog'));
 		} else {
 			this.fetchAndSetUp();
 		}
@@ -209,6 +221,9 @@ class QuestionSlide extends Slide {
 		this.$exitButton = $('<button/>').addClass('button secondary-button')
 			.text(_('exit-button') + ' →')
 			.attr('data-text', _('exit-button-tooltip'))
+			.on('click', () => {
+				showDialog($('#lesson-done-dialog'));
+			})
 			.appendTo($buttonsCard);
 	}
 }
@@ -240,11 +255,15 @@ class CommentSlide extends Slide {
 }
 
 class OverviewPage {
+	courseId: number;
+	lessonId: number;
+
 	constructor(courseId: number, lessonId: number, lesson: Lesson, items: LearnableItem[]) {
-		// TODO
+		this.courseId = courseId;
+		this.lessonId = lessonId;
 	}
 	render(): void {
-		// TODO
+		showDialog($('#lesson-done-dialog')); // TODO
 	}
 }
 

@@ -25,18 +25,19 @@
 			</div>-->
 		</div>
 		<div id="dialog-layer" style="display: none;">
-			<!--<div id="done-dialog" class="dialog">
+			<div id="lesson-done-dialog" class="dialog" style="display: none;">
 				<div class="dialog-header">
-					Congratulations, you've learned <span id="done-dialog-item-count">?</span> new words!
+					Congratulations, you finished Lesson <%= lesson['id'] + 1 %>!
 				</div>
 				<div class="dialog-body">
 					<div id="learned-words"></div>
-					These words have been added to your review queue. Click the button below to start your reviews!
+					The words have been added to your review queue. Click the button below to get an overview of the words you learned, or to start your reviews right away!
 				</div>
 				<div class="dialog-buttons">
 					<a class="button primary-button" id="to-review-button">Review &rarr;</a>
+					<a class="button secondary-button" id="to-overview-button">Overview &rarr;</a>
 				</div>
-			</div>-->
+			</div>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
 		<script src="/js/ui-translations.js"></script>
