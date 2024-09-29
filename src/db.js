@@ -112,7 +112,7 @@ function preprocessLessons(course) {
 			for (let i = 0; i < words.length; i += 25) {
 				const end = Math.min(i + 25, words.length);
 				lessons.push({
-					'name': dictionary.getById(words[i + 1]['id'])['word_raw']['FN'] + ' – ' +
+					'name': dictionary.getById(words[i]['id'])['word_raw']['FN'] + ' – ' +
 						dictionary.getById(words[end - 1]['id'])['word_raw']['FN'],
 					'words': words.slice(i, end)
 				});
