@@ -180,7 +180,9 @@
 		"help-other-modes-text-3": "The <b>Rhymes</b> mode is a simple rhyme dictionary. It allows you to find rhyme words, grouped by number of syllables and the stressed syllable. This is useful mostly when writing poetry.",
 		"error-403-text": "You don't have permission to access this page.",
 		"error-404-text": "Reykunyu couldn't find the page you're looking for. You can go back to the homepage with the button above.",
-		"error-500-text": "You encountered an internal server error. Sorry!"
+		"error-500-text": "You encountered an internal server error. Sorry!",
+		"pick-a-course": "Which course would you like to learn?",
+		"pick-a-course-note": "If you are just starting out, we strongly recommend starting with the Beginner Vocabulary course. Reykunyu remembers which words you've already learned, so if you want to do another course later, it won't make you repeat words you already know from the Beginner Vocabulary course."
 	},
 	"de": {
 		"language": "Deutsch",
@@ -439,7 +441,9 @@
 		"help-other-modes-text-3": "De modus <b>Rijmen</b> is een eenvoudig rijmwoordenboek. Hiermee vind je rijmwoorden, gegroepeerd op aantal lettergrepen en de beklemtoonde lettergreep. Dit is voornamelijk nuttig bij het schrijven van poëzie.",
 		"error-403-text": "Je hebt geen toegang tot deze pagina.",
 		"error-404-text": "Reykunyu heeft de gezochte pagina niet kunnen vinden. Je kunt terug naar de startpagina gaan met de knop hierboven.",
-		"error-500-text": "Je bent tegen een interne serverfout aangelopen. Sorry!"
+		"error-500-text": "Je bent tegen een interne serverfout aangelopen. Sorry!",
+		"pick-a-course": "Welke cursus wil je volgen?",
+		"pick-a-course-note": "Ben je een beginner, dan raden we sterk aan om als eerste de cursus Beginner Vocabulary te doen. Reykunyu onthoudt welke woorden je al geleerd hebt, dus als je later een andere cursus wil doen, dan hoef je woorden die je al kent van Beginner Vocabulary niet opnieuw te doen."
 	},
 	"x-navi": {
 		"language": "Na’vi",

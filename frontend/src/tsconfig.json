@@ -8,6 +8,7 @@
 	"files": [
 		"index.ts",
 		"all-words.ts",
+		"study.ts"
 	],
 	"include": [
 		"*.d.ts"

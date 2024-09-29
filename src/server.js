@@ -392,37 +392,7 @@ app.get('/study', function(req, res) {
 		res.render('403', pageVariables(req));
 		return;
 	}
-	zeykerokyu.getCourses(req.user, (courseData) => {
-		res.render('study', pageVariables(req, { courses: courseData }));
-	});
-});
-
-app.get('/study/course', function(req, res) {
-	if (!req.query.hasOwnProperty('course')) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	const courseId = parseInt(req.query['course'], 10);
-	if (isNaN(courseId)) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	zeykerokyu.getCourseData(req.user, courseId, (courseData) => {
-		zeykerokyu.getLessons(req.user, courseId, (lessonData) => {
-			res.render('study-course', pageVariables(req, { course: courseData, lessons: lessonData }));
-		});
-	});
-});
-
-app.get('/study/learn', function(req, res) {
-	if (!req.query.hasOwnProperty('course') || !req.query.hasOwnProperty('lesson')) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	res.render('learn', pageVariables(req));
+	res.render('study', pageVariables(req));
 });
 
 app.get('/words.json', function(req, res) {

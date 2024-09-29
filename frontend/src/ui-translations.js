@@ -2,18 +2,21 @@ let strings = {};
 
 // initialize the language dropdown
 $(function () {
-	$('#language-dropdown').dropdown();
-	if (localStorage.getItem('reykunyu-language')) {
-		$('#language-dropdown').dropdown('set selected',
-			localStorage.getItem('reykunyu-language'));
-	} else {
-		localStorage.setItem('reykunyu-language', 'en');
-		$('#language-dropdown').dropdown('set selected', 'en');
+	const $dropdown = $('#language-dropdown');
+	if ($dropdown.length) {
+		$dropdown.dropdown();
+		if (localStorage.getItem('reykunyu-language')) {
+			$dropdown.dropdown('set selected',
+				localStorage.getItem('reykunyu-language'));
+		} else {
+			localStorage.setItem('reykunyu-language', 'en');
+			$dropdown.dropdown('set selected', 'en');
+		}
+		$('.current-lang').text(_('language'));
+		$dropdown.dropdown({
+			onChange: setNewLanguage
+		});
 	}
-	$('.current-lang').text(_('language'));
-	$('#language-dropdown').dropdown({
-		onChange: setNewLanguage
-	});
 });
 
 function setNewLanguage(value) {

@@ -1,4 +1,4 @@
-class LearnPage {
+export class LearnPage {
 	courseId: number;
 	lessonId: number;
 	items: number[] = [];

@@ -1,16 +1,35 @@
-@font-face {
-	font-family: 'Recursive';
-	font-weight: 300 1000;
-	font-style: oblique 0deg 14deg;
-	src: url('/fonts/Recursive_VF_1.078.woff2');
-}
+@import 'fonts.less';
+@import 'global.less';
+@import 'study-colors.less';
 
 body {
-	margin: 0;
+	font-size: 16px;
 	font-family: 'Recursive' !important;
-	background-color: #f9f9f9;
-	line-height: 1.4;
-	text-decoration-skip-ink: none;
+	font-variation-settings: "MONO" 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+.courses-list {
+	list-style: none;
+	padding-left: 0;
+	padding-right: 0;
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+
+	li {
+		.shadow();
+		.shadow-drops-on-hover();
+		padding: 14px 18px;
+		width: 50%;
+		cursor: pointer;
+
+		.course-name {
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+	}
 }
 
 a {
@@ -33,17 +52,24 @@ a {
 	transition: scale 0.25s;
 }
 
-.main-container {
-	padding-top: 40px;
+.shadow() {
+	background-color: var(--card-background-color);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+	border: none;
+	border-radius: 4px;
+}
+
+.shadow-drops-on-hover() {
+	transition: box-shadow 0.25s;
+	&:hover {
+		box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25), 0 6px 10px rgba(0, 0, 0, 0.22);
+	}
 }
 
 .card {
-	background-color: white;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
-	border: none;
+	.shadow();
 	width: 100%;
 	box-sizing: border-box;
-	border-radius: 4px;
 	font-size: 25px;
 	margin: auto;
 	max-width: 600px;
@@ -186,7 +212,7 @@ button {
 
 .dialog {
 	max-width: 900px;
-	background-color: white;
+	background-color: var(--card-background-color);
 	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 	margin: auto;
 	margin-top: 50px;
@@ -238,9 +264,9 @@ button {
 }
 
 .syllable {
-	background-color: white;
+	background-color: var(--card-background-color);
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
-	border: 2px solid white;
+	border: 2px solid var(--card-background-color);
 	border-radius: 4px;
 	cursor: pointer;
 }
@@ -325,16 +351,11 @@ button {
 
 @media (prefers-color-scheme: dark) {
 	body {
-		background-color: #222;
 		color: #fff;
 	}
 
 	input {
 		color: #fff;
-	}
-
-	.card {
-		background-color: #444;
 	}
 
 	.card .type {
@@ -362,15 +383,11 @@ button {
 	}
 
 	.word-reference {
-		background-color: #444;
+		background-color: var(--card-background-color);
 	}
 
 	#buttons-card {
 		border-top: 1px solid #444;
-	}
-
-	.dialog {
-		background-color: #222;
 	}
 
 	.dialog-buttons {
@@ -382,7 +399,7 @@ button {
 	}
 
 	.syllable {
-		background-color: #444;
+		background-color: var(--card-background-color);
 		border-color: #444;
 	}
 
@@ -391,6 +408,6 @@ button {
 	}
 	
 	.learned-word {
-		background-color: #444;
+		background-color: var(--card-background-color);
 	}
 }

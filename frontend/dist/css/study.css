@@ -1,80 +1,571 @@
-.lessons-container {
-	border: 1px solid #ddd;
-	border-radius: 5px;
+@font-face {
+  font-family: 'Recursive';
+  font-weight: 300 1000;
+  font-style: oblique 0deg 14deg;
+  src: url('/fonts/Recursive_VF_1.078.woff2');
 }
-
-.lesson-container {
-	display: block;
-	color: black;
-	text-decoration: none;
-	border-top: 1px solid #ddd;
-	position: relative;
-	padding: 20px;
-	padding-right: 120px;
-	cursor: pointer;
-	background-color: #fff;
-	transition: background-color 0.2s;
+@font-face {
+  font-family: 'Gentium Plus';
+  src: url('/fonts/GentiumPlus-Regular.woff2');
 }
-.lesson-container:hover {
-	color: black;
-	background-color: #fafafa;
+@font-face {
+  font-family: 'Recursive';
+  font-weight: 300 1000;
+  font-style: oblique 0deg 14deg;
+  src: url('/fonts/Recursive_VF_1.078.woff2');
 }
-.lesson-container:before {
-	font-size: 25px;
-	font-weight: 700;
-	color: #888;
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	right: 35px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	opacity: 0;
-	transition: opacity 0.2s, right 0.2s;
+@font-face {
+  font-family: 'Gentium Plus';
+  src: url('/fonts/GentiumPlus-Regular.woff2');
 }
-.lesson-container:hover:before {
-	opacity: 1;
-	right: 25px;
+a:hover {
+  text-decoration: underline;
 }
-
-.lesson-container.learn-link:before {
-	content: "Learn →";
+i,
+em {
+  font-variation-settings: "slnt" -15;
 }
-.lesson-container.review-link:before {
-	content: "Review →";
+body {
+  font-size: 14px;
+  background-color: var(--background-color);
+  padding: 0 15px;
+  width: 100%;
+  line-height: 1.6;
+  height: auto;
+  min-width: 300px;
+  overflow-x: auto;
 }
-
-.lesson-container:first-child {
-	border: none;
+.container {
+  margin: 0px auto;
+  max-width: 1000px;
+  padding: 20px 0px;
 }
-
-.lesson-name {
-	font-size: 20px;
-	font-weight: 700;
+body.wide .container,
+.container.wide {
+  max-width: none;
 }
-
-.lesson-progress {
-	/*text-align: center;*/
+/* errors */
+.error {
+  color: var(--muted-color);
+  text-align: center;
 }
-
+.error p {
+  width: 80%;
+  min-width: 270px;
+  margin: 20px auto;
+}
+.error .error-text {
+  font-size: 30px;
+  color: var(--muted-color);
+}
+.error .error-subtext {
+  font-style: italic;
+  font-variation-settings: "slnt" -15;
+}
+.error .error-icon {
+  margin: 20px auto;
+}
 @media (prefers-color-scheme: dark) {
-	.lessons-container {
-		border-color: #555;
-	}
-
-	.lesson-container {
-		color: white;
-		border-top-color: #555;
-		background-color: black;
-	}
-
-	.lesson-container:hover {
-		color: white;
-		background-color: #222;
-	}
-
-	.lesson-container:before {
-		color: #888;
-	}
+  .error .error-icon {
+    opacity: 0.15;
+  }
+}
+.error pre {
+  text-align: left;
+}
+/* tables */
+table {
+  margin-top: 8px;
+  width: 100%;
+}
+table tr {
+  border-top: 1px solid var(--border-color);
+}
+table tr td,
+table tr th {
+  padding: 5px 10px;
+}
+table tr td.column-title {
+  text-align: center;
+  font-style: italic;
+  font-variation-settings: "slnt" -15;
+}
+table tr td.row-title {
+  text-align: right;
+  font-style: italic;
+  font-variation-settings: "slnt" -15;
+}
+table.conjugation-table {
+  min-width: 800px;
+}
+.prefix,
+.word-link.prefix,
+.word-link .prefix {
+  color: var(--prefix-color);
+  font-weight: bold;
+}
+.lenition {
+  color: var(--lenition-color);
+  font-weight: bold;
+}
+.infix,
+.word-link.infix,
+.word-link .infix {
+  color: var(--infix-color);
+  font-weight: bold;
+}
+.suffix,
+.word-link.suffix,
+.word-link .suffix {
+  color: var(--suffix-color);
+  font-weight: bold;
+}
+.root-infix {
+  font-weight: bold;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+.muted {
+  color: var(--muted-color);
+}
+.highlight {
+  color: var(--translation-highlight-color);
+}
+.result a {
+  cursor: pointer;
+}
+.word-link {
+  border-radius: 4px;
+  background-color: var(--shaded-background-color);
+  padding: 2px 4px;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+.word-link:hover {
+  background-color: var(--hovered-background-color);
+  color: var(--primary-color);
+  text-decoration: none;
+}
+.word-link .navi {
+  font-weight: 700;
+}
+.word-link .translation {
+  color: var(--muted-color);
+}
+/* TODO I don't know what this is used for */
+.warning {
+  background-image: url('/images/tsahey.svg');
+  background-repeat: no-repeat;
+  background-size: 1em;
+  background-position: 0 5px;
+  font-weight: 700;
+  padding-left: 22px;
+}
+/* infix details dialog */
+#infix-details-input,
+#infix-details-result {
+  text-align: center;
+  font-weight: 700;
+  font-size: 125%;
+}
+#infix-details-input-translation,
+#infix-details-result-translation {
+  text-align: center;
+  color: var(--muted-color);
+}
+/* settings modal */
+#settings-modal .explanation {
+  line-height: 1.4285em;
+  padding-top: 2px;
+  padding-bottom: 5px;
+  color: var(--muted-color);
+}
+/* sentence analysis */
+.beta-notice-block,
+.error-block,
+.warning-block,
+.result-block {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 15px 20px;
+}
+.beta-notice-block {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 40px;
+}
+.error-block {
+  background-color: var(--error-background-color);
+  border-left: 2px solid var(--error-color);
+}
+.warning-block {
+  background-color: var(--warning-background-color);
+  border-left: 2px solid var(--warning-color);
+}
+.result-block .header,
+.error-block .header,
+.warning-block .header {
+  font-weight: 700;
+}
+.result-block .body,
+.error-block .body,
+.warning-block .body {
+  margin-left: 20px;
+}
+:root {
+  --background-color: #f9f9f9;
+  --card-background-color: #fff;
+  --primary-color: #222;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #222;
+    --card-background-color: #444;
+    --primary-color: #eee;
+  }
+}
+body {
+  font-size: 16px;
+  font-family: 'Recursive' !important;
+  font-variation-settings: "MONO" 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.courses-list {
+  list-style: none;
+  padding-left: 0;
+  padding-right: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+.courses-list li {
+  background-color: var(--card-background-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+  border: none;
+  border-radius: 4px;
+  transition: box-shadow 0.25s;
+  padding: 14px 18px;
+  width: 50%;
+  cursor: pointer;
+}
+.courses-list li:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25), 0 6px 10px rgba(0, 0, 0, 0.22);
+}
+.courses-list li .course-name {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+a {
+  text-decoration: none;
+}
+.score {
+  float: right;
+}
+#score-field {
+  position: relative;
+  display: inline-block;
+  font-weight: bold;
+}
+#score-field.just-changed {
+  scale: 125%;
+}
+#score-field.in-transition {
+  transition: scale 0.25s;
+}
+.card {
+  background-color: var(--card-background-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+  border: none;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 25px;
+  margin: auto;
+  max-width: 600px;
+  min-height: 120px;
+  text-align: center;
+  margin-bottom: 50px;
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.card > * {
+  padding: 25px;
+}
+.card .type {
+  color: #888;
+}
+input {
+  font-family: 'Recursive' !important;
+}
+input.card:focus {
+  outline: none;
+  border: 2px solid #4ca6ff;
+}
+input.card.correct,
+.syllable.correct {
+  border: 2px solid #3a9550;
+  color: #3a9550;
+}
+input.card.incorrect,
+.syllable.incorrect {
+  border: 2px solid #d6443f;
+  color: #d6443f;
+  text-decoration: line-through;
+}
+.semicard {
+  font-size: 18px;
+  margin: auto;
+  max-width: 900px;
+  padding: 0 25px;
+  text-align: center;
+  margin-bottom: 50px;
+  color: #333;
+}
+.semicard-header {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+#correction {
+  font-size: 25px;
+}
+#word-image {
+  width: 100%;
+  padding: 0;
+}
+.word-reference {
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  padding: 2px 4px;
+}
+#buttons-card {
+  border-top: 1px solid #ddd;
+  padding-top: 50px;
+}
+button {
+  font-family: 'Recursive' !important;
+}
+.button {
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin: 0px 10px;
+  font-size: 25px;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+  transition: box-shadow 0.25s;
+  position: relative;
+  cursor: pointer;
+}
+.button.primary-button {
+  background: linear-gradient(#4ca6ff, #4595e5);
+  color: white;
+}
+.button.secondary-button {
+  background-color: #fcfcfc;
+  color: black;
+}
+.button:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25), 0 6px 10px rgba(0, 0, 0, 0.22);
+}
+.button.secondary-button::before {
+  content: attr(data-text);
+  pointer-events: none;
+  opacity: 0;
+  position: absolute;
+  left: -60px;
+  right: -60px;
+  bottom: 70px;
+  font-size: 15px;
+  line-height: 1.4;
+  background-color: #222;
+  color: white;
+  border-radius: 10px;
+  padding: 6px 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+  transition: opacity 0.25s, bottom 0.25s;
+}
+.button.secondary-button:hover::before {
+  opacity: 1;
+  display: block;
+  bottom: 65px;
+}
+#dialog-layer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+.dialog {
+  max-width: 900px;
+  background-color: var(--card-background-color);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  margin: auto;
+  margin-top: 50px;
+  border-radius: 4px;
+  padding: 20px;
+}
+.dialog-header {
+  font-size: 30px;
+  text-align: center;
+  font-weight: 700;
+  padding-bottom: 25px;
+}
+.dialog-body {
+  font-size: 18px;
+}
+.dialog-buttons {
+  margin-top: 25px;
+  margin-bottom: 5px;
+  padding-top: 25px;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+.speed-tip {
+  font-size: 70%;
+  color: #888;
+  display: none;
+}
+#definition .lemma {
+  font-weight: bold;
+}
+#definition .type {
+  font-style: italic;
+}
+#syllables {
+  padding: 5px;
+}
+.syllable,
+.separator {
+  display: inline-block;
+  vertical-align: top;
+  padding: 15px;
+}
+.syllable {
+  background-color: var(--card-background-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+  border: 2px solid var(--card-background-color);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.syllable .navi,
+.separator {
+  font-size: 25px;
+}
+.syllable .index {
+  font-size: 18px;
+  color: #888;
+  padding-top: 5px;
+  margin-bottom: -5px;
+}
+#learned-words {
+  display: flex;
+  flex-wrap: wrap;
+}
+.learned-word {
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  text-align: center;
+  position: relative;
+}
+.learned-word.incorrect {
+  border: 2px solid #d6443f;
+  padding-left: 45px;
+}
+.learned-word.incorrect:before {
+  content: 'x';
+  color: #d6443f;
+  font-size: 150%;
+  position: absolute;
+  top: 19px;
+  left: 14px;
+}
+.learned-word .navi {
+  display: block;
+  font-weight: 700;
+  padding-bottom: 4px;
+}
+.learned-word .navi .type {
+  font-weight: 400;
+  color: #888;
+}
+.learned-word .english {
+  display: block;
+  max-width: 400px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.progress-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background-color: black;
+}
+.progress-bar .filled-part {
+  background-color: #3a9550;
+  width: 0%;
+  height: 100%;
+  transition: width 0.5s;
+}
+.progress-bar .filled-part.incorrect {
+  background-color: #d6443f;
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #fff;
+  }
+  input {
+    color: #fff;
+  }
+  .card .type {
+    color: #888;
+  }
+  input.card:focus {
+    border-color: #4ca6ff;
+  }
+  input.card.correct,
+  .syllable.correct {
+    border-color: #3a9550;
+    color: #3a9550;
+  }
+  input.card.incorrect,
+  .syllable.incorrect {
+    border-color: #d6443f;
+    color: #d6443f;
+  }
+  .semicard {
+    color: #ddd;
+  }
+  .word-reference {
+    background-color: var(--card-background-color);
+  }
+  #buttons-card {
+    border-top: 1px solid #444;
+  }
+  .dialog-buttons {
+    border-top-color: #444;
+  }
+  .speed-tip {
+    color: #888;
+  }
+  .syllable {
+    background-color: var(--card-background-color);
+    border-color: #444;
+  }
+  .syllable .index {
+    color: #888;
+  }
+  .learned-word {
+    background-color: var(--card-background-color);
+  }
 }

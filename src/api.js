@@ -146,6 +146,16 @@ router.get('/rhymes', cors(), function(req, res) {
 	res.json(reykunyu.getRhymes(req.query["tìpawm"], req.query['dialect']));
 });
 
+router.get('/srs/courses', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	zeykerokyu.getCourses(req.user, (courses) => {
+		res.json(courses);
+	});
+});
+
 router.get('/srs/learnable', function(req, res) {
 	if (!req.user) {
 		send403(res);

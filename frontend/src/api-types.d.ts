@@ -150,3 +150,9 @@ declare type Sentence = {
 };
 
 declare type RhymesResult = WordData[][][];
+
+declare type Course = {
+	id: number,
+	name: string,
+	description: string
+}
