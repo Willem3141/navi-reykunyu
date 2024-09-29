@@ -50,6 +50,7 @@ db.serialize(() => {
 		lesson_id integer,
 		order_in_lesson integer,
 		vocab integer,
+		comment string,
 		primary key (course_id, lesson_id, order_in_lesson),
 		foreign key (course_id, lesson_id) references lesson(course_id, id)
 	)`);
@@ -65,10 +66,10 @@ db.serialize(() => {
 				db.run(`insert into lesson values (?, ?, ?, ?, ?)`,
 					i, j, lesson['name'], lesson['introduction'], lesson['conclusion']);
 				
-				const wordIDs = getWordIDsForLesson(lesson);
-				const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?)`);
+				const wordIDs = getWordsForLesson(lesson);
+				const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?, ?)`);
 				for (let k = 0; k < wordIDs.length; k++) {
-					vocabInsert.run(i, j, k, wordIDs[k]);
+					vocabInsert.run(i, j, k, wordIDs[k]['id'], wordIDs[k]['comment']);
 				}
 				vocabInsert.finalize();
 			}
@@ -96,28 +97,34 @@ db.serialize(() => {
 	)`);
 });
 
-function getWordIDsForLesson(lesson) {
-	let wordIDs = [];
+function getWordsForLesson(lesson) {
+	let words = [];
 	if (lesson.hasOwnProperty('words')) {
-		const words = lesson['words'];
-		wordIDs = words.map((w) => {
-			const [word, type] = dictionary.splitWordAndType(w);
+		words = lesson['words'];
+		words = words.map((w) => {
+			if (typeof w === 'string') {
+				w = { 'word': w };
+			}
+			const [word, type] = dictionary.splitWordAndType(w['word']);
 			const entry = dictionary.get(word, type, 'FN');
 			if (!entry) {
-				output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w);
+				output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w['word']);
 			}
-			return entry['id'];
+			return {
+				'id': entry['id'],
+				'comment': w['comment']
+			};
 		});
 	} else {
-		const words = dictionary.getAll();
-		wordIDs = words.map((w) => w['id']);
-		wordIDs.sort(function (a, b) {
+		words = dictionary.getAll();
+		words = words.map((w) => { return { 'id': w['id'] } });
+		words.sort(function (a, b) {
 			return compareNaviWords(
-				dictionary.getById(a)['word_raw']['FN'],
-				dictionary.getById(b)['word_raw']['FN'], 0);
+				dictionary.getById(a['id'])['word_raw']['FN'],
+				dictionary.getById(b['id'])['word_raw']['FN'], 0);
 		});
 	}
-	return wordIDs;
+	return words;
 }
 
 module.exports = db;
