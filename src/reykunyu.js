@@ -1005,7 +1005,7 @@ function getReverseResponsesFor(query, language) {
 			if (!translation.hasOwnProperty(language)) {
 				continue;
 			}
-			const t = translation[language];
+			const t = translation[language].toLowerCase();
 			if (!t.includes(query)) {
 				continue;
 			}
