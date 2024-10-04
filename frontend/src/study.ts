@@ -268,12 +268,36 @@ class OverviewPage {
 	courseId: number;
 	lessonId: number;
 
+	/// All items we're supposed to show to the user. A number means the item
+	/// is a word to learn; a string is a comment that we should show on a
+	/// separate slide.
+	items: (number | string)[];
+
 	constructor(courseId: number, lessonId: number, lesson: Lesson, items: LearnableItem[]) {
 		this.courseId = courseId;
 		this.lessonId = lessonId;
+		this.items = buildItemList(lesson, items);
 	}
+
 	render(): void {
-		showDialog($('#lesson-done-dialog')); // TODO
+		const $container = $('#main-container');
+		$container.empty();
+
+		let $list: JQuery | null = null;
+		
+		for (let item of this.items) {
+			if (typeof item === 'string') {
+				$list = null;
+				$('<div/>').html(item).appendTo($container);
+			} else {
+				if (!$list) {
+					$list = $('<ul/>').addClass('vertical-list')
+						.appendTo($container);
+				}
+				$('<li/>').text(item)
+					.appendTo($list);
+			}
+		}
 	}
 }
 
