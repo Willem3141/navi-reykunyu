@@ -14,7 +14,7 @@
 			<ul class="vertical-list">
 				<% for (let lesson of lessons) { %>
 					<li>
-						<a href="/study/lesson?c=<%= course['id'] + 1 %>&l=<%= lesson['id'] + 1 %>">
+						<a class="on-button" href="/study/lesson?c=<%= course['id'] + 1 %>&l=<%= lesson['id'] + 1 %>">
 							<div class="card-title"><%- _('lesson') %> <%= lesson['id'] + 1 %></div>
 							<div class="card-description"><%= lesson['name'] %></div>
 							<b><%= lesson['known_count'] - lesson['reviewable_count'] %></b> known,

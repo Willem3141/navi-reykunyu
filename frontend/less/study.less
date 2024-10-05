@@ -2,18 +2,21 @@
 @import 'global.less';
 @import 'study-colors.less';
 
+:root {
+	--main-font-size: 16px;
+	@media (max-width: 512px) {
+		--main-font-size: 14px;
+	}
+}
+
 body {
-	font-size: 16px;
+	font-size: var(--main-font-size);
 	font-family: 'Recursive' !important;
 	font-variation-settings: "MONO" 0;
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 	text-decoration-skip-ink: none;
-
-	@media (max-width: 512px) {
-		font-size: 14px;
-	}
 }
 
 .container {
@@ -21,11 +24,14 @@ body {
 }
 
 a {
-	color: var(--primary-color);
+	color: var(--link-color);
 	text-decoration: none;
 
-	&:hover {
-		text-decoration: none;
+	.on-button {
+		color: var(--primary-color);
+		&:hover {
+			text-decoration: none;
+		}
 	}
 }
 
@@ -129,6 +135,10 @@ a {
 
 .card>* {
 	padding: 25px;
+}
+
+.card .word {
+	font-weight: 700;
 }
 
 .card .type {
@@ -258,6 +268,7 @@ button {
 
 .dialog {
 	max-width: 900px;
+	font-size: var(--main-font-size);
 	background-color: var(--card-background-color);
 	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 	margin: 50px auto;
@@ -286,10 +297,6 @@ button {
 		margin: auto;
 		display: block;
 	}
-}
-
-.dialog-body {
-	font-size: 112%;
 }
 
 .dialog-buttons {

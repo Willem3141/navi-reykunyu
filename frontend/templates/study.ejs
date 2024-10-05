@@ -14,7 +14,7 @@
 			<ul class="cards-list">
 				<% for (let course of courses) { %>
 					<li>
-						<a href="/study/course?c=<%= course['id'] + 1 %>">
+						<a class="on-button" href="/study/course?c=<%= course['id'] + 1 %>">
 							<div class="card-title"><%= course['name'] %></div>
 							<div class="card-description"><%= course['description'] %></div>
 						</a>
