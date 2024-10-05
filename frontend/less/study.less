@@ -342,7 +342,23 @@ button {
 	flex-wrap: wrap;
 }
 
-.learned-word {
+.lesson-word {
+	.navi {
+		font-weight: 700;
+		.type {
+			font-weight: 400;
+			color: #888;
+		}
+	}
+
+	.english {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+}
+
+.reviewed-word {
 	padding: 14px 18px;
 	margin-bottom: 20px;
 	margin-right: 20px;
@@ -350,38 +366,37 @@ button {
 	border-radius: 4px;
 	text-align: center;
 	position: relative;
-}
 
-.learned-word.incorrect {
-	border: 2px solid #d6443f;
-	padding-left: 45px;
-}
-.learned-word.incorrect:before {
-	content: 'x';
-	color: #d6443f;
-	font-size: 150%;
-	position: absolute;
-	top: 19px;
-	left: 14px;
-}
+	&.incorrect {
+		border: 2px solid #d6443f;
+		padding-left: 45px;
+		&:before {
+			content: 'x';
+			color: #d6443f;
+			font-size: 150%;
+			position: absolute;
+			top: 19px;
+			left: 14px;
+		}
+	}
 
-.learned-word .navi {
-	display: block;
-	font-weight: 700;
-	padding-bottom: 4px;
-}
+	.navi {
+		display: block;
+		font-weight: 700;
+		padding-bottom: 4px;
+		.type {
+			font-weight: 400;
+			color: #888;
+		}
+	}
 
-.learned-word .navi .type {
-	font-weight: 400;
-	color: #888;
-}
-
-.learned-word .english {
-	display: block;
-	max-width: 400px;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+	.english {
+		display: block;
+		max-width: 400px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
 }
 
 .comment {

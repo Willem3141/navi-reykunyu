@@ -165,6 +165,6 @@ declare type Lesson = {
 }
 
 declare type LearnableItem = {
-	vocab: number,
+	vocab: WordData,
 	comment: string
 }

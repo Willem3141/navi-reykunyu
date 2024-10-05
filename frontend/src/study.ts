@@ -1,6 +1,6 @@
 import { appendLinkString, toReadableType } from "./lib";
 
-function buildItemList(lesson: Lesson, items: LearnableItem[]): (number | string)[] {
+function buildItemList(lesson: Lesson, items: LearnableItem[]): (WordData | string)[] {
 	let result = [];
 	if (lesson.introduction) {
 		result.push(lesson.introduction);
@@ -84,10 +84,10 @@ class LearnPage {
 	courseId: number;
 	lessonId: number;
 
-	/// All items we're supposed to show to the user. A number means the item
+	/// All items we're supposed to show to the user. A WordData means the item
 	/// is a word to learn; a string is a comment that we should show on a
 	/// separate slide.
-	items: (number | string)[];
+	items: (WordData | string)[];
 	
 	/// The index of the item we're currently showing.
 	currentItemIndex = 0;  // TODO
@@ -102,16 +102,13 @@ class LearnPage {
 
 	fetchAndSetUp(): void {
 		const item = this.items[this.currentItemIndex];
-		if (typeof item === 'number') {
-			const itemID = this.items[this.currentItemIndex];
-			$.getJSON('/api/word', { 'id': itemID }).done((wordData) => {
-				this.currentSlide = new QuestionSlide(wordData, this.courseId, this.toNextItem.bind(this));
-				const $container = $('#main-container');
-				$container.empty();
-				this.currentSlide.renderIn($container);
-			});
-		} else {
+		if (typeof item === 'string') {
 			this.currentSlide = new CommentSlide(item, this.toNextItem.bind(this));
+			const $container = $('#main-container');
+			$container.empty();
+			this.currentSlide.renderIn($container);
+		} else {
+			this.currentSlide = new QuestionSlide(item, this.courseId, this.toNextItem.bind(this));
 			const $container = $('#main-container');
 			$container.empty();
 			this.currentSlide.renderIn($container);
@@ -271,7 +268,7 @@ class OverviewPage {
 	/// All items we're supposed to show to the user. A number means the item
 	/// is a word to learn; a string is a comment that we should show on a
 	/// separate slide.
-	items: (number | string)[];
+	items: (WordData | string)[];
 
 	constructor(courseId: number, lessonId: number, lesson: Lesson, items: LearnableItem[]) {
 		this.courseId = courseId;
@@ -294,8 +291,17 @@ class OverviewPage {
 					$list = $('<ul/>').addClass('vertical-list')
 						.appendTo($container);
 				}
-				$('<li/>').text(item)
+				const $item = $('<li/>').addClass('lesson-word')
 					.appendTo($list);
+				$('<span/>').addClass('navi')
+					.html(getDisplayedNavi(item))
+					.append($('<span/>').addClass('type')
+						.html(' (' + toReadableType(item['type']) + ')'))
+					.appendTo($item);
+				$item.append(' ');
+				$('<span/>').addClass('translation')
+					.html(getDisplayedEnglish(item))
+					.appendTo($item);
 			}
 		}
 	}

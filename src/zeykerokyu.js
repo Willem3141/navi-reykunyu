@@ -30,6 +30,7 @@ module.exports = {
 const fs = require('fs');
 
 const db = require('./db');
+const reykunyu = require('./reykunyu');
 
 /// Returns (in a callback) a list of available courses.
 function getCourses(cb) {
@@ -102,15 +103,22 @@ function getItemsForLesson(courseId, lessonId, user, cb) {
 	}
 	db.all(`select v.vocab, v.comment from vocab_in_lesson v
 		where v.course_id == ? and v.lesson_id == ?
-		`, courseId, lessonId, (err, lessons) => {
+		`, courseId, lessonId, (err, items) => {
 			if (err) {
 				cb([]);
 				console.log(err);
 			} else {
-				cb(lessons);
+				vocabIDsToWordData(items);
+				cb(items);
 			}
 		}
 	);
+}
+
+function vocabIDsToWordData(items) {
+	for (let item of items) {
+		item['vocab'] = reykunyu.getWord(item['vocab']);
+	}
 }
 
 function getLearnableItemsForLesson(courseId, lessonId, user, cb) {
@@ -124,12 +132,13 @@ function getLearnableItemsForLesson(courseId, lessonId, user, cb) {
 				from vocab_status
 				where user == ?
 			)
-		`, courseId, lessonId, user.username, (err, lessons) => {
+		`, courseId, lessonId, user.username, (err, items) => {
 			if (err) {
 				cb([]);
 				console.log(err);
 			} else {
-				cb(lessons);
+				vocabIDsToWordData(items);
+				cb(items);
 			}
 		}
 	);
@@ -146,12 +155,14 @@ function getReviewableItemsForLesson(courseId, lessonId, user, cb) {
 			and v.vocab == s.vocab
 			and v.course_id == ? and v.lesson_id == ?
 		order by random()
-		`, user.username, courseId, lessonId, (err, lessons) => {
+		`, user.username, courseId, lessonId, (err, items) => {
 			if (err) {
 				cb([]);
 				console.log(err);
 			} else {
-				cb(lessons.map((item) => item['vocab']));
+				items = items.map((item) => item['vocab']);
+				vocabIDsToWordData(items);
+				cb(items);
 			}
 		}
 	);
