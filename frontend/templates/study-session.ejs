@@ -14,8 +14,10 @@
 			<h2 id="lesson-information">
 				<div class="lesson-number"><%- _('lesson') %> <%= lesson['id'] + 1 %>: <%= lesson['name'] %></div>
 			</h2>
-			<div id="progress-bar">
-				<div class="filled-part"></div>
+			<div id="progress-bar" style="display: none;" class="ui progress blue">
+				<div class="bar">
+					<div class="progress"></div>
+				</div>
 			</div>
 		</div>
 		<div id="main-container" class="container"></div>

@@ -42,7 +42,7 @@ function hideDialog(): void {
 }
 
 function htmlFromNavi(navi: string): string {
-	return navi.replace(/\//g, '').replace(/\[/, '<u>').replace(/\]/, '</u>');
+	return navi.replace(/\//g, '').replace(/\[/g, '<u>').replace(/\]/g, '</u>');
 }
 
 function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
@@ -96,53 +96,55 @@ function getDisplayedEnglish(word: WordData) {
 	return english;
 }
 
-function buildWordInfo(word: WordData): JQuery {
-	let $result = $();
+function buildWordInfo(word: WordData, flip?: () => void): JQuery {
+	let $shape = $('<div/>').addClass('ui shape learn-card');
+	let $sides = $('<div/>').addClass('sides')
+		.appendTo($shape);
+	let $front = $('<div/>').addClass('ui segment')
+		.appendTo($('<div/>').addClass('side active').appendTo($sides));
+	let $back = $('<div/>').addClass('ui segment')
+		.appendTo($('<div/>').addClass('side').appendTo($sides));
+	if (flip) {
+		$shape.shape({
+			'onChange': () => {
+				$shape.find('.side')
+					.css('width', '100%');
+			}
+		});
+		$shape.on('click', flip);
+	}
 
 	let navi = getDisplayedNavi(word);
 	let english = getDisplayedEnglish(word);
 
-	const $naviCard = $('<div/>').addClass('card');
 	const $navi = $('<div/>')
 		.attr('id', 'navi')
-		.appendTo($naviCard);
+		.appendTo($front);
 	$navi.append($('<span/>').addClass('word').html(navi));
 	$navi.append(' ');
 	$navi.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
-	$result = $result.add($naviCard);
+	$navi.clone().appendTo($back);
 
-	const $englishCard = $('<div/>').addClass('card');
 	const $english = $('<div/>')
 		.attr('id', 'english')
-		.appendTo($englishCard);
+		.appendTo($back);
 	$english.append($('<span/>').addClass('meaning').html(english));
-	$result = $result.add($englishCard);
 
 	if (word['meaning_note']) {
-		const $meaningNoteCard = $('<div/>').addClass('semicard')
-		$('<div/>').addClass('semicard-header')
-			.text(_('study-section-meaning-note'))
-			.appendTo($meaningNoteCard);
-		const $meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($meaningNoteCard);
+		const $meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($back);
 		appendLinkString(word['meaning_note'], $meaningNote, 'FN', 'en');
-		$result = $result.add($meaningNoteCard);
 	}
 
 	if (word['etymology']) {
-		const $etymologyCard = $('<div/>').addClass('semicard');
-		$('<div/>').addClass('semicard-header')
-			.text(_('study-section-etymology'))
-			.appendTo($etymologyCard);
-		const $etymology = $('<div/>').attr('id', 'etymology').appendTo($etymologyCard);
+		const $etymology = $('<div/>').attr('id', 'etymology').html('<b>Etymology:</b> ').appendTo($back);
 		appendLinkString(word['etymology'], $etymology, 'FN', 'en');
-		$result = $result.add($etymologyCard);
 	}
 
 	if (word['image']) {
-		$('<img/>').attr('src', '/ayrel/' + word['image']).appendTo($englishCard);
+		$('<img/>').attr('src', '/ayrel/' + word['image']).appendTo($back);
 	}
 
-	return $result;
+	return $shape;
 }
 
 class LearnPage {
@@ -163,6 +165,17 @@ class LearnPage {
 		this.courseId = courseId;
 		this.lessonId = lessonId;
 		this.items = buildItemList(lesson, items);
+
+		$('#progress-bar').show()
+			.progress({
+				'value': 0,
+				'total': this.items.length,
+				'label': 'ratio',
+				'text': {
+					'ratio': '{value}/{total}'
+				},
+			}
+		);
 	}
 
 	fetchAndSetUp(): void {
@@ -191,9 +204,9 @@ class LearnPage {
 	}
 
 	updateProgress(): void {
-		const $progressBar = $('#progress-bar .filled-part');
-		$progressBar
-			.css('width', (100.0 * this.currentItemIndex / this.items.length) + '%');
+		$('#progress-bar').progress(
+			'set progress', this.currentItemIndex
+		);
 	}
 }
 
@@ -211,10 +224,12 @@ class WordInfoSlide extends Slide {
 	word: WordData;
 	courseId: number;
 
+	$shape?: JQuery;
 	$navi?: JQuery;
 	$english?: JQuery;
 	$meaningNote?: JQuery;
 	$etymology?: JQuery;
+	$flipButton?: JQuery;
 	$learnedButton?: JQuery;
 	$knownButton?: JQuery;
 	$exitButton?: JQuery;
@@ -225,16 +240,32 @@ class WordInfoSlide extends Slide {
 		this.courseId = courseId;
 	}
 
+	flipCard(): void {
+		this.$flipButton!.hide();
+		this.$learnedButton!.show();
+
+		this.$shape!.find('.side')
+			.css('width', this.$shape!.width() + 'px');
+		this.$shape!.shape('flip over');
+	}
+
 	renderIn($container: JQuery): void {
 		$container.empty();
-		const $wordInfo = buildWordInfo(this.word);
-		$wordInfo.appendTo($container);
+		this.$shape = buildWordInfo(this.word, this.flipCard.bind(this));
+		this.$shape.appendTo($container);
 		
 		// buttons
-		const $buttonsCard = $('<div/>').addClass('semicard')
+		const $buttonsCard = $('<div/>').addClass('buttons')
 			.appendTo($container);
+		this.$flipButton = $('<button/>').addClass('ui primary button')
+			.text(_('flip-button'))
+			.prepend($('<i/>').addClass('share icon'))
+			.on('click', this.flipCard.bind(this))
+			.appendTo($buttonsCard);
 		this.$learnedButton = $('<button/>').addClass('ui primary button')
-			.text(_('learned-button') + ' →')
+			.hide()
+			.text(_('learned-button'))
+			.prepend($('<i/>').addClass('checkmark icon'))
 			.on('click', () => {
 				$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
 					this.toNextItem();
@@ -242,7 +273,7 @@ class WordInfoSlide extends Slide {
 			})
 			.appendTo($buttonsCard);
 		this.$knownButton = $('<button/>').addClass('ui button')
-			.text(_('known-button') + ' →')
+			.text(_('known-button'))
 			.attr('data-content', _('known-button-tooltip'))
 			.popup({
 				position: 'top center'
@@ -254,7 +285,7 @@ class WordInfoSlide extends Slide {
 			})
 			.appendTo($buttonsCard);
 		this.$exitButton = $('<button/>').addClass('ui button')
-			.text(_('exit-button') + ' →')
+			.text(_('exit-button'))
 			.attr('data-content', _('exit-button-tooltip'))
 			.popup({
 				position: 'top center'
@@ -284,7 +315,7 @@ class CommentSlide extends Slide {
 		const $buttonsCard = $('<div/>').addClass('semicard')
 			.appendTo($container);
 		this.$continueButton = $('<button/>').addClass('ui primary button')
-			.text(_('continue-button') + ' →')
+			.text(_('continue-button'))
 			.on('click', () => {
 				this.toNextItem();
 			})
@@ -308,6 +339,8 @@ class OverviewPage {
 	}
 
 	render(): void {
+		$('#progress-bar').hide();
+
 		const $container = $('#main-container');
 		$container.empty();
 
