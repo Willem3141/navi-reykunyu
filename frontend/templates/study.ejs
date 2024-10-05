@@ -3,27 +3,35 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Study</title>
+		<title>Reykunyu &bull; Study</title>
+		<link rel="stylesheet" type="text/css" href="/vendor/semantic/dist/semantic.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="/css/study.css" rel="stylesheet">
 	</head>
 	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+		</div>
 		<div id="main-container" class="container">
 			<h3><%- _('pick-a-course') %></h3>
 			<p><%- _('pick-a-course-note') %></p>
-			<ul class="cards-list">
+			<div class="ui two stackable cards">
 				<% for (let course of courses) { %>
-					<li>
-						<a class="on-button" href="/study/course?c=<%= course['id'] + 1 %>">
-							<div class="card-title"><%= course['name'] %></div>
-							<div class="card-description"><%= course['description'] %></div>
-						</a>
-					</li>
+					<a class="card" href="/study/course?c=<%= course['id'] + 1 %>">
+						<div class="content">
+							<div class="header"><%= course['name'] %></div>
+							<div class="description"><%= course['description'] %></div>
+						</div>
+						<div class="extra content">
+							<i class="sitemap icon"></i>
+							<b><%= course['lesson_count'] %></b> lessons
+						</div>
+					</a>
 				<% } %>
-			</ul>
+			</div>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
 		<script src="/js/ui-translations.js"></script>
 	</body>
 </html>
-
