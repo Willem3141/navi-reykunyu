@@ -40,6 +40,13 @@
 					<a class="button secondary-button" id="to-overview-button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Overview &rarr;</a>
 				</div>
 			</div>
+			<div id="word-info-dialog" class="dialog" style="display: none;">
+				<div class="dialog-header"></div>
+				<div class="dialog-body"></div>
+				<div class="dialog-buttons">
+					<a class="button primary-button" id="word-info-close-button">&rarr; <%- _('dialog-close') %></a>
+				</div>
+			</div>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
 		<script src="/js/ui-translations.js"></script>

@@ -347,14 +347,18 @@ button {
 
 .lesson-word,
 .reviewed-word {
+	.shadow();
+	.shadow-drops-on-hover();
+	.rounded();
 	padding: 9px 15px;
 	margin-bottom: 20px;
 	margin-right: 20px;
-	background-color: var(--card-background-color);
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
-	border-radius: 4px;
 	text-align: center;
 	position: relative;
+
+	&.lesson-word {
+		cursor: pointer;
+	}
 
 	&.reviewed-word.incorrect {
 		border: 2px solid #d6443f;

@@ -17,12 +17,28 @@ function buildItemList(lesson: Lesson, items: LearnableItem[]): (WordData | stri
 	return result;
 }
 
-function showDialog($dialog: JQuery): void {
+function showDialog($dialog: JQuery, dismissable?: boolean): void {
 	const $dialogLayer = $('#dialog-layer');
+	if (dismissable) {
+		$dialogLayer.on('click', (e) => {
+			if (e.currentTarget == e.target) {
+				hideDialog();
+			}
+		});
+	} else {
+		$dialogLayer.off('click');
+	}
 	$dialogLayer.hide();
 	$dialogLayer.find('.dialog').hide();
 	$dialog.show();
 	$dialogLayer.fadeIn(250);
+}
+
+function hideDialog(): void {
+	const $dialogLayer = $('#dialog-layer');
+	$dialogLayer.fadeOut(250, () => {
+		$dialogLayer.find('.dialog').hide();
+	});
 }
 
 function htmlFromNavi(navi: string): string {
@@ -80,6 +96,55 @@ function getDisplayedEnglish(word: WordData) {
 	return english;
 }
 
+function buildWordInfo(word: WordData): JQuery {
+	let $result = $();
+
+	let navi = getDisplayedNavi(word);
+	let english = getDisplayedEnglish(word);
+
+	const $naviCard = $('<div/>').addClass('card');
+	const $navi = $('<div/>')
+		.attr('id', 'navi')
+		.appendTo($naviCard);
+	$navi.append($('<span/>').addClass('word').html(navi));
+	$navi.append(' ');
+	$navi.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
+	$result = $result.add($naviCard);
+
+	const $englishCard = $('<div/>').addClass('card');
+	const $english = $('<div/>')
+		.attr('id', 'english')
+		.appendTo($englishCard);
+	$english.append($('<span/>').addClass('meaning').html(english));
+	$result = $result.add($englishCard);
+
+	if (word['meaning_note']) {
+		const $meaningNoteCard = $('<div/>').addClass('semicard')
+		$('<div/>').addClass('semicard-header')
+			.text(_('study-section-meaning-note'))
+			.appendTo($meaningNoteCard);
+		const $meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($meaningNoteCard);
+		appendLinkString(word['meaning_note'], $meaningNote, 'FN', 'en');
+		$result = $result.add($meaningNoteCard);
+	}
+
+	if (word['etymology']) {
+		const $etymologyCard = $('<div/>').addClass('semicard');
+		$('<div/>').addClass('semicard-header')
+			.text(_('study-section-etymology'))
+			.appendTo($etymologyCard);
+		const $etymology = $('<div/>').attr('id', 'etymology').appendTo($etymologyCard);
+		appendLinkString(word['etymology'], $etymology, 'FN', 'en');
+		$result = $result.add($etymologyCard);
+	}
+
+	if (word['image']) {
+		$('<img/>').attr('src', '/ayrel/' + word['image']).appendTo($englishCard);
+	}
+
+	return $result;
+}
+
 class LearnPage {
 	courseId: number;
 	lessonId: number;
@@ -108,7 +173,7 @@ class LearnPage {
 			$container.empty();
 			this.currentSlide.renderIn($container);
 		} else {
-			this.currentSlide = new QuestionSlide(item, this.courseId, this.toNextItem.bind(this));
+			this.currentSlide = new WordInfoSlide(item, this.courseId, this.toNextItem.bind(this));
 			const $container = $('#main-container');
 			$container.empty();
 			this.currentSlide.renderIn($container);
@@ -142,7 +207,7 @@ abstract class Slide {
 	abstract renderIn($container: JQuery): void;
 };
 
-class QuestionSlide extends Slide {
+class WordInfoSlide extends Slide {
 	word: WordData;
 	courseId: number;
 
@@ -161,49 +226,9 @@ class QuestionSlide extends Slide {
 	}
 
 	renderIn($container: JQuery): void {
-		let navi = getDisplayedNavi(this.word);
-		let english = getDisplayedEnglish(this.word);
 		$container.empty();
-
-		const $naviCard = $('<div/>').addClass('card')
-			.appendTo($container);
-		this.$navi = $('<div/>')
-			.attr('id', 'navi')
-			.appendTo($naviCard);
-		this.$navi.append($('<span/>').addClass('word').html(navi));
-		this.$navi.append(' ');
-		this.$navi.append($('<span/>').addClass('type').text('(' + toReadableType(this.word['type']) + ')'));
-
-		const $englishCard = $('<div/>').addClass('card')
-			.appendTo($container);
-		this.$english = $('<div/>')
-			.attr('id', 'english')
-			.appendTo($englishCard);
-		this.$english.append($('<span/>').addClass('meaning').html(english));
-
-		if (this.word['meaning_note']) {
-			const $meaningNoteCard = $('<div/>').addClass('semicard')
-				.appendTo($container);
-			$('<div/>').addClass('semicard-header')
-				.text(_('study-section-meaning-note'))
-				.appendTo($meaningNoteCard);
-			this.$meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($meaningNoteCard);
-			appendLinkString(this.word['meaning_note'], this.$meaningNote, 'FN', 'en');
-		}
-
-		if (this.word['etymology']) {
-			const $etymologyCard = $('<div/>').addClass('semicard')
-				.appendTo($container);
-			$('<div/>').addClass('semicard-header')
-				.text(_('study-section-etymology'))
-				.appendTo($etymologyCard);
-			this.$etymology = $('<div/>').attr('id', 'etymology').appendTo($etymologyCard);
-			appendLinkString(this.word['etymology'], this.$etymology, 'FN', 'en');
-		}
-
-		if (this.word['image']) {
-			$('<img/>').attr('src', '/ayrel/' + this.word['image']).appendTo($englishCard);
-		}
+		const $wordInfo = buildWordInfo(this.word);
+		$wordInfo.appendTo($container);
 		
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('semicard')
@@ -294,6 +319,17 @@ class OverviewPage {
 						.appendTo($container);
 				}
 				const $item = $('<li/>').addClass('lesson-word')
+					.on('click', () => {
+						const $wordInfoDialog = $('#word-info-dialog');
+						const $wordInfoBody = $wordInfoDialog.find('.dialog-body');
+						$wordInfoBody.empty();
+						const $wordInfo = buildWordInfo(<WordData>item);
+						$wordInfoBody.append($wordInfo);
+						$('#word-info-close-button').on('click', () => {
+							hideDialog();
+						});
+						showDialog($wordInfoDialog, true);
+					})
 					.appendTo($list);
 				$('<span/>').addClass('navi')
 					.html(getDisplayedNavi(item))
