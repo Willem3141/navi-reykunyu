@@ -233,7 +233,7 @@ class WordInfoSlide extends Slide {
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('semicard')
 			.appendTo($container);
-		this.$learnedButton = $('<button/>').addClass('button primary-button')
+		this.$learnedButton = $('<button/>').addClass('ui primary button')
 			.text(_('learned-button') + ' →')
 			.on('click', () => {
 				$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
@@ -241,18 +241,24 @@ class WordInfoSlide extends Slide {
 				});
 			})
 			.appendTo($buttonsCard);
-		this.$knownButton = $('<button/>').addClass('button secondary-button')
+		this.$knownButton = $('<button/>').addClass('ui button')
 			.text(_('known-button') + ' →')
-			.attr('data-text', _('known-button-tooltip'))
+			.attr('data-content', _('known-button-tooltip'))
+			.popup({
+				position: 'top center'
+			})
 			.on('click', () => {
 				$.post('/api/srs/mark-known', { 'vocab': this.word['id'] }, () => {
 					this.toNextItem();
 				});
 			})
 			.appendTo($buttonsCard);
-		this.$exitButton = $('<button/>').addClass('button secondary-button')
+		this.$exitButton = $('<button/>').addClass('ui button')
 			.text(_('exit-button') + ' →')
-			.attr('data-text', _('exit-button-tooltip'))
+			.attr('data-content', _('exit-button-tooltip'))
+			.popup({
+				position: 'top center'
+			})
 			.on('click', () => {
 				window.location.href = '/study/course?c=' + this.courseId;
 			})
@@ -277,7 +283,7 @@ class CommentSlide extends Slide {
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('semicard')
 			.appendTo($container);
-		this.$continueButton = $('<button/>').addClass('button primary-button')
+		this.$continueButton = $('<button/>').addClass('ui primary button')
 			.text(_('continue-button') + ' →')
 			.on('click', () => {
 				this.toNextItem();
