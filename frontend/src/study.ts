@@ -280,6 +280,8 @@ class OverviewPage {
 		const $container = $('#main-container');
 		$container.empty();
 
+		$('<h2/>').html(_('lesson-overview')).appendTo($container);
+
 		let $list: JQuery | null = null;
 		
 		for (let item of this.items) {
@@ -288,7 +290,7 @@ class OverviewPage {
 				$('<div/>').html(item).appendTo($container);
 			} else {
 				if (!$list) {
-					$list = $('<ul/>').addClass('vertical-list')
+					$list = $('<ul/>').addClass('lesson-words')
 						.appendTo($container);
 				}
 				const $item = $('<li/>').addClass('lesson-word')
