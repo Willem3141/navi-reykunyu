@@ -18,7 +18,7 @@ function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
 	return result.replace(/ù/g, 'u');
 }
 
-function getDisplayedNavi(word: WordData) {
+export function getDisplayedNavi(word: WordData) {
 	let navi = lemmaForm(word, 'FN');
 	let pronunciation = '';
 	if (word['pronunciation']) {

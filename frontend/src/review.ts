@@ -1,4 +1,4 @@
-import { buildQuestionCard, buildWordPill } from "./study-lib";
+import { buildQuestionCard, buildWordPill, getDisplayedNavi } from "./study-lib";
 
 class ReviewPage {
 	courseId: number;
@@ -176,11 +176,12 @@ class QuestionSlide extends Slide {
 		givenAnswer = givenAnswer.replace(/[\[\]<>+\-]/g, '');
 
 		if (givenAnswer !== this.getCorrectAnswer()) {
-			this.$meaningInput.addClass('incorrect')
-				.prop('disabled', true);
+			this.$meaningInput.prop('disabled', true);
+			this.$meaningInput.parent().addClass('error');
 			this.$checkButton.prop('disabled', true);
-			//$('#correction-card').slideDown();
-			//$('#correction').html(this.correctAnswerDisplay(this.currentItem));
+			$('<div/>').addClass('correction')
+				.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
+				.insertAfter(this.$meaningInput.parent());
 			$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
 				setTimeout(() => {
 					this.toNextItem(false);
