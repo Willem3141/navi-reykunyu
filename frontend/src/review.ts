@@ -51,62 +51,19 @@ function getDisplayedEnglish(word: WordData) {
 }
 
 function buildWordInfo(word: WordData, onFlip?: () => void): JQuery {
-	let $shape = $('<div/>').addClass('ui shape learn-card');
-	let $sides = $('<div/>').addClass('sides')
-		.appendTo($shape);
-	let $front = $('<div/>').addClass('ui segment')
-		.appendTo($('<div/>').addClass('side active').appendTo($sides));
-	let $back = $('<div/>').addClass('ui segment')
-		.appendTo($('<div/>').addClass('side').appendTo($sides));
-	$shape.shape({
-		'width': 'initial',
-		'height': 'initial',
-		'duration': window.matchMedia('(prefers-reduced-motion)').matches ? 0 : 700
-	});
-	$shape.on('click', () => {
-		if ($shape!.is('.animating')) {
-			return;
-		}
-		$shape!.find('.side')
-			.css('width', $shape!.width() + 'px');
-		$shape!.shape('flip over');
-		if (onFlip) {
-			onFlip();
-		}
-	});
+	let $card = $('<div/>').addClass('ui segment review-card');
 
 	let navi = getDisplayedNavi(word);
 	let english = getDisplayedEnglish(word);
 
-	const $navi = $('<div/>')
-		.attr('id', 'navi')
-		.appendTo($front);
-	addLemmaClass($navi, word['type']);
-	$navi.append($('<span/>').addClass('word').html(navi));
-	$navi.append(' ');
-	$navi.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
-	$navi.clone().appendTo($back);
+	const $question = $('<div/>')
+		.attr('id', 'question')
+		.appendTo($card);
+	$question.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
+	$question.append(' ');
+	$question.append($('<span/>').addClass('meaning').html(english));
 
-	const $english = $('<div/>')
-		.attr('id', 'english')
-		.appendTo($back);
-	$english.append($('<span/>').addClass('meaning').html(english));
-
-	if (word['meaning_note']) {
-		const $meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($back);
-		appendLinkString(word['meaning_note'], $meaningNote, 'FN', 'en');
-	}
-
-	if (word['etymology']) {
-		const $etymology = $('<div/>').attr('id', 'etymology').html('<b>Etymology:</b> ').appendTo($back);
-		appendLinkString(word['etymology'], $etymology, 'FN', 'en');
-	}
-
-	if (word['image']) {
-		$('<img/>').attr('src', '/ayrel/' + word['image']).appendTo($back);
-	}
-
-	return $shape;
+	return $card;
 }
 
 class ReviewPage {
