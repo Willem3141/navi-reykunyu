@@ -5,7 +5,7 @@ const esbuild = require('esbuild');
 const path = require('path');
 
 function buildLess(cb) {
-	return src('./frontend/less/tìlam.less')
+	return src(['./frontend/less/index.less', './frontend/less/study.less'])
 		.pipe(less({
 			paths: [path.join(__dirname, 'less')]
 		}))
@@ -21,7 +21,12 @@ function doTypecheck(cb) {
 
 function buildTypeScript(cb) {
 	return esbuild.build({
-		entryPoints: ['./frontend/src/index.ts', './frontend/src/all-words.ts', './frontend/src/learn.ts'],
+		entryPoints: [
+			'./frontend/src/index.ts',
+			'./frontend/src/all-words.ts',
+			'./frontend/src/study.ts',
+			'./frontend/src/review.ts'
+		],
 		bundle: true,
 		minify: true,
 		sourcemap: true,
@@ -32,4 +37,5 @@ function buildTypeScript(cb) {
 
 exports.buildLess = buildLess;
 exports.buildTypeScript = series(doTypecheck, buildTypeScript);
+exports.buildWithoutTypecheck = parallel(exports.buildLess, buildTypeScript);
 exports.default = parallel(exports.buildLess, exports.buildTypeScript);

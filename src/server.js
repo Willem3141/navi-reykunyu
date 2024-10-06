@@ -386,39 +386,75 @@ app.get('/signup', function(req, res) {
 	res.render('signup', pageVariables(req));
 });
 
-/*app.get('/study', function(req, res) {
-	zeykerokyu.getCourses(req.user, (courseData) => {
-		res.render('study', pageVariables(req, { courses: courseData }));
+app.get('/study', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.render('403', pageVariables(req));
+		return;
+	}
+	zeykerokyu.getCourses((courses) => {
+		res.render('study', pageVariables(req, { courses: courses }));
 	});
 });
 
 app.get('/study/course', function(req, res) {
-	if (!req.query.hasOwnProperty('course')) {
-		res.status(400);
-		res.send('400 Bad Request');
+	if (!req.user) {
+		res.status(403);
+		res.render('403', pageVariables(req));
 		return;
 	}
-	const courseId = parseInt(req.query['course'], 10);
+	const courseId = parseInt(req.query['c'], 10);
 	if (isNaN(courseId)) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
-	zeykerokyu.getCourseData(req.user, courseId, (courseData) => {
-		zeykerokyu.getLessons(req.user, courseId, (lessonData) => {
-			res.render('study-course', pageVariables(req, { course: courseData, lessons: lessonData }));
+	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
+		zeykerokyu.getLessons(req.user, courseId - 1, (lessons) => {
+			res.render('study-course', pageVariables(req, { course: courseData, lessons: lessons }));
 		});
 	});
 });
 
-app.get('/study/learn', function(req, res) {
-	if (!req.query.hasOwnProperty('course') || !req.query.hasOwnProperty('lesson')) {
+app.get('/study/lesson', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.render('403', pageVariables(req));
+		return;
+	}
+	const courseId = parseInt(req.query['c'], 10);
+	const lessonId = parseInt(req.query['l'], 10);
+	if (isNaN(courseId) || isNaN(lessonId)) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
-	res.render('learn', pageVariables(req));
-});*/
+	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
+		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson) => {
+			res.render('study-session', pageVariables(req, { course: courseData, lesson: lesson }));
+		});
+	});
+});
+
+app.get('/study/review', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.render('403', pageVariables(req));
+		return;
+	}
+	const courseId = parseInt(req.query['c'], 10);
+	const lessonId = parseInt(req.query['l'], 10);
+	if (isNaN(courseId) || isNaN(lessonId)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
+		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson) => {
+			res.render('study-review', pageVariables(req, { course: courseData, lesson: lesson }));
+		});
+	});
+});
 
 app.get('/words.json', function(req, res) {
 	res.sendFile('words.json', { root: process.cwd() + '/data' });

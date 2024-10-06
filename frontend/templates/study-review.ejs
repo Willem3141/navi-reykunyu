@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Reykunyu &bull; Study</title>
+		<link rel="stylesheet" type="text/css" href="/vendor/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/css/study.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+			<h2 id="lesson-information">
+				<div class="lesson-number"><%- _('lesson') %> <%= lesson['id'] + 1 %>: <%= lesson['name'] %></div>
+			</h2>
+			<div id="progress-bar" style="display: none;" class="ui progress blue">
+				<div class="bar">
+					<div class="progress"></div>
+				</div>
+			</div>
+		</div>
+		<div id="main-container" class="container"></div>
+
+		<!-- modals -->
+		<div id="lesson-done-modal" class="ui modal">
+			<div class="header">
+				Congratulations, you reviewed <span id="review-count">...</span> words!
+			</div>
+			<div class="image content">
+				<div class="image">
+					<img class="navi-face" src="/images/study/nitram.png" alt="A happy-looking Na'vi face">
+					<div class="navi-face-description ui top pointing basic label"></div>
+				</div>
+				<div>
+					You reviewed the following words:
+					<ul id="reviewed-words"></ul>
+				</div>
+			</div>
+			<div class="actions">
+				<a class="ui primary button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Exit</a>
+			</div>
+		</div>
+		<div id="word-info-modal" class="ui modal">
+			<div class="content"></div>
+			<div class="actions">
+				<a class="ui primary deny button"><%- _('dialog-close') %></a>
+			</div>
+		</div>
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/review.js"></script>
+	</body>
+</html>
+

@@ -146,13 +146,58 @@ router.get('/rhymes', cors(), function(req, res) {
 	res.json(reykunyu.getRhymes(req.query["tìpawm"], req.query['dialect']));
 });
 
-/*router.get('/srs/learnable', function(req, res) {
+router.get('/srs/courses', function(req, res) {
 	if (!req.user) {
 		send403(res);
 		return;
 	}
-	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
-	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res);
+	zeykerokyu.getCourses((courses) => {
+		res.json(courses);
+	});
+});
+
+router.get('/srs/lessons', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	zeykerokyu.getLessons(req.user, courseId, (lessons) => {
+		res.json(lessons);
+	});
+});
+
+router.get('/srs/lesson', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
+	zeykerokyu.getLessonData(courseId, lessonId, (lessons) => {
+		res.json(lessons);
+	});
+});
+
+router.get('/srs/items', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
+	zeykerokyu.getItemsForLesson(courseId, lessonId, req.user, (items) => {
+		res.json(items);
+	});
+});
+
+router.get('/srs/learnable', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
 	zeykerokyu.getLearnableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});
@@ -163,8 +208,8 @@ router.get('/srs/reviewable', function(req, res) {
 		send403(res);
 		return;
 	}
-	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
-	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res);
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
 	zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});
@@ -201,7 +246,7 @@ router.post('/srs/mark-known', function(req, res) {
 	zeykerokyu.processKnownAnswer(req.user, vocab, (items) => {
 		res.send();
 	});
-});*/
+});
 
 function send403(res) {
 	res.status(403);

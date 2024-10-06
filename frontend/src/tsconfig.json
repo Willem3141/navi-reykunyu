@@ -8,6 +8,9 @@
 	"files": [
 		"index.ts",
 		"all-words.ts",
+		"study.ts",
+		"study-lib.ts",
+		"review.ts"
 	],
 	"include": [
 		"*.d.ts"

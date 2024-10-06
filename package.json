@@ -4,6 +4,7 @@
   "description": "Na'vi dictionary website",
   "scripts": {
     "build": "npx gulp",
+    "build-no-typecheck": "npx gulp buildWithoutTypecheck",
     "start": "node src/server.js",
     "test": "node --test"
   },

@@ -3,46 +3,37 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Study &bull; Reykunyu</title>
+		<title>Reykunyu &bull; Study</title>
 		<link rel="stylesheet" type="text/css" href="/vendor/semantic/dist/semantic.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="/css/tìlam.css" rel="stylesheet">
 		<link href="/css/study.css" rel="stylesheet">
 	</head>
 	<body>
 		<div class="container">
 			<%- include('header.ejs') %>
 		</div>
-
-		<% if (!user) { %>
-		<div class="container">
-			<p>To study vocab, you have to be logged in, so that your progress can be stored.</p>
-			<p>Please <a href="/login">login</a> to Reykunyu, or <a href="/signup">create an account</a>.</p>
-		</div>
-		<% } else { %>
-		<div class="container">
-			<h2><%= course['name'] %></h2>
-			<p><%= course['description'] %></p>
-			<div class="lessons-container">
-				<% for (let i in lessons) {
-					const lesson = lessons[i];
-					const reviewOrLearn = lesson['reviewable_count'] > 0 ? 'review' : 'learn'; %>
-				<a class="lesson-container <%= reviewOrLearn %>-link" href="/study/<%= reviewOrLearn %>?course=<%= course['id'] %>&lesson=<%= i %>">
-					<div class="lesson-name"><%= lesson['name'] %></div>
-					<div class="lesson-progress"><b><%= lesson['total_count'] %></b> items
-						<% if (lesson['known_count'] > 0) { %>
-						&bull; <b><%= lesson['known_count'] %></b> learned
-						<% } %>
-						<% if (lesson['reviewable_count'] > 0) { %>
-						&bull; <b><%= lesson['reviewable_count'] %></b> now up for review
-						<% } %>
-					</div>
-				</a>
+		<div id="main-container" class="container">
+			<h3><%- course['name'] %></h3>
+			<p><%- course['description'] %></p>
+			<div class="ui four doubling cards">
+				<% for (let lesson of lessons) { %>
+					<a class="card" href="/study/lesson?c=<%= course['id'] + 1 %>&l=<%= lesson['id'] + 1 %>">
+						<div class="content">
+							<div class="header"><%- _('lesson') %> <%= lesson['id'] + 1 %></div>
+							<div class="description"><%= lesson['name'] %></div>
+						</div>
+						<div class="extra content">
+							<i class="book icon"></i>
+							<b><%= lesson['total_count'] %></b> words
+							<br>
+							<i class="user icon"></i>
+							<b><%= lesson['known_count'] - lesson['reviewable_count'] %></b> known,
+							<b><%= lesson['reviewable_count'] %></b> up for review
+						</div>
+					</a>
 				<% } %>
-			</div>
+			</ul>
 		</div>
-		<% } %>
-
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
 		<script src="/vendor/semantic/dist/semantic.js"></script>
 		<script src="/js/ui-translations.js"></script>

@@ -1,0 +1,104 @@
+@import 'colors.less';
+@import 'development-banner.less';
+@import 'fonts.less';
+@import 'global.less';
+@import 'header.less';
+@import 'semantic-overrides.less';
+
+.ui.cards {
+	a.card:hover {
+		text-decoration: none;
+	}
+}
+
+.learn-card {
+	width: 100%;
+	height: 450px;
+
+	.ui.segment {
+		height: 450px;
+		cursor: pointer;
+	}
+}
+
+
+.learn-card .ui.segment,
+.ui.segment.review-card,
+.correction {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	width: 100%;
+	text-align: center;
+	padding: 18px;
+	color: var(--primary-color);
+
+	.word {
+		font-weight: 700;
+		font-size: 1.5rem;
+
+		.stressed {
+			text-decoration: underline;
+			text-decoration-skip-ink: none;
+			text-decoration-thickness: 2px;
+		}
+	}
+
+	.type {
+		font-weight: 400;
+		color: var(--muted-color);
+		font-size: 1.5rem;
+	}
+	
+	#english {
+		margin-bottom: 15px;
+	}
+
+	.meaning {
+		font-size: 1.5rem;
+	}
+
+	img {
+		width: 100%;
+		max-width: 270px;
+	}
+}
+
+.correction {
+	.word {
+		font-weight: 400;
+	}
+}
+
+.ui.fluid.meaning-input {
+	input {
+		padding: 18px;
+		font-size: 1.5rem;
+		text-align: center;
+	}
+}
+
+.buttons.under-card {
+	margin-top: 45px;
+}
+
+.ui.modal > .content {
+	.image {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		.navi-face {
+			width: 300px;
+			height: 300px;
+		}
+
+		.navi-face-description {
+			font-weight: 400;
+			font-size: 14px;
+			margin-top: 0;
+		}
+	}
+}
