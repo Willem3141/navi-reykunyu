@@ -468,7 +468,9 @@
 		"known-button-tooltip": "Klik op deze knop als je dit woord al kent. Het woord zal dan één keer in je reviews verschijnen, maar als je hem dan correct beantwoordt, zal Reykunyu je er verder niet meer mee lastigvallen.",
 		"exit-button": "Sessie beëindigen",
 		"exit-button-tooltip": "Deze knop beëindigt de les. Je voortgang wordt opgeslagen.",
-		"continue-button": "Verder"
+		"continue-button": "Verder",
+		"relearn-button": "Opnieuw leren",
+		"review-button": "Overhoren"
 	},
 	"x-navi": {
 		"language": "Na’vi",

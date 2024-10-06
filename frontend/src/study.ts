@@ -67,7 +67,7 @@ function getDisplayedEnglish(word: WordData) {
 	return english;
 }
 
-function buildWordInfo(word: WordData, flip?: () => void): JQuery {
+function buildWordInfo(word: WordData, onFlip?: () => void): JQuery {
 	let $shape = $('<div/>').addClass('ui shape learn-card');
 	let $sides = $('<div/>').addClass('sides')
 		.appendTo($shape);
@@ -75,14 +75,22 @@ function buildWordInfo(word: WordData, flip?: () => void): JQuery {
 		.appendTo($('<div/>').addClass('side active').appendTo($sides));
 	let $back = $('<div/>').addClass('ui segment')
 		.appendTo($('<div/>').addClass('side').appendTo($sides));
-	if (flip) {
-		$shape.shape({
-			'width': 'initial',
-			'height': 'initial',
-			'duration': window.matchMedia('(prefers-reduced-motion)').matches ? 0 : 700
-		});
-		$shape.on('click', flip);
-	}
+	$shape.shape({
+		'width': 'initial',
+		'height': 'initial',
+		'duration': window.matchMedia('(prefers-reduced-motion)').matches ? 0 : 700
+	});
+	$shape.on('click', () => {
+		if ($shape!.is('.animating')) {
+			return;
+		}
+		$shape!.find('.side')
+			.css('width', $shape!.width() + 'px');
+		$shape!.shape('flip over');
+		if (onFlip) {
+			onFlip();
+		}
+	});
 
 	let navi = getDisplayedNavi(word);
 	let english = getDisplayedEnglish(word);
@@ -222,31 +230,32 @@ class WordInfoSlide extends Slide {
 		this.relearn = relearn;
 	}
 
-	flipCard(): void {
-		if (this.$shape!.is('.animating')) {
-			return;
-		}
-		this.$flipButton!.hide();
-		this.$learnedButton?.show();
-		this.$continueButton?.show();
-
-		this.$shape!.find('.side')
-			.css('width', this.$shape!.width() + 'px');
-		this.$shape!.shape('flip over');
-	}
-
 	renderIn($container: JQuery): void {
 		$container.empty();
-		this.$shape = buildWordInfo(this.word, this.flipCard.bind(this));
+
+		const hideFlipButton = () => {
+			this.$flipButton!.hide();
+			this.$learnedButton?.show();
+			this.$continueButton?.show();
+		};
+		this.$shape = buildWordInfo(this.word, hideFlipButton.bind(this));
 		this.$shape.appendTo($container);
 		
 		// buttons
-		const $buttonsCard = $('<div/>').addClass('buttons')
+		const $buttonsCard = $('<div/>').addClass('buttons under-card')
 			.appendTo($container);
 		this.$flipButton = $('<button/>').addClass('ui primary button')
 			.text(_('flip-button'))
 			.prepend($('<i/>').addClass('share icon'))
-			.on('click', this.flipCard.bind(this))
+			.on('click', () => {
+				if (this.$shape!.is('.animating')) {
+					return;
+				}
+				this.$shape!.find('.side')
+					.css('width', this.$shape!.width() + 'px');
+				this.$shape!.shape('flip over');
+				hideFlipButton();
+			})
 			.appendTo($buttonsCard);
 		if (this.relearn) {
 			this.$continueButton = $('<button/>').addClass('ui primary button')
@@ -313,7 +322,7 @@ class CommentSlide extends Slide {
 			.appendTo($container);
 
 		// buttons
-		const $buttonsCard = $('<div/>').addClass('buttons')
+		const $buttonsCard = $('<div/>').addClass('buttons under-card')
 			.appendTo($container);
 		this.$continueButton = $('<button/>').addClass('ui primary button')
 			.text(_('continue-button'))
@@ -364,7 +373,9 @@ class OverviewPage {
 		for (let item of this.items) {
 			if (typeof item === 'string') {
 				$list = null;
-				$('<div/>').html(item).appendTo($container);
+				$('<div/>').addClass('ui segment')
+					.html(item)
+					.appendTo($container);
 			} else {
 				if (!$list) {
 					$list = $('<ul/>').addClass('lesson-words')
