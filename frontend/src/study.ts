@@ -1,4 +1,4 @@
-import { appendLinkString, lemmaForm, toReadableType } from "./lib";
+import { addLemmaClass, appendLinkString, lemmaForm, toReadableType } from "./lib";
 
 function buildItemList(lesson: Lesson, items: LearnableItem[]): (WordData | string)[] {
 	let result = [];
@@ -17,10 +17,6 @@ function buildItemList(lesson: Lesson, items: LearnableItem[]): (WordData | stri
 	return result;
 }
 
-function htmlFromNavi(navi: string): string {
-	return navi.replace(/\//g, '').replace(/\[/g, '<u>').replace(/\]/g, '</u>');
-}
-
 function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
 	let result = '';
 	for (let i = 0; i < pronunciation.length; i++) {
@@ -30,7 +26,7 @@ function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
 		const syllables = pronunciation[i]['syllables'].split('-');
 		for (let j = 0; j < syllables.length; j++) {
 			if (syllables.length > 1 && j + 1 == pronunciation[i]['stressed']) {
-				result += '<u>' + syllables[j] + '</u>';
+				result += '<span class="stressed">' + syllables[j] + '</span>';
 			} else {
 				result += syllables[j];
 			}
@@ -40,14 +36,12 @@ function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
 }
 
 function getDisplayedNavi(word: WordData) {
-	let navi = htmlFromNavi(word['word']['FN']);
+	let navi = lemmaForm(word, 'FN');
 	let pronunciation = '';
 	if (word['pronunciation']) {
 		pronunciation = htmlFromPronunciation(word['pronunciation']);
 	}
-	lemmaForm(navi);
 	if (word['type'] == 'n:si') {
-		navi += ' si';
 		pronunciation += ' si';
 	}
 	if (word['pronunciation']) {
@@ -96,6 +90,7 @@ function buildWordInfo(word: WordData, flip?: () => void): JQuery {
 	const $navi = $('<div/>')
 		.attr('id', 'navi')
 		.appendTo($front);
+	addLemmaClass($navi, word['type']);
 	$navi.append($('<span/>').addClass('word').html(navi));
 	$navi.append(' ');
 	$navi.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
@@ -173,10 +168,10 @@ class LearnPage {
 		this.currentItemIndex++;
 		this.updateProgress();
 		if (this.currentItemIndex >= this.items.length) {
-			$('#lesson-done-dialog').modal({
+			$('#lesson-done-modal').modal({
 				'closable': false
 			})
-			$('#lesson-done-dialog').modal('show');
+			$('#lesson-done-modal').modal('show');
 		} else {
 			this.fetchAndSetUp();
 		}
@@ -350,11 +345,12 @@ class OverviewPage {
 						$('#word-info-modal').modal('show');
 					})
 					.appendTo($list);
-				$('<span/>').addClass('navi')
+				const $navi = $('<span/>').addClass('navi')
 					.html(getDisplayedNavi(item))
 					.append($('<span/>').addClass('type')
 						.html(' (' + toReadableType(item['type']) + ')'))
 					.appendTo($item);
+				addLemmaClass($navi, item['type']);
 				$item.append(' ');
 				$('<span/>').addClass('translation')
 					.html(getDisplayedEnglish(item))
