@@ -109,7 +109,8 @@ function buildWordInfo(word: WordData, flip?: () => void): JQuery {
 			'onChange': () => {
 				$shape.find('.side')
 					.css('width', '100%');
-			}
+			},
+			'duration': window.matchMedia('(prefers-reduced-motion)').matches ? 0 : 700
 		});
 		$shape.on('click', flip);
 	}
@@ -307,15 +308,16 @@ class CommentSlide extends Slide {
 	}
 
 	renderIn($container: JQuery): void {
-		$('<div/>').addClass('semicard comment')
+		$('<div/>').addClass('ui segment')
 			.html(this.comment)
 			.appendTo($container);
 
 		// buttons
-		const $buttonsCard = $('<div/>').addClass('semicard')
+		const $buttonsCard = $('<div/>').addClass('buttons')
 			.appendTo($container);
 		this.$continueButton = $('<button/>').addClass('ui primary button')
 			.text(_('continue-button'))
+			.append($('<i/>').addClass('icon arrow right'))
 			.on('click', () => {
 				this.toNextItem();
 			})

@@ -10,3 +10,49 @@
 		text-decoration: none;
 	}
 }
+
+.learn-card {
+	width: 100%;
+	height: 450px;
+
+	.ui.segment {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+
+		width: 100%;
+		height: 450px;
+		text-align: center;
+		color: var(--primary-color);
+
+		.word {
+			font-weight: 700;
+			font-size: 150%;
+			text-decoration-skip-ink: none;
+		}
+
+		.type {
+			color: var(--muted-color);
+			font-size: 150%;
+		}
+		
+		#english {
+			margin-bottom: 15px;
+		}
+
+		.meaning {
+			font-size: 150%;
+		}
+
+		img {
+			width: 100%;
+			max-width: 270px;
+		}
+	}
+}
+
+.buttons {
+	margin-top: 45px;
+}
