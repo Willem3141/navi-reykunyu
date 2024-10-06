@@ -212,10 +212,6 @@ class WordInfoSlide extends Slide {
 	relearn: boolean;
 
 	$shape?: JQuery;
-	$navi?: JQuery;
-	$english?: JQuery;
-	$meaningNote?: JQuery;
-	$etymology?: JQuery;
 	$flipButton?: JQuery;
 	$continueButton?: JQuery;
 	$learnedButton?: JQuery;
