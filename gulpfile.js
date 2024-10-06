@@ -21,7 +21,12 @@ function doTypecheck(cb) {
 
 function buildTypeScript(cb) {
 	return esbuild.build({
-		entryPoints: ['./frontend/src/index.ts', './frontend/src/all-words.ts', './frontend/src/study.ts'],
+		entryPoints: [
+			'./frontend/src/index.ts',
+			'./frontend/src/all-words.ts',
+			'./frontend/src/study.ts',
+			'./frontend/src/review.ts'
+		],
 		bundle: true,
 		minify: true,
 		sourcemap: true,

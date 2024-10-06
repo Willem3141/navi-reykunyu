@@ -8,7 +8,8 @@
 	"files": [
 		"index.ts",
 		"all-words.ts",
-		"study.ts"
+		"study.ts",
+		"review.ts"
 	],
 	"include": [
 		"*.d.ts"

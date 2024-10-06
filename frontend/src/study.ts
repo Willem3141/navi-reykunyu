@@ -136,7 +136,7 @@ class LearnPage {
 	items: (WordData | string)[];
 	
 	/// The index of the item we're currently showing.
-	currentItemIndex = 0;  // TODO
+	currentItemIndex = 0;
 
 	currentSlide: Slide | null = null;
 

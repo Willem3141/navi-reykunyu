@@ -160,7 +160,6 @@ function getReviewableItemsForLesson(courseId, lessonId, user, cb) {
 				cb([]);
 				console.log(err);
 			} else {
-				items = items.map((item) => item['vocab']);
 				vocabIDsToWordData(items);
 				cb(items);
 			}

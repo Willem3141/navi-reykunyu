@@ -436,6 +436,26 @@ app.get('/study/lesson', function(req, res) {
 	});
 });
 
+app.get('/study/review', function(req, res) {
+	if (!req.user) {
+		res.status(403);
+		res.render('403', pageVariables(req));
+		return;
+	}
+	const courseId = parseInt(req.query['c'], 10);
+	const lessonId = parseInt(req.query['l'], 10);
+	if (isNaN(courseId) || isNaN(lessonId)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
+		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson) => {
+			res.render('study-review', pageVariables(req, { course: courseData, lesson: lesson }));
+		});
+	});
+});
+
 app.get('/words.json', function(req, res) {
 	res.sendFile('words.json', { root: process.cwd() + '/data' });
 });
