@@ -1,70 +1,4 @@
-import { addLemmaClass, appendLinkString, lemmaForm, toReadableType } from "./lib";
-
-function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
-	let result = '';
-	for (let i = 0; i < pronunciation.length; i++) {
-		if (i > 0) {
-			result += ' or ';
-		}
-		const syllables = pronunciation[i]['syllables'].split('-');
-		for (let j = 0; j < syllables.length; j++) {
-			if (syllables.length > 1 && j + 1 == pronunciation[i]['stressed']) {
-				result += '<span class="stressed">' + syllables[j] + '</span>';
-			} else {
-				result += syllables[j];
-			}
-		}
-	}
-	return result.replace(/ù/g, 'u');
-}
-
-function getDisplayedNavi(word: WordData) {
-	let navi = lemmaForm(word, 'FN');
-	let pronunciation = '';
-	if (word['pronunciation']) {
-		pronunciation = htmlFromPronunciation(word['pronunciation']);
-	}
-	if (word['type'] == 'n:si') {
-		pronunciation += ' si';
-	}
-	if (word['pronunciation']) {
-		if (pronunciation.length && navi !== pronunciation) {
-			navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
-		}
-	}
-	return navi;
-}
-
-function getDisplayedEnglish(word: WordData) {
-	let english = '';
-	if (word['translations'].length > 1) {
-		for (let i = 0; i < word['translations'].length; i++) {
-			if (i > 0) {
-				english += '<br>';
-			}
-			english += '<b>' + (i + 1) + '.</b> ' + word['translations'][i]['en'];
-		}
-	} else {
-		english = word['translations'][0]['en'];
-	}
-	return english;
-}
-
-function buildWordInfo(word: WordData, onFlip?: () => void): JQuery {
-	let $card = $('<div/>').addClass('ui segment review-card');
-
-	let navi = getDisplayedNavi(word);
-	let english = getDisplayedEnglish(word);
-
-	const $question = $('<div/>')
-		.attr('id', 'question')
-		.appendTo($card);
-	$question.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
-	$question.append(' ');
-	$question.append($('<span/>').addClass('meaning').html(english));
-
-	return $card;
-}
+import { buildQuestionCard, buildWordPill } from "./study-lib";
 
 class ReviewPage {
 	courseId: number;
@@ -75,8 +9,9 @@ class ReviewPage {
 	
 	/// The index of the item we're currently showing.
 	currentItemIndex = 0;
+	correctCount = 0;
 
-	currentSlide: Slide | null = null;
+	currentSlide!: Slide;
 
 	constructor(courseId: number, lessonId: number, lesson: Lesson, items: WordData[]) {
 		this.courseId = courseId;
@@ -103,17 +38,52 @@ class ReviewPage {
 		this.currentSlide.renderIn($container);
 	}
 
-	toNextItem(): void {
+	addToLearnedList(correct: boolean): void {
+		const $pill = buildWordPill(this.items[this.currentItemIndex]);
+		if (!correct) {
+			$pill.addClass('incorrect');
+		}
+		$('#reviewed-words').append($pill);
+	}
+
+	/// correct indicates if the previous question was answered correctly
+	toNextItem(correct: boolean): void {
+		this.addToLearnedList(correct);
+		if (correct) {
+			this.correctCount++;
+		}
 		this.currentItemIndex++;
 		this.updateProgress();
 		if (this.currentItemIndex >= this.items.length) {
-			$('#lesson-done-modal').modal({
-				'closable': false
-			})
-			$('#lesson-done-modal').modal('show');
+			this.showDoneModal();
 		} else {
 			this.fetchAndSetUp();
 		}
+	}
+
+	showDoneModal(): void {
+		const $modal = $('#lesson-done-modal');
+		$modal.find('#review-count').text(this.currentItemIndex);
+		let fraction = this.correctCount / this.currentItemIndex;
+		let emotion = 'nitram';
+		if (fraction < 0.55) {
+			emotion = 'tì\'efuluke';
+		}
+		if (this.currentItemIndex >= 10) {
+			if (fraction > 0.9) {
+				emotion = 'lrrtok';
+			} else if (fraction < 0.3) {
+				emotion = 'tsngusawvìk';
+			}
+		}
+		$modal.find('.navi-face').attr('src', '/images/study/' + emotion + '.png');
+		$modal.find('.navi-face-description').text(this.correctCount + '/' + this.currentItemIndex +
+			' correct (' + Math.round(fraction * 100) + '%)');
+		$modal.modal({
+			'allowMultiple': true,
+			'closable': false
+		})
+		$modal.modal('show');
 	}
 
 	updateProgress(): void {
@@ -124,9 +94,9 @@ class ReviewPage {
 }
 
 abstract class Slide {
-	toNextItem: () => void;
+	toNextItem: (correct: boolean) => void;
 
-	constructor(toNextItem: () => void) {
+	constructor(toNextItem: (correct: boolean) => void) {
 		this.toNextItem = toNextItem;
 	}
 
@@ -146,7 +116,7 @@ class QuestionSlide extends Slide {
 	static readonly CORRECT_WAITING_TIME = 0;
 	static readonly INCORRECT_WAITING_TIME = 4000;
 
-	constructor(word: WordData, courseId: number, lessonId: number, toNextItem: () => void) {
+	constructor(word: WordData, courseId: number, lessonId: number, toNextItem: (correct: boolean) => void) {
 		super(toNextItem);
 		this.word = word;
 		this.courseId = courseId;
@@ -156,7 +126,7 @@ class QuestionSlide extends Slide {
 	renderIn($container: JQuery): void {
 		$container.empty();
 
-		this.$card = buildWordInfo(this.word);
+		this.$card = buildQuestionCard(this.word);
 		this.$card.appendTo($container);
 
 		this.$meaningInput = $('<input/>')
@@ -213,10 +183,9 @@ class QuestionSlide extends Slide {
 			//$('#correction').html(this.correctAnswerDisplay(this.currentItem));
 			$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
 				setTimeout(() => {
-					this.toNextItem();
+					this.toNextItem(false);
 				}, QuestionSlide.INCORRECT_WAITING_TIME);
 			});
-			//this.addToLearnedList(false);  // TODO
 			return;
 		}
 
@@ -227,11 +196,9 @@ class QuestionSlide extends Slide {
 		// don't need to ask for stress
 		$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
 			setTimeout(() => {
-				this.toNextItem();
+				this.toNextItem(true);
 			}, QuestionSlide.CORRECT_WAITING_TIME);
 		});
-		//this.addToLearnedList(true);  // TODO
-		//this.correctCount++;
 	}
 }
 

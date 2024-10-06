@@ -25,22 +25,26 @@
 		<!-- modals -->
 		<div id="lesson-done-modal" class="ui modal">
 			<div class="header">
-				Congratulations, you finished Lesson <%= lesson['id'] + 1 %>!
+				Congratulations, you reviewed <span id="review-count">...</span> words!
 			</div>
 			<div class="image content">
-				<img class="image navi-face" src="/images/study/nitram.png" alt="A happy-looking Na'vi face">
-				The words have been added to your review queue. You can start your reviews right away, or you can first view an overview of the words you learned.
+				<div class="image">
+					<img class="navi-face" src="/images/study/nitram.png" alt="A happy-looking Na'vi face">
+					<div class="navi-face-description ui top pointing basic label"></div>
+				</div>
+				<div>
+					You reviewed the following words:
+					<ul id="reviewed-words"></ul>
+				</div>
 			</div>
 			<div class="actions">
-				<a class="ui primary button" id="to-review-button" href="/study/review?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Review &rarr;</a>
-				<a class="ui button" id="to-overview-button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Overview &rarr;</a>
+				<a class="ui primary button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Exit</a>
 			</div>
 		</div>
 		<div id="word-info-modal" class="ui modal">
-			<div class="header"></div>
 			<div class="content"></div>
 			<div class="actions">
-				<a class="ui primary deny button">&rarr; <%- _('dialog-close') %></a>
+				<a class="ui primary deny button"><%- _('dialog-close') %></a>
 			</div>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>

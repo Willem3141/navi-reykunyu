@@ -1,4 +1,4 @@
-import { addLemmaClass, appendLinkString, lemmaForm, toReadableType } from "./lib";
+import { buildWordCard, buildWordPill } from "./study-lib";
 
 function buildItemList(lesson: Lesson, items: LearnableItem[]): (WordData | string)[] {
 	let result = [];
@@ -15,115 +15,6 @@ function buildItemList(lesson: Lesson, items: LearnableItem[]): (WordData | stri
 		result.push(lesson.conclusion);
 	}
 	return result;
-}
-
-function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
-	let result = '';
-	for (let i = 0; i < pronunciation.length; i++) {
-		if (i > 0) {
-			result += ' or ';
-		}
-		const syllables = pronunciation[i]['syllables'].split('-');
-		for (let j = 0; j < syllables.length; j++) {
-			if (syllables.length > 1 && j + 1 == pronunciation[i]['stressed']) {
-				result += '<span class="stressed">' + syllables[j] + '</span>';
-			} else {
-				result += syllables[j];
-			}
-		}
-	}
-	return result.replace(/ù/g, 'u');
-}
-
-function getDisplayedNavi(word: WordData) {
-	let navi = lemmaForm(word, 'FN');
-	let pronunciation = '';
-	if (word['pronunciation']) {
-		pronunciation = htmlFromPronunciation(word['pronunciation']);
-	}
-	if (word['type'] == 'n:si') {
-		pronunciation += ' si';
-	}
-	if (word['pronunciation']) {
-		if (pronunciation.length && navi !== pronunciation) {
-			navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
-		}
-	}
-	return navi;
-}
-
-function getDisplayedEnglish(word: WordData) {
-	let english = '';
-	if (word['translations'].length > 1) {
-		for (let i = 0; i < word['translations'].length; i++) {
-			if (i > 0) {
-				english += '<br>';
-			}
-			english += '<b>' + (i + 1) + '.</b> ' + word['translations'][i]['en'];
-		}
-	} else {
-		english = word['translations'][0]['en'];
-	}
-	return english;
-}
-
-function buildWordInfo(word: WordData, onFlip?: () => void): JQuery {
-	let $shape = $('<div/>').addClass('ui shape learn-card');
-	let $sides = $('<div/>').addClass('sides')
-		.appendTo($shape);
-	let $front = $('<div/>').addClass('ui segment')
-		.appendTo($('<div/>').addClass('side active').appendTo($sides));
-	let $back = $('<div/>').addClass('ui segment')
-		.appendTo($('<div/>').addClass('side').appendTo($sides));
-	$shape.shape({
-		'width': 'initial',
-		'height': 'initial',
-		'duration': window.matchMedia('(prefers-reduced-motion)').matches ? 0 : 700
-	});
-	$shape.on('click', () => {
-		if ($shape!.is('.animating')) {
-			return;
-		}
-		$shape!.find('.side')
-			.css('width', $shape!.width() + 'px');
-		$shape!.shape('flip over');
-		if (onFlip) {
-			onFlip();
-		}
-	});
-
-	let navi = getDisplayedNavi(word);
-	let english = getDisplayedEnglish(word);
-
-	const $navi = $('<div/>')
-		.attr('id', 'navi')
-		.appendTo($front);
-	addLemmaClass($navi, word['type']);
-	$navi.append($('<span/>').addClass('word').html(navi));
-	$navi.append(' ');
-	$navi.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
-	$navi.clone().appendTo($back);
-
-	const $english = $('<div/>')
-		.attr('id', 'english')
-		.appendTo($back);
-	$english.append($('<span/>').addClass('meaning').html(english));
-
-	if (word['meaning_note']) {
-		const $meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($back);
-		appendLinkString(word['meaning_note'], $meaningNote, 'FN', 'en');
-	}
-
-	if (word['etymology']) {
-		const $etymology = $('<div/>').attr('id', 'etymology').html('<b>Etymology:</b> ').appendTo($back);
-		appendLinkString(word['etymology'], $etymology, 'FN', 'en');
-	}
-
-	if (word['image']) {
-		$('<img/>').attr('src', '/ayrel/' + word['image']).appendTo($back);
-	}
-
-	return $shape;
 }
 
 class LearnPage {
@@ -234,7 +125,7 @@ class WordInfoSlide extends Slide {
 			this.$learnedButton?.show();
 			this.$continueButton?.show();
 		};
-		this.$shape = buildWordInfo(this.word, hideFlipButton.bind(this));
+		this.$shape = buildWordCard(this.word, hideFlipButton.bind(this));
 		this.$shape.appendTo($container);
 		
 		// buttons
@@ -377,26 +268,7 @@ class OverviewPage {
 					$list = $('<ul/>').addClass('lesson-words')
 						.appendTo($container);
 				}
-				const $item = $('<li/>').addClass('lesson-word')
-					.on('click', () => {
-						const $modal = $('#word-info-modal');
-						const $content = $modal.find('.content');
-						$content.empty();
-						const $wordInfo = buildWordInfo(<WordData>item);
-						$content.append($wordInfo);
-						$('#word-info-modal').modal('show');
-					})
-					.appendTo($list);
-				const $navi = $('<span/>').addClass('navi')
-					.html(getDisplayedNavi(item))
-					.append($('<span/>').addClass('type')
-						.html(' (' + toReadableType(item['type']) + ')'))
-					.appendTo($item);
-				addLemmaClass($navi, item['type']);
-				$item.append(' ');
-				$('<span/>').addClass('translation')
-					.html(getDisplayedEnglish(item))
-					.appendTo($item);
+				buildWordPill(item).appendTo($list);
 			}
 		}
 	}
