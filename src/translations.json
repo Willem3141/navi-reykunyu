@@ -196,7 +196,8 @@
 		"exit-button-tooltip": "This button exits your learning session. Your progress so far will be saved.",
 		"continue-button": "Continue",
 		"relearn-button": "Relearn",
-		"review-button": "Review"
+		"review-button": "Review",
+		"check-button": "Check"
 	},
 	"de": {
 		"language": "Deutsch",

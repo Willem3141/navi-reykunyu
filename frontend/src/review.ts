@@ -138,14 +138,13 @@ class QuestionSlide extends Slide {
 	courseId: number;
 	lessonId: number;
 
-	$shape?: JQuery;
-	$navi?: JQuery;
-	$english?: JQuery;
-	$meaningNote?: JQuery;
-	$etymology?: JQuery;
-	$flipButton?: JQuery;
-	$answerButton?: JQuery;
-	$exitButton?: JQuery;
+	$card?: JQuery;
+	$meaningInput!: JQuery;
+	$checkButton!: JQuery;
+	$exitButton!: JQuery;
+
+	static readonly CORRECT_WAITING_TIME = 0;
+	static readonly INCORRECT_WAITING_TIME = 4000;
 
 	constructor(word: WordData, courseId: number, lessonId: number, toNextItem: () => void) {
 		super(toNextItem);
@@ -157,22 +156,26 @@ class QuestionSlide extends Slide {
 	renderIn($container: JQuery): void {
 		$container.empty();
 
-		this.$shape = buildWordInfo(this.word);
-		this.$shape.appendTo($container);
+		this.$card = buildWordInfo(this.word);
+		this.$card.appendTo($container);
+
+		this.$meaningInput = $('<input/>')
+			.attr('placeholder', 'Na\'vi')
+			.appendTo(($('<div/>').addClass('ui fluid input meaning-input').appendTo($container)))
+			.trigger('focus')
+			.on('keypress', (e) => {
+				if (e.key === 'Enter') {
+					this.checkAnswer();
+				}
+			});
 		
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('buttons under-card')
 			.appendTo($container);
-		this.$answerButton = $('<button/>').addClass('ui primary button')
-			.hide()
-			.text(_('answer-button'))
+		this.$checkButton = $('<button/>').addClass('ui primary button')
+			.text(_('check-button'))
 			.prepend($('<i/>').addClass('checkmark icon'))
-			.on('click', () => {
-				// TODO figure out if correct etc.
-				$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
-					this.toNextItem();
-				});
-			})
+			.on('click', this.checkAnswer.bind(this))
 			.appendTo($buttonsCard);
 		this.$exitButton = $('<button/>').addClass('ui button')
 			.text(_('exit-button'))
@@ -184,6 +187,51 @@ class QuestionSlide extends Slide {
 				window.location.href = '/study/lesson?c=' + this.courseId + '&l=' + this.lessonId;
 			})
 			.appendTo($buttonsCard);
+	}
+
+	getCorrectAnswer(): string {
+		return this.word['word_raw']['FN'].toLowerCase();
+	}
+	
+	checkAnswer(): void {
+		let givenAnswer = ('' + this.$meaningInput.val()!).trim();
+		const lastCharacter = parseInt(givenAnswer.charAt(givenAnswer.length - 1), 10);
+		let givenStress: number | null = null;
+		if (!isNaN(lastCharacter)) {
+			givenAnswer = givenAnswer.substring(0, givenAnswer.length - 1).trim();
+			givenStress = lastCharacter;
+		}
+		this.$meaningInput.val(givenAnswer);
+		givenAnswer = givenAnswer.toLowerCase();
+		givenAnswer = givenAnswer.replace(/[\[\]<>+\-]/g, '');
+
+		if (givenAnswer !== this.getCorrectAnswer()) {
+			this.$meaningInput.addClass('incorrect')
+				.prop('disabled', true);
+			this.$checkButton.prop('disabled', true);
+			//$('#correction-card').slideDown();
+			//$('#correction').html(this.correctAnswerDisplay(this.currentItem));
+			$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
+				setTimeout(() => {
+					this.toNextItem();
+				}, QuestionSlide.INCORRECT_WAITING_TIME);
+			});
+			//this.addToLearnedList(false);  // TODO
+			return;
+		}
+
+		this.$meaningInput.addClass('correct')
+			.prop('disabled', true);
+		this.$checkButton.prop('disabled', true);
+
+		// don't need to ask for stress
+		$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
+			setTimeout(() => {
+				this.toNextItem();
+			}, QuestionSlide.CORRECT_WAITING_TIME);
+		});
+		//this.addToLearnedList(true);  // TODO
+		//this.correctCount++;
 	}
 }
 
