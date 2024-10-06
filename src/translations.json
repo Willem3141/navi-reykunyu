@@ -194,7 +194,9 @@
 		"known-button-tooltip": "Click this button if you already know this word. It will still appear in your reviews once, but if you get it right, Reykunyu will not bother you with it again.",
 		"exit-button": "Exit session",
 		"exit-button-tooltip": "This button exits your learning session. Your progress so far will be saved.",
-		"continue-button": "Continue"
+		"continue-button": "Continue",
+		"relearn-button": "Relearn",
+		"review-button": "Review"
 	},
 	"de": {
 		"language": "Deutsch",

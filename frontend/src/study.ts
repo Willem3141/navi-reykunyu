@@ -132,10 +132,13 @@ class LearnPage {
 
 	currentSlide: Slide | null = null;
 
-	constructor(courseId: number, lessonId: number, lesson: Lesson, items: LearnableItem[]) {
+	relearn: boolean;
+
+	constructor(courseId: number, lessonId: number, lesson: Lesson, items: LearnableItem[], relearn?: boolean) {
 		this.courseId = courseId;
 		this.lessonId = lessonId;
 		this.items = buildItemList(lesson, items);
+		this.relearn = relearn ? true : false;
 
 		$('#progress-bar').show()
 			.progress({
@@ -157,7 +160,7 @@ class LearnPage {
 			$container.empty();
 			this.currentSlide.renderIn($container);
 		} else {
-			this.currentSlide = new WordInfoSlide(item, this.courseId, this.toNextItem.bind(this));
+			this.currentSlide = new WordInfoSlide(item, this.courseId, this.lessonId, this.toNextItem.bind(this), this.relearn);
 			const $container = $('#main-container');
 			$container.empty();
 			this.currentSlide.renderIn($container);
@@ -197,6 +200,8 @@ abstract class Slide {
 class WordInfoSlide extends Slide {
 	word: WordData;
 	courseId: number;
+	lessonId: number;
+	relearn: boolean;
 
 	$shape?: JQuery;
 	$navi?: JQuery;
@@ -204,14 +209,17 @@ class WordInfoSlide extends Slide {
 	$meaningNote?: JQuery;
 	$etymology?: JQuery;
 	$flipButton?: JQuery;
+	$continueButton?: JQuery;
 	$learnedButton?: JQuery;
 	$knownButton?: JQuery;
 	$exitButton?: JQuery;
 
-	constructor(word: WordData, courseId: number, toNextItem: () => void) {
+	constructor(word: WordData, courseId: number, lessonId: number, toNextItem: () => void, relearn: boolean) {
 		super(toNextItem);
 		this.word = word;
 		this.courseId = courseId;
+		this.lessonId = lessonId;
+		this.relearn = relearn;
 	}
 
 	flipCard(): void {
@@ -219,7 +227,8 @@ class WordInfoSlide extends Slide {
 			return;
 		}
 		this.$flipButton!.hide();
-		this.$learnedButton!.show();
+		this.$learnedButton?.show();
+		this.$continueButton?.show();
 
 		this.$shape!.find('.side')
 			.css('width', this.$shape!.width() + 'px');
@@ -239,28 +248,41 @@ class WordInfoSlide extends Slide {
 			.prepend($('<i/>').addClass('share icon'))
 			.on('click', this.flipCard.bind(this))
 			.appendTo($buttonsCard);
-		this.$learnedButton = $('<button/>').addClass('ui primary button')
-			.hide()
-			.text(_('learned-button'))
-			.prepend($('<i/>').addClass('checkmark icon'))
-			.on('click', () => {
-				$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
-					this.toNextItem();
-				});
-			})
-			.appendTo($buttonsCard);
-		this.$knownButton = $('<button/>').addClass('ui button')
-			.text(_('known-button'))
-			.attr('data-content', _('known-button-tooltip'))
-			.popup({
-				position: 'top center'
-			})
-			.on('click', () => {
-				$.post('/api/srs/mark-known', { 'vocab': this.word['id'] }, () => {
-					this.toNextItem();
-				});
-			})
-			.appendTo($buttonsCard);
+		if (this.relearn) {
+			this.$continueButton = $('<button/>').addClass('ui primary button')
+				.hide()
+				.text(_('continue-button'))
+				.append($('<i/>').addClass('arrow right icon'))
+				.on('click', () => {
+					$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
+						this.toNextItem();
+					});
+				})
+				.appendTo($buttonsCard);
+		} else {
+			this.$learnedButton = $('<button/>').addClass('ui primary button')
+				.hide()
+				.text(_('learned-button'))
+				.prepend($('<i/>').addClass('checkmark icon'))
+				.on('click', () => {
+					$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
+						this.toNextItem();
+					});
+				})
+				.appendTo($buttonsCard);
+			this.$knownButton = $('<button/>').addClass('ui button')
+				.text(_('known-button'))
+				.attr('data-content', _('known-button-tooltip'))
+				.popup({
+					position: 'top center'
+				})
+				.on('click', () => {
+					$.post('/api/srs/mark-known', { 'vocab': this.word['id'] }, () => {
+						this.toNextItem();
+					});
+				})
+				.appendTo($buttonsCard);
+		}
 		this.$exitButton = $('<button/>').addClass('ui button')
 			.text(_('exit-button'))
 			.attr('data-content', _('exit-button-tooltip'))
@@ -268,7 +290,9 @@ class WordInfoSlide extends Slide {
 				position: 'top center'
 			})
 			.on('click', () => {
-				window.location.href = '/study/course?c=' + this.courseId;
+				window.location.href = this.relearn ?
+					'/study/lesson?c=' + this.courseId + '&l=' + this.lessonId :
+					'/study/course?c=' + this.courseId;
 			})
 			.appendTo($buttonsCard);
 	}
@@ -321,6 +345,17 @@ class OverviewPage {
 
 		const $container = $('#main-container');
 		$container.empty();
+
+		const $buttonsCard = $('<div/>').addClass('buttons')
+			.appendTo($container);
+		$('<a/>').addClass('ui primary button')
+			.text(_('review-button'))
+			.attr('href', '/study/review?c=' + this.courseId + '&l=' + this.lessonId)
+			.appendTo($buttonsCard);
+		$('<a/>').addClass('ui button')
+			.text(_('relearn-button'))
+			.attr('href', '/study/lesson?c=' + this.courseId + '&l=' + this.lessonId + '&relearn')
+			.appendTo($buttonsCard);
 
 		$('<h2/>').html(_('lesson-overview')).appendTo($container);
 
@@ -380,11 +415,14 @@ $(() => {
 	if (isNaN(lessonId)) {
 		throw Error('lesson parameter is not an integer');
 	}
+	const relearn = url.searchParams.has('relearn');
 	$.getJSON('/api/srs/lesson', { 'courseId': courseId, 'lessonId': lessonId }).done((lessonData) => {
 		$.getJSON('/api/srs/items', { 'courseId': courseId, 'lessonId': lessonId }).done((items) => {
 			$.getJSON('/api/srs/learnable', { 'courseId': courseId, 'lessonId': lessonId }).done((learnableItems) => {
 				if (learnableItems.length > 0) {
 					new LearnPage(courseId, lessonId, lessonData, learnableItems).fetchAndSetUp();
+				} else if (relearn) {
+					new LearnPage(courseId, lessonId, lessonData, items, true).fetchAndSetUp();
 				} else {
 					new OverviewPage(courseId, lessonId, lessonData, items).render();
 				}
