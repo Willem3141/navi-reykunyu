@@ -160,7 +160,7 @@ class QuestionSlide extends Slide {
 	}
 
 	getCorrectAnswer(): string {
-		return this.word['word_raw']['FN'].toLowerCase();
+		return this.word['word_raw']['FN'].toLowerCase() + (this.word['type'] === 'n:si' ? ' si' : '');
 	}
 	
 	checkAnswer(): void {
