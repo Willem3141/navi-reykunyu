@@ -21,28 +21,26 @@
 			</div>
 		</div>
 		<div id="main-container" class="container"></div>
-		<div id="dialog-layer" style="display: none;">
-			<div id="lesson-done-dialog" class="dialog" style="display: none;">
-				<div class="dialog-header">
-					Congratulations, you finished Lesson <%= lesson['id'] + 1 %>!
-				</div>
-				<div class="dialog-image">
-					<img src="/images/study/nitram.png" alt="A happy-looking Na'vi face">
-				</div>
-				<div class="dialog-body">
-					The words have been added to your review queue. You can start your reviews right away, or you can first view an overview of the words you learned.
-				</div>
-				<div class="dialog-buttons">
-					<a class="button primary-button" id="to-review-button" href="/study/review?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Review &rarr;</a>
-					<a class="button secondary-button" id="to-overview-button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Overview &rarr;</a>
-				</div>
+
+		<!-- modals -->
+		<div id="lesson-done-modal" class="ui modal">
+			<div class="header">
+				Congratulations, you finished Lesson <%= lesson['id'] + 1 %>!
 			</div>
-			<div id="word-info-dialog" class="dialog" style="display: none;">
-				<div class="dialog-header"></div>
-				<div class="dialog-body"></div>
-				<div class="dialog-buttons">
-					<a class="button primary-button" id="word-info-close-button">&rarr; <%- _('dialog-close') %></a>
-				</div>
+			<div class="image content">
+				<img class="image" src="/images/study/nitram.png" alt="A happy-looking Na'vi face">
+				The words have been added to your review queue. You can start your reviews right away, or you can first view an overview of the words you learned.
+			</div>
+			<div class="actions">
+				<a class="ui primary button" id="to-review-button" href="/study/review?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Review &rarr;</a>
+				<a class="ui button" id="to-overview-button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Overview &rarr;</a>
+			</div>
+		</div>
+		<div id="word-info-modal" class="ui modal">
+			<div class="header"></div>
+			<div class="content"></div>
+			<div class="actions">
+				<a class="ui primary dismiss button">&rarr; <%- _('dialog-close') %></a>
 			</div>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>

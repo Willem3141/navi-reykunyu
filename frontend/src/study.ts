@@ -1,4 +1,4 @@
-import { appendLinkString, toReadableType } from "./lib";
+import { appendLinkString, lemmaForm, toReadableType } from "./lib";
 
 function buildItemList(lesson: Lesson, items: LearnableItem[]): (WordData | string)[] {
 	let result = [];
@@ -15,30 +15,6 @@ function buildItemList(lesson: Lesson, items: LearnableItem[]): (WordData | stri
 		result.push(lesson.conclusion);
 	}
 	return result;
-}
-
-function showDialog($dialog: JQuery, dismissable?: boolean): void {
-	const $dialogLayer = $('#dialog-layer');
-	if (dismissable) {
-		$dialogLayer.on('click', (e) => {
-			if (e.currentTarget == e.target) {
-				hideDialog();
-			}
-		});
-	} else {
-		$dialogLayer.off('click');
-	}
-	$dialogLayer.hide();
-	$dialogLayer.find('.dialog').hide();
-	$dialog.show();
-	$dialogLayer.fadeIn(250);
-}
-
-function hideDialog(): void {
-	const $dialogLayer = $('#dialog-layer');
-	$dialogLayer.fadeOut(250, () => {
-		$dialogLayer.find('.dialog').hide();
-	});
 }
 
 function htmlFromNavi(navi: string): string {
@@ -69,12 +45,13 @@ function getDisplayedNavi(word: WordData) {
 	if (word['pronunciation']) {
 		pronunciation = htmlFromPronunciation(word['pronunciation']);
 	}
+	lemmaForm(navi);
 	if (word['type'] == 'n:si') {
 		navi += ' si';
 		pronunciation += ' si';
 	}
 	if (word['pronunciation']) {
-		if (navi !== pronunciation) {
+		if (pronunciation.length && navi !== pronunciation) {
 			navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
 		}
 	}
@@ -106,10 +83,8 @@ function buildWordInfo(word: WordData, flip?: () => void): JQuery {
 		.appendTo($('<div/>').addClass('side').appendTo($sides));
 	if (flip) {
 		$shape.shape({
-			'onChange': () => {
-				$shape.find('.side')
-					.css('width', '100%');
-			},
+			'width': 'initial',
+			'height': 'initial',
 			'duration': window.matchMedia('(prefers-reduced-motion)').matches ? 0 : 700
 		});
 		$shape.on('click', flip);
@@ -198,7 +173,10 @@ class LearnPage {
 		this.currentItemIndex++;
 		this.updateProgress();
 		if (this.currentItemIndex >= this.items.length) {
-			showDialog($('#lesson-done-dialog'));
+			$('#lesson-done-dialog').modal({
+				'closable': false
+			})
+			$('#lesson-done-dialog').modal('show');
 		} else {
 			this.fetchAndSetUp();
 		}
@@ -242,6 +220,9 @@ class WordInfoSlide extends Slide {
 	}
 
 	flipCard(): void {
+		if (this.$shape!.is('.animating')) {
+			return;
+		}
 		this.$flipButton!.hide();
 		this.$learnedButton!.show();
 
@@ -361,15 +342,12 @@ class OverviewPage {
 				}
 				const $item = $('<li/>').addClass('lesson-word')
 					.on('click', () => {
-						const $wordInfoDialog = $('#word-info-dialog');
-						const $wordInfoBody = $wordInfoDialog.find('.dialog-body');
-						$wordInfoBody.empty();
+						const $modal = $('#word-info-modal');
+						const $content = $modal.find('.content');
+						$content.empty();
 						const $wordInfo = buildWordInfo(<WordData>item);
-						$wordInfoBody.append($wordInfo);
-						$('#word-info-close-button').on('click', () => {
-							hideDialog();
-						});
-						showDialog($wordInfoDialog, true);
+						$content.append($wordInfo);
+						$('#word-info-modal').modal('show');
 					})
 					.appendTo($list);
 				$('<span/>').addClass('navi')
