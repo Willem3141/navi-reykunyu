@@ -102,7 +102,8 @@ function preprocessLessons(course) {
 		let lessons = [];
 		if (course['rule'] === 'all') {
 			let words = dictionary.getAll();
-			words = words.map((w) => { return { 'id': w['id'] } });
+			words = words.filter((w) => w['status'] !== 'unconfirmed' && w['status'] !== 'unofficial')
+				.map((w) => { return { 'id': w['id'] } });
 			words.sort(function (a, b) {
 				return compareNaviWords(
 					dictionary.getById(a['id'])['word_raw']['FN'],
