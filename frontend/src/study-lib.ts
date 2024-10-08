@@ -126,7 +126,7 @@ export function buildQuestionCard(word: WordData, onFlip?: () => void): JQuery {
 }
 
 export function buildWordPill(word: WordData): JQuery {
-	const $pill = $('<li/>').addClass('lesson-word')
+	const $pill = $('<li/>').addClass('ui segment word-pill')
 		.on('click', () => {
 			const $modal = $('#word-info-modal');
 			const $content = $modal.find('.content');
