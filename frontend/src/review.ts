@@ -171,6 +171,8 @@ class QuestionSlide extends Slide {
 			givenAnswer = givenAnswer.substring(0, givenAnswer.length - 1).trim();
 			givenStress = lastCharacter;
 		}
+		givenAnswer = givenAnswer.replace(/’/g, "'");
+		givenAnswer = givenAnswer.replace(/‘/g, "'");
 		this.$meaningInput.val(givenAnswer);
 		givenAnswer = givenAnswer.toLowerCase();
 		givenAnswer = givenAnswer.replace(/[\[\]<>+\-]/g, '');
