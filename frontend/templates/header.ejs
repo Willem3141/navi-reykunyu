@@ -56,8 +56,10 @@
 		<a id="help-button" class="ui icon basic button" href="/help"><i class="question icon"></i><span class="button-label"><%- _("menu-help") %></span></a>
 	</div>
 	<% } else { %>
-	<a href="/" class="ui icon right floated top right basic button">
-		<i class="arrow left icon"></i> <%- _('menu-back-to-reykunyu') %>
+	<% if (!locals['backTo']) { locals['backTo'] = '/'; } %>
+	<% if (!locals['backMessage']) { locals['backMessage'] = 'menu-back-to-reykunyu'; } %>
+	<a href="<%- locals['backTo'] %>" class="ui icon right floated top right basic button">
+		<i class="arrow left icon"></i> <%- _(locals['backMessage']) %>
 	</a>
 	<% } %>
 </h1>

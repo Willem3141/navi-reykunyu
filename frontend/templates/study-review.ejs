@@ -10,7 +10,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<%- include('header.ejs') %>
+			<%- include('header.ejs', { 'backTo': '/study/lesson?c=' + (course['id'] + 1) + '&l=' + (lesson['id'] + 1), 'backMessage': 'menu-back-to-lesson' }) %>
 			<h2 id="lesson-information">
 				<div class="lesson-number"><%- _('lesson') %> <%= lesson['id'] + 1 %>: <%= lesson['name'] %></div>
 			</h2>
