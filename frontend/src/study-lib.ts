@@ -28,7 +28,7 @@ export function getDisplayedNavi(word: WordData) {
 		pronunciation += ' si';
 	}
 	if (word['pronunciation']) {
-		if (pronunciation.length && navi !== pronunciation) {
+		if (pronunciation.length && navi.toLowerCase() !== pronunciation.toLowerCase()) {
 			navi = navi + ' <span class="type">(pronounced ' + pronunciation + ')</span>';
 		}
 	}
