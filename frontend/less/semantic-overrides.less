@@ -22,6 +22,8 @@ body,
 .ui.selection.visible.dropdown > .text:not(.default),
 .ui.modal .header,
 .ui.modal .content,
+.ui.cards > .card > .content > .header,
+.ui.cards > .card > .content > .description,
 .ui.checkbox label,
 .ui.checkbox + label,
 .ui.checkbox label:hover,
@@ -40,7 +42,8 @@ body,
 }
 
 .ui.basic.button,
-.ui.basic.buttons .button {
+.ui.basic.buttons .button,
+.ui.cards > .card > .extra {
 	color: var(--muted-color) !important;
 }
 
@@ -59,6 +62,8 @@ body,
 }
 
 .ui.modal .actions,
+.ui.cards > .card,
+.ui.cards > a.card:hover,
 .ui.segment {
 	background-color: var(--lightly-shaded-background-color);
 }
