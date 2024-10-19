@@ -30,6 +30,9 @@
 							<b><%= lesson['known_count'] - lesson['reviewable_count'] %></b> known,
 							<b><%= lesson['reviewable_count'] %></b> up for review
 						</div>
+						<div class="ui bottom blue attached progress">
+							<div class="bar" style="min-width: 0; width: <%= 100 * (lesson['known_count'] - lesson['reviewable_count']) / lesson['total_count'] %>%;"></div>
+						</div>
 					</a>
 				<% } %>
 			</ul>
