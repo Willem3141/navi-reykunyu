@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Reykunyu &bull; Study</title>
+		<link rel="stylesheet" type="text/css" href="/vendor/semantic/dist/semantic.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/css/study.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<%- include('header.ejs', { 'showLoginButton': true } ) %>
+		</div>
+		<div id="main-container" class="container">
+			<h3>Study</h3>
+			<p>Reykunyu has a built-in system for studying vocabulary. If you'd like to use it, make an account <a href="/signup">here</a>. (Or if you already have an account, login to it using the "Login" button above.)</p>
+			<div class="ui two stackable cards" style="opacity: 0.4;">
+				<% for (let course of courses) { %>
+					<div class="card disabled">
+						<div class="content">
+							<div class="header"><%= course['name'] %></div>
+							<div class="description"><%= course['description'] %></div>
+						</div>
+						<div class="extra content">
+							<i class="sitemap icon"></i>
+							<b><%= course['lesson_count'] %></b> lessons
+						</div>
+					</div>
+				<% } %>
+			</div>
+		</div>
+
+		<%- include('login-modal.ejs') %>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script>
+			$(() => {
+				$('#login-modal').modal();
+				$('#login-button').on("click", () => {
+					$('.login-error-message').remove();
+					$('#login-modal')
+						.modal("show");
+				});
+				if ($('.login-error-message').length > 0) {
+					$('#login-modal')
+						.modal('setting', 'duration', 0)
+						.modal('show')
+						.modal('setting', 'duration', 400);
+				}
+			});
+		</script>
+	</body>
+</html>

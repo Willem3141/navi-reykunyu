@@ -387,13 +387,8 @@ app.get('/signup', function(req, res) {
 });
 
 app.get('/study', function(req, res) {
-	if (!req.user) {
-		res.status(403);
-		res.render('403', pageVariables(req));
-		return;
-	}
 	zeykerokyu.getCourses((courses) => {
-		res.render('study', pageVariables(req, { courses: courses }));
+		res.render(!req.user ? 'study-landing' : 'study', pageVariables(req, { courses: courses }));
 	});
 });
 
