@@ -173,9 +173,14 @@ const intervalDuration = [
 	'0 hours',
 	'0 hours',
 	'4 hours',
+	'8 hours',
 	'1 day',
+	'2 days',
+	'4 days',
 	'7 days',
+	'14 days',
 	'30 days',
+	'90 days',
 	'365 days'
 ];
 
@@ -284,7 +289,7 @@ function processKnownAnswer(user, vocab, cb) {
 
 	db.run(`insert into vocab_status
 		values (?, ?, ?, current_timestamp)`,
-		user.username, vocab, 6, (err) => {
+		user.username, vocab, 11, (err) => {
 			if (err) {
 				cb();
 				console.log(err);
