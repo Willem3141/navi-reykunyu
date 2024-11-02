@@ -21,7 +21,12 @@ module.exports = {
 	'getLessonData': getLessonData,
 	'getItemsForLesson': getItemsForLesson,
 	'getLearnableItemsForLesson': getLearnableItemsForLesson,
+	'getReviewableItems': getReviewableItems,
+	'getReviewableCount': getReviewableCount,
+	'getReviewableItemsForCourse': getReviewableItemsForCourse,
+	'getReviewableCountForCourse': getReviewableCountForCourse,
 	'getReviewableItemsForLesson': getReviewableItemsForLesson,
+	'getReviewableCountForLesson': getReviewableCountForLesson,
 	'processCorrectAnswer': processCorrectAnswer,
 	'processIncorrectAnswer': processIncorrectAnswer,
 	'processKnownAnswer': processKnownAnswer
@@ -144,11 +149,97 @@ function getLearnableItemsForLesson(courseId, lessonId, user, cb) {
 	);
 }
 
+function getReviewableItems(user, cb) {
+	if (!user) {
+		cb([]);
+	}
+	db.all(`select distinct v.vocab
+		from vocab_status s, vocab_in_lesson v
+		where s.user == ?
+			and s.next_review <= current_timestamp
+			and v.vocab == s.vocab
+		order by random()
+		`, user.username, (err, items) => {
+			if (err) {
+				cb([]);
+				console.log(err);
+			} else {
+				vocabIDsToWordData(items);
+				cb(items);
+			}
+		}
+	);
+}
+
+function getReviewableCount(user, cb) {
+	if (!user) {
+		cb(0);
+	}
+	db.get(`select count(distinct v.vocab)
+		from vocab_status s, vocab_in_lesson v
+		where s.user == ?
+			and s.next_review <= current_timestamp
+			and v.vocab == s.vocab
+		`, user.username, (err, result) => {
+			if (err) {
+				cb(0);
+				console.log(err);
+			} else {
+				cb(result['count(distinct v.vocab)']);
+			}
+		}
+	);
+}
+
+function getReviewableItemsForCourse(courseId, user, cb) {
+	if (!user) {
+		cb([]);
+	}
+	db.all(`select distinct v.vocab
+		from vocab_status s, vocab_in_lesson v
+		where s.user == ?
+			and s.next_review <= current_timestamp
+			and v.vocab == s.vocab
+			and v.course_id == ?
+		order by random()
+		`, user.username, courseId, (err, items) => {
+			if (err) {
+				cb([]);
+				console.log(err);
+			} else {
+				vocabIDsToWordData(items);
+				cb(items);
+			}
+		}
+	);
+}
+
+function getReviewableCountForCourse(courseId, user, cb) {
+	if (!user) {
+		cb(0);
+	}
+	db.get(`select count(distinct v.vocab)
+		from vocab_status s, vocab_in_lesson v
+		where s.user == ?
+			and s.next_review <= current_timestamp
+			and v.vocab == s.vocab
+			and v.course_id == ?
+		`, user.username, courseId, (err, result) => {
+			if (err) {
+				cb(0);
+				console.log(err);
+			} else {
+				cb(result['count(distinct v.vocab)']);
+			}
+		}
+	);
+}
+
 function getReviewableItemsForLesson(courseId, lessonId, user, cb) {
 	if (!user) {
 		cb([]);
 	}
-	db.all(`select v.vocab
+	db.all(`select distinct v.vocab
 		from vocab_status s, vocab_in_lesson v
 		where s.user == ?
 			and s.next_review <= current_timestamp
@@ -162,6 +253,27 @@ function getReviewableItemsForLesson(courseId, lessonId, user, cb) {
 			} else {
 				vocabIDsToWordData(items);
 				cb(items);
+			}
+		}
+	);
+}
+
+function getReviewableCountForLesson(courseId, lessonId, user, cb) {
+	if (!user) {
+		cb(0);
+	}
+	db.get(`select count(distinct v.vocab)
+		from vocab_status s, vocab_in_lesson v
+		where s.user == ?
+			and s.next_review <= current_timestamp
+			and v.vocab == s.vocab
+			and v.course_id == ? and v.lesson_id == ?
+		`, user.username, courseId, lessonId, (err, result) => {
+			if (err) {
+				cb(0);
+				console.log(err);
+			} else {
+				cb(result['count(distinct v.vocab)']);
 			}
 		}
 	);

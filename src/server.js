@@ -76,7 +76,13 @@ app.use((req, res, next) => {
 });
 
 app.get('/', function(req, res) {
-	res.render('index', pageVariables(req, { query: req.query['q'] }));
+	if (req.user) {
+		zeykerokyu.getReviewableCount(req.user, (count) => {
+			res.render('index', pageVariables(req, { query: req.query['q'], reviewableCount: count }));
+		});
+	} else {
+		res.render('index', pageVariables(req, { query: req.query['q'] }));
+	}
 });
 
 app.get('/help', function(req, res) {
@@ -388,7 +394,13 @@ app.get('/signup', function(req, res) {
 
 app.get('/study', function(req, res) {
 	zeykerokyu.getCourses((courses) => {
-		res.render(!req.user ? 'study-landing' : 'study', pageVariables(req, { courses: courses }));
+		if (req.user) {
+			zeykerokyu.getReviewableCount(req.user, (count) => {
+				res.render('study', pageVariables(req, { courses: courses, reviewableCount: count }));
+			});
+		} else {
+			res.render('study-landing', pageVariables(req, { courses: courses }));
+		}
 	});
 });
 
@@ -406,7 +418,9 @@ app.get('/study/course', function(req, res) {
 	}
 	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
 		zeykerokyu.getLessons(req.user, courseId - 1, (lessons) => {
-			res.render('study-course', pageVariables(req, { course: courseData, lessons: lessons }));
+			zeykerokyu.getReviewableCountForCourse(courseId - 1, req.user, (count) => {
+				res.render('study-course', pageVariables(req, { course: courseData, lessons: lessons, reviewableCount: count }));
+			});
 		});
 	});
 });
@@ -437,18 +451,7 @@ app.get('/study/review', function(req, res) {
 		res.render('403', pageVariables(req));
 		return;
 	}
-	const courseId = parseInt(req.query['c'], 10);
-	const lessonId = parseInt(req.query['l'], 10);
-	if (isNaN(courseId) || isNaN(lessonId)) {
-		res.status(400);
-		res.send('400 Bad Request');
-		return;
-	}
-	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
-		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson) => {
-			res.render('study-review', pageVariables(req, { course: courseData, lesson: lesson }));
-		});
-	});
+	res.render('study-review', pageVariables(req));
 });
 
 app.get('/words.json', function(req, res) {

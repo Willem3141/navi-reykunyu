@@ -13,6 +13,12 @@
 			<%- include('header.ejs') %>
 		</div>
 		<div id="main-container" class="container">
+			<div class="buttons">
+				<a class="ui <%= reviewableCount === 0 ? 'disabled ' : '' %>labeled button" href="/study/review">
+					<div class="ui primary button">Review</div>
+					<div class="ui basic blue left pointing label"><%= reviewableCount %></div>
+				</a>
+			</div>
 			<h3><%- _('pick-a-course') %></h3>
 			<p><%- _('pick-a-course-note') %></p>
 			<div class="ui two stackable cards">

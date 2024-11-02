@@ -1,8 +1,8 @@
 import { buildQuestionCard, buildWordPill, getDisplayedNavi } from "./study-lib";
 
 class ReviewPage {
-	courseId: number;
-	lessonId: number;
+	/// The URL we're redirecting to when this review session is done.
+	doneRedirectUrl: string;
 
 	/// All items we're supposed to show to the user.
 	items: WordData[];
@@ -13,9 +13,8 @@ class ReviewPage {
 
 	currentSlide!: Slide;
 
-	constructor(courseId: number, lessonId: number, lesson: Lesson, items: WordData[]) {
-		this.courseId = courseId;
-		this.lessonId = lessonId;
+	constructor(doneRedirectUrl: string, items: WordData[]) {
+		this.doneRedirectUrl = doneRedirectUrl;
 		this.items = items;
 
 		$('#progress-bar').show()
@@ -32,7 +31,7 @@ class ReviewPage {
 
 	fetchAndSetUp(): void {
 		const item = this.items[this.currentItemIndex];
-		this.currentSlide = new QuestionSlide(item, this.courseId, this.lessonId, this.toNextItem.bind(this));
+		this.currentSlide = new QuestionSlide(item, this.doneRedirectUrl, this.toNextItem.bind(this));
 		const $container = $('#main-container');
 		$container.empty();
 		this.currentSlide.renderIn($container);
@@ -83,6 +82,7 @@ class ReviewPage {
 			'allowMultiple': true,
 			'closable': false
 		})
+		$modal.find('.ui.primary.button').attr('href', this.doneRedirectUrl);
 		$modal.modal('show');
 	}
 
@@ -105,8 +105,7 @@ abstract class Slide {
 
 class QuestionSlide extends Slide {
 	word: WordData;
-	courseId: number;
-	lessonId: number;
+	doneRedirectUrl: string;
 
 	$card?: JQuery;
 	$meaningInput!: JQuery;
@@ -116,11 +115,10 @@ class QuestionSlide extends Slide {
 	static readonly CORRECT_WAITING_TIME = 0;
 	static readonly INCORRECT_WAITING_TIME = 4000;
 
-	constructor(word: WordData, courseId: number, lessonId: number, toNextItem: (correct: boolean) => void) {
+	constructor(word: WordData, doneRedirectUrl: string, toNextItem: (correct: boolean) => void) {
 		super(toNextItem);
 		this.word = word;
-		this.courseId = courseId;
-		this.lessonId = lessonId;
+		this.doneRedirectUrl = doneRedirectUrl;
 	}
 
 	renderIn($container: JQuery): void {
@@ -154,7 +152,7 @@ class QuestionSlide extends Slide {
 				position: 'top center'
 			})
 			.on('click', () => {
-				window.location.href = '/study/lesson?c=' + this.courseId + '&l=' + this.lessonId;
+				window.location.href = this.doneRedirectUrl;
 			})
 			.appendTo($buttonsCard);
 	}
@@ -210,31 +208,31 @@ export interface Page {
 }
 
 $(() => {
+	let params: any = {};
+	let doneRedirectUrl = '/study';
 	const url = new URL(window.location.href);
-	if (!url.searchParams.has('c')) {
-		throw Error('course parameter not set');
+	if (url.searchParams.has('c')) {
+		const courseId = parseInt(url.searchParams.get('c')!, 10);
+		if (isNaN(courseId)) {
+			throw Error('course parameter is not an integer');
+		}
+		params['courseId'] = courseId;
+		doneRedirectUrl = '/study/course?c=' + courseId;
+		if (url.searchParams.has('l')) {
+			const lessonId = parseInt(url.searchParams.get('l')!, 10);
+			if (isNaN(lessonId)) {
+				throw Error('lesson parameter is not an integer');
+			}
+			params['lessonId'] = lessonId;
+			doneRedirectUrl = '/study/lesson?c=' + courseId + '&l=' + lessonId;
+		}
 	}
-	const courseId = parseInt(url.searchParams.get('c')!, 10);
-	if (isNaN(courseId)) {
-		throw Error('course parameter is not an integer');
-	}
-	if (!url.searchParams.has('l')) {
-		throw Error('lesson parameter not set');
-	}
-	const lessonId = parseInt(url.searchParams.get('l')!, 10);
-	if (isNaN(lessonId)) {
-		throw Error('lesson parameter is not an integer');
-	}
-	$.getJSON('/api/srs/lesson', { 'courseId': courseId, 'lessonId': lessonId }).done((lessonData) => {
-		$.getJSON('/api/srs/items', { 'courseId': courseId, 'lessonId': lessonId }).done((items) => {
-			$.getJSON('/api/srs/reviewable', { 'courseId': courseId, 'lessonId': lessonId }).done((reviewableItems) => {
-				if (reviewableItems.length > 0) {
-					new ReviewPage(courseId, lessonId, lessonData,
-						reviewableItems.map((item: LearnableItem) => item['vocab'])).fetchAndSetUp();
-				} else {
-					window.location.href = '/study/lesson?c=' + courseId + '&l=' + lessonId;
-				}
-			});
-		});
+	$.getJSON('/api/srs/reviewable', params).done((reviewableItems) => {
+		if (reviewableItems.length > 0) {
+			new ReviewPage(doneRedirectUrl,
+				reviewableItems.map((item: LearnableItem) => item['vocab'])).fetchAndSetUp();
+		} else {
+			window.location.href = doneRedirectUrl;
+		}
 	});
 });

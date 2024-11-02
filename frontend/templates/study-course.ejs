@@ -13,6 +13,14 @@
 			<%- include('header.ejs', { 'backTo': '/study', 'backMessage': 'menu-back-to-courses' }) %>
 		</div>
 		<div id="main-container" class="container">
+			<div class="buttons">
+			</div>
+			<div class="buttons">
+				<a class="ui <%= reviewableCount === 0 ? 'disabled ' : '' %>labeled button" href="/study/review?c=<%= course['id'] + 1 %>">
+					<div class="ui primary button">Review</div>
+					<div class="ui basic blue left pointing label"><%= reviewableCount %></div>
+				</a>
+			</div>
 			<h3><%- course['name'] %></h3>
 			<p><%- course['description'] %></p>
 			<div class="ui four doubling cards">
