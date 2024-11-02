@@ -254,7 +254,7 @@ router.post('/srs/mark-correct', function(req, res) {
 	}
 	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processCorrectAnswer(req.user, vocab, (items) => {
-		res.send();
+		res.status(204).send();
 	});
 });
 
@@ -265,7 +265,7 @@ router.post('/srs/mark-incorrect', function(req, res) {
 	}
 	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processIncorrectAnswer(req.user, vocab, (items) => {
-		res.send();
+		res.status(204).send();
 	});
 });
 
@@ -276,7 +276,7 @@ router.post('/srs/mark-known', function(req, res) {
 	}
 	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processKnownAnswer(req.user, vocab, (items) => {
-		res.send();
+		res.status(204).send();
 	});
 });
 
