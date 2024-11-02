@@ -5,7 +5,7 @@ h1 {
 
 h1 #user-label {
 	position: relative;
-	top: -5px;
+	top: -6px;
 }
 
 h1 .logo {
@@ -25,6 +25,11 @@ h1 .logo {
 
 #language-dropdown {
 	margin-left: 10px;
+}
+
+h1 > .ui.button {
+	position: relative;
+	top: 5px;
 }
 
 h1::after {
@@ -64,6 +69,7 @@ h1::after {
 	font-size: 85%;
 	font-weight: 500;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+	min-width: 20px;
 }
 
 @media (max-width: 600px) {
@@ -142,5 +148,7 @@ h1::after {
 	.main-menu {
 		width: auto;
 		float: right;
+		position: relative;
+		top: 5px;
 	}
 }
