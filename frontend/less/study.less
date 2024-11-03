@@ -27,6 +27,24 @@
 		padding-left: 12px;
 		text-indent: 1.8em hanging each-line;
 	}
+
+	table {
+		margin-top: 10px;
+		margin-bottom: 20px;
+		margin-left: 12px;
+		tr {
+			border: none;
+			td {
+				width: 50%;
+				padding: 0;
+				vertical-align: top;
+				&:first-child {
+					border-left: 4px solid var(--border-color);
+					padding-left: 12px;
+				}
+			}
+		}
+	}
 }
 
 .learn-card {
