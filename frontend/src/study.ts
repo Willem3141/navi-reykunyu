@@ -204,7 +204,7 @@ class CommentSlide extends Slide {
 	}
 
 	renderIn($container: JQuery): void {
-		$('<div/>').addClass('ui segment')
+		$('<div/>').addClass('ui segment comment')
 			.html(this.comment)
 			.appendTo($container);
 
@@ -260,7 +260,7 @@ class OverviewPage {
 		for (let item of this.items) {
 			if (typeof item === 'string') {
 				$list = null;
-				$('<div/>').addClass('ui segment')
+				$('<div/>').addClass('ui segment comment')
 					.html(item)
 					.appendTo($container);
 			} else {
