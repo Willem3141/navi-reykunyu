@@ -2,6 +2,12 @@
   "name": "reykunyu",
   "version": "0.0.1",
   "description": "Na'vi dictionary website",
+  "scripts": {
+    "build": "npx gulp",
+    "build-no-typecheck": "npx gulp buildWithoutTypecheck",
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
@@ -18,11 +24,13 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.14",
+    "@types/semantic-ui": "^2.2.9",
     "chai": "^4.2.0",
+    "esbuild": "^0.24.0",
+    "gulp": "^5.0.0",
+    "gulp-less": "^5.0.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "mocha": "^6.0.2",
     "typescript": "^4.6.4"
-  },
-  "scripts": {
-    "test": "mocha sìfmetok"
   }
 }

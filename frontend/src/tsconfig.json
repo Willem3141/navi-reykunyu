@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"module": "amd",
+		"target": "es2016",
+		"noEmit": true
+	},
+	"files": [
+		"index.ts",
+		"all-words.ts",
+		"study.ts",
+		"study-lib.ts",
+		"review.ts"
+	],
+	"include": [
+		"*.d.ts"
+	]
+}

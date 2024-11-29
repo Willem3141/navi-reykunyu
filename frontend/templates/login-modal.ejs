@@ -1,0 +1,27 @@
+<form id="login-modal" class="ui modal form" method="POST" action="/auth/login/password">
+	<div class="header"><%- _("login") %></div>
+	<div class="scrolling content">
+		<p><%- _("login-explanation") %></p>
+		<% for (let message of messages) { %>
+			<div class="login-error-message error-block"><%- message %></div>
+		<% } %>
+		<div class="ui fields">
+			<div class="field">
+				<label for="username"><%- _('login-username') %></label>
+				<input name="username" type="text">
+			</div>
+			<div class="field">
+				<label for="password"><%- _('login-password') %></label>
+				<input name="password" type="password">
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<div class="ui basic deny button">
+			<i class="close icon"></i> <%- _("dialog-cancel") %>
+		</div>
+		<button type="submit" class="ui primary submit button">
+			<i class="checkmark icon"></i> <%- _("dialog-login") %>
+		</button>
+	</div>
+</form>

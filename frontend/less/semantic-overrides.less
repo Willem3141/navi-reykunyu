@@ -1,0 +1,145 @@
+body,
+.ui.button,
+.ui.modal .ui.header,
+h1, h2, h3, h4, h5,
+.ui.menu,
+.ui input,
+#search-box,
+.ui.modal .header,
+.ui.popup .header,
+.content > .header,
+.ui.card > .content > .header {
+	font-family: 'Recursive' !important;
+	font-variation-settings: "MONO" 0;
+}
+
+body,
+.ui.form .field > label,
+.ui.label,
+.ui.search > .results .result .title,
+.ui.selection.dropdown:hover,
+.ui.selection.dropdown:focus,
+.ui.selection.visible.dropdown > .text:not(.default),
+.ui.modal .header,
+.ui.modal .content,
+.ui.cards > .card > .content > .header,
+.ui.cards > .card > .content > .description,
+.ui.checkbox label,
+.ui.checkbox + label,
+.ui.checkbox label:hover,
+.ui.checkbox + label:hover,
+.ui.checkbox input:focus ~ label,
+.ui.horizontal.divider,
+.ui.vertical.divider,
+.ui.tabular.menu .item,
+.ui.tabular.menu .item:hover,
+.ui.tabular.menu .active.item,
+.ui.pointing.menu .item,
+.ui.pointing.menu .item:hover,
+.ui.disabled.checkbox label,
+.ui.checkbox input[disabled] ~ label {
+	color: var(--primary-color);
+}
+
+.ui.basic.button,
+.ui.basic.buttons .button,
+.ui.cards > .card > .extra {
+	color: var(--muted-color) !important;
+}
+
+.ui.basic.button:hover,
+.ui.basic.button.active,
+.ui.basic.buttons .button:hover,
+.ui.basic.buttons .button.active {
+	color: var(--muted-color) !important;
+	background-color: var(--lightly-shaded-background-color) !important;
+}
+
+.ui.modal,
+.ui.modal .header,
+.ui.modal .content {
+	background-color: var(--dialog-background-color);
+}
+
+.ui.modal .actions,
+.ui.cards > .card,
+.ui.cards > a.card:hover,
+.ui.segment {
+	background-color: var(--lightly-shaded-background-color);
+}
+
+.ui.tabular.menu .active.item {
+	background-color: var(--background-color);
+}
+
+.ui.tabular.menu,
+.ui.tabular.menu .active.item {
+	border-color: var(--border-color);
+}
+
+.ui.input, .ui.input input,
+.ui.selection.dropdown {
+	background-color: var(--background-color);
+	border-color: var(--border-color);
+	color: var(--primary-color);
+}
+
+.ui.input input:focus {
+	background-color: var(--background-color);
+	color: var(--primary-color);
+}
+
+.ui.search .action:hover {
+	background-color: var(--background-color);
+}
+
+.ui.search > .results {
+	background-color: var(--background-color);
+	border-color: var(--border-color);
+}
+
+.ui.selection.dropdown:hover {
+	border-color: var(--border-color);
+}
+
+.ui.menu .item {
+	transition: none;
+}
+
+.ui.tag.labels .label::after, .ui.tag.label::after {
+	background-color: var(--background-color) !important;
+}
+
+.ui.pointing.menu {
+	background-color: var(--background-color);
+	border: 1px solid var(--border-color);
+}
+
+.ui.pointing.menu .item {
+	background-color: var(--background-color);
+}
+.ui.pointing.menu .item:hover {
+	background-color: var(--hovered-background-color);
+}
+
+.ui.pointing.menu .active.item {
+	background-color: var(--shaded-background-color);
+}
+
+.ui.pointing.menu .active.item::after {
+	border-color: var(--border-color);
+	background-color: var(--shaded-background-color);
+	transition: none;
+}
+.ui.pointing.menu .active.item:hover::after {
+	background-color: var(--shaded-background-color);
+}
+
+.ui.menu .item::before {
+	background-color: var(--border-color);
+}
+
+.ui.label {
+	background-color: var(--shaded-background-color);
+	transition: none;
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Corpus editor' }) %>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+			<p>On this page, you can edit Reykunyu's corpus of example sentences.</p>
+			<div class="ui section divider"></div>
+		</div>
+		<div class="container">
+			<a href="/corpus-editor/add" class="ui icon labeled button">
+				<i class="plus icon"></i>
+				Add new sentence
+			</a>
+		</div>
+		<div class="container wide">
+			<div class="ui form">
+				<table class="ui very compact celled table">
+					<thead>
+						<tr>
+							<th></th>
+							<th>ID</th>
+							<th>Source</th>
+							<th>Sentence</th>
+							<th>Translation</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% for (let key in sentences) {
+							const sentence = sentences[key];
+						%>
+						<tr>
+							<td class="collapsing">
+								<a class="ui icon small button" href="corpus-editor/edit?sentence=<%= key %>">
+									<i class="pencil icon"></i>
+								</a>
+							</td>
+							<td>
+								<%= key %>
+							</td>
+							<td>
+								<a href="<%= sentence['source'][1] %>"><%= sentence["source"][0] %></a> (<%= sentence["source"][2] %>)
+							</td>
+							<td>
+								<%= sentence["na'vi"].map(s => s[0]).join(' ') %>
+							</td>
+							<td>
+								<%= sentence["translations"]["en"]["translation"].join(' ') %>
+							</td>
+						</tr>
+						<% } %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/js/corpusEditor.js"></script>
+		<script src="/js/ui-translations.js"></script>
+	</body>
+</html>
+

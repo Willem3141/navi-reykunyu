@@ -1,0 +1,38 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Word editor' }) %>
+	<body data-url="<%= post_url %>">
+		<div class="container">
+			<%- include('header.ejs') %>
+
+			<div class="ui form">
+				<h2>Raw editor</h2>
+				<p>On this page, you can edit the raw JSON definition of a word. This can be useful for technical reasons, but is usually not necessary.</p>
+
+				<div class="ui section divider"></div>
+
+				<textarea id="json-field" rows="25"><%= JSON.stringify(word, null, 4); %></textarea>
+
+				<div class="ui section divider"></div>
+
+				<div id="save-button" class="ui floated right primary submit icon labeled button">
+					<i class="check icon"></i>
+					Save
+				</div>
+				<a href="/edit?word=<%= word['id'] %>" class="ui icon button">
+					<i class="edit icon"></i> Edit in visual editor
+				</a>
+				<a href="/" class="ui floated right submit button">
+					Cancel
+				</a>
+			</div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/js/editRaw.js"></script>
+		<script src="/js/ui-translations.js"></script>
+	</body>
+</html>
+

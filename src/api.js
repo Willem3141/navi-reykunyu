@@ -146,13 +146,58 @@ router.get('/rhymes', cors(), function(req, res) {
 	res.json(reykunyu.getRhymes(req.query["tìpawm"], req.query['dialect']));
 });
 
+router.get('/srs/courses', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	zeykerokyu.getCourses((courses) => {
+		res.json(courses);
+	});
+});
+
+router.get('/srs/lessons', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	zeykerokyu.getLessons(req.user, courseId, (lessons) => {
+		res.json(lessons);
+	});
+});
+
+router.get('/srs/lesson', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
+	zeykerokyu.getLessonData(courseId, lessonId, (lessons) => {
+		res.json(lessons);
+	});
+});
+
+router.get('/srs/items', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
+	zeykerokyu.getItemsForLesson(courseId, lessonId, req.user, (items) => {
+		res.json(items);
+	});
+});
+
 router.get('/srs/learnable', function(req, res) {
 	if (!req.user) {
 		send403(res);
 		return;
 	}
-	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
-	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res);
+	const courseId = getIntegerArgumentOr400('courseId', req.query, res) - 1;
+	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res) - 1;
 	zeykerokyu.getLearnableItemsForLesson(courseId, lessonId, req.user, (items) => {
 		res.json(items);
 	});
@@ -163,11 +208,43 @@ router.get('/srs/reviewable', function(req, res) {
 		send403(res);
 		return;
 	}
-	const courseId = getIntegerArgumentOr400('courseId', req.query, res);
-	const lessonId = getIntegerArgumentOr400('lessonId', req.query, res);
-	zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user, (items) => {
-		res.json(items);
-	});
+	const courseId = parseInt(req.query['courseId'], 10) - 1;
+	const lessonId = parseInt(req.query['lessonId'], 10) - 1;
+	if (isNaN(courseId)) {
+		zeykerokyu.getReviewableItems(req.user, (items) => {
+			res.json(items);
+		});
+	} else if (isNaN(lessonId)) {
+		zeykerokyu.getReviewableItemsForCourse(courseId, req.user, (items) => {
+			res.json(items);
+		});
+	} else {
+		zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user, (items) => {
+			res.json(items);
+		});
+	}
+});
+
+router.get('/srs/reviewable-count', function(req, res) {
+	if (!req.user) {
+		send403(res);
+		return;
+	}
+	const courseId = parseInt(req.query['courseId'], 10) - 1;
+	const lessonId = parseInt(req.query['lessonId'], 10) - 1;
+	if (isNaN(courseId)) {
+		zeykerokyu.getReviewableCount(req.user, (count) => {
+			res.json(count);
+		});
+	} else if (isNaN(lessonId)) {
+		zeykerokyu.getReviewableCountForCourse(courseId, req.user, (count) => {
+			res.json(count);
+		});
+	} else {
+		zeykerokyu.getReviewableCountForLesson(courseId, lessonId, req.user, (count) => {
+			res.json(count);
+		});
+	}
 });
 
 router.post('/srs/mark-correct', function(req, res) {
@@ -177,7 +254,7 @@ router.post('/srs/mark-correct', function(req, res) {
 	}
 	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processCorrectAnswer(req.user, vocab, (items) => {
-		res.send();
+		res.status(204).send();
 	});
 });
 
@@ -188,7 +265,7 @@ router.post('/srs/mark-incorrect', function(req, res) {
 	}
 	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processIncorrectAnswer(req.user, vocab, (items) => {
-		res.send();
+		res.status(204).send();
 	});
 });
 
@@ -199,7 +276,7 @@ router.post('/srs/mark-known', function(req, res) {
 	}
 	const vocab = getIntegerArgumentOr400('vocab', req.body, res);
 	zeykerokyu.processKnownAnswer(req.user, vocab, (items) => {
-		res.send();
+		res.status(204).send();
 	});
 });
 

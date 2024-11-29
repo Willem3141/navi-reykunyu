@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Study', 'css': 'study.css' }) %>
+	<body>
+		<div class="container">
+			<%- include('header.ejs', { 'backTo': '/study/course?c=' + (course['id'] + 1), 'backMessage': 'menu-back-to-course' }) %>
+			<h2 id="lesson-information">
+				<div class="lesson-number"><%- _('lesson') %> <%= lesson['id'] + 1 %>: <%= lesson['name'] %></div>
+			</h2>
+			<div id="progress-bar" style="display: none;" class="ui progress blue">
+				<div class="bar">
+					<div class="progress"></div>
+				</div>
+			</div>
+		</div>
+		<div id="main-container" class="container"></div>
+
+		<!-- modals -->
+		<div id="lesson-done-modal" class="ui modal">
+			<div class="header">
+				Congratulations, you finished Lesson <%= lesson['id'] + 1 %>!
+			</div>
+			<div class="content">
+				The words have been added to your review queue. You can start your reviews right away, or you can first view an overview of the words you learned.
+			</div>
+			<div class="actions">
+				<a class="ui primary button" id="to-review-button" href="/study/review?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Review</a>
+				<a class="ui button" id="to-overview-button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Overview</a>
+			</div>
+		</div>
+		<div id="word-info-modal" class="ui modal">
+			<div class="content"></div>
+			<div class="actions">
+				<a class="ui primary deny button">&rarr; <%- _('dialog-close') %></a>
+			</div>
+		</div>
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/study.js"></script>
+	</body>
+</html>
+

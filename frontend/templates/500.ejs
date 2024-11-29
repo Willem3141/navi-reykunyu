@@ -1,0 +1,22 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs') %>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+
+			<div class="error">
+				<p class="error-text">500 Nolui oe</p>
+				<p class="error-subText"><%- _('error-500-text') %></p>
+				<img class="error-icon" src="/images/ke'u.svg">
+				<p class="error-subText"><pre><%= error %></pre></p>
+			</div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/js/ui-translations.js"></script>
+	</body>
+</html>
+
