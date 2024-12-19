@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx gulp",
     "build-no-typecheck": "npx gulp buildWithoutTypecheck",
-    "start": "node dist/server.js",
+    "start": "npx tsx src/server.ts",
     "test": "node --test"
   },
   "dependencies": {
@@ -24,8 +24,13 @@
     "tsx": "^4.19.2"
   },
   "devDependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.1",
     "@types/jquery": "^3.5.14",
     "@types/node": "^16.18.122",
+    "@types/passport": "^1.0.17",
     "@types/semantic-ui": "^2.2.9",
     "chai": "^4.2.0",
     "esbuild": "^0.24.0",

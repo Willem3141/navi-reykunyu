@@ -13,6 +13,7 @@
 		"review.ts"
 	],
 	"include": [
-		"*.d.ts"
+		"*.d.ts",
+		"../../src/types/api-types.d.ts"
 	]
 }

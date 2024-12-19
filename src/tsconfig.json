@@ -3,12 +3,12 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"target": "es2016",
-		"noEmit": true
+		"noEmit": true,
+		"strict": true,
+		"esModuleInterop": true
 	},
-	"files": [
-		"server.ts"
-	],
 	"include": [
-		"*.d.ts"
+		"*.ts",
+		"types/*.d.ts"
 	]
 }

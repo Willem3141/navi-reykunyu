@@ -2,27 +2,26 @@
  * Reykunyu - Weptseng fte ralpiveng aylì'ut leNa'vi
  */
 
-var fs = require('fs');
+const fs = require('fs');
 
-var express = require('express');
-var compression = require('compression');
-var session = require('express-session');
-var sqliteSession = require('connect-sqlite3')(session);
-const passport = require('passport');
+import express, { Request, Response, NextFunction } from 'express';
+import compression from 'compression';
+import session from 'express-session';
+const sqliteSession = require('connect-sqlite3')(session);
+import passport from 'passport';
 
-var app = express();
+const app = express();
 app.use(compression());
-var http = require('http').Server(app);
 
-var config = JSON.parse(fs.readFileSync('config.json'));
+const config = JSON.parse(fs.readFileSync('config.json'));
 
-var reykunyu = require('./reykunyu');
-var edit = require('./edit');
-var output = require('./output');
-var dialect = require('./dialect');
-var zeykerokyu = require('./zeykerokyu');
+const reykunyu = require('./reykunyu');
+const edit = require('./edit');
+const output = require('./output');
+const dialect = require('./dialect');
+const zeykerokyu = require('./zeykerokyu');
 
-var tslamyu;
+let tslamyu;
 try {
 	tslamyu = require('../../navi-tslamyu/tslamyu');
 } catch (e) {
@@ -30,7 +29,8 @@ try {
 	output.hint(`Reykunyu can use navi-tslamyu to parse sentences.`);
 }
 
-const ejs = require('ejs');
+// TODO is this necessary?
+//import ejs from 'ejs';
 
 app.use(require('body-parser').urlencoded({ extended: true }));
 
@@ -56,7 +56,7 @@ const translations = require('./translations');
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json'));
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
-function pageVariables(req, toAdd?) {
+function pageVariables(req: Request, toAdd?: any) {
 	let variables = { ...toAdd };
 	variables['user'] = req.user;
 	variables['_'] = translations.span_;
@@ -70,14 +70,14 @@ function pageVariables(req, toAdd?) {
 	return variables;
 }
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
 	setLanguage(req);
 	next();
 });
 
-app.get('/', function(req, res) {
+app.get('/', function(req: Request, res: Response) {
 	if (req.user) {
-		zeykerokyu.getReviewableCount(req.user, (count) => {
+		zeykerokyu.getReviewableCount(req.user, (count: number) => {
 			res.render('index', pageVariables(req, { query: req.query['q'], reviewableCount: count }));
 		});
 	} else {
@@ -85,11 +85,11 @@ app.get('/', function(req, res) {
 	}
 });
 
-app.get('/help', function(req, res) {
+app.get('/help', function(req: Request, res: Response) {
 	res.render('help', pageVariables(req));
 });
 
-function setLanguage(req) {
+function setLanguage(req: Request) {
 	var lang = 'en';
 	if (req.headers.cookie) {
 		for (let cookie of req.headers.cookie.split('; ')) {
@@ -102,16 +102,16 @@ function setLanguage(req) {
 	translations.setLanguage(lang);
 }
 
-app.get('/js/ui-translations.js', function(req, res) {
+app.get('/js/ui-translations.js', function(req: Request, res: Response) {
 	res.setHeader('Content-Type', 'text/javascript');
 	res.send(uiTranslationsJs);
 });
 
-app.get('/all', function(req, res) {
+app.get('/all', function(req: Request, res: Response) {
 	res.render("fralì'u", pageVariables(req));
 });
 
-app.get('/add', function(req, res) {
+app.get('/add', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -126,7 +126,7 @@ app.get('/add', function(req, res) {
 	}));
 });
 
-app.post('/add', function(req, res) {
+app.post('/add', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -155,7 +155,7 @@ app.post('/add', function(req, res) {
 	});
 });
 
-app.get('/edit', function(req, res) {
+app.get('/edit', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -166,7 +166,7 @@ app.get('/edit', function(req, res) {
 		res.send('400 Bad Request');
 		return;
 	}
-	const id = parseInt(req.query['word'], 10);
+	const id = parseInt(req.query['word'] as string, 10);
 	if (isNaN(id)) {
 		res.status(400);
 		res.send('400 Bad Request');
@@ -179,7 +179,7 @@ app.get('/edit', function(req, res) {
 	}));
 });
 
-app.get('/edit/raw', function(req, res) {
+app.get('/edit/raw', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -190,7 +190,7 @@ app.get('/edit/raw', function(req, res) {
 		res.send('400 Bad Request');
 		return;
 	}
-	const id = parseInt(req.query['word'], 10);
+	const id = parseInt(req.query['word'] as string, 10);
 	if (isNaN(id)) {
 		res.status(400);
 		res.send('400 Bad Request');
@@ -203,7 +203,7 @@ app.get('/edit/raw', function(req, res) {
 	}));
 });
 
-app.post('/edit', function(req, res) {
+app.post('/edit', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -236,14 +236,14 @@ app.post('/edit', function(req, res) {
 	});
 });
 
-app.get('/history', function(req, res) {
+app.get('/history', function(req: Request, res: Response) {
 	let historyData = JSON.parse(fs.readFileSync("./data/history.json"));
 	historyData = historyData.slice(Math.max(1, historyData.length - 50));  // 50 last elements
 	historyData.reverse();
 	res.render('history', pageVariables(req, { history: historyData }));
 });
 
-app.get('/etymology-editor', function(req, res) {
+app.get('/etymology-editor', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -255,7 +255,7 @@ app.get('/etymology-editor', function(req, res) {
 	}));
 });
 
-app.get('/sources-editor', function(req, res) {
+app.get('/sources-editor', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -267,7 +267,7 @@ app.get('/sources-editor', function(req, res) {
 	}));
 });
 
-app.get('/corpus-editor', function(req, res) {
+app.get('/corpus-editor', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -278,7 +278,7 @@ app.get('/corpus-editor', function(req, res) {
 	}));
 });
 
-app.get('/corpus-editor/add', function(req, res) {
+app.get('/corpus-editor/add', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -289,7 +289,7 @@ app.get('/corpus-editor/add', function(req, res) {
 	}));
 });
 
-app.get('/corpus-editor/edit', function(req, res) {
+app.get('/corpus-editor/edit', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -301,7 +301,7 @@ app.get('/corpus-editor/edit', function(req, res) {
 		res.send('400 Bad Request');
 		return;
 	}
-	const sentence = reykunyu.getAllSentences()[key];
+	const sentence = reykunyu.getAllSentences()[key as string];
 	res.render('corpusEditorEdit', pageVariables(req, {
 		'post_url': '/corpus-editor/edit',
 		'key': key,
@@ -309,7 +309,7 @@ app.get('/corpus-editor/edit', function(req, res) {
 	}));
 });
 
-app.post('/corpus-editor/add', function(req, res) {
+app.post('/corpus-editor/add', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -352,7 +352,7 @@ app.post('/corpus-editor/add', function(req, res) {
 	res.send();
 });
 
-app.post('/corpus-editor/edit', function(req, res) {
+app.post('/corpus-editor/edit', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -374,7 +374,7 @@ app.post('/corpus-editor/edit', function(req, res) {
 	res.send();
 });
 
-app.get('/untranslated', function(req, res) {
+app.get('/untranslated', function(req: Request, res: Response) {
 	if (!req.user || !req.user['is_admin']) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -388,14 +388,14 @@ app.get('/untranslated', function(req, res) {
 	}));
 });
 
-app.get('/signup', function(req, res) {
+app.get('/signup', function(req: Request, res: Response) {
 	res.render('signup', pageVariables(req));
 });
 
-app.get('/study', function(req, res) {
-	zeykerokyu.getCourses((courses) => {
+app.get('/study', function(req: Request, res: Response) {
+	zeykerokyu.getCourses((courses: Course[]) => {
 		if (req.user) {
-			zeykerokyu.getReviewableCount(req.user, (count) => {
+			zeykerokyu.getReviewableCount(req.user, (count: number) => {
 				res.render('study', pageVariables(req, { courses: courses, reviewableCount: count }));
 			});
 		} else {
@@ -404,48 +404,48 @@ app.get('/study', function(req, res) {
 	});
 });
 
-app.get('/study/course', function(req, res) {
+app.get('/study/course', function(req: Request, res: Response) {
 	if (!req.user) {
 		res.status(403);
 		res.render('403', pageVariables(req));
 		return;
 	}
-	const courseId = parseInt(req.query['c'], 10);
+	const courseId = parseInt(req.query['c'] as string, 10);
 	if (isNaN(courseId)) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
-	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
-		zeykerokyu.getLessons(req.user, courseId - 1, (lessons) => {
-			zeykerokyu.getReviewableCountForCourse(courseId - 1, req.user, (count) => {
+	zeykerokyu.getCourseData(courseId - 1, (courseData: Course) => {
+		zeykerokyu.getLessons(req.user, courseId - 1, (lessons: Lesson[]) => {
+			zeykerokyu.getReviewableCountForCourse(courseId - 1, req.user, (count: number) => {
 				res.render('study-course', pageVariables(req, { course: courseData, lessons: lessons, reviewableCount: count }));
 			});
 		});
 	});
 });
 
-app.get('/study/lesson', function(req, res) {
+app.get('/study/lesson', function(req: Request, res: Response) {
 	if (!req.user) {
 		res.status(403);
 		res.render('403', pageVariables(req));
 		return;
 	}
-	const courseId = parseInt(req.query['c'], 10);
-	const lessonId = parseInt(req.query['l'], 10);
+	const courseId = parseInt(req.query['c'] as string, 10);
+	const lessonId = parseInt(req.query['l'] as string, 10);
 	if (isNaN(courseId) || isNaN(lessonId)) {
 		res.status(400);
 		res.send('400 Bad Request');
 		return;
 	}
-	zeykerokyu.getCourseData(courseId - 1, (courseData) => {
-		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson) => {
+	zeykerokyu.getCourseData(courseId - 1, (courseData: Course) => {
+		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson: Lesson[]) => {
 			res.render('study-session', pageVariables(req, { course: courseData, lesson: lesson }));
 		});
 	});
 });
 
-app.get('/study/review', function(req, res) {
+app.get('/study/review', function(req: Request, res: Response) {
 	if (!req.user) {
 		res.status(403);
 		res.render('403', pageVariables(req));
@@ -454,7 +454,7 @@ app.get('/study/review', function(req, res) {
 	res.render('study-review', pageVariables(req));
 });
 
-app.get('/words.json', function(req, res) {
+app.get('/words.json', function(req: Request, res: Response) {
 	res.sendFile('words.json', { root: process.cwd() + '/data' });
 });
 
@@ -464,19 +464,19 @@ app.use('/api', apiRouter);
 const authRouter = require('./auth');
 app.use('/auth', authRouter);
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
 	res.status(404);
 	res.render('404', pageVariables(req));
 })
 
-app.use((err, req, res, next) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 	res.status(500);
 	output.error('Uncaught exception when handling a request; responding with HTTP 500');
 	console.log(err.stack);
 	res.render('500', pageVariables(req, { error: err }));
 })
 
-http.listen(config["port"], function() {
+app.listen(config["port"], function() {
 	console.log('listening on *:' + config["port"]);
 });
 
