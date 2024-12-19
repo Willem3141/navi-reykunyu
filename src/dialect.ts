@@ -9,17 +9,17 @@ module.exports = {
 }
 
 /// Removes the syllable separators and stressed syllable marks.
-function makeRaw(word) {
+function makeRaw(word: string): string {
 	return word.replace(/[-\[\]]/g, '').replaceAll('/', '');
 }
 
 /// Changes combined notation to FN (this just drops the ù).
-function combinedToFN(combined) {
+function combinedToFN(combined: string): string {
 	return combined.replaceAll('ù', 'u');
 }
 
 /// Changes combined notation to RN.
-function combinedToRN(combined) {
+function combinedToRN(combined: string): string {
 	let rn = combined;
 
 	// syllable-initial ejectives become voiced stops
