@@ -12,14 +12,14 @@ function buildLess(cb) {
 		.pipe(dest('./frontend/dist/css/'));
 };
 
-function doTypecheck(cb) {
+function doTypecheckClient(cb) {
 	const tsProject = ts.createProject("./frontend/src/tsconfig.json");
 	return tsProject.src()
 		.pipe(tsProject())
 		.on('error', () => { process.exit(1); });
 };
 
-function buildTypeScript(cb) {
+function buildTypeScriptClient(cb) {
 	return esbuild.build({
 		entryPoints: [
 			'./frontend/src/index.ts',
@@ -35,7 +35,15 @@ function buildTypeScript(cb) {
 	}).catch(() => { process.exit(1); });
 };
 
+function doTypecheckServer(cb) {
+	const tsProject = ts.createProject("./src/tsconfig.json");
+	return tsProject.src()
+		.pipe(tsProject())
+		.on('error', () => { process.exit(1); });
+};
+
 exports.buildLess = buildLess;
-exports.buildTypeScript = series(doTypecheck, buildTypeScript);
-exports.buildWithoutTypecheck = parallel(exports.buildLess, buildTypeScript);
-exports.default = parallel(exports.buildLess, exports.buildTypeScript);
+exports.doTypecheckServer = doTypecheckServer;
+exports.buildTypeScriptClient = series(doTypecheckClient, buildTypeScriptClient);
+exports.buildWithoutTypecheck = parallel(exports.buildLess, buildTypeScriptClient);
+exports.default = parallel(exports.buildLess, exports.buildTypeScriptClient, exports.doTypecheckServer);
