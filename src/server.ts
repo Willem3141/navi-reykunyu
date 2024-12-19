@@ -56,7 +56,7 @@ const translations = require('./translations');
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json'));
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
-function pageVariables(req, toAdd) {
+function pageVariables(req, toAdd?) {
 	let variables = { ...toAdd };
 	variables['user'] = req.user;
 	variables['_'] = translations.span_;

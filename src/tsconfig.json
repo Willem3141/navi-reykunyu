@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"target": "es2016",
+		"noEmit": true
+	},
+	"files": [
+		"server.ts"
+	],
+	"include": [
+		"*.d.ts"
+	]
+}

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx gulp",
     "build-no-typecheck": "npx gulp buildWithoutTypecheck",
-    "start": "node src/server.js",
+    "start": "node dist/server.js",
     "test": "node --test"
   },
   "dependencies": {
@@ -20,10 +20,12 @@
     "js-levenshtein": "^1.1.6",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "sqlite3": "^5.1.2"
+    "sqlite3": "^5.1.2",
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.14",
+    "@types/node": "^16.18.122",
     "@types/semantic-ui": "^2.2.9",
     "chai": "^4.2.0",
     "esbuild": "^0.24.0",
