@@ -126,7 +126,12 @@ class AllWordsPage {
 			$block.append($meaningNote);
 		}
 		if (word['etymology'] && word['etymology'].length > 0) {
-			$block.append('. ');
+			if (word['meaning_note'] && word['meaning_note'].length > 0) {
+				// assume the meaning note already ends in '.'
+				$block.append(' ');
+			} else {
+				$block.append('. ');
+			}
 			const $etymology = $('<span/>').addClass('etymology');
 			appendLinkString(word['etymology'], $etymology, this.getDialect(), this.getLanguage(), true);
 			$block.append($etymology);
