@@ -20,6 +20,7 @@ declare type WordData = {
 		combined: string,
 		RN: string,
 	},
+	"na'vi": string,  // deprecated
 	type: string,
 	pronunciation?: Pronunciation[],
 	translations: Translated<string>[],
@@ -151,6 +152,7 @@ declare type Sentence = {
 
 declare type RhymesResult = WordData[][][];
 
+// SRS types
 declare type Course = {
 	id: number,
 	name: string,
@@ -166,5 +168,9 @@ declare type Lesson = {
 
 declare type LearnableItem = {
 	vocab: WordData,
-	comment: string
+	comment?: string
 }
+
+// autocomplete suggestions (format prescribed by Semantic UI)
+declare type Suggestion = { 'title': string, 'description'?: string };
+declare type Suggestions = { 'results': Suggestion[] };

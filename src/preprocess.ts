@@ -1,10 +1,8 @@
-module.exports = {
-	'preprocessQuery': preprocessQuery,
-}
+export { preprocessQuery }
 
 // normalizes a query by replacing weird Unicode tìftang variations by
 // normal ASCII ', and c -> ts / g -> ng
-function preprocessQuery(query, dialect) {
+function preprocessQuery(query: string, dialect: Dialect): string {
 	query = query.trim();
 	query = query.replace(/’/g, "'");
 	query = query.replace(/‘/g, "'");

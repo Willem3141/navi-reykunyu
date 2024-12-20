@@ -1,8 +1,8 @@
 // Reykunyu's user and session database
-const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
+import fs from 'fs';
+import sqlite3 from 'sqlite3';
 const dictionary = require('./dictionary');
-const output = require('./output');
+import * as output from './output';
 
 const db = new sqlite3.Database('./data/reykunyu.db');
 
@@ -13,7 +13,7 @@ const naviSortAlphabet = " 'aäeéfghiìklmnoprstuvwxyz";
 // tìftang is sorted before everything else). A non-zero i specifies that the
 // first i characters of both strings are to be ignored. Returns a negative
 // value if a < b, a positive value if a > b, or 0 if a == b.
-function compareNaviWords(a, b, i) {
+function compareNaviWords(a: string, b: string, i: number): number {
 	if (a.length <= i || b.length <= i) {
 		return a.length - b.length;
 	}
@@ -56,7 +56,7 @@ db.serialize(() => {
 	)`);
 	db.run(`begin transaction`);
 	db.parallelize(() => {
-		const coursesData = JSON.parse(fs.readFileSync("./data/courses.json"));
+		const coursesData = JSON.parse(fs.readFileSync('./data/courses.json', 'utf8'));
 		for (let i = 0; i < coursesData.length; i++) {
 			const course = coursesData[i];
 			db.run(`insert into course values (?, ?, ?)`, i, course['name'], course['description']);
@@ -97,14 +97,14 @@ db.serialize(() => {
 	)`);
 });
 
-function preprocessLessons(course) {
+function preprocessLessons(course: any): void {
 	if (course.hasOwnProperty('rule')) {
 		let lessons = [];
 		if (course['rule'] === 'all') {
 			let words = dictionary.getAll();
-			words = words.filter((w) => w['status'] !== 'unconfirmed' && w['status'] !== 'unofficial')
-				.map((w) => { return { 'id': w['id'] } });
-			words.sort(function (a, b) {
+			words = words.filter((w: WordData) => w['status'] !== 'unconfirmed' && w['status'] !== 'unofficial')
+				.map((w: WordData) => { return { 'id': w['id'] } });
+			words.sort(function (a: WordData, b: WordData) {
 				return compareNaviWords(
 					dictionary.getById(a['id'])['word_raw']['FN'],
 					dictionary.getById(b['id'])['word_raw']['FN'], 0);
@@ -127,7 +127,7 @@ function preprocessLessons(course) {
 		let words = [];
 		if (lesson.hasOwnProperty('words')) {
 			words = lesson['words'];
-			words = words.map((w) => {
+			words = words.map((w: string | { 'word': string, 'comment'?: string }) => {
 				if (typeof w === 'string') {
 					w = { 'word': w };
 				}
@@ -146,4 +146,4 @@ function preprocessLessons(course) {
 	}
 }
 
-module.exports = db;
+export default db;

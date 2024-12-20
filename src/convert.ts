@@ -22,13 +22,9 @@
  * conserve capitalization).
  */
 
-module.exports = {
-	compress: compress,
-	decompress: decompress,
-	decompressAll: decompressAll
-}
+export { compress, decompress };
 
-function compress(word) {
+function compress(word: string): string {
 	let result = word.replace(/ts/g, 'c')
 	                 .replace(/ng/g, 'G')
 	                 .replace(/tx/g, 'T')
@@ -44,7 +40,7 @@ function compress(word) {
 	return result;
 }
 
-function decompress(word) {
+function decompress(word: string): string {
 	let result = word.replace(/1/g, 'aw')
 	                 .replace(/2/g, 'ay')
 	                 .replace(/3/g, 'ew')
@@ -58,16 +54,4 @@ function decompress(word) {
 	                 .replace(/ng/g, 'n·g')
 	                 .replace(/G/g, 'ng');
 	return result;
-}
-
-function decompressAll(input) {
-	if (Array.isArray(input)) {
-		let result = []
-		for (let i = 0; i < input.length; i++) {
-			result.push(decompressAll(input[i]));
-		}
-		return result;
-	} else {
-		return decompress(input);
-	}
 }

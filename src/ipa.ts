@@ -6,10 +6,10 @@ module.exports = {
 	generateIpa: generateIpa
 }
 
-const convert = require("./convert");
-const phonology = require("./phonology");
+import * as convert from "./convert";
+import * as phonology from "./phonology";
 
-function generateIpa(pronunciation, type, dialect) {
+function generateIpa(pronunciation: Pronunciation, type: string, dialect: Dialect): string {
 	const syllables = pronunciation['syllables'].split("-");
 	let ipa = '';
 	let lastOfPrevious = '';
@@ -42,13 +42,22 @@ function generateIpa(pronunciation, type, dialect) {
 	return '[' + ipa + ']';
 }
 
-function syllableToIpa(text, dialect, lastOfPrevious, nextStartsWithEjective, stressed) {
+function syllableToIpa(text: string, dialect: Dialect, lastOfPrevious: string, nextStartsWithEjective: boolean, stressed: boolean): string {
 	let ipa = '';
 	text = convert.compress(text.toLowerCase());
 
-	const ipaMapping = {
+	type SyllableInfo = {
+		'dialect': Dialect,
+		'first': boolean,
+		'last': boolean,
+		'previous': string,
+		'next': string,
+		'stressed': boolean,
+		'nextStartsWithEjective': boolean
+	};
+
+	const ipaMapping: { [letter: string]: string | ((d: SyllableInfo) => string) } = {
 		'cy': (d) => d.dialect === 'RN' ? 't͡ʃ' : 't͡sj',
-		'c': 't͡s',
 		'sy': (d) => d.dialect === 'RN' ? 'ʃ' : 'sj',
 		'\'': (d) => {
 			if (d.dialect === 'FN' || !d.first
@@ -70,7 +79,6 @@ function syllableToIpa(text, dialect, lastOfPrevious, nextStartsWithEjective, st
 		'y': 'j',
 		'ì': 'ɪ',
 		'e': 'ɛ',
-		'ä': 'æ',
 		'ä': (d) => (d.dialect === 'RN' && !d.stressed) ? '(æ~ɛ)' : 'æ',
 		'u': (d) => d.dialect === 'FN' ? (d.last ? 'u' : '(u~ʊ)') : 'u',
 		'ù': (d) => d.dialect === 'FN' ? (d.last ? 'u' : '(u~ʊ)') : 'ʊ',
@@ -91,7 +99,7 @@ function syllableToIpa(text, dialect, lastOfPrevious, nextStartsWithEjective, st
 			if (i <= text.length - length) {
 				const next = text.substring(i, i + length);
 				if (ipaMapping.hasOwnProperty(next)) {
-					var toAdd = ipaMapping[next];
+					let toAdd = ipaMapping[next];
 					if (typeof toAdd === 'string') {
 						ipa += toAdd;
 					} else {
