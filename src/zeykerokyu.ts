@@ -14,34 +14,21 @@
  * 6: revise in 365d
  */
 
-module.exports = {
-	'getCourses': getCourses,
-	'getCourseData': getCourseData,
-	'getLessons': getLessons,
-	'getLessonData': getLessonData,
-	'getItemsForLesson': getItemsForLesson,
-	'getLearnableItemsForLesson': getLearnableItemsForLesson,
-	'getReviewableItems': getReviewableItems,
-	'getReviewableCount': getReviewableCount,
-	'getReviewableItemsForCourse': getReviewableItemsForCourse,
-	'getReviewableCountForCourse': getReviewableCountForCourse,
-	'getReviewableItemsForLesson': getReviewableItemsForLesson,
-	'getReviewableCountForLesson': getReviewableCountForLesson,
-	'processCorrectAnswer': processCorrectAnswer,
-	'processIncorrectAnswer': processIncorrectAnswer,
-	'processKnownAnswer': processKnownAnswer
-}
+export {
+	getCourses, getCourseData, getLessons, getLessonData,
+	getItemsForLesson, getLearnableItemsForLesson, getReviewableItems, getReviewableCount,
+	getReviewableItemsForCourse, getReviewableCountForCourse, getReviewableItemsForLesson,
+	getReviewableCountForLesson, processCorrectAnswer, processIncorrectAnswer, processKnownAnswer
+};
 
-const fs = require('fs');
-
-const db = require('./db');
+import db from './db';
 const reykunyu = require('./reykunyu');
 
 /// Returns (in a callback) a list of available courses.
-function getCourses(cb) {
+function getCourses(cb: (data: Course[]) => void): void {
 	db.all(`select c.id, c.name, c.description,
 		(select count() from lesson l where l.course_id == c.id) as lesson_count
-	from course c`, (err, courses) => {
+	from course c`, (err, courses: Course[]) => {
 		if (err) {
 			console.log(err);
 		}
@@ -49,20 +36,20 @@ function getCourses(cb) {
 	});
 }
 
-function getCourseData(courseId, cb) {
+function getCourseData(courseId: number, cb: (data: Course) => void): void {
 	db.get(`select id, name, description
 	from course
-	where id == ?`, courseId, (err, courses) => {
+	where id == ?`, courseId, (err, course: Course) => {
 		if (err) {
 			console.log(err);
 		}
-		cb(courses);
+		cb(course);
 	});
 }
 
 /// Returns (in a callback) a list of available lessons in a course, with
 /// statistics for the given user.
-function getLessons(user, courseId, cb) {
+function getLessons(user: Express.User, courseId: number, cb: Callback<Lesson[]>): void {
 	if (user) {
 		db.all(`select l.id, l.name, l.introduction, l.conclusion,
 			(select count() from vocab_in_lesson v
@@ -74,7 +61,7 @@ function getLessons(user, courseId, cb) {
 				where l.course_id == v.course_id and l.id == v.lesson_id
 				and v.vocab == s.vocab and s.user == ?1 and s.next_review <= current_timestamp) as reviewable_count
 		from lesson l
-		where l.course_id = ?2`, user.username, courseId, (err, lessons) => {
+		where l.course_id = ?2`, user.username, courseId, (err: Error | null, lessons: Lesson[]) => {
 			if (err) {
 				console.log(err);
 			}
@@ -85,48 +72,62 @@ function getLessons(user, courseId, cb) {
 		db.all(`select l.id, l.name, l.description,
 			(select count() from vocab_in_lesson v where l.id == v.lesson_id) as total_count,
 		from lesson l
-		where l.course_id = ?`, courseId, (err, lessons) => {
+		where l.course_id = ?`, courseId, (err, lessons: Lesson[]) => {
+			if (err) {
+				console.log(err);
+			}
 			cb(lessons);
 		});
 	}
 }
 
-function getLessonData(courseId, lessonId, cb) {
+function getLessonData(courseId: number, lessonId: number, cb: Callback<Lesson>): void {
 	db.get(`select course_id, id, name, introduction, conclusion
 	from lesson
-	where course_id == ? and id == ?`, courseId, lessonId, (err, courses) => {
+	where course_id == ? and id == ?`, courseId, lessonId, (err: Error | null, lesson: Lesson) => {
 		if (err) {
 			console.log(err);
 		}
-		cb(courses);
+		cb(lesson);
 	});
 }
 
-function getItemsForLesson(courseId, lessonId, user, cb) {
+/** LearnableItem as it comes out of the database, with a word ID instead of WordData. */
+type UnprocessedLearnableItem = { 'vocab': number, 'comment'?: string };
+
+function getItemsForLesson(courseId: number, lessonId: number, user: Express.User, cb: Callback<LearnableItem[]>): void {
 	if (!user) {
 		cb([]);
 	}
 	db.all(`select v.vocab, v.comment from vocab_in_lesson v
 		where v.course_id == ? and v.lesson_id == ?
-		`, courseId, lessonId, (err, items) => {
+		`, courseId, lessonId, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 			if (err) {
 				cb([]);
 				console.log(err);
 			} else {
-				vocabIDsToWordData(items);
-				cb(items);
+				let result = vocabIDsToWordData(items);
+				cb(result);
 			}
 		}
 	);
 }
 
-function vocabIDsToWordData(items) {
+function vocabIDsToWordData(items: UnprocessedLearnableItem[]): LearnableItem[] {
+	let result: LearnableItem[] = [];
 	for (let item of items) {
-		item['vocab'] = reykunyu.getWord(item['vocab']);
+		let resultItem: LearnableItem = { 
+			'vocab': reykunyu.getWord(item['vocab'])
+		};
+		if (item['comment']) {
+			resultItem['comment'] = item['comment'];
+		}
+		result.push(resultItem);
 	}
+	return result;
 }
 
-function getLearnableItemsForLesson(courseId, lessonId, user, cb) {
+function getLearnableItemsForLesson(courseId: number, lessonId: number, user: Express.User, cb: Callback<LearnableItem[]>): void {
 	if (!user) {
 		cb([]);
 	}
@@ -137,19 +138,19 @@ function getLearnableItemsForLesson(courseId, lessonId, user, cb) {
 				from vocab_status
 				where user == ?
 			)
-		`, courseId, lessonId, user.username, (err, items) => {
+		`, courseId, lessonId, user.username, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 			if (err) {
 				cb([]);
 				console.log(err);
 			} else {
-				vocabIDsToWordData(items);
-				cb(items);
+				let result = vocabIDsToWordData(items);
+				cb(result);
 			}
 		}
 	);
 }
 
-function getReviewableItems(user, cb) {
+function getReviewableItems(user: Express.User, cb: Callback<LearnableItem[]>): void {
 	if (!user) {
 		cb([]);
 	}
@@ -159,19 +160,19 @@ function getReviewableItems(user, cb) {
 			and s.next_review <= current_timestamp
 			and v.vocab == s.vocab
 		order by random()
-		`, user.username, (err, items) => {
+		`, user.username, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 			if (err) {
 				cb([]);
 				console.log(err);
 			} else {
-				vocabIDsToWordData(items);
-				cb(items);
+				let result = vocabIDsToWordData(items);
+				cb(result);
 			}
 		}
 	);
 }
 
-function getReviewableCount(user, cb) {
+function getReviewableCount(user: Express.User, cb: Callback<number>): void {
 	if (!user) {
 		cb(0);
 	}
@@ -180,7 +181,7 @@ function getReviewableCount(user, cb) {
 		where s.user == ?
 			and s.next_review <= current_timestamp
 			and v.vocab == s.vocab
-		`, user.username, (err, result) => {
+		`, user.username, (err, result: Record<'count(distinct v.vocab)', number>) => {
 			if (err) {
 				cb(0);
 				console.log(err);
@@ -191,7 +192,7 @@ function getReviewableCount(user, cb) {
 	);
 }
 
-function getReviewableItemsForCourse(courseId, user, cb) {
+function getReviewableItemsForCourse(courseId: number, user: Express.User, cb: Callback<LearnableItem[]>): void {
 	if (!user) {
 		cb([]);
 	}
@@ -202,19 +203,19 @@ function getReviewableItemsForCourse(courseId, user, cb) {
 			and v.vocab == s.vocab
 			and v.course_id == ?
 		order by random()
-		`, user.username, courseId, (err, items) => {
+		`, user.username, courseId, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 			if (err) {
 				cb([]);
 				console.log(err);
 			} else {
-				vocabIDsToWordData(items);
-				cb(items);
+				let result = vocabIDsToWordData(items);
+				cb(result);
 			}
 		}
 	);
 }
 
-function getReviewableCountForCourse(courseId, user, cb) {
+function getReviewableCountForCourse(courseId: number, user: Express.User, cb: Callback<number>): void {
 	if (!user) {
 		cb(0);
 	}
@@ -224,7 +225,7 @@ function getReviewableCountForCourse(courseId, user, cb) {
 			and s.next_review <= current_timestamp
 			and v.vocab == s.vocab
 			and v.course_id == ?
-		`, user.username, courseId, (err, result) => {
+		`, user.username, courseId, (err: Error | null, result: Record<'count(distinct v.vocab)', number>) => {
 			if (err) {
 				cb(0);
 				console.log(err);
@@ -235,7 +236,7 @@ function getReviewableCountForCourse(courseId, user, cb) {
 	);
 }
 
-function getReviewableItemsForLesson(courseId, lessonId, user, cb) {
+function getReviewableItemsForLesson(courseId: number, lessonId: number, user: Express.User, cb: Callback<LearnableItem[]>): void {
 	if (!user) {
 		cb([]);
 	}
@@ -246,19 +247,19 @@ function getReviewableItemsForLesson(courseId, lessonId, user, cb) {
 			and v.vocab == s.vocab
 			and v.course_id == ? and v.lesson_id == ?
 		order by random()
-		`, user.username, courseId, lessonId, (err, items) => {
+		`, user.username, courseId, lessonId, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 			if (err) {
 				cb([]);
 				console.log(err);
 			} else {
-				vocabIDsToWordData(items);
-				cb(items);
+				let result = vocabIDsToWordData(items);
+				cb(result);
 			}
 		}
 	);
 }
 
-function getReviewableCountForLesson(courseId, lessonId, user, cb) {
+function getReviewableCountForLesson(courseId: number, lessonId: number, user: Express.User, cb: Callback<number>): void {
 	if (!user) {
 		cb(0);
 	}
@@ -268,7 +269,7 @@ function getReviewableCountForLesson(courseId, lessonId, user, cb) {
 			and s.next_review <= current_timestamp
 			and v.vocab == s.vocab
 			and v.course_id == ? and v.lesson_id == ?
-		`, user.username, courseId, lessonId, (err, result) => {
+		`, user.username, courseId, lessonId, (err: Error | null, result: Record<'count(distinct v.vocab)', number>) => {
 			if (err) {
 				cb(0);
 				console.log(err);
@@ -300,16 +301,16 @@ const intervalDuration = [
 /// item. This can also be called for items that have not been learned yet; in
 /// this case they will move from stage 0 (which is not in the database) to 1
 /// and scheduled for immediate review.
-function processCorrectAnswer(user, vocab, cb) {
+function processCorrectAnswer(user: Express.User, vocab: number, cb: Callback<void>): void {
 	if (!user || !vocab) {
-		cb(false);
+		cb();
 	}
 
 	// get current SRS stage
 	db.get(`select srs_stage from vocab_status
 		where user == ?
 			and vocab == ?`,
-		user.username, vocab, (err, result) => {
+		user.username, vocab, (err: any, result: Record<'srs_stage', number>) => {
 			if (err) {
 				cb();
 				console.log(err);
@@ -317,7 +318,7 @@ function processCorrectAnswer(user, vocab, cb) {
 				// if not in database (= stage 0), insert it
 				db.run(`insert into vocab_status
 					values (?, ?, ?, current_timestamp)`,
-					user.username, vocab, 1, (err) => {
+					user.username, vocab, 1, (err: any) => {
 						if (err) {
 							cb();
 							console.log(err);
@@ -335,7 +336,7 @@ function processCorrectAnswer(user, vocab, cb) {
 					set (srs_stage, next_review) = (?, datetime(current_timestamp, "+" || ?))
 					where user == ?
 						and vocab == ?`,
-					newStage, intervalDuration[newStage], user.username, vocab, (err) => {
+					newStage, intervalDuration[newStage], user.username, vocab, (err: any) => {
 						if (err) {
 							cb();
 							console.log(err);
@@ -352,16 +353,16 @@ function processCorrectAnswer(user, vocab, cb) {
 /// Decreases the SRS stage for an item and schedules the next review for the
 /// item. Can be called only for vocab whose status is already stored in the
 /// database, i.e., not for newly learned items.
-function processIncorrectAnswer(user, vocab, cb) {
+function processIncorrectAnswer(user: Express.User, vocab: number, cb: Callback<void>): void {
 	if (!user || !vocab) {
-		cb(false);
+		cb();
 	}
 
 	// get current SRS stage
 	db.get(`select srs_stage from vocab_status
 		where user == ?
 			and vocab == ?`,
-		user.username, vocab, (err, result) => {
+		user.username, vocab, (err: any, result: Record<'srs_stage', number>) => {
 			if (err) {
 				cb();
 				console.log(err);
@@ -377,7 +378,7 @@ function processIncorrectAnswer(user, vocab, cb) {
 					set (srs_stage, next_review) = (?, datetime(current_timestamp, "+" || ?))
 					where user == ?
 						and vocab == ?`,
-					newStage, intervalDuration[newStage], user.username, vocab, (err) => {
+					newStage, intervalDuration[newStage], user.username, vocab, (err: any) => {
 						if (err) {
 							cb();
 							console.log(err);
@@ -394,14 +395,14 @@ function processIncorrectAnswer(user, vocab, cb) {
 /// Increases the SRS stage for an item to the maximum level, *and* schedules it
 /// for immediate review. Can be called only for items that are not yet in the
 /// database.
-function processKnownAnswer(user, vocab, cb) {
+function processKnownAnswer(user: Express.User, vocab: number, cb: Callback<void>): void {
 	if (!user || !vocab) {
-		cb(false);
+		cb();
 	}
 
 	db.run(`insert into vocab_status
 		values (?, ?, ?, current_timestamp)`,
-		user.username, vocab, 11, (err) => {
+		user.username, vocab, 11, (err: any) => {
 			if (err) {
 				cb();
 				console.log(err);

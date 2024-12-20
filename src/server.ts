@@ -21,14 +21,6 @@ const output = require('./output');
 const dialect = require('./dialect');
 const zeykerokyu = require('./zeykerokyu');
 
-let tslamyu;
-try {
-	tslamyu = require('../../navi-tslamyu/tslamyu');
-} catch (e) {
-	output.warning('navi-tslamyu not found, continuing without parsing support');
-	output.hint(`Reykunyu can use navi-tslamyu to parse sentences.`);
-}
-
 // TODO is this necessary?
 //import ejs from 'ejs';
 
@@ -458,7 +450,7 @@ app.get('/words.json', function(req: Request, res: Response) {
 	res.sendFile('words.json', { root: process.cwd() + '/data' });
 });
 
-const apiRouter = require('./api');
+import apiRouter from './api';
 app.use('/api', apiRouter);
 
 const authRouter = require('./auth');

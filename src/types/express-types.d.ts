@@ -6,7 +6,12 @@ declare module 'express-session' {
 
 declare global {
 	namespace Express {
+		interface Request {
+			args?: { [name: string]: any };
+		}
 		interface User {
+			id: number;
+			username: string;
 			is_admin: boolean;
 		}
 	}

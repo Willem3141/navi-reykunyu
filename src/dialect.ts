@@ -2,11 +2,7 @@
 /// syllable marks (like "txùm/[tsä']/wll") to the conventional spelling in FN,
 /// RN, or combined (FN + "ù" where relevant).
 
-module.exports = {
-	'makeRaw': makeRaw,
-	'combinedToFN': combinedToFN,
-	'combinedToRN': combinedToRN
-}
+export { makeRaw, combinedToFN, combinedToRN }
 
 /// Removes the syllable separators and stressed syllable marks.
 function makeRaw(word: string): string {

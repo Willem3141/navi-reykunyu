@@ -7,38 +7,31 @@
 // uniquely define words by word and type too. We call the combination of a word
 // and its type the key of that word.
 
-module.exports = {
-	'reload': reload,
-	'getById': getById,
-	'get': get,
-	'getEditable': getEditable,
-	'getOfTypes': getOfTypes,
-	'getNotOfTypes': getNotOfTypes,
-	'getAll': getAll,
-	'splitWordAndType': splitWordAndType
-}
+export { reload, getById, get, getEditable, getOfTypes, getNotOfTypes, getAll, splitWordAndType };
 
-const fs = require('fs');
+import fs from 'fs';
 
-const dialect = require('./dialect');
-const output = require('./output');
+import * as dialect from './dialect';
+import * as output from './output';
 
-var words;
+let words: WordData[];
 
 // dictionaries of all Na'vi words in the database, one per dialect
 // each dictionary is a mapping from strings to (arrays of) IDs in `words`
 // used for searching
-var searchables = {};
+let searchables: Record<Dialect, { [word: string]: number[] }>;
 
 // dictionary of all word:type keys in the database
 // this is a mapping from strings to IDs in `words`
 // used for resolving word links
-var wordTypeKeys = {};
+let wordTypeKeys: {[key: string]: number};
+
+reload();
 
 // Processes the dictionary data.
-function reload() {
+function reload(): void {
 	try {
-		words = JSON.parse(fs.readFileSync("./data/words.json"));
+		words = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
 	} catch (e) {
 		output.error('words.json not found, exiting');
 		output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
@@ -80,7 +73,7 @@ function reload() {
 		word["na'vi"] = word['word_raw']['FN'];  // for compatibility reasons
 
 		// put the word in the searchables dictionary
-		for (let dialect of ['FN', 'RN']) {
+		for (let dialect of ['FN', 'RN'] as Dialect[]) {
 			let searchable = word['word_raw'][dialect].toLowerCase();
 			if (!searchables[dialect].hasOwnProperty(searchable)) {
 				searchables[dialect][searchable] = [];
@@ -107,14 +100,14 @@ to be linked to from other words.`, 'duplicate-word-type');
 	}
 }
 
-function getById(id) {
+function getById(id: number): WordData {
 	return words[id];
 }
 
 // Returns the given word of the given type.
 // The returned object is a deep copy. Editing it won't change the data in the
 // dictionary itself (see also getEditable).
-function get(word, type, dialect) {
+function get(word: string, type: string, dialect: Dialect): WordData | null {
 	if (searchables[dialect].hasOwnProperty(word)) {
 		for (let id of searchables[dialect][word]) {
 			let result = words[id];
@@ -128,7 +121,7 @@ function get(word, type, dialect) {
 
 // Returns the given word of the given type, without making a deep copy.
 // The word is assumed to be in FN.
-function getEditable(word, type) {
+function getEditable(word: string, type: string): WordData | null {
 	if (searchables['FN'].hasOwnProperty(word)) {
 		for (let id of searchables['FN'][word]) {
 			let result = words[id];
@@ -142,7 +135,7 @@ function getEditable(word, type) {
 
 // Returns the given word of one of the given types. This returns an array
 // because more than one type may match.
-function getOfTypes(word, types, dialect) {
+function getOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
 	let results = [];
 	for (let type of types) {
 		let result = get(word, type, dialect);
@@ -155,7 +148,7 @@ function getOfTypes(word, types, dialect) {
 
 // Returns the given word that is not one of the given types. This returns an
 // array because more than one type may match.
-function getNotOfTypes(word, types, dialect) {
+function getNotOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
 	let results = [];
 	if (searchables[dialect].hasOwnProperty(word)) {
 		for (let id of searchables[dialect][word]) {
@@ -168,15 +161,15 @@ function getNotOfTypes(word, types, dialect) {
 	return results;
 }
 
-function getAll() {
+function getAll(): WordData[] {
 	return words;
 }
 
-function deepCopy(object) {
+function deepCopy<T>(object: T): T {
 	return JSON.parse(JSON.stringify(object));
 }
 
-function splitWordAndType(wordType) {
+function splitWordAndType(wordType: string): [string, string] {
 	let i = wordType.indexOf(':');
 	return [wordType.substring(0, i), wordType.substring(i + 1)];
 }

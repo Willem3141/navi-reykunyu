@@ -98,7 +98,7 @@ function reloadData() {
 
 		// etymology and derived words
 		if (word.hasOwnProperty('etymology')) {
-			word['etymology'] = wordLinks.enrichWordLinks(word['etymology'], dictionary);
+			word['etymology'] = wordLinks.enrichWordLinks(word['etymology']);
 			for (let piece of word['etymology']) {
 				if (typeof piece === "string") {
 					continue;
@@ -122,10 +122,10 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 
 		// meaning notes
 		if (word.hasOwnProperty('meaning_note')) {
-			word['meaning_note'] = wordLinks.enrichWordLinks(word['meaning_note'], dictionary);
+			word['meaning_note'] = wordLinks.enrichWordLinks(word['meaning_note']);
 		}
 		if (word.hasOwnProperty('conjugation_note')) {
-			word['conjugation_note'] = wordLinks.enrichWordLinks(word['conjugation_note'], dictionary);
+			word['conjugation_note'] = wordLinks.enrichWordLinks(word['conjugation_note']);
 		}
 
 		// see also
