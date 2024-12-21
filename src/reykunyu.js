@@ -280,8 +280,8 @@ function getResponsesFor(query, dialect) {
 		// sort on result relevancy
 		// higher scores result in being sorted lower
 		wordResults.sort((a, b) => {
-			scoreA = resultScore(a, queryWord);
-			scoreB = resultScore(b, queryWord);
+			scoreA = resultScore(a, queryWord, dialect);
+			scoreB = resultScore(b, queryWord, dialect);
 			return scoreA - scoreB;
 		});
 
@@ -609,8 +609,8 @@ function lookUpAdjective(queryWord, wordResults, dialect) {
 	// handles conjugated adjectives
 	let adjectiveResults = adjectives.parse(queryWord);
 	adjectiveResults.forEach(function (adjResult) {
-		let adjective = dictionary.get(adjResult['root'], 'adj', dialect);
-		if (adjective) {
+		let results = dictionary.getOfTypes(adjResult['root'], ['adj', 'num'], dialect);
+		for (let adjective of results) {
 			let conjugation = conjugationString.formsFromString(
 				adjectives.conjugate(adjResult["root"], adjResult["form"], adjective["etymology"]));
 			let adjResultCopy = JSON.parse(JSON.stringify(adjResult));
@@ -729,10 +729,10 @@ function lookUpOtherType(queryWord, wordResults, dialect) {
 	}
 }
 
-function resultScore(result, queryWord) {
+function resultScore(result, queryWord, dialect) {
 	let score = 0;
 
-	if (result["na'vi"].toLowerCase() !== queryWord) {
+	if (result['word_raw'][dialect].toLowerCase() !== queryWord) {
 		// if this was an incorrect conjugation, sort it further down
 		if (result.hasOwnProperty("conjugated")) {
 			for (let conjugation of result["conjugated"]) {
@@ -751,7 +751,7 @@ function resultScore(result, queryWord) {
 		// the longer the root word, the higher it should be sorted
 		// because it likely has a more specialized meaning
 		// (e.g. utraltsyìp vs. utral)
-		score += 100 - result["na'vi"].length;
+		score += 100 - result['word_raw'][dialect].length;
 	}
 
 	return score;
