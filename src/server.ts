@@ -44,7 +44,7 @@ app.use('/fam', express.static('./data/fam'));
 app.set('views', './frontend/templates');
 app.set('view engine', 'ejs');
 
-const translations = require('./translations');
+import * as translations from './translations';
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json'));
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
