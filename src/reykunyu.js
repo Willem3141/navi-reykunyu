@@ -59,8 +59,6 @@ function reloadData() {
 	dictionary.reload();
 	reverseDictionary.reload();
 
-	pronounForms = pronouns.getConjugatedForms(dictionary);
-
 	sentencesForWord = [];
 
 	// preprocess all words
@@ -172,6 +170,8 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 			}
 		}
 	}
+
+	pronounForms = pronouns.getConjugatedForms(dictionary);
 
 	allWords = [];
 	for (let word of dictionary.getAll()) {

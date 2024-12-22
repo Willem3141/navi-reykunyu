@@ -7,11 +7,6 @@
  * = t..ul + ["", "ol", "äng"]
  */
 
-module.exports = {
-	conjugate: conjugate,
-	parse: parse
-}
-
 /**
  * Conjugates a verb and returns a conjugation string with six parts:
  *
@@ -25,7 +20,7 @@ module.exports = {
  * verb - the verb stem in which infix positions are marked by two dots
  * infixes - an array with three infixes
  */
-function conjugate(verb, infixes) {
+export function conjugate(verb: string, infixes: [string, string, string]) {
 
 	let prefirst = infixes[0];
 	let first = infixes[1];
@@ -80,7 +75,7 @@ function conjugate(verb, infixes) {
 	// * (stressed) ferrrfen -> frrfen
 	// * (unstressed) pollltxe -> poltxe (marked as p.(ll)tx.e)
 	// Horen §2.3.2
-	function handlePseudovowelContraction(pseudovowel, infix) {
+	function handlePseudovowelContraction(pseudovowel: string, infix: string): void {
 		if (between.startsWith('(' + pseudovowel + ')')) {
 			if (first === infix) {
 				between = between.substring(4);
@@ -112,27 +107,33 @@ function conjugate(verb, infixes) {
 	return [beforeFirst, prefirst, first, between, second, afterSecond].join('-');
 }
 
+type ParsedVerb = {
+	'result'?: string[],
+	'root': string,
+	'infixes': [string, string, string],
+	'correction'?: string
+};
+
 /**
  * Returns all possible conjugations that could have resulted in the given
  * word.
  */
-function parse(word) {
+export function parse(word: string): ParsedVerb[] {
 	let candidates = getCandidates(word);
 	return candidates;
 }
 
-function tryPrefirstInfixes(candidate) {
+function tryPrefirstInfixes(candidate: ParsedVerb): ParsedVerb[] {
 	let candidates = [];
 
 	candidates.push({...candidate});
-	let tryInfix = function (infix, name) {
+	let tryInfix = (infix: string, name: string) => {
 		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
 			let index = match.index;
 			let newInfixes = [...candidate["infixes"]];
 			newInfixes[0] = name;
 			candidates.push({
-				"result": candidate["result"],
 				"root": candidate["root"].slice(0, index) + candidate["root"].slice(index + infix.length),
 				"infixes": newInfixes
 			});
@@ -146,11 +147,11 @@ function tryPrefirstInfixes(candidate) {
 	return candidates;
 }
 
-function tryFirstInfixes(candidate) {
+function tryFirstInfixes(candidate: ParsedVerb): ParsedVerb[] {
 	let candidates = [];
 
 	candidates.push({...candidate});
-	let tryInfix = function (infix, name, replacement) {
+	let tryInfix = (infix: string, name: string, replacement?: string) => {
 		if (!replacement) {
 			replacement = '';
 		}
@@ -160,7 +161,6 @@ function tryFirstInfixes(candidate) {
 			let newInfixes = [...candidate["infixes"]];
 			newInfixes[1] = name;
 			candidates.push({
-				"result": candidate["result"],
 				"root": candidate["root"].slice(0, index) + replacement + candidate["root"].slice(index + infix.length),
 				"infixes": newInfixes
 			});
@@ -204,18 +204,17 @@ function tryFirstInfixes(candidate) {
 	return candidates;
 }
 
-function trySecondInfixes(candidate) {
+function trySecondInfixes(candidate: ParsedVerb): ParsedVerb[] {
 	let candidates = [];
 
 	candidates.push({...candidate});
-	let tryInfix = function (infix, name) {
+	let tryInfix = (infix: string, name: string) => {
 		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
 			let index = match.index;
 			let newInfixes = [...candidate["infixes"]];
 			newInfixes[2] = name;
 			candidates.push({
-				"result": candidate["result"],
 				"root": candidate["root"].slice(0, index) + candidate["root"].slice(index + infix.length),
 				"infixes": newInfixes
 			});
@@ -235,22 +234,21 @@ function trySecondInfixes(candidate) {
 	return candidates;
 }
 
-function getCandidates(word) {
+function getCandidates(word: string): ParsedVerb[] {
 	let functions = [
 		tryPrefirstInfixes,
 		tryFirstInfixes,
 		trySecondInfixes,
 	];
 
-	let candidates = [];
+	let candidates: ParsedVerb[] = [];
 	candidates.push({
-		"result": word,
 		"root": word,
 		"infixes": ["", "", ""]
 	});
 
 	for (let i = 0; i < functions.length; i++) {
-		let newCandidates = [];
+		let newCandidates: ParsedVerb[] = [];
 		for (let j = 0; j < candidates.length; j++) {
 			newCandidates = newCandidates.concat(functions[i](candidates[j]));
 		}
@@ -258,18 +256,4 @@ function getCandidates(word) {
 	}
 
 	return candidates;
-}
-
-/**
- * Tests if a given word is a correct conjugation for the given form.
- */
-function checkCandidate(word, verb, infixes) {
-	let conjugation = conjugate(verb, infixes);
-
-	let possibility = conjugation.join('');
-	if (word === possibility) {
-		return true;
-	}
-
-	return false;
 }

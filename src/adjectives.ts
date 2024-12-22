@@ -6,12 +6,7 @@
  * form (with the prefix a-).
  */
 
-const conjugationString = require("./conjugationString");
-
-module.exports = {
-	conjugate: conjugate,
-	parse: parse
-}
+import * as conjugationString from "./conjugationString";
 
 /**
  * Conjugates an adjective.
@@ -21,10 +16,9 @@ module.exports = {
  * etymology - (optional) the etymology string, used to determine if the
  * adjective starts with the le- prefix
  */
-function conjugate(adjective, form, etymology, dialect) {
-	if (form === "predicative") {
-		return "-" + adjective + "-";
-	} else if (form === "postnoun") {
+export function conjugate(adjective: string, form: 'predicative' | 'prenoun' | 'postnoun',
+		etymology?: string, dialect?: Dialect): string {
+	if (form === "postnoun") {
 		if (adjective.charAt(0) === "a" && dialect !== 'RN') {
 			return "a-" + adjective.substring(1) + "-";
 		} else if (etymology && etymology.indexOf('[le:aff:pre]') !== -1) {
@@ -38,35 +32,40 @@ function conjugate(adjective, form, etymology, dialect) {
 		} else {
 			return "-" + adjective + "-a";
 		}
+	} else {  // predicative
+		return "-" + adjective + "-";
 	}
 }
+
+type ParsedAdjective = {
+	'result'?: string[],
+	'root': string,
+	'form': 'predicative' | 'prenoun' | 'postnoun',
+	'correction'?: string
+};
 
 /**
  * Returns all possible conjugations that could have resulted in the given
  * word.
  */
-function parse(word) {
+export function parse(word: string): ParsedAdjective[] {
 
-	let candidates = [{
-		"result": word,
+	let candidates: ParsedAdjective[] = [{
 		"root": word,
 		"form": 'predicative'
 	}];
 
 	if (word.charAt(0) === "a") {
 		candidates.push({
-			"result": word,
 			"root": word.substring(1),
 			"form": 'postnoun'
 		});
 		candidates.push({
-			"result": word,
 			"root": word,
 			"form": 'postnoun'
 		});
 	} else if (word.substring(0, 2) === "le") {
 		candidates.push({
-			"result": word,
 			"root": word,
 			"form": 'postnoun'
 		});
@@ -74,12 +73,10 @@ function parse(word) {
 
 	if (word.charAt(word.length - 1) === "a") {
 		candidates.push({
-			"result": word,
 			"root": word.slice(0, -1),
 			"form": 'prenoun'
 		});
 		candidates.push({
-			"result": word,
 			"root": word,
 			"form": 'prenoun'
 		});
@@ -89,8 +86,8 @@ function parse(word) {
 	for (let i = 0; i < candidates.length; i++) {
 		const candidate = candidates[i];
 		let conjugation = conjugate(candidate["root"], candidate["form"]);
-		if (!conjugationString.stringAdmits(conjugation, candidate["result"])) {
-			candidate["correction"] = candidate["result"];
+		if (!conjugationString.stringAdmits(conjugation, word)) {
+			candidate["correction"] = word;
 		}
 		candidate["result"] = conjugationString.formsFromString(conjugation);
 		result.push(candidates[i]);
