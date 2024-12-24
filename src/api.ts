@@ -6,7 +6,7 @@ import fs from 'fs';
 import * as annotatedDictionary from './annotatedDictionary';
 import * as conjugationString from './conjugationString';
 const reykunyu = require('./reykunyu');
-const verbs = require('./verbs');
+import * as verbs from './verbs';
 import * as zeykerokyu from './zeykerokyu';
 
 router.get('/word',

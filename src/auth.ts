@@ -1,10 +1,11 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 const router = express.Router();
 module.exports = router;
 
 import crypto from 'crypto';
 import db from './db';
-const _ = require('./translations')._;
+import * as translations from './translations';
+const _ = translations._;
 
 const hashIterationCount = 600000;
 const keyLength = 32;

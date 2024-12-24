@@ -1,7 +1,8 @@
 // Reykunyu's user and session database
 import fs from 'fs';
 import sqlite3 from 'sqlite3';
-const dictionary = require('./dictionary');
+
+import * as dictionary from './dictionary';
 import * as output from './output';
 
 const db = new sqlite3.Database('./data/reykunyu.db');
@@ -101,10 +102,9 @@ function preprocessLessons(course: any): void {
 	if (course.hasOwnProperty('rule')) {
 		let lessons = [];
 		if (course['rule'] === 'all') {
-			let words = dictionary.getAll();
-			words = words.filter((w: WordData) => w['status'] !== 'unconfirmed' && w['status'] !== 'unofficial')
+			let words = dictionary.getAll().filter((w: WordData) => w['status'] !== 'unconfirmed' && w['status'] !== 'unofficial')
 				.map((w: WordData) => { return { 'id': w['id'] } });
-			words.sort(function (a: WordData, b: WordData) {
+			words.sort((a: { 'id': number }, b: { 'id': number }) => {
 				return compareNaviWords(
 					dictionary.getById(a['id'])['word_raw']['FN'],
 					dictionary.getById(b['id'])['word_raw']['FN'], 0);
@@ -125,7 +125,7 @@ function preprocessLessons(course: any): void {
 
 	for (let lesson of course['lessons']) {
 		let words = [];
-		if (lesson.hasOwnProperty('words')) {
+		if (lesson['words']) {
 			words = lesson['words'];
 			words = words.map((w: string | { 'word': string, 'comment'?: string }) => {
 				if (typeof w === 'string') {
@@ -135,6 +135,7 @@ function preprocessLessons(course: any): void {
 				const entry = dictionary.get(word, type, 'FN');
 				if (!entry) {
 					output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w['word']);
+					process.exit(1);
 				}
 				return {
 					'id': entry['id'],

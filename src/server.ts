@@ -2,18 +2,19 @@
  * Reykunyu - Weptseng fte ralpiveng aylì'ut leNa'vi
  */
 
-const fs = require('fs');
+import * as fs from 'fs';
 
 import express, { Request, Response, NextFunction } from 'express';
 import compression from 'compression';
 import session from 'express-session';
-const sqliteSession = require('connect-sqlite3')(session);
+import connectSqlite from 'connect-sqlite3';
+const sqliteSession = connectSqlite(session);
 import passport from 'passport';
 
 const app = express();
 app.use(compression());
 
-const config = JSON.parse(fs.readFileSync('config.json'));
+const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 const reykunyu = require('./reykunyu');
 const edit = require('./edit');
@@ -27,7 +28,7 @@ const zeykerokyu = require('./zeykerokyu');
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 app.use(session({
-	store: new sqliteSession(),
+	store: new sqliteSession() as any,
 	secret: config["secret"],
 	resave: true,
 	saveUninitialized: true
@@ -45,7 +46,7 @@ app.set('views', './frontend/templates');
 app.set('view engine', 'ejs');
 
 import * as translations from './translations';
-const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json'));
+const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json', 'utf8'));
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
 function pageVariables(req: Request, toAdd?: any) {
@@ -229,7 +230,7 @@ app.post('/edit', function(req: Request, res: Response) {
 });
 
 app.get('/history', function(req: Request, res: Response) {
-	let historyData = JSON.parse(fs.readFileSync("./data/history.json"));
+	let historyData = JSON.parse(fs.readFileSync('./data/history.json', 'utf8'));
 	historyData = historyData.slice(Math.max(1, historyData.length - 50));  // 50 last elements
 	historyData.reverse();
 	res.render('history', pageVariables(req, { history: historyData }));

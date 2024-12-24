@@ -3,7 +3,7 @@ export { getResponsesFor, getSuggestionsFor };
 import fs from 'fs';
 
 import * as output from './output';
-const preprocess = require('./preprocess');
+import * as preprocess from './preprocess';
 
 let annotated: {[word: string]: string[]} = {};
 
@@ -19,7 +19,9 @@ Dictionary will not work.`);
 }
 
 function getResponsesFor(query: string): string[] {
-	query = preprocess.preprocessQuery(query);
+	// always pass combined here, as the Annotated Dictionary data is in FN;
+	// this way if someone inputs d, b, g they get preprocessed into tx, px, kx
+	query = preprocess.preprocessQuery(query, 'combined');
 	query = query.toLowerCase();
 	let results: string[] = [];
 
@@ -37,7 +39,7 @@ function getResponsesFor(query: string): string[] {
 }
 
 function getSuggestionsFor(query: string): Suggestions {
-	query = preprocess.preprocessQuery(query);
+	query = preprocess.preprocessQuery(query, 'combined');
 	query = query.toLowerCase();
 	let resultsArray: Suggestion[] = [];
 
