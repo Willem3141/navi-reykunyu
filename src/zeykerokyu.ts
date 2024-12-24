@@ -22,7 +22,7 @@ export {
 };
 
 import db from './db';
-const reykunyu = require('./reykunyu');
+import * as reykunyu from './reykunyu';
 
 /// Returns (in a callback) a list of available courses.
 function getCourses(cb: (data: Course[]) => void): void {

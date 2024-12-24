@@ -142,12 +142,12 @@ declare type LinkString = LinkStringPiece[];
 declare type LinkStringPiece = string | WordData;
 
 declare type Sentence = {
-	'na\'vi': [string, string[]],
+	'na\'vi': [string, string[]][],
 	translations: Translated<{
 		translation: string[],
 		mapping: number[][]
 	}>,
-	source: [string, string, string]
+	source: string[]
 };
 
 declare type RhymesResult = WordData[][][];

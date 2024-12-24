@@ -1,6 +1,6 @@
 // Simple script to profile Reykunyu's search
 
-const reykunyu = require('./reykunyu');
+import * as reykunyu from './reykunyu';
 
 const queries = [
 	'kxì',

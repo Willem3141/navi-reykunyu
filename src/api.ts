@@ -5,7 +5,7 @@ import fs from 'fs';
 
 import * as annotatedDictionary from './annotatedDictionary';
 import * as conjugationString from './conjugationString';
-const reykunyu = require('./reykunyu');
+import * as reykunyu from './reykunyu';
 import * as verbs from './verbs';
 import * as zeykerokyu from './zeykerokyu';
 
@@ -25,7 +25,7 @@ router.get('/fwew-search',
 	(req, res) => {
 		res.json({
 			'fromNa\'vi': reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']),
-			'toNa\'vi': reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'])
+			'toNa\'vi': reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect'])
 		});
 	}
 );
@@ -67,8 +67,9 @@ router.get('/search',
 	cors(),
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
+	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language']));
+		res.json(reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']));
 	}
 );
 
@@ -160,8 +161,9 @@ router.get('/random',
 	cors(),
 	parseIntegerParameter('holpxay', 'get'),
 	parseStringParameter('fnel', 'get'),
+	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getRandomWords(req.args!['holpxay'], req.args!['fnel']));
+		res.json(reykunyu.getRandomWords(req.args!['holpxay'], req.args!['fnel'], req.args!['dialect']));
 	}
 );
 

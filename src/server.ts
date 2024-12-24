@@ -16,16 +16,14 @@ app.use(compression());
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
-const reykunyu = require('./reykunyu');
-const edit = require('./edit');
-const output = require('./output');
-const dialect = require('./dialect');
-const zeykerokyu = require('./zeykerokyu');
+import * as dialect from './dialect';
+import * as edit from './edit';
+import * as output from './output';
+import * as reykunyu from './reykunyu';
+import * as zeykerokyu from './zeykerokyu';
 
-// TODO is this necessary?
-//import ejs from 'ejs';
-
-app.use(require('body-parser').urlencoded({ extended: true }));
+import bodyParser from 'body-parser';
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({
 	store: new sqliteSession() as any,
@@ -324,8 +322,8 @@ app.post('/corpus-editor/add', function(req: Request, res: Response) {
 		return;
 	}
 
-	const result = reykunyu.getResponsesFor(sentence);
-	let words = [];
+	const result = reykunyu.getResponsesFor(sentence, 'FN');
+	let words: [string, string[]][] = [];
 	for (let word of result) {
 		let roots = [];
 		for (let root of word['sì\'eyng']) {
@@ -334,7 +332,7 @@ app.post('/corpus-editor/add', function(req: Request, res: Response) {
 		words.push([word['tìpawm'], roots]);
 	}
 
-	const sentenceData = {
+	const sentenceData: Sentence = {
 		"na'vi": words,
 		"translations": { 'en': { 'translation': [], 'mapping': [] } },
 		"source": []
@@ -409,9 +407,10 @@ app.get('/study/course', function(req: Request, res: Response) {
 		res.send('400 Bad Request');
 		return;
 	}
+	let user = req.user;
 	zeykerokyu.getCourseData(courseId - 1, (courseData: Course) => {
-		zeykerokyu.getLessons(req.user, courseId - 1, (lessons: Lesson[]) => {
-			zeykerokyu.getReviewableCountForCourse(courseId - 1, req.user, (count: number) => {
+		zeykerokyu.getLessons(user, courseId - 1, (lessons: Lesson[]) => {
+			zeykerokyu.getReviewableCountForCourse(courseId - 1, user, (count: number) => {
 				res.render('study-course', pageVariables(req, { course: courseData, lessons: lessons, reviewableCount: count }));
 			});
 		});
@@ -432,7 +431,7 @@ app.get('/study/lesson', function(req: Request, res: Response) {
 		return;
 	}
 	zeykerokyu.getCourseData(courseId - 1, (courseData: Course) => {
-		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson: Lesson[]) => {
+		zeykerokyu.getLessonData(courseId - 1, lessonId - 1, (lesson: Lesson) => {
 			res.render('study-session', pageVariables(req, { course: courseData, lesson: lesson }));
 		});
 	});
@@ -454,7 +453,7 @@ app.get('/words.json', function(req: Request, res: Response) {
 import apiRouter from './api';
 app.use('/api', apiRouter);
 
-const authRouter = require('./auth');
+import authRouter from './auth';
 app.use('/auth', authRouter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
