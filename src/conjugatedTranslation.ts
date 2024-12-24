@@ -203,34 +203,36 @@ export function addTranslations(word: WordData): void {
 	}
 
 	for (let conjugation of conjugated) {
-		let hasPluralPrefix = false;
-		for (let affix of conjugation['affixes'] as any) {
-			if (typeof affix['affix'] !== 'string') {
-				if (['me', 'pxe', 'ay'].includes(affix['affix']["na'vi"])) {
-					hasPluralPrefix = true;
+		if (conjugation['affixes']) {
+			let hasPluralPrefix = false;
+			for (let affix of conjugation['affixes'] as any) {
+				if (typeof affix['affix'] !== 'string') {
+					if (['me', 'pxe', 'ay'].includes(affix['affix']["na'vi"])) {
+						hasPluralPrefix = true;
+					}
 				}
 			}
-		}
-		for (let affix of conjugation['affixes']) {
-			let a: string;
-			if (typeof affix['affix'] === 'string') {
-				a = affix['affix'];
-			} else {
-				a = affix['affix']["na'vi"];
-			}
-			if (translators.hasOwnProperty(conjugation['type'])) {
-				if (translators[conjugation['type']].hasOwnProperty(a)) {
-					let data = {
-						'hasPluralPrefix': hasPluralPrefix
-					};
-					translation = translators[conjugation['type']][a](translation, data);
-				} else if (conjugation['type'] === 'n') {
-					translation = getShortTranslation(affix['affix'] as WordData)
-						+ ' ' + toAccusative(translation);
+			for (let affix of conjugation['affixes']) {
+				let a: string;
+				if (typeof affix['affix'] === 'string') {
+					a = affix['affix'];
+				} else {
+					a = affix['affix']["na'vi"];
+				}
+				if (translators.hasOwnProperty(conjugation['type'])) {
+					if (translators[conjugation['type']].hasOwnProperty(a)) {
+						let data = {
+							'hasPluralPrefix': hasPluralPrefix
+						};
+						translation = translators[conjugation['type']][a](translation, data);
+					} else if (conjugation['type'] === 'n') {
+						translation = getShortTranslation(affix['affix'] as WordData)
+							+ ' ' + toAccusative(translation);
+					}
 				}
 			}
+			conjugation['translation'] = translation;
 		}
-		conjugation['translation'] = translation;
 	}
 }
 

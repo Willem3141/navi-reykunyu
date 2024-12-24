@@ -1,11 +1,6 @@
 // The code responsible for the to-Na'vi dictionary in Reykunyu. This module
 // encapsulates the dictionary data read from data/words.json.
 
-module.exports = {
-	'reload': reload,
-	'search': search
-}
-
 import * as dictionary from './dictionary';
 
 // dictionaries of all natural language words in the database, one per language
@@ -14,7 +9,7 @@ import * as dictionary from './dictionary';
 let searchables: Record<string, { [word: string]: number[] }>;
 
 // Processes the dictionary data.
-function reload(): void {
+export function reload(): void {
 	searchables = {};
 
 	for (let word of dictionary.getAll()) {
@@ -42,7 +37,7 @@ function reload(): void {
 	}
 }
 
-function search(word: string, language: string): WordData[] {
+export function search(word: string, language: string): WordData[] {
 	if (!searchables.hasOwnProperty(language) || !searchables[language].hasOwnProperty(word)) {
 		return [];
 	}

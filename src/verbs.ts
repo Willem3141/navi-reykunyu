@@ -107,30 +107,23 @@ export function conjugate(verb: string, infixes: [string, string, string]) {
 	return [beforeFirst, prefirst, first, between, second, afterSecond].join('-');
 }
 
-type ParsedVerb = {
-	'result'?: string[],
-	'root': string,
-	'infixes': [string, string, string],
-	'correction'?: string
-};
-
 /**
  * Returns all possible conjugations that could have resulted in the given
  * word.
  */
-export function parse(word: string): ParsedVerb[] {
+export function parse(word: string): Omit<VerbConjugationStep, 'result'>[] {
 	let candidates = getCandidates(word);
 	return candidates;
 }
 
-function tryPrefirstInfixes(candidate: ParsedVerb): ParsedVerb[] {
+function tryPrefirstInfixes(candidate: Omit<VerbConjugationStep, 'result'>): Omit<VerbConjugationStep, 'result'>[] {
 	let candidates = [];
 
 	candidates.push({...candidate});
 	let tryInfix = (infix: string, name: string) => {
 		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
-			let index = match.index;
+			let index = match.index!;
 			let newInfixes = [...candidate["infixes"]];
 			newInfixes[0] = name;
 			candidates.push({
@@ -147,7 +140,7 @@ function tryPrefirstInfixes(candidate: ParsedVerb): ParsedVerb[] {
 	return candidates;
 }
 
-function tryFirstInfixes(candidate: ParsedVerb): ParsedVerb[] {
+function tryFirstInfixes(candidate: Omit<VerbConjugationStep, 'result'>): Omit<VerbConjugationStep, 'result'>[] {
 	let candidates = [];
 
 	candidates.push({...candidate});
@@ -157,7 +150,7 @@ function tryFirstInfixes(candidate: ParsedVerb): ParsedVerb[] {
 		}
 		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
-			let index = match.index;
+			let index = match.index!;
 			let newInfixes = [...candidate["infixes"]];
 			newInfixes[1] = name;
 			candidates.push({
@@ -204,14 +197,14 @@ function tryFirstInfixes(candidate: ParsedVerb): ParsedVerb[] {
 	return candidates;
 }
 
-function trySecondInfixes(candidate: ParsedVerb): ParsedVerb[] {
+function trySecondInfixes(candidate: Omit<VerbConjugationStep, 'result'>): Omit<VerbConjugationStep, 'result'>[] {
 	let candidates = [];
 
 	candidates.push({...candidate});
 	let tryInfix = (infix: string, name: string) => {
 		let matches = candidate["root"].matchAll(new RegExp(infix, 'g'));
 		for (let match of matches) {
-			let index = match.index;
+			let index = match.index!;
 			let newInfixes = [...candidate["infixes"]];
 			newInfixes[2] = name;
 			candidates.push({
@@ -234,21 +227,22 @@ function trySecondInfixes(candidate: ParsedVerb): ParsedVerb[] {
 	return candidates;
 }
 
-function getCandidates(word: string): ParsedVerb[] {
-	let functions = [
+function getCandidates(word: string): Omit<VerbConjugationStep, 'result'>[] {
+	let functions: ((candidate: Omit<VerbConjugationStep, 'result'>) =>
+			Omit<VerbConjugationStep, 'result'>[])[] = [
 		tryPrefirstInfixes,
 		tryFirstInfixes,
 		trySecondInfixes,
 	];
 
-	let candidates: ParsedVerb[] = [];
+	let candidates: Omit<VerbConjugationStep, 'result'>[] = [];
 	candidates.push({
 		"root": word,
 		"infixes": ["", "", ""]
 	});
 
 	for (let i = 0; i < functions.length; i++) {
-		let newCandidates: ParsedVerb[] = [];
+		let newCandidates: Omit<VerbConjugationStep, 'result'>[] = [];
 		for (let j = 0; j < candidates.length; j++) {
 			newCandidates = newCandidates.concat(functions[i](candidates[j]));
 		}

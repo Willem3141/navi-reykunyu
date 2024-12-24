@@ -2,14 +2,10 @@
  * Functions to convert pronunciation strings into IPA.
  */
 
-module.exports = {
-	generateIpa: generateIpa
-}
-
 import * as convert from "./convert";
 import * as phonology from "./phonology";
 
-function generateIpa(pronunciation: Pronunciation, type: string, dialect: Dialect): string {
+export function generateIpa(pronunciation: Pronunciation, type: string, dialect: Dialect): string {
 	const syllables = pronunciation['syllables'].split("-");
 	let ipa = '';
 	let lastOfPrevious = '';

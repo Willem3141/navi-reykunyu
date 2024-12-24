@@ -1,13 +1,13 @@
 import * as conjugationString from './conjugationString';
 import * as dictionary from './dictionary';
 
-type ConjugatedPronoun = {
+export type ConjugatedPronoun = {
 	'word': WordData,
 	'plural': string,
 	'case': string
 };
 
-export function getConjugatedForms() {
+export function getConjugatedForms(): {[form: string]: ConjugatedPronoun} {
 	let forms: {[form: string]: ConjugatedPronoun} = {};
 
 	let plurals = ["", "me", "pxe", "ay"];

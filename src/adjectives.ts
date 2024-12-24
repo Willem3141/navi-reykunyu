@@ -17,11 +17,11 @@ import * as conjugationString from "./conjugationString";
  * adjective starts with the le- prefix
  */
 export function conjugate(adjective: string, form: 'predicative' | 'prenoun' | 'postnoun',
-		etymology?: string, dialect?: Dialect): string {
+		etymology?: LinkString | undefined, dialect?: Dialect): string {
 	if (form === "postnoun") {
 		if (adjective.charAt(0) === "a" && dialect !== 'RN') {
 			return "a-" + adjective.substring(1) + "-";
-		} else if (etymology && etymology.indexOf('[le:aff:pre]') !== -1) {
+		} else if (etymology && isLeAdjective(etymology)) {
 			return "(a)-" + adjective + "-";
 		} else {
 			return "a-" + adjective + "-";
@@ -37,20 +37,26 @@ export function conjugate(adjective: string, form: 'predicative' | 'prenoun' | '
 	}
 }
 
-type ParsedAdjective = {
-	'result'?: string[],
-	'root': string,
-	'form': 'predicative' | 'prenoun' | 'postnoun',
-	'correction'?: string
-};
+function isLeAdjective(etymology: LinkString): boolean {
+	for (let piece of etymology) {
+		if (typeof piece === 'string') {
+			continue;
+		}
+		if (piece.word.FN === 'le') {
+			return true;
+		}
+	}
+
+	return false;
+}
 
 /**
  * Returns all possible conjugations that could have resulted in the given
  * word.
  */
-export function parse(word: string): ParsedAdjective[] {
+export function parse(word: string): AdjectiveConjugationStep[] {
 
-	let candidates: ParsedAdjective[] = [{
+	let candidates: Omit<AdjectiveConjugationStep, 'result'>[] = [{
 		"root": word,
 		"form": 'predicative'
 	}];
@@ -89,8 +95,11 @@ export function parse(word: string): ParsedAdjective[] {
 		if (!conjugationString.stringAdmits(conjugation, word)) {
 			candidate["correction"] = word;
 		}
-		candidate["result"] = conjugationString.formsFromString(conjugation);
-		result.push(candidates[i]);
+		result.push({
+			'root': candidates[i]['root'],
+			'form': candidates[i]['form'],
+			'result': conjugationString.formsFromString(conjugation)
+		});
 	}
 
 	return result;

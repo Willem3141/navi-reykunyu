@@ -35,6 +35,11 @@ declare type WordData = {
 	},
 	conjugation_note?: LinkString,
 	conjugated?: ConjugationStep[],
+	externalLenition?: {
+		from: string,
+		to: string,
+		by: string
+	},
 	image?: string,
 	source?: Source,
 	status?: 'loan' | 'unconfirmed' | 'unofficial',
@@ -73,26 +78,21 @@ declare type AdjectiveConjugation = {
 	suffixed: string
 };
 
-declare type ConjugationStep = {
+declare type ConjugationStep = ({
 	type: 'n' | 'v_to_n' | 'v_to_adj' | 'v_to_part' | 'adj_to_adv',
 	conjugation: NounConjugationStep,
-	affixes: AffixData[],
-	translation: string
 } | {
 	type: 'v',
 	conjugation: VerbConjugationStep,
-	affixes: AffixData[],
-	translation: string
 } | {
 	type: 'adj',
 	conjugation: AdjectiveConjugationStep,
-	affixes: AffixData[],
-	translation: string
 } | {
 	type: 'gerund',
 	conjugation: OtherConjugationStep,
-	affixes: AffixData[],
-	translation: string
+}) & {
+	affixes?: AffixData[],
+	translation?: string
 };
 
 declare type NounConjugationStep = {
@@ -105,14 +105,14 @@ declare type NounConjugationStep = {
 declare type VerbConjugationStep = {
 	root: string,
 	result: string[],
-	infixes: string[],
+	infixes: [string, string, string],
 	correction?: string
 };
 
 declare type AdjectiveConjugationStep = {
 	root: string,
 	result: string[],
-	form: string,
+	form: 'predicative' | 'prenoun' | 'postnoun',
 	correction?: string
 };
 
