@@ -30,21 +30,19 @@
  * ```
  */
 
-module.exports = {
-	enrichWordLinks: enrichWordLinks,
-	stripToLinkData: stripToLinkData
-}
+export { enrichWordLinks, stripToLinkData }
 
-const output = require('./output');
+import * as dictionary from './dictionary';
+import * as output from './output';
 
-// Replaces word links in a string by dictionary objects.
-function enrichWordLinks(text, dictionary) {
+// Replaces word links in a string.
+function enrichWordLinks(text: string): LinkString {
 
 	// matches word links between brackets
 	const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
-	pieces = text.split(wordLinkRegex);
+	let pieces = text.split(wordLinkRegex);
 
-	let list = [];
+	let list: LinkString = [];
 	for (let i = 0; i < pieces.length; i++) {
 		if (i % 3 === 0) {
 			// string piece: just place it into the list
@@ -72,8 +70,9 @@ doesn't exist. This word link will look broken.`, 'invalid-word-link-reference')
 // relevant when making a word link (Na'vi word, type, and translations).
 // Calling this function makes the returned data smaller, and avoids potential
 // infinite loops if two words happen to have word links to each other.
-function stripToLinkData(word) {
-	let result = {
+function stripToLinkData(word: WordData): WordData {
+	let result: WordData = {
+		"id": word["id"],
 		"word": word["word"],
 		"word_raw": word["word_raw"],
 		"na'vi": word["na'vi"],

@@ -2,20 +2,18 @@
  * Code that generates an affix list for a conjugated form.
  */
 
-module.exports = {
-	addAffixList: addAffixList
-}
+import * as dictionary from './dictionary';
 
-let dictionary;
-
-function addAffixList(word, d, dialect) {
-	dictionary = d;
+export function addAffixList(word: WordData, dialect: Dialect): void {
 	let conjugated = word['conjugated'];
+	if (!conjugated) {
+		return;
+	}
 
-	for (let conjugation of conjugated) {
-		list = [];
-		let affixes = conjugation['conjugation']['affixes'];
-		if (conjugation['type'] === 'n') {
+	for (let conjugationStep of conjugated) {
+		let list: AffixData[] = [];
+		if (conjugationStep['type'] === 'n') {
+			let affixes = conjugationStep['conjugation']['affixes'];
 			addAffix(list, 'suffix', affixes[3], ['aff:suf'], dialect);
 			addAffix(list, 'prefix', affixes[2], ['aff:pre'], dialect);
 			if (affixes[1] === '(ay)') {
@@ -28,41 +26,46 @@ function addAffixList(word, d, dialect) {
 			addAffix(list, 'suffix', affixes[5], ['aff:suf', 'adp', 'adp:len'], dialect);
 			addAffix(list, 'suffix', affixes[6], ['part'], dialect);
 
-		} else if (conjugation['type'] === 'v_to_n') {
+		} else if (conjugationStep['type'] === 'v_to_n') {
+			let affixes = conjugationStep['conjugation']['affixes'];
 			addAffix(list, 'suffix', affixes[0], ['aff:suf'], dialect);
 
-		} else if (conjugation['type'] === 'v_to_adj') {
+		} else if (conjugationStep['type'] === 'v_to_adj') {
+			let affixes = conjugationStep['conjugation']['affixes'];
 			addAffix(list, 'prefix', affixes[0], ['aff:pre'], dialect);
 
-		} else if (conjugation['type'] === 'v_to_part') {
+		} else if (conjugationStep['type'] === 'v_to_part') {
+			let affixes = conjugationStep['conjugation']['affixes'];
 			addAffix(list, 'infix', affixes[0], ['aff:in'], dialect);
 
-		} else if (conjugation['type'] === 'v') {
-			let infixes = conjugation['conjugation']['infixes'];
+		} else if (conjugationStep['type'] === 'v') {
+			let infixes = conjugationStep['conjugation']['infixes'];
 			addPrefirstVerbInfix(list, infixes[0], dialect);
 			addFirstVerbInfix(list, infixes[1], dialect);
 			addAffix(list, 'infix', infixes[2], ['aff:in'], dialect);
 
-		} else if (conjugation['type'] === 'adj') {
-			let form = conjugation['conjugation']['form'];
+		} else if (conjugationStep['type'] === 'adj') {
+			let form = conjugationStep['conjugation']['form'];
 			if (form === 'postnoun') {
 				addAffix(list, 'prefix', 'a', ['aff:pre'], dialect);
 			} else if (form === 'prenoun') {
 				addAffix(list, 'suffix', 'a', ['aff:suf'], dialect);
 			}
 
-		} else if (conjugation['type'] === 'adj_to_adv') {
+		} else if (conjugationStep['type'] === 'adj_to_adv') {
+			let affixes = conjugationStep['conjugation']['affixes'];
 			addAffix(list, 'prefix', affixes[0], ['aff:pre'], dialect);
-		} else if (conjugation['type'] === 'gerund') {
+
+		} else if (conjugationStep['type'] === 'gerund') {
 			addAffix(list, 'prefix', 'tì', ['aff:pre'], dialect);
 			addAffix(list, 'infix', 'us', ['aff:in'], dialect);
 		}
 
-		conjugation['affixes'] = list;
+		conjugationStep['affixes'] = list;
 	}
 }
 
-function addAffix(list, affixType, affixString, types, dialect) {
+function addAffix(list: AffixData[], affixType: 'prefix' | 'infix' | 'suffix', affixString: string, types: string[], dialect: Dialect): void {
 	if (!affixString.length) {
 		return;
 	}
@@ -75,8 +78,9 @@ function addAffix(list, affixType, affixString, types, dialect) {
 	}
 }
 
-function addCombinedAffix(list, affixType, combined, affixStrings, types, dialect) {
-	let combinedList = [];
+function addCombinedAffix(list: AffixData[], affixType: 'prefix' | 'infix' | 'suffix',
+		combined: string, affixStrings: string[], types: string[], dialect: Dialect): void {
+	let combinedList: SimpleAffixData[] = [];
 	for (const affixString of affixStrings) {
 		addAffix(combinedList, affixType, affixString, types, dialect);
 	}
@@ -87,7 +91,7 @@ function addCombinedAffix(list, affixType, combined, affixStrings, types, dialec
 	});
 }
 
-function addPrefirstVerbInfix(list, affixString, dialect) {
+function addPrefirstVerbInfix(list: AffixData[], affixString: string, dialect: Dialect): void {
 	if (affixString === "äpeyk") {
 		addCombinedAffix(list, 'infix', affixString, ['äp', 'eyk'], ['aff:in'], dialect);
 	} else {
@@ -95,7 +99,7 @@ function addPrefirstVerbInfix(list, affixString, dialect) {
 	}
 }
 
-function addFirstVerbInfix(list, affixString, dialect) {
+function addFirstVerbInfix(list: AffixData[], affixString: string, dialect: Dialect): void {
 	if (affixString === "ìsy") {
 		addCombinedAffix(list, 'infix', affixString, ['ìy', 's'], ['aff:in'], dialect);
 	} else if (affixString === "asy") {

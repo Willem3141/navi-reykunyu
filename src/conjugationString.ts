@@ -14,16 +14,13 @@
  * (parses to kìyevame and kiyevame)
  */
 
-module.exports = {
-	formsFromString: formsFromString,
-	stringAdmits: stringAdmits
-}
+export{ formsFromString, stringAdmits };
 
-function formsFromString(formString) {
+function formsFromString(formString: string): string[] {
 	if (!formString) {
 		return [];
 	}
-	let forms = [];
+	let forms: string[] = [];
 
 	let split = formString.split(";");
 	for (let i = 0; i < split.length; i++) {
@@ -32,7 +29,7 @@ function formsFromString(formString) {
 	return forms;
 }
 
-function formsRecursive(formString) {
+function formsRecursive(formString: string): string[] {
 
 	// parse parentheses
 	let parenRegex = /([^(]*)\(([^)]*)\)(.*)/;
@@ -46,11 +43,11 @@ function formsRecursive(formString) {
 	for (let i = 0; i < parts.length; i++) {
 		let options = parts[i].split("/");
 		if (options.length > 1) {
-			let forms = [];
+			let forms: string[] = [];
 			for (let j = 0; j < options.length; j++) {
-				optionChosenString = [...parts];
-				optionChosenString[i] = options[j];
-				optionChosenString = optionChosenString.join("-");
+				let optionChosenStringParts = [...parts];
+				optionChosenStringParts[i] = options[j];
+				let optionChosenString = optionChosenStringParts.join("-");
 				forms = forms.concat(formsRecursive(optionChosenString));
 			}
 			return forms;
@@ -60,7 +57,7 @@ function formsRecursive(formString) {
 	return [formString.split("-").join("")];
 }
 
-function stringAdmits(formString, target) {
+function stringAdmits(formString: string, target: string): boolean {
 	const forms = formsFromString(formString);
 	return forms.includes(target);
 }

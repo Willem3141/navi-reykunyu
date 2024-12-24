@@ -1,28 +1,29 @@
-module.exports = {
-	'getResponsesFor': getResponsesFor,
-	'getSuggestionsFor': getSuggestionsFor,
-}
+export { getResponsesFor, getSuggestionsFor };
 
-const fs = require('fs');
+import fs from 'fs';
 
-const output = require('./output');
-const preprocess = require('./preprocess');
+import * as output from './output';
+import * as preprocess from './preprocess';
+
+let annotated: {[word: string]: string[]} = {};
 
 try {
-	var annotated = JSON.parse(fs.readFileSync("./data/annotated.json"));
+	annotated = JSON.parse(fs.readFileSync("./data/annotated.json", 'utf8'));
 } catch (e) {
 	output.warning('Annotated Dictionary data not found');
 	output.hint(`Reykunyu uses a JSON file called annotated.json containing the source
 of the Annotated Dictionary by Plumps. This file does not seem to be
 present. This warning is harmless, but searching in the Annotated
 Dictionary will not work.`);
-	var annotated = {};
+	annotated = {};
 }
 
-function getResponsesFor(query) {
-	query = preprocess.preprocessQuery(query);
+function getResponsesFor(query: string): string[] {
+	// always pass combined here, as the Annotated Dictionary data is in FN;
+	// this way if someone inputs d, b, g they get preprocessed into tx, px, kx
+	query = preprocess.preprocessQuery(query, 'combined');
 	query = query.toLowerCase();
-	let results = [];
+	let results: string[] = [];
 
 	if (annotated.hasOwnProperty(query)) {
 		results = results.concat(annotated[query]);
@@ -37,12 +38,12 @@ function getResponsesFor(query) {
 	return results;
 }
 
-function getSuggestionsFor(query) {
-	query = preprocess.preprocessQuery(query);
+function getSuggestionsFor(query: string): Suggestions {
+	query = preprocess.preprocessQuery(query, 'combined');
 	query = query.toLowerCase();
-	resultsArray = [];
+	let resultsArray: Suggestion[] = [];
 
-	for (word in annotated) {
+	for (const word in annotated) {
 		if (annotated.hasOwnProperty(word)) {
 			if (word.toLowerCase().startsWith(query)) {
 				resultsArray.push({ 'title': word });

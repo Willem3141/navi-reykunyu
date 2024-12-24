@@ -269,8 +269,8 @@ class Reykunyu {
 			}
 			$item.append($explanation);
 
-			if (conjugation[i].hasOwnProperty("affixes") && conjugation[i]["affixes"].length) {
-				$item.append(this.affixesSection(conjugation[i]["affixes"]));
+			if (conjugation[i]["affixes"] && conjugation[i]["affixes"]!.length) {
+				$item.append(this.affixesSection(conjugation[i]["affixes"]!));
 			}
 
 			$conjugatedBox.append($item);

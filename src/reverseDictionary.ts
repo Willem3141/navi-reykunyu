@@ -1,26 +1,16 @@
 // The code responsible for the to-Na'vi dictionary in Reykunyu. This module
 // encapsulates the dictionary data read from data/words.json.
 
-module.exports = {
-	'reload': reload,
-	'search': search
-}
-
-const fs = require('fs');
-
-const dictionary = require('./dictionary');
-const output = require('./output');
+import * as dictionary from './dictionary';
 
 // dictionaries of all natural language words in the database, one per language
 // each dictionary is a mapping from strings to (arrays of) IDs in the
 // dictionary
-let searchables;
+let searchables: Record<string, { [word: string]: number[] }>;
 
 // Processes the dictionary data.
-function reload() {
+export function reload(): void {
 	searchables = {};
-
-	let words = dictionary.getAll();
 
 	for (let word of dictionary.getAll()) {
 		for (let translation of word['translations']) {
@@ -30,8 +20,8 @@ function reload() {
 				}
 				// split translation into words
 				let t = translation[language].replace(/[.,:;!?"\|\(\)\[\]\<\>/\\-]/g, ' ');
-				t = t.split(' ').map((v) => v.toLowerCase());
-				for (let w of t) {
+				let words = t.split(' ').map((v) => v.toLowerCase());
+				for (let w of words) {
 					if (w.length === 0) {
 						continue;
 					}
@@ -47,11 +37,11 @@ function reload() {
 	}
 }
 
-function search(word, language) {
+export function search(word: string, language: string): WordData[] {
 	if (!searchables.hasOwnProperty(language) || !searchables[language].hasOwnProperty(word)) {
 		return [];
 	}
-	let results = [];
+	let results: WordData[] = [];
 	const indices = searchables[language][word];
 	for (let id of indices) {
 		let result = JSON.parse(JSON.stringify(dictionary.getById(id)));
