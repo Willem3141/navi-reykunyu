@@ -36,6 +36,7 @@
     "@types/passport": "^1.0.17",
     "@types/passport-local": "^1.0.38",
     "@types/semantic-ui": "^2.2.9",
+    "@types/sqlite3": "^3.1.11",
     "chai": "^4.2.0",
     "esbuild": "^0.24.0",
     "gulp": "^5.0.0",
