@@ -443,22 +443,25 @@ function lookUpNoun(queryWord: string, wordResults: WordData[], dialect: Dialect
 				});
 			}
 		}
-		if (nounResult["root"].endsWith('tswo')) {
-			let possibleSiVerb = nounResult["root"].slice(0, -4);
-			let siVerbResult = dictionary.get(possibleSiVerb, 'n:si', dialect);
-			if (siVerbResult) {
-				siVerbResult["conjugated"] = [{
-					"type": "v_to_n",
-					"conjugation": {
-						"result": [nounResult["root"]],
-						"root": possibleSiVerb + ' si',
-						"affixes": ['tswo']
-					}
-				}, {
-					"type": "n",
-					"conjugation": nounResult
-				}];
-				wordResults.push(siVerbResult);
+		const siVerbSuffixes = ['siyu', 'tswo'];
+		for (const suffix of siVerbSuffixes) {
+			if (nounResult["root"].endsWith(suffix)) {
+				let possibleSiVerb = nounResult["root"].slice(0, -4);
+				let siVerbResult = dictionary.get(possibleSiVerb, 'n:si', dialect);
+				if (siVerbResult) {
+					siVerbResult["conjugated"] = [{
+						"type": "v_to_n",
+						"conjugation": {
+							"result": [nounResult["root"]],
+							"root": possibleSiVerb + ' si',
+							"affixes": [suffix === 'siyu' ? 'yu' : 'tswo']
+						}
+					}, {
+						"type": "n",
+						"conjugation": nounResult
+					}];
+					wordResults.push(siVerbResult);
+				}
 			}
 		}
 
