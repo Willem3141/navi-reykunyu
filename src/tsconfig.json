@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"target": "es2021",
+		"noEmit": true,
+		"strict": true,
+		"esModuleInterop": true
+	},
+	"include": [
+		"*.ts",
+		"types/*.d.ts"
+	]
+}

@@ -1,6 +1,6 @@
 // Simple script to profile Reykunyu's search
 
-const reykunyu = require('./reykunyu');
+import * as reykunyu from './reykunyu';
 
 const queries = [
 	'kxì',
@@ -18,7 +18,7 @@ const sampleCount = 40;
 const spinUpCount = 40;
 
 for (let query of queries) {
-	const measurements = [];
+	const measurements: number[] = [];
 	for (let i = 0; i < sampleCount + spinUpCount; i++) {
 		const startTime = process.hrtime();
 		reykunyu.getResponsesFor(query, 'combined');

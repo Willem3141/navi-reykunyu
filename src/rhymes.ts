@@ -2,14 +2,10 @@
  * Functions to determine if two Na'vi words rhyme.
  */
 
-const convert = require("./convert");
-const phonology = require("./phonology");
+import * as convert from "./convert";
+import * as phonology from "./phonology";
 
-module.exports = {
-	rhymes: rhymes
-}
-
-function rhymes(first, second) {
+export function rhymes(first: string, second: string): boolean {
 	if (first === second) {
 		return false;
 	}

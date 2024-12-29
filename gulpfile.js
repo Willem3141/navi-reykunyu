@@ -12,14 +12,14 @@ function buildLess(cb) {
 		.pipe(dest('./frontend/dist/css/'));
 };
 
-function doTypecheck(cb) {
+function doTypecheckClient(cb) {
 	const tsProject = ts.createProject("./frontend/src/tsconfig.json");
 	return tsProject.src()
 		.pipe(tsProject())
 		.on('error', () => { process.exit(1); });
 };
 
-function buildTypeScript(cb) {
+function buildTypeScriptClient(cb) {
 	return esbuild.build({
 		entryPoints: [
 			'./frontend/src/index.ts',
@@ -35,7 +35,32 @@ function buildTypeScript(cb) {
 	}).catch(() => { process.exit(1); });
 };
 
+function doTypecheckServer(cb) {
+	const tsProject = ts.createProject("./src/tsconfig.json");
+	return tsProject.src()
+		.pipe(tsProject())
+		.on('error', () => { process.exit(1); });
+};
+
+function buildTypeScriptServer(cb) {
+	return esbuild.build({
+		entryPoints: [
+			'./src/server.ts',
+			'./src/profile.ts'
+		],
+		bundle: true,
+		sourcemap: true,
+		platform: 'node',
+		outdir: './dist',
+		target: 'node16.19',
+		packages: 'external',
+		format: 'cjs'
+	}).catch(() => { process.exit(1); });
+};
+
+
 exports.buildLess = buildLess;
-exports.buildTypeScript = series(doTypecheck, buildTypeScript);
-exports.buildWithoutTypecheck = parallel(exports.buildLess, buildTypeScript);
-exports.default = parallel(exports.buildLess, exports.buildTypeScript);
+exports.buildClient = series(doTypecheckClient, buildTypeScriptClient);
+exports.buildServer = series(doTypecheckServer, buildTypeScriptServer);
+exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptServer);
+exports.default = parallel(buildLess, exports.buildClient, exports.buildServer);

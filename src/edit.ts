@@ -1,26 +1,17 @@
 // Some simple routines that allow editing the data in data/words.json, and
 // storing the history of these edits in data/history.json.
 
-module.exports = {
-	'getWordData': getWordData,
-	'updateWordData': updateWordData,
-	'insertWordData': insertWordData,
-	'getAll': getAll,
-	'getUntranslated': getUntranslated
+import fs from 'fs';
+
+function readJson(): WordData[] {
+	return JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
 }
 
-const fs = require('fs');
-const output = require('./output');
-
-function readJson() {
-	return JSON.parse(fs.readFileSync("./data/words.json"));
-}
-
-function writeJson(json) {
+function writeJson(json: WordData[]): void {
 	return fs.writeFileSync("./data/words.json", JSON.stringify(json));
 }
 
-function getWordData(id) {
+export function getWordData(id: number): WordData {
 	const json = readJson();
 	const data = json[id];
 	if (!data) {
@@ -29,7 +20,7 @@ function getWordData(id) {
 	return data;
 }
 
-function updateWordData(id, newData, user) {
+export function updateWordData(id: number, newData: WordData, user: Express.User): void {
 	const json = readJson();
 	const data = json[id];
 	if (!data) {
@@ -42,7 +33,7 @@ function updateWordData(id, newData, user) {
 	writeJson(json);
 
 	// add history entry
-	let history = JSON.parse(fs.readFileSync("./data/history.json"));
+	let history = JSON.parse(fs.readFileSync('./data/history.json', 'utf8'));
 	history.push({
 		'user': user['username'],
 		'date': new Date(),
@@ -53,7 +44,7 @@ function updateWordData(id, newData, user) {
 	fs.writeFileSync("./data/history.json", JSON.stringify(history));
 }
 
-function insertWordData(newData, user) {
+export function insertWordData(newData: WordData, user: Express.User): void {
 	const json = readJson();
 	const id = json.length;
 	if (newData['id'] !== -1) {
@@ -64,7 +55,7 @@ function insertWordData(newData, user) {
 	writeJson(json);
 
 	// add history entry
-	let history = JSON.parse(fs.readFileSync("./data/history.json"));
+	let history = JSON.parse(fs.readFileSync('./data/history.json', 'utf8'));
 	history.push({
 		'user': user['username'],
 		'date': new Date(),
@@ -74,13 +65,13 @@ function insertWordData(newData, user) {
 	fs.writeFileSync("./data/history.json", JSON.stringify(history));
 }
 
-function getAll() {
+export function getAll(): WordData[] {
 	return readJson();
 }
 
-function getUntranslated(language) {
+export function getUntranslated(language: string): WordData[] {
 	const json = readJson();
-	let results = [];
+	let results: WordData[] = [];
 
 	wordLoop:
 	for (let w in json) {
