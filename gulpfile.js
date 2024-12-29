@@ -45,7 +45,8 @@ function doTypecheckServer(cb) {
 function buildTypeScriptServer(cb) {
 	return esbuild.build({
 		entryPoints: [
-			'./src/server.ts'
+			'./src/server.ts',
+			'./src/profile.ts'
 		],
 		bundle: true,
 		sourcemap: true,
@@ -59,8 +60,7 @@ function buildTypeScriptServer(cb) {
 
 
 exports.buildLess = buildLess;
-exports.doTypecheckServer = doTypecheckServer;
-exports.buildTypeScriptClient = series(doTypecheckClient, buildTypeScriptClient);
-exports.buildTypeScriptServer = series(doTypecheckServer, buildTypeScriptServer);
-exports.buildWithoutTypecheck = parallel(exports.buildLess, buildTypeScriptClient, buildTypeScriptServer);
-exports.default = parallel(exports.buildLess, exports.buildTypeScriptClient, exports.buildTypeScriptServer);
+exports.buildClient = series(doTypecheckClient, buildTypeScriptClient);
+exports.buildServer = series(doTypecheckServer, buildTypeScriptServer);
+exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptServer);
+exports.default = parallel(buildLess, exports.buildClient, exports.buildServer);
