@@ -3,12 +3,7 @@
  * round.
  */
 
-const dialect = require('./dialect')
-
-module.exports = {
-	conjugate: conjugate,
-	parse: parse
-}
+import { makeRaw, combinedToFN, combinedToRN } from './dialect';
 
 const units = ["", "'aw", "mune", "pxey", "tsìng", "mrr", "pukap", "kinä"];
 const unitSuffixes = ["", "aw", "mun", "pey", "sìng", "mrr", "fu", "hin"];
@@ -21,7 +16,7 @@ const powersShortened = ["", "vo/", "za/", "vo/za/", "za/za/"];
  * 
  * number - The number to convert.
  */
-function conjugate(number) {
+export function conjugate(number: number): WordData | null {
 
 	// special cases for numbers out of range
 	if (number < 0 || number >= 8 ** 5) {
@@ -40,14 +35,15 @@ function conjugate(number) {
 		if (digit === "0") {
 			continue;
 		}
+		const d = parseInt(digit, 10);
 		if (i === 0) {
 			if (n === 1) {
-				result = units[digit];
+				result = units[d];
 			} else {
-				result = unitSuffixes[digit];
+				result = unitSuffixes[d];
 			}
 		} else {
-			const prefix = unitPrefixes[digit];
+			const prefix = unitPrefixes[d];
 			const shortenPower = result.length > 0 && result[0] !== "a";
 			const power = (shortenPower ? powersShortened : powers)[i];
 			result = prefix + power + result;
@@ -57,13 +53,19 @@ function conjugate(number) {
 	return generateNumberEntry(number, result);
 }
 
-function generateNumberEntry(number, result) {
+function generateNumberEntry(number: number, result: string): WordData {
 	return {
-		"na'vi": dialect.makeRaw(result),
+		"id": -1,
+		"na'vi": makeRaw(result),
 		"word": {
-			"FN": dialect.combinedToFN(result),
+			"FN": combinedToFN(result),
 			"combined": result,
-			"RN": dialect.combinedToRN(result)
+			"RN": combinedToRN(result)
+		},
+		"word_raw": {
+			"FN": makeRaw(combinedToFN(result)),
+			"combined": makeRaw(result),
+			"RN": makeRaw(combinedToRN(result)),
 		},
 		"type": "num",
 		"translations": [{ "en": "" + number }]
@@ -74,8 +76,8 @@ function generateNumberEntry(number, result) {
  * Returns all possible conjugations that could have resulted in the given
  * word.
  */
-function parse(word) {
-	let result = [];
+export function parse(word: string): unknown {
+	let result: unknown[] = [];
 	// TODO
 	return result;
 }

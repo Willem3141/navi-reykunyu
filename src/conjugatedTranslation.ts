@@ -4,11 +4,7 @@
  * translation "this person".
  */
 
-module.exports = {
-	addTranslations: addTranslations
-}
-
-let translators = {
+let translators: Record<string, Record<string, (translation: string, data: any) => string>> = {
 	'v': {
 		'äp': (t) => t + ' oneself',
 		'eyk': (t) => 'cause (someone) to ' + t,
@@ -85,14 +81,14 @@ let translators = {
 	}
 };
 
-let pasts = {
+let pasts: {[verb: string]: string} = {
 	'be': 'was',
 	'have': 'had',
 	'go': 'went',
 	'make': 'made',
 	'do': 'did',
 };
-function toPast(verb) {
+function toPast(verb: string): string {
 	if (pasts.hasOwnProperty(verb)) {
 		return pasts[verb];
 	}
@@ -102,10 +98,10 @@ function toPast(verb) {
 	return duplicateFinalConsonant(verb) + 'ed';
 }
 
-let presentParticiples = {
+let presentParticiples: {[verb: string]: string} = {
 	'be': 'being',
 };
-function toPresentParticiple(verb) {
+function toPresentParticiple(verb: string): string {
 	if (presentParticiples.hasOwnProperty(verb)) {
 		return presentParticiples[verb];
 	}
@@ -115,14 +111,14 @@ function toPresentParticiple(verb) {
 	return duplicateFinalConsonant(verb) + 'ing';
 }
 
-let pastParticiples = {
+let pastParticiples: {[verb: string]: string} = {
 	'be': 'been',
 	'have': 'had',
 	'go': 'gone',
 	'make': 'made',
 	'do': 'done',
 };
-function toPastParticiple(verb) {
+function toPastParticiple(verb: string): string {
 	if (pastParticiples.hasOwnProperty(verb)) {
 		return pastParticiples[verb];
 	}
@@ -132,7 +128,7 @@ function toPastParticiple(verb) {
 	return verb + 'ed';
 }
 
-function duplicateFinalConsonant(word) {
+function duplicateFinalConsonant(word: string): string {
 	if (word.length < 2) {
 		return word;
 	}
@@ -144,7 +140,7 @@ function duplicateFinalConsonant(word) {
 	return word;
 }
 
-let plurals = {
+let plurals: {[verb: string]: string} = {
 	'I': 'we',
 	'you': 'you',
 	'he/she': 'they',
@@ -155,7 +151,7 @@ let plurals = {
 	'this': 'these things',
 	'that': 'those things',
 };
-function pluralize(noun) {
+function pluralize(noun: string): string {
 	if (plurals.hasOwnProperty(noun)) {
 		return plurals[noun];
 	}
@@ -166,7 +162,7 @@ function pluralize(noun) {
 	return noun + 's';
 }
 
-let accusatives = {
+let accusatives: {[verb: string]: string} = {
 	'I': 'me',
 	'he/she': 'him/her',
 	'he': 'him',
@@ -174,14 +170,14 @@ let accusatives = {
 	'we': 'us',
 	'they': 'them',
 };
-function toAccusative(noun) {
+function toAccusative(noun: string): string {
 	if (accusatives.hasOwnProperty(noun)) {
 		return accusatives[noun];
 	}
 	return noun;
 }
 
-let possessives = {
+let possessives: {[verb: string]: string} = {
 	'I': 'my',
 	'you': 'your',
 	'he/she': 'his/her',
@@ -190,7 +186,7 @@ let possessives = {
 	'we': 'our',
 	'they': 'their',
 };
-function toPossessive(noun) {
+function toPossessive(noun: string): string {
 	if (possessives.hasOwnProperty(noun)) {
 		return possessives[noun];
 	}
@@ -199,40 +195,48 @@ function toPossessive(noun) {
 
 let dictionary;
 
-function addTranslations(word, d) {
+export function addTranslations(word: WordData): void {
 	let translation = getShortTranslation(word);
 	let conjugated = word['conjugated'];
+	if (!conjugated) {
+		return;
+	}
 
 	for (let conjugation of conjugated) {
-		let hasPluralPrefix = false;
-		for (let affix of conjugation['affixes']) {
-			if (['me', 'pxe', 'ay'].includes(affix['affix']["na'vi"])) {
-				hasPluralPrefix = true;
-			}
-		}
-		for (let affix of conjugation['affixes']) {
-			affix = affix['affix'];
-			a = affix;
-			if (affix.hasOwnProperty("na'vi")) {
-				a = affix["na'vi"];
-			}
-			if (translators.hasOwnProperty(conjugation['type'])) {
-				if (translators[conjugation['type']].hasOwnProperty(a)) {
-					let data = {
-						'hasPluralPrefix': hasPluralPrefix
-					};
-					translation = translators[conjugation['type']][a](translation, data);
-				} else if (conjugation['type'] === 'n') {
-					translation = getShortTranslation(affix)
-						+ ' ' + toAccusative(translation);
+		if (conjugation['affixes']) {
+			let hasPluralPrefix = false;
+			for (let affix of conjugation['affixes'] as any) {
+				if (typeof affix['affix'] !== 'string') {
+					if (['me', 'pxe', 'ay'].includes(affix['affix']["na'vi"])) {
+						hasPluralPrefix = true;
+					}
 				}
 			}
+			for (let affix of conjugation['affixes']) {
+				let a: string;
+				if (typeof affix['affix'] === 'string') {
+					a = affix['affix'];
+				} else {
+					a = affix['affix']["na'vi"];
+				}
+				if (translators.hasOwnProperty(conjugation['type'])) {
+					if (translators[conjugation['type']].hasOwnProperty(a)) {
+						let data = {
+							'hasPluralPrefix': hasPluralPrefix
+						};
+						translation = translators[conjugation['type']][a](translation, data);
+					} else if (conjugation['type'] === 'n') {
+						translation = getShortTranslation(affix['affix'] as WordData)
+							+ ' ' + toAccusative(translation);
+					}
+				}
+			}
+			conjugation['translation'] = translation;
 		}
-		conjugation['translation'] = translation;
 	}
 }
 
-function getShortTranslation(word) {
+function getShortTranslation(word: WordData) {
 	if (word["short_translation"]) {
 		return word["short_translation"];
 	}
