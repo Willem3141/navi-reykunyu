@@ -14,7 +14,7 @@ export function getConjugatedForms(): {[form: string]: ConjugatedPronoun} {
 	let cases = ["", "l", "t", "r", "ä", "ri"];
 
 	for (let word of dictionary.getAll()) {
-		if (word['type'] === 'pn' && word["conjugation"]) {
+		if ((word['type'] === 'pn' || word['type'] === 'ctr') && word["conjugation"]) {
 			for (let i = 0; i < 4; i++) {
 				for (let j = 0; j < 6; j++) {
 					let form = (word['conjugation']['FN'] as NounConjugation)[i][j];
