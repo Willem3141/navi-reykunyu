@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx gulp",
     "build-no-typecheck": "npx gulp buildWithoutTypecheck",
-    "start": "npx tsx src/server.ts",
+    "start": "node dist/server.js",
     "test": "node --test"
   },
   "dependencies": {
@@ -20,8 +20,7 @@
     "js-levenshtein": "^1.1.6",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "sqlite3": "^5.1.2",
-    "tsx": "^4.19.2"
+    "sqlite3": "^5.1.2"
   },
   "devDependencies": {
     "@types/compression": "^1.7.5",

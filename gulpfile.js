@@ -42,8 +42,25 @@ function doTypecheckServer(cb) {
 		.on('error', () => { process.exit(1); });
 };
 
+function buildTypeScriptServer(cb) {
+	return esbuild.build({
+		entryPoints: [
+			'./src/server.ts'
+		],
+		bundle: true,
+		sourcemap: true,
+		platform: 'node',
+		outdir: './dist',
+		target: 'node16.19',
+		packages: 'external',
+		format: 'cjs'
+	}).catch(() => { process.exit(1); });
+};
+
+
 exports.buildLess = buildLess;
 exports.doTypecheckServer = doTypecheckServer;
 exports.buildTypeScriptClient = series(doTypecheckClient, buildTypeScriptClient);
-exports.buildWithoutTypecheck = parallel(exports.buildLess, buildTypeScriptClient);
-exports.default = parallel(exports.buildLess, exports.buildTypeScriptClient, exports.doTypecheckServer);
+exports.buildTypeScriptServer = series(doTypecheckServer, buildTypeScriptServer);
+exports.buildWithoutTypecheck = parallel(exports.buildLess, buildTypeScriptClient, buildTypeScriptServer);
+exports.default = parallel(exports.buildLess, exports.buildTypeScriptClient, exports.buildTypeScriptServer);
