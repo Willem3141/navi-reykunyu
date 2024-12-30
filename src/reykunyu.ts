@@ -1038,7 +1038,7 @@ function getReverseResponsesFor(query: string, language: string, dialect: Dialec
 	return results;
 }
 
-function getRandomWords(number: number, type: string, dialect: Dialect): WordData[] {
+function getRandomWords(number: number, dialect: Dialect, type?: string): WordData[] {
 	let results = [];
 	let wordList = allWords;
 	if (type && allWordsOfType[type]) {
