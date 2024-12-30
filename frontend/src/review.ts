@@ -1,5 +1,71 @@
 import { buildQuestionCard, buildWordPill, getDisplayedNavi } from "./study-lib";
 
+/// List of alternatives for each word. If the user answers with an alternative
+/// in this list, the answer isn't marked incorrect, but instead they get the
+/// chance to try again.
+type Alternative = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction'];
+const alternatives: Record<string, Alternative[]> = {
+	'nìlam:adv': ['tatlam'],
+	'tatlam:adv': ['nìlam'],
+	'za\'ärìp:vtr': ['zärìp'],
+	'zärìp:vtr': ['za\'ärìp'],
+	'kä\'ärìp:vtr': ['kärìp'],
+	'kärìp:vtr': ['kä\'ärìp'],
+	'zìsìtsaltrr:n': ['zìtsaltrr'],
+	'zìtsaltrr:n': ['zìsìtsaltrr'],
+	'eywa\'eveng:n': ['eyweveng'],
+	'eyweveng:n': ['eywa\'eveng'],
+	'fìtxan:adv': ['nìftxan'],
+	'nìftxan:adv': ['fìtxan'],
+	'pesu:inter': ['tupe'],
+	'tupe:inter': ['pesu'],
+	'pefya:inter': ['fyape'],
+	'fyape:inter': ['pefya'],
+	'pehrr:inter': ['krrpe'],
+	'krrpe:inter': ['pehrr'],
+	'pelun:inter': ['lumpe'],
+	'lumpe:inter': ['pelun'],
+	'peseng:inter': ['tsengpe'],
+	'tsengpe:inter': ['peseng'],
+	'peu:inter': ['\'upe'],
+	'\'upe:inter': ['peu'],
+	'pefnel:inter': ['fnepe'],
+	'fnepe:inter': ['pefnel'],
+	'polpxay:inter': ['holpxaype'],
+	'holpxaype:inter': ['polpxay'],
+	'pìmtxan:inter': ['hìmtxampe'],
+	'hìmtxampe:inter': ['pìmtxan'],
+	'pxel:adp': ['na'],
+	'na:adp': ['pxel'],
+	'mip:adj': [['want', 'wrong-direction']],
+	'tul:v:in': [['find', 'wrong-direction']],
+	'srane:part': ['sran'],
+	'eampin:n': [['ean', 'wrong-type']],
+	'ean:adj': [['eampin', 'wrong-type']],
+	'rimpin:n': [['rim', 'wrong-type']],
+	'rim:adj': [['rimpin', 'wrong-type']],
+	'tumpin:n': [['tun', 'wrong-type']],
+	'tun:adj': [['tumpin', 'wrong-type']],
+	'\'ompin:n': [['\'om', 'wrong-type']],
+	'\'om:adj': [['\'ompin', 'wrong-type']],
+	'teyrpin:n': [['teyr', 'wrong-type']],
+	'teyr:adj': [['teyrpin', 'wrong-type']],
+	'layompin:n': [['layon', 'wrong-type']],
+	'layon:adj': [['layompin', 'wrong-type']],
+	'\'aw:num': [['fko', 'wrong-type'], ['pum', 'wrong-type']],
+	'yawntu:n': ['yawnetu'],
+	'yawnetu:n': ['yawntu'],
+	'tseng:n': ['tsenge'],
+	'tsenge:n': ['tseng'],
+	'fìtseng:adv': ['fìtsenge'],
+	'fìtsenge:adv': ['fìtseng'],
+	'tsatseng:adv': ['tsatsenge'],
+	'tsatsenge:adv': ['tsatseng'],
+	'tem:v:in': [['toltem', 'wrong-type']],
+	'toltem:v:tr': [['tem', 'wrong-type']],
+	'\'em:v:tr': [['\'emyu', 'wrong-type']]
+};
+
 class ReviewPage {
 	/// The URL we're redirecting to when this review session is done.
 	doneRedirectUrl: string;
@@ -160,6 +226,24 @@ class QuestionSlide extends Slide {
 	getCorrectAnswer(): string {
 		return this.word['word_raw']['FN'].toLowerCase() + (this.word['type'] === 'n:si' ? ' si' : '');
 	}
+
+	isAlternative(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | null {
+		const key = this.word['word']['FN'] + ':' + this.word['type'];
+		if (alternatives[key]) {
+			for (let alternative of alternatives[key]) {
+				if (typeof alternative === 'string') {
+					if (alternative === answer) {
+						return 'synonym'
+					}
+				} else {
+					if (alternative[0] === answer) {
+						return alternative[1];
+					}
+				}
+			}
+		}
+		return null;
+	}
 	
 	checkAnswer(): void {
 		let givenAnswer = ('' + this.$meaningInput.val()!).trim();
@@ -176,30 +260,43 @@ class QuestionSlide extends Slide {
 		givenAnswer = givenAnswer.replace(/[\[\]<>+\-]/g, '');
 
 		if (givenAnswer !== this.getCorrectAnswer()) {
-			this.$meaningInput.prop('disabled', true);
-			this.$meaningInput.parent().addClass('error');
+			let alternativeType = this.isAlternative(givenAnswer);
+			if (alternativeType) {
+				this.$meaningInput.popup({
+					'content': _(alternativeType + '-note'),
+					'position': 'bottom center',
+					'on': 'manual'
+				});
+				this.$meaningInput.popup('show');
+				this.$meaningInput.on('input', () => {
+					this.$meaningInput.popup('hide');
+				});
+				this.$meaningInput.trigger('select');
+			} else {
+				this.$meaningInput.prop('disabled', true);
+				this.$meaningInput.parent().addClass('error');
+				this.$checkButton.prop('disabled', true);
+				$('<div/>').addClass('correction')
+					.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
+					.insertAfter(this.$meaningInput.parent());
+				$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
+					setTimeout(() => {
+						this.toNextItem(false);
+					}, QuestionSlide.INCORRECT_WAITING_TIME);
+				});
+			}
+		} else {
+			this.$meaningInput.addClass('correct')
+				.prop('disabled', true);
 			this.$checkButton.prop('disabled', true);
-			$('<div/>').addClass('correction')
-				.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
-				.insertAfter(this.$meaningInput.parent());
-			$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
+
+			// don't need to ask for stress
+			$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
 				setTimeout(() => {
-					this.toNextItem(false);
-				}, QuestionSlide.INCORRECT_WAITING_TIME);
+					this.toNextItem(true);
+				}, QuestionSlide.CORRECT_WAITING_TIME);
 			});
-			return;
 		}
-
-		this.$meaningInput.addClass('correct')
-			.prop('disabled', true);
-		this.$checkButton.prop('disabled', true);
-
-		// don't need to ask for stress
-		$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
-			setTimeout(() => {
-				this.toNextItem(true);
-			}, QuestionSlide.CORRECT_WAITING_TIME);
-		});
 	}
 }
 

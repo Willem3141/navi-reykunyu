@@ -200,7 +200,10 @@
 		"continue-button": "Continue",
 		"relearn-button": "Relearn",
 		"review-button": "Review",
-		"check-button": "Check"
+		"check-button": "Check",
+		"synonym-note": "That may be correct, but we're looking for another word. Try again!",
+		"wrong-type-note": "We're looking for a word with a different word class. Try again!",
+		"wrong-direction-note": "We're looking for the Na'vi word with the given translation – not the other way round. Try again!"
 	},
 	"de": {
 		"language": "Deutsch",
