@@ -160,10 +160,10 @@ router.get('/sound',
 router.get('/random',
 	cors(),
 	parseIntegerParameter('holpxay', 'get'),
-	parseStringParameter('fnel', 'get'),
+	parseStringParameter('fnel', 'get', true),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getRandomWords(req.args!['holpxay'], req.args!['fnel'], req.args!['dialect']));
+		res.json(reykunyu.getRandomWords(req.args!['holpxay'], req.args!['dialect'], req.args!['fnel']));
 	}
 );
 
@@ -311,16 +311,20 @@ function checkLoggedIn() {
 	}
 }
 
-function parseStringParameter(name: string, type: 'get' | 'post') {
+function parseStringParameter(name: string, type: 'get' | 'post', optional?: boolean) {
 	return (req: Request, res: Response, next: NextFunction) => {
 		if (!req.args) {
 			req.args = {};
 		}
 		const args = type === 'get' ? req.query : req.body;
 		if (!args.hasOwnProperty(name)) {
-			res.status(400);
-			res.send('400 Bad Request');
-			return;
+			if (!optional) {
+				res.status(400);
+				res.send('400 Bad Request');
+				return;
+			} else {
+				next();
+			}
 		}
 		req.args[name] = args[name];
 		next();
