@@ -16,7 +16,7 @@ export function initializeOmaticonButton(): void {
 					position: 'bottom center'
 				});
 			} else {
-				$omaticonButton.popup('remove popup');
+				$omaticonButton.popup('destroy');
 			}
 		});
 	}
