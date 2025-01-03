@@ -203,7 +203,9 @@
 		"check-button": "Check",
 		"synonym-note": "That may be correct, but we're looking for another word. Try again!",
 		"wrong-type-note": "We're looking for a word with a different word class. Try again!",
-		"wrong-direction-note": "We're looking for the Na'vi word with the given translation – not the other way round. Try again!"
+		"wrong-direction-note": "We're looking for the Na'vi word with the given translation – not the other way round. Try again!",
+		"what-is-your-team": "What is your team?",
+		"best-team": "Clearly the best team!"
 	},
 	"de": {
 		"language": "Deutsch",
@@ -477,7 +479,8 @@
 		"exit-button-tooltip": "Deze knop beëindigt de les. Je voortgang wordt opgeslagen.",
 		"continue-button": "Verder",
 		"relearn-button": "Opnieuw leren",
-		"review-button": "Overhoren"
+		"review-button": "Overhoren",
+		"what-is-your-team": "Wat is je team?"
 	},
 	"x-navi": {
 		"language": "Na’vi",
