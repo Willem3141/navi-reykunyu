@@ -300,7 +300,7 @@ function processCorrectAnswer(user: Express.User, vocab: number, cb: Callback<vo
 				// otherwise update the SRS stage and next review time in the
 				// database
 				const stage = result['srs_stage'];
-				const newStage = Math.min(stage + 1, 6);
+				const newStage = Math.min(stage + 1, intervalDuration.length - 1);
 				db.run(`update vocab_status
 					set (srs_stage, next_review) = (?, datetime(current_timestamp, "+" || ?))
 					where user == ?
@@ -362,7 +362,7 @@ function processIncorrectAnswer(user: Express.User, vocab: number, cb: Callback<
 function processKnownAnswer(user: Express.User, vocab: number, cb: Callback<void>): void {
 	db.run(`insert into vocab_status
 		values (?, ?, ?, current_timestamp)`,
-		user.username, vocab, 11, (err: any) => {
+		user.username, vocab, intervalDuration.length - 1, (err: any) => {
 			if (err) {
 				console.log(err);
 				throw err;
