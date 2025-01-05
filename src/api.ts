@@ -324,6 +324,7 @@ function parseStringParameter(name: string, type: 'get' | 'post', optional?: boo
 				return;
 			} else {
 				next();
+				return;
 			}
 		}
 		req.args[name] = args[name];
@@ -343,13 +344,15 @@ function parseDialectParameter(name: string, type: 'get' | 'post') {
 		const args = type === 'get' ? req.query : req.body;
 		if (!args.hasOwnProperty(name)) { 
 			req.args[name] = 'combined';
+			next();
+			return;
 		} else if (args[name] !== 'FN' && args[name] !== 'RN' && args[name] !== 'combined') {
 			res.status(400);
 			res.send('400 Bad Request');
-		} else {
-			req.args[name] = args[name];
-			next();
+			return;
 		}
+		req.args[name] = args[name];
+		next();
 	}
 }
 
