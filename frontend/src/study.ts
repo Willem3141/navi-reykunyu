@@ -161,6 +161,8 @@ class WordInfoSlide extends Slide {
 				.text(_('learned-button'))
 				.prepend($('<i/>').addClass('checkmark icon'))
 				.on('click', () => {
+					this.$learnedButton!.prop('disabled', true);
+					this.$knownButton!.prop('disabled', true);
 					$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
 						this.toNextItem();
 					});
@@ -173,6 +175,8 @@ class WordInfoSlide extends Slide {
 					position: 'top center'
 				})
 				.on('click', () => {
+					this.$learnedButton!.prop('disabled', true);
+					this.$knownButton!.prop('disabled', true);
 					$.post('/api/srs/mark-known', { 'vocab': this.word['id'] }, () => {
 						this.toNextItem();
 					});
