@@ -228,12 +228,12 @@ class QuestionSlide extends Slide {
 	}
 
 	isAlternative(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | null {
-		const key = this.word['word']['FN'] + ':' + this.word['type'];
+		const key = this.word['word_raw']['FN'] + ':' + this.word['type'];
 		if (alternatives[key]) {
 			for (let alternative of alternatives[key]) {
 				if (typeof alternative === 'string') {
 					if (alternative === answer) {
-						return 'synonym'
+						return 'synonym';
 					}
 				} else {
 					if (alternative[0] === answer) {
