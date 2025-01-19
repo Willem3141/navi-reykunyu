@@ -1,7 +1,7 @@
-const test = require('node:test');
-const assert = require('node:assert');
+import test from 'node:test';
+import assert from 'node:assert';
 
-const nouns = require('../src/nouns');
+import * as nouns from '../src/nouns';
 
 test('adding case suffixes to a noun ending in a consonant', (t) => {
 	assert.strictEqual(nouns.conjugate('fwampop', ['', '', '', '', '', '', ''], true, 'FN'), '-fwampop-');

@@ -1,7 +1,7 @@
-const test = require('node:test');
-const assert = require('node:assert');
+import test from 'node:test';
+import assert from 'node:assert';
 
-const dialect = require('../src/dialect');
+import * as dialect from '../src/dialect';
 
 test('converting words to FN', (t) => {
 	assert.strictEqual(dialect.combinedToFN('kal/[txì]'), 'kal/[txì]');
