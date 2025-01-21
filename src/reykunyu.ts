@@ -15,14 +15,16 @@ import * as conjugationString from './conjugationString';
 import * as convert from './convert';
 import * as dictionary from './dictionary';
 import * as ipa from './ipa';
-import * as nouns from './nouns';
+import * as nounConjugator from './nouns/conjugator';
+import * as nounParser from './nouns/parser';
 import * as numbers from './numbers';
 import * as output from './output';
 import * as preprocess from './preprocess';
 import * as pronouns from './pronouns';
 import * as reverseDictionary from './reverseDictionary';
 import * as rhymes from './rhymes';
-import * as verbs from './verbs';
+import * as verbConjugator from './verbs/conjugator';
+import * as verbParser from './verbs/parser';
 import * as wordLinks from './wordLinks';
 
 let sentences: {[key: string]: Sentence};
@@ -397,7 +399,7 @@ function lookUpWord(queryWord: string, dialect: Dialect): WordData[] {
 
 function lookUpNoun(queryWord: string, wordResults: WordData[], dialect: Dialect): void {
 	// handles conjugated nouns and pronouns
-	let nounResults = nouns.parse(queryWord, dialect);
+	let nounResults = nounParser.parse(queryWord, dialect);
 	nounResults.forEach((nounResult) => {
 		let nouns = dictionary.getOfTypes(nounResult["root"], ['n', 'n:pr'], dialect);
 		for (let noun of nouns) {
@@ -526,7 +528,7 @@ function lookUpNoun(queryWord: string, wordResults: WordData[], dialect: Dialect
 				// is not allowed
 				if (infixes[0] === '' && infixes[1] === 'us' && infixes[2] === '') {
 					let infixesWithoutFirst: [string, string, string] = ['', '', ''];
-					let conjugatedWithoutFirst = conjugationString.formsFromString(verbs.conjugate(verb["infixes"]!, infixesWithoutFirst));
+					let conjugatedWithoutFirst = conjugationString.formsFromString(verbConjugator.conjugate(verb["infixes"]!, infixesWithoutFirst));
 					conjugated[0]['conjugation']['result'] = conjugatedWithoutFirst;
 					(conjugated[0]['conjugation'] as VerbConjugationStep)['infixes'] = infixesWithoutFirst;
 					conjugated.push({
@@ -547,7 +549,7 @@ function lookUpNoun(queryWord: string, wordResults: WordData[], dialect: Dialect
 	});
 
 	// finally, handle loanwords
-	let nounLoanResults = nouns.parse(queryWord, dialect, true);
+	let nounLoanResults = nounParser.parse(queryWord, dialect, true);
 	nounLoanResults.forEach(function (nounResult) {
 		let nouns = dictionary.getOfTypes(nounResult["root"], ['n', 'n:pr'], dialect);
 		for (let noun of nouns) {
@@ -564,7 +566,7 @@ function lookUpNoun(queryWord: string, wordResults: WordData[], dialect: Dialect
 
 function lookUpVerb(queryWord: string, wordResults: WordData[], dialect: Dialect, allowParticiples?: boolean): void {
 	// handles conjugated verbs
-	let verbResults = verbs.parse(queryWord);
+	let verbResults = verbParser.parse(queryWord);
 	verbResults.forEach((result) => {
 		const infixes = result['infixes'];
 		if (!allowParticiples && (infixes[1] === 'us' || infixes[1] === 'awn')) {
@@ -574,7 +576,7 @@ function lookUpVerb(queryWord: string, wordResults: WordData[], dialect: Dialect
 		let results = dictionary.getOfTypes(result["root"], ['v:in', 'v:tr', 'v:cp', 'v:m', 'v:si', 'v:?'], dialect);
 		for (let verb of results) {
 			let conjugation = conjugationString.formsFromString(
-				verbs.conjugate(verb["infixes"]!, result["infixes"]));
+				verbConjugator.conjugate(verb["infixes"]!, result["infixes"]));
 			let resultCopy = JSON.parse(JSON.stringify(result));
 			if (conjugation.indexOf(queryWord) === -1) {
 				resultCopy["correction"] = queryWord;
@@ -623,7 +625,7 @@ function lookUpAdjective(queryWord: string, wordResults: WordData[], dialect: Di
 				return;
 			}
 			let infixesWithoutFirst: [string, string, string] = [infixes[0], '', infixes[2]];
-			let conjugatedWithoutFirst = conjugationString.formsFromString(verbs.conjugate(verb["infixes"]!, infixesWithoutFirst));
+			let conjugatedWithoutFirst = conjugationString.formsFromString(verbConjugator.conjugate(verb["infixes"]!, infixesWithoutFirst));
 			const newConjugated: ConjugationStep[] =  [
 				{
 					"type": "v",
@@ -788,7 +790,7 @@ function createNounConjugation(word: WordData, dialect: Dialect): NounConjugatio
 		let row = [];
 		if (word['type'] !== 'n:pr' || j === 0) {
 			for (let i = 0; i < 6; i++) {
-				let conjugated = nouns.conjugate(word['word_raw'][dialect],
+				let conjugated = nounConjugator.conjugate(word['word_raw'][dialect],
 					['', plurals[j], '', '', '', cases[i], ''], true, dialect,
 					word['status'] === 'loan');
 				row.push(conjugated);

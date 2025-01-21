@@ -6,7 +6,7 @@ import fs from 'fs';
 import * as annotatedDictionary from './annotatedDictionary';
 import * as conjugationString from './conjugationString';
 import * as reykunyu from './reykunyu';
-import * as verbs from './verbs';
+import * as verbs from './verbs/conjugator';
 import * as zeykerokyu from './zeykerokyu';
 
 router.get('/word',
