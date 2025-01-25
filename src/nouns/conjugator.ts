@@ -75,11 +75,8 @@ let pluralFunctions: { [prefix: string]: PluralFunction } = {
  * noun - the noun stem
  * affixes - an array with seven affixes to be applied to the stem, as detailed
  *           above
- * simple - (boolean) if true, assumes that only plural and case affixes are
- *          present, and returns a simplified version of the conjugation string
- *          with only these parts.
  */
-export function conjugate(noun: string, affixes: string[], simple: boolean, dialect: Dialect, isLoanword?: boolean): string {
+export function conjugate(noun: string, affixes: string[], dialect: Dialect, isLoanword?: boolean): string {
 
 	const upperCase = noun.length > 0 && noun[0] !== noun[0].toLowerCase();
 	noun = noun.toLowerCase();
@@ -210,28 +207,18 @@ export function conjugate(noun: string, affixes: string[], simple: boolean, dial
 	// finally, output the results
 	let options = [];
 	for (let [stem, voiced, caseSuffix] of stemVoicingOptions) {
-		if (simple) {
-			options.push([
-				pluralPrefix,
-				(lenitedConsonant === '' ? '' : '{' + lenitedConsonant + '}') +
-				stem +
-				(voiced === '' ? '' : '{' + voiced + '}'),
-				caseSuffix
-			]);
-		} else {
-			options.push([
-				convert.decompress(determinerPrefix),
-				convert.decompress(pluralPrefix),
-				convert.decompress(stemPrefix),
-				lenitedConsonant,
-				stem,
-				voiced,
-				convert.decompress(stemSuffix),
-				convert.decompress(determinerSuffix),
-				caseSuffix,
-				convert.decompress(finalSuffix)
-			]);
-		}
+		options.push([
+			convert.decompress(determinerPrefix),
+			convert.decompress(pluralPrefix),
+			convert.decompress(stemPrefix),
+			lenitedConsonant,
+			stem,
+			voiced,
+			convert.decompress(stemSuffix),
+			convert.decompress(determinerSuffix),
+			caseSuffix,
+			convert.decompress(finalSuffix)
+		]);
 	}
 
 	if (upperCase) {
@@ -239,6 +226,29 @@ export function conjugate(noun: string, affixes: string[], simple: boolean, dial
 	}
 
 	return options.map((option) => option.join('-')).join(';');
+}
+
+export function conjugateSimple(noun: string, pluralPrefix: string, caseSuffix: string, dialect: Dialect, isLoanword?: boolean) {
+	const conjugation = conjugate(noun, ['', pluralPrefix, '', '','', caseSuffix, ''], dialect, isLoanword);
+	const options = conjugation.split(';');
+	let result = '';
+	for (const option of options) {
+		if (result !== '') {
+			result += ';';
+		}
+		const parts = option.split('-');
+		const pluralPart = parts[1];
+		const lenitedPart = parts[3];
+		const stemPart = parts[4];
+		const voicedPart = parts[5];
+		const casePart = parts[8];
+		result += pluralPart + '-' +
+			(lenitedPart !== '' ? '{' + lenitedPart + '}' : '') +
+			stemPart +
+			(voicedPart !== '' ? '{' + voicedPart + '}' : '') + '-' +
+			casePart;
+	}
+	return result;
 }
 
 function applyUpperCase(options: any): void {

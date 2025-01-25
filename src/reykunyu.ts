@@ -790,8 +790,8 @@ function createNounConjugation(word: WordData, dialect: Dialect): NounConjugatio
 		let row = [];
 		if (word['type'] !== 'n:pr' || j === 0) {
 			for (let i = 0; i < 6; i++) {
-				let conjugated = nounConjugator.conjugate(word['word_raw'][dialect],
-					['', plurals[j], '', '', '', cases[i], ''], true, dialect,
+				let conjugated = nounConjugator.conjugateSimple(word['word_raw'][dialect],
+					plurals[j], cases[i], dialect,
 					word['status'] === 'loan');
 				row.push(conjugated);
 			}
