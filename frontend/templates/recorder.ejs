@@ -1,0 +1,61 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Recorder'}) %>
+	<body data-url="<%= post_url %>">
+		<div class="container">
+			<%- include('header.ejs') %>
+
+			<h2>Recorder</h2>
+			<div class="ui segment" style="text-align: center; font-size: 200%;"><span class="word"><span class="stressed">dìm</span>-ya</span><br><span class="word ipa">[ˈdɪm.ja]</span></div>
+
+			<p id="instruction">Press <b>R</b> to start recording.</p>
+
+			<audio id="player" controls style="display: none;"></audio>
+		</div>
+
+		<style>
+			.stressed {
+				text-decoration-thickness: 2px;
+			}
+		</style>
+		<script>
+			let recording = false;
+			let chunks = [];
+			navigator.mediaDevices.getUserMedia({
+				audio: true,
+			}).then((stream) => {
+				const mediaRecorder = new MediaRecorder(stream);
+				mediaRecorder.addEventListener('dataavailable', (e) => {
+					chunks.push(e.data);
+				});
+				window.addEventListener("keydown", (e) => {
+					if (e.key === 'r') {
+						if (recording) {
+							recording = false;
+							mediaRecorder.stop();
+							$('#instruction').html('Recording finished. Press <b>R</b> again to do another take (will overwrite the current one).');
+							const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+							const audioURL = window.URL.createObjectURL(blob);
+							console.log(audioURL);
+							$('#player').show().attr('src', audioURL);
+						} else {
+							recording = true;
+							chunks = [];
+							mediaRecorder.start({
+								'timeslice': 10
+							});
+							$('#instruction').html('Recording… Press <b>R</b> again to stop.');
+						}
+					}
+				});
+			}).catch((err) => {
+				alert(`The following getUserMedia error occurred: ${err}`);
+			});
+		</script>
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/js/ui-translations.js"></script>
+	</body>
+</html>
+

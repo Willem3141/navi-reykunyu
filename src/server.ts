@@ -379,6 +379,17 @@ app.get('/untranslated', function(req: Request, res: Response) {
 	}));
 });
 
+app.get('/recorder', function(req: Request, res: Response) {
+	if (!req.user || !req.user['is_admin']) {
+		res.status(403);
+		res.render('403', pageVariables(req));
+		return;
+	}
+	res.render('recorder', pageVariables(req, {
+		'post_url': '/test'  // TODO
+	}));
+});
+
 app.get('/signup', function(req: Request, res: Response) {
 	res.render('signup', pageVariables(req));
 });
