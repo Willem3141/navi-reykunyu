@@ -313,7 +313,7 @@ describe('noun conjugations', () => {
 				assert.strictEqual(conjugate('kxeyey', ['', '', '', '', '', 'ä', ''], 'FN'), '----kxeyey----ä-');
 			});
 
-			test('is ä for loanwords ending in -ì, with the -ì dropping', (t) => {
+			test('is -ä for loanwords ending in -ì, with the -ì dropping', (t) => {
 				assert.strictEqual(conjugate('Kelnì', ['', '', '', '', '', 'ä', ''], 'FN', true), '----Keln----ä-');
 				assert.strictEqual(conjugate('Kerìsmìsì', ['', '', '', '', '', 'ä', ''], 'FN', true), '----Kerìsmìs----ä-');
 			});
@@ -349,7 +349,7 @@ describe('noun conjugations', () => {
 		});
 	});
 
-	describe('stem prefixes', () => {
+	describe('final suffixes', () => {
 		test('are appended to the noun', (t) => {
 			assert.strictEqual(conjugate('fwampop', ['', '', '', '', '', '', 'sì'], 'FN'), '----fwampop-----sì');
 		});
