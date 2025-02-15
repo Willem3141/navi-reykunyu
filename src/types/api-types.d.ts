@@ -47,6 +47,7 @@ declare type WordData = {
 	etymology?: LinkString,
 	derived?: WordData[],
 	seeAlso?: WordData[],
+	favorite?: boolean,
 	sentences?: Sentence[]
 };
 

@@ -542,11 +542,11 @@ class Reykunyu {
 
 	pronunciationAudioButtons(audioData: AudioData[]): JQuery {
 		let $buttons = $('<div/>')
-			.addClass('pronunciation-audio-buttons buttons');
+			.addClass('ui icon compact mini basic buttons pronunciation-audio-buttons');
 		for (let audio of audioData) {
 			let $button = $('<a/>')
-				.addClass('ui icon compact mini basic button pronunciation-audio-button')
-				.attr('data-tooltip', 'Speaker: ' + audio['speaker']);
+				.addClass('ui button pronunciation-audio-button')
+				.attr('data-tooltip', _('speaker') + ' ' + audio['speaker']);
 			$('<i/>').addClass('play icon').appendTo($button);
 			let clip: HTMLAudioElement | null = null;
 			$button.on('click', () => {
@@ -571,12 +571,42 @@ class Reykunyu {
 		return $buttons;
 	}
 
-	editButton(id: number): JQuery {
-		let $button = $('<a/>').addClass('ui icon basic button edit-button');
-		const url = "/edit?word=" + id;
-		$button.attr('href', url);
-		$('<i/>').addClass('pencil icon').appendTo($button);
-		return $button;
+	wordToolbar(word: WordData): JQuery {
+		const $toolbar = $('<div/>').addClass('ui icon compact mini basic buttons word-toolbar');
+
+		// favorite button
+		const $favoriteButton = $('<div/>')
+			.addClass('ui button favorite-button')
+			.attr('data-tooltip', _('mark-as-favorite'))
+			.appendTo($toolbar)
+			.on('click', () => {
+				if ($favoriteButton.hasClass('active')) {
+					$.post('/api/user/unmark-favorite', { 'vocab': word.id }, () => {
+						$favoriteButton.removeClass('active');
+					});
+				} else {
+					$.post('/api/user/mark-favorite', { 'vocab': word.id }, () => {
+						$favoriteButton.addClass('active');
+					});
+				}
+			});
+		if (word.favorite) {
+			$favoriteButton.addClass('active');
+		}
+		$('<i/>').addClass('star icon').appendTo($favoriteButton);
+
+		// edit button
+		if ($('body').hasClass('logged-in-admin')) {
+			const $editButton = $('<a/>')
+				.addClass('ui button')
+				.attr('data-tooltip', _('edit'))
+				.appendTo($toolbar);
+			const url = "/edit?word=" + word.id;
+			$editButton.attr('href', url);
+			$('<i/>').addClass('pencil icon').appendTo($editButton);
+		}
+
+		return $toolbar;
 	}
 
 	statusNoteSection(wordStatus: string, statusNote?: string): JQuery {
@@ -1206,9 +1236,9 @@ class Reykunyu {
 			}
 		}
 
-		const showEditButton = $('body').hasClass('editable');
-		if (showEditButton) {
-			$resultWord.append(this.editButton(r["id"]));
+		const loggedIn = $('body').hasClass('logged-in');
+		if (loggedIn) {
+			$resultWord.append(this.wordToolbar(r));
 		}
 
 		if (r['id'] == 2772) {

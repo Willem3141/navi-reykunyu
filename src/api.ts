@@ -6,6 +6,7 @@ import fs from 'fs';
 import * as annotatedDictionary from './annotatedDictionary';
 import * as conjugationString from './conjugationString';
 import * as reykunyu from './reykunyu';
+import * as userdata from './userdata';
 import * as verbs from './verbs/conjugator';
 import * as zeykerokyu from './zeykerokyu';
 
@@ -22,10 +23,16 @@ router.get('/fwew-search',
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	(req, res) => {
+	async (req, res) => {
+		let fromNaviResult = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
+		let toNaviResult = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+		if (req.user) {
+			await userdata.augmentFromNaviResultWithUserData(req.user, fromNaviResult);
+			await userdata.augmentToNaviResultWithUserData(req.user, toNaviResult);
+		}
 		res.json({
-			'fromNa\'vi': reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']),
-			'toNa\'vi': reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect'])
+			'fromNa\'vi': fromNaviResult,
+			'toNa\'vi': toNaviResult
 		});
 	}
 );
@@ -34,8 +41,12 @@ router.get('/fwew',
 	cors(),
 	parseStringParameter('tìpawm', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	(req, res) => {
-		res.json(reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']));
+	async (req, res) => {
+		let result = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
+		if (req.user) {
+			await userdata.augmentFromNaviResultWithUserData(req.user, result);
+		}
+		res.json(result);
 	}
 );
 
@@ -68,8 +79,12 @@ router.get('/search',
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	(req, res) => {
-		res.json(reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']));
+	async (req, res) => {
+		let result = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+		if (req.user) {
+			await userdata.augmentToNaviResultWithUserData(req.user, result);
+		}
+		res.json(result);
 	}
 );
 
@@ -173,6 +188,26 @@ router.get('/rhymes',
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
 		res.json(reykunyu.getRhymes(req.args!['tìpawm'], req.args!['dialect']));
+	}
+);
+
+router.post('/user/mark-favorite',
+	checkLoggedIn(),
+	parseIntegerParameter('vocab', 'post'),
+	(req, res) => {
+		userdata.markFavorite(req.user!, req.args!['vocab'], () => {
+			res.status(204).send();
+		});
+	}
+);
+
+router.post('/user/unmark-favorite',
+	checkLoggedIn(),
+	parseIntegerParameter('vocab', 'post'),
+	(req, res) => {
+		userdata.unmarkFavorite(req.user!, req.args!['vocab'], () => {
+			res.status(204).send();
+		});
 	}
 );
 
