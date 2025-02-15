@@ -46,144 +46,171 @@ describe('noun conjugations', () => {
 	});
 
 	describe('plural prefixes', () => {
-		test('are prepended to the noun', (t) => {
-			assert.strictEqual(conjugate('fwampop', ['', '', '', '', '', '', ''], 'FN'), '----fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['', 'me', '', '', '', '', ''], 'FN'), '-me---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---fwampop-----');
+		describe('the dual prefix', () => {
+			test('is prepended to the noun', (t) => {
+				assert.strictEqual(conjugate('fwampop', ['', 'me', '', '', '', '', ''], 'FN'), '-me---fwampop-----');
+			});
+
+			test('preserves the initial uppercase letter of the noun', (t) => {
+				assert.strictEqual(conjugate('Fwampop', ['', 'me', '', '', '', '', ''], 'FN'), '-me---Fwampop-----');
+			});
+
+			test('drops its -e if the noun starts with e-', (t) => {
+				assert.strictEqual(conjugate('ekxan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---ekxan-----');
+				assert.strictEqual(conjugate('Ekxan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Ekxan-----');
+			});
+
+			test('drops its -e if the noun starts with ew-/ey-', (t) => {
+				assert.strictEqual(conjugate('ewro', ['', 'me', '', '', '', '', ''], 'FN'), '-m---ewro-----');
+				assert.strictEqual(conjugate('Ewro', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Ewro-----');
+				assert.strictEqual(conjugate('eyktan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---eyktan-----');
+				assert.strictEqual(conjugate('Eyktan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Eyktan-----');
+			});
+
+			test('drops its -e if the noun starts with e- after lenition', (t) => {
+				assert.strictEqual(conjugate('\'eylan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---eylan-----');
+				assert.strictEqual(conjugate('\'Eylan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Eylan-----');
+			});
+
+			test('lenites the noun', (t) => {
+				assert.strictEqual(conjugate('kelku', ['', 'me', '', '', '', '', ''], 'FN'), '-me--h-elku-----');
+			});
+
+			test('doesn\'t lenite the noun if it starts with \'ll/\'rr', (t) => {
+				assert.strictEqual(conjugate('\'llngo', ['', 'me', '', '', '', '', ''], 'FN'), '-me---\'llngo-----');
+				assert.strictEqual(conjugate('\'rrpxom', ['', 'me', '', '', '', '', ''], 'FN'), '-me---\'rrpxom-----');
+			});
+
+			test('lenites the noun even if it starts with an uppercase letter', (t) => {
+				assert.strictEqual(conjugate('Kelku', ['', 'me', '', '', '', '', ''], 'FN'), '-me--H-elku-----');
+				assert.strictEqual(conjugate('Txon', ['', 'me', '', '', '', '', ''], 'FN'), '-me--T-on-----');
+			});
+
+			test('is placed after a determiner prefix', (t) => {
+				assert.strictEqual(conjugate('fwampop', ['fì', 'me', '', '', '', '', ''], 'FN'), 'fì-me---fwampop-----');
+				assert.strictEqual(conjugate('fwampop', ['tsa', 'me', '', '', '', '', ''], 'FN'), 'tsa-me---fwampop-----');
+				assert.strictEqual(conjugate('fwampop', ['pe', 'me', '', '', '', '', ''], 'FN'), 'pe-me---fwampop-----');
+				assert.strictEqual(conjugate('fwampop', ['fra', 'me', '', '', '', '', ''], 'FN'), 'fra-me---fwampop-----');
+			});
+
+			test('when combined with a determiner, still lenites the noun', (t) => {
+				assert.strictEqual(conjugate('kelku', ['fì', 'me', '', '', '', '', ''], 'FN'), 'fì-me--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['tsa', 'me', '', '', '', '', ''], 'FN'), 'tsa-me--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['pe', 'me', '', '', '', '', ''], 'FN'), 'pe-me--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['fra', 'me', '', '', '', '', ''], 'FN'), 'fra-me--h-elku-----');
+			});
 		});
 
-		test('in the case of me+ and pxe+, drop their -e if the noun starts with e-', (t) => {
-			assert.strictEqual(conjugate('ekxan', ['', '', '', '', '', '', ''], 'FN'), '----ekxan-----');
-			assert.strictEqual(conjugate('ekxan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---ekxan-----');
-			assert.strictEqual(conjugate('ekxan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---ekxan-----');
-			assert.strictEqual(conjugate('ekxan', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---ekxan-----');
+		describe('the trial prefix', () => {
+			test('is prepended to the noun', (t) => {
+				assert.strictEqual(conjugate('fwampop', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe---fwampop-----');
+			});
+
+			test('preserves the initial uppercase letter of the noun', (t) => {
+				assert.strictEqual(conjugate('Fwampop', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe---Fwampop-----');
+			});
+
+			test('drops its -e if the noun starts with e-', (t) => {
+				assert.strictEqual(conjugate('ekxan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---ekxan-----');
+				assert.strictEqual(conjugate('Ekxan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Ekxan-----');
+			});
+
+			test('drops its -e if the noun starts with ew-/ey-', (t) => {
+				assert.strictEqual(conjugate('ewro', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---ewro-----');
+				assert.strictEqual(conjugate('Ewro', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Ewro-----');
+				assert.strictEqual(conjugate('eyktan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---eyktan-----');
+				assert.strictEqual(conjugate('Eyktan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Eyktan-----');
+			});
+
+			test('drops its -e if the noun starts with e- after lenition', (t) => {
+				assert.strictEqual(conjugate('\'eylan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---eylan-----');
+				assert.strictEqual(conjugate('\'Eylan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Eylan-----');
+			});
+
+			test('lenites the noun', (t) => {
+				assert.strictEqual(conjugate('kelku', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe--h-elku-----');
+			});
+
+			test('doesn\'t lenite the noun if it starts with \'ll/\'rr', (t) => {
+				assert.strictEqual(conjugate('\'llngo', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe---\'llngo-----');
+				assert.strictEqual(conjugate('\'rrpxom', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe---\'rrpxom-----');
+			});
+
+			test('lenites the noun even if it starts with an uppercase letter', (t) => {
+				assert.strictEqual(conjugate('Kelku', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe--H-elku-----');
+				assert.strictEqual(conjugate('Txon', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe--T-on-----');
+			});
+
+			test('is placed after a determiner prefix', (t) => {
+				assert.strictEqual(conjugate('fwampop', ['fì', 'pxe', '', '', '', '', ''], 'FN'), 'fì-pxe---fwampop-----');
+				assert.strictEqual(conjugate('fwampop', ['tsa', 'pxe', '', '', '', '', ''], 'FN'), 'tsa-pxe---fwampop-----');
+				assert.strictEqual(conjugate('fwampop', ['fra', 'pxe', '', '', '', '', ''], 'FN'), 'fra-pxe---fwampop-----');
+			});
+
+			test('when combined with pe+, gets lenited itself', (t) => {
+				assert.strictEqual(conjugate('fwampop', ['pe', 'pxe', '', '', '', '', ''], 'FN'), 'pe-pe---fwampop-----');
+			});
+
+			test('when combined with a determiner, still lenites the noun', (t) => {
+				assert.strictEqual(conjugate('kelku', ['fì', 'pxe', '', '', '', '', ''], 'FN'), 'fì-pxe--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['tsa', 'pxe', '', '', '', '', ''], 'FN'), 'tsa-pxe--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['pe', 'pxe', '', '', '', '', ''], 'FN'), 'pe-pe--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['fra', 'pxe', '', '', '', '', ''], 'FN'), 'fra-pxe--h-elku-----');
+			});
 		});
 
-		test('in the case of me+ and pxe+, drop their -e if the noun starts with capitalized e-', (t) => {
-			assert.strictEqual(conjugate('Ekxan', ['', '', '', '', '', '', ''], 'FN'), '----Ekxan-----');
-			assert.strictEqual(conjugate('Ekxan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Ekxan-----');
-			assert.strictEqual(conjugate('Ekxan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Ekxan-----');
-			assert.strictEqual(conjugate('Ekxan', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---Ekxan-----');
-		});
+		describe('the general plural prefix', () => {
+			test('is prepended to the noun', (t) => {
+				assert.strictEqual(conjugate('fwampop', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---fwampop-----');
+			});
 
-		test('in the case of me+ and pxe+, drop their -e if the noun starts with ew-/ey-', (t) => {
-			assert.strictEqual(conjugate('ewro', ['', '', '', '', '', '', ''], 'FN'), '----ewro-----');
-			assert.strictEqual(conjugate('ewro', ['', 'me', '', '', '', '', ''], 'FN'), '-m---ewro-----');
-			assert.strictEqual(conjugate('ewro', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---ewro-----');
-			assert.strictEqual(conjugate('ewro', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---ewro-----');
-			assert.strictEqual(conjugate('eyktan', ['', '', '', '', '', '', ''], 'FN'), '----eyktan-----');
-			assert.strictEqual(conjugate('eyktan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---eyktan-----');
-			assert.strictEqual(conjugate('eyktan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---eyktan-----');
-			assert.strictEqual(conjugate('eyktan', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---eyktan-----');
-		});
+			test('preserves the initial uppercase letter of the noun', (t) => {
+				assert.strictEqual(conjugate('Fwampop', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---Fwampop-----');
+			});
 
-		test('in the case of me+ and pxe+, drop their -e if the noun starts with capitalized ew-/ey-', (t) => {
-			assert.strictEqual(conjugate('Ewro', ['', '', '', '', '', '', ''], 'FN'), '----Ewro-----');
-			assert.strictEqual(conjugate('Ewro', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Ewro-----');
-			assert.strictEqual(conjugate('Ewro', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Ewro-----');
-			assert.strictEqual(conjugate('Ewro', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---Ewro-----');
-			assert.strictEqual(conjugate('Eyktan', ['', '', '', '', '', '', ''], 'FN'), '----Eyktan-----');
-			assert.strictEqual(conjugate('Eyktan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Eyktan-----');
-			assert.strictEqual(conjugate('Eyktan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Eyktan-----');
-			assert.strictEqual(conjugate('Eyktan', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---Eyktan-----');
-		});
+			test('lenites the noun', (t) => {
+				assert.strictEqual(conjugate('kelku', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--h-elku-----');
+			});
 
-		test('in the case of me+ and pxe+, drop their -e if the noun starts with e- after lenition', (t) => {
-			assert.strictEqual(conjugate('\'eylan', ['', '', '', '', '', '', ''], 'FN'), '----\'eylan-----');
-			assert.strictEqual(conjugate('\'eylan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---eylan-----');
-			assert.strictEqual(conjugate('\'eylan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---eylan-----');
-			assert.strictEqual(conjugate('\'eylan', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)---eylan-----');
-		});
+			test('doesn\'t lenite the noun if it starts with \'ll/\'rr', (t) => {
+				assert.strictEqual(conjugate('\'llngo', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---\'llngo-----');
+				assert.strictEqual(conjugate('\'rrpxom', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---\'rrpxom-----');
+			});
 
-		test('in the case of me+ and pxe+, drop their -e if the noun starts with capitalized e- after lenition', (t) => {
-			assert.strictEqual(conjugate('\'Eylan', ['', '', '', '', '', '', ''], 'FN'), '----\'Eylan-----');
-			assert.strictEqual(conjugate('\'Eylan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Eylan-----');
-			assert.strictEqual(conjugate('\'Eylan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Eylan-----');
-			assert.strictEqual(conjugate('\'Eylan', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)---Eylan-----');
-		});
+			test('lenites the noun even if it starts with an uppercase letter', (t) => {
+				assert.strictEqual(conjugate('Kelku', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--H-elku-----');
+				assert.strictEqual(conjugate('Txon', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--T-on-----');
+			});
 
-		test('in the case of ay+, can be dropped if the noun underwent lenition', (t) => {
-			assert.strictEqual(conjugate('tute', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--s-ute-----');
-			assert.strictEqual(conjugate('pxen', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--p-en-----');
-			assert.strictEqual(conjugate('\'eylan', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)---eylan-----');
-		});
+			test('is optional if the noun underwent lenition', (t) => {
+				assert.strictEqual(conjugate('tute', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--s-ute-----');
+				assert.strictEqual(conjugate('pxen', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--p-en-----');
+				assert.strictEqual(conjugate('\'eylan', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)---eylan-----');
+			});
 
-		test('in the case of ay+, cannot be dropped if the noun did not undergo lenition', (t) => {
-			assert.strictEqual(conjugate('lun', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---lun-----');
-			assert.strictEqual(conjugate('sngel', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---sngel-----');
-			assert.strictEqual(conjugate('zum', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---zum-----');
-		});
+			test('is not optional if the noun did not undergo lenition', (t) => {
+				assert.strictEqual(conjugate('lun', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---lun-----');
+				assert.strictEqual(conjugate('sngel', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---sngel-----');
+				assert.strictEqual(conjugate('zum', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---zum-----');
+			});
 
-		test('in the case of ay+, cannot be dropped in the case of \'u', (t) => {
-			assert.strictEqual(conjugate('\'u', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---u-----');
-		});
+			test('is not optional in the case of \'u', (t) => {
+				assert.strictEqual(conjugate('\'u', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---u-----');
+			});
 
-		test('lenite the noun', (t) => {
-			assert.strictEqual(conjugate('kelku', ['', '', '', '', '', '', ''], 'FN'), '----kelku-----');
-			assert.strictEqual(conjugate('kelku', ['', 'me', '', '', '', '', ''], 'FN'), '-me--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--h-elku-----');
-		});
+			test('is placed after a determiner prefix', (t) => {
+				assert.strictEqual(conjugate('fwampop', ['fì', 'ay', '', '', '', '', ''], 'FN'), 'f(ì)-ay---fwampop-----');
+				assert.strictEqual(conjugate('fwampop', ['tsa', 'ay', '', '', '', '', ''], 'FN'), 'ts-ay---fwampop-----');
+				assert.strictEqual(conjugate('fwampop', ['pe', 'ay', '', '', '', '', ''], 'FN'), 'p-ay---fwampop-----');
+				assert.strictEqual(conjugate('fwampop', ['fra', 'ay', '', '', '', '', ''], 'FN'), 'fr-ay---fwampop-----');
+			});
 
-		test('don\'t lenite the noun if it starts with \'ll/\'rr', (t) => {
-			assert.strictEqual(conjugate('\'llngo', ['', 'me', '', '', '', '', ''], 'FN'), '-me---\'llngo-----');
-			assert.strictEqual(conjugate('\'rrpxom', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe---\'rrpxom-----');
-		});
-
-		test('preserve the initial uppercase letter of the noun', (t) => {
-			assert.strictEqual(conjugate('Fwampop', ['', '', '', '', '', '', ''], 'FN'), '----Fwampop-----');
-			assert.strictEqual(conjugate('Fwampop', ['', 'me', '', '', '', '', ''], 'FN'), '-me---Fwampop-----');
-			assert.strictEqual(conjugate('Fwampop', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe---Fwampop-----');
-			assert.strictEqual(conjugate('Fwampop', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---Fwampop-----');
-		});
-
-		test('lenite the noun even if it starts with an uppercase letter', (t) => {
-			assert.strictEqual(conjugate('Kelku', ['', '', '', '', '', '', ''], 'FN'), '----Kelku-----');
-			assert.strictEqual(conjugate('Kelku', ['', 'me', '', '', '', '', ''], 'FN'), '-me--H-elku-----');
-			assert.strictEqual(conjugate('Kelku', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe--H-elku-----');
-			assert.strictEqual(conjugate('Kelku', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--H-elku-----');
-			assert.strictEqual(conjugate('Txon', ['', '', '', '', '', '', ''], 'FN'), '----Txon-----');
-			assert.strictEqual(conjugate('Txon', ['', 'me', '', '', '', '', ''], 'FN'), '-me--T-on-----');
-			assert.strictEqual(conjugate('Txon', ['', 'pxe', '', '', '', '', ''], 'FN'), '-pxe--T-on-----');
-			assert.strictEqual(conjugate('Txon', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--T-on-----');
-		});
-
-		test('are placed after a determiner prefix', (t) => {
-			assert.strictEqual(conjugate('fwampop', ['fì', 'me', '', '', '', '', ''], 'FN'), 'fì-me---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['tsa', 'me', '', '', '', '', ''], 'FN'), 'tsa-me---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['pe', 'me', '', '', '', '', ''], 'FN'), 'pe-me---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['fra', 'me', '', '', '', '', ''], 'FN'), 'fra-me---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['fì', 'ay', '', '', '', '', ''], 'FN'), 'f(ì)-ay---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['tsa', 'ay', '', '', '', '', ''], 'FN'), 'ts-ay---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['pe', 'ay', '', '', '', '', ''], 'FN'), 'p-ay---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['fra', 'ay', '', '', '', '', ''], 'FN'), 'fr-ay---fwampop-----');
-		});
-
-		test('when combined with pe+, get lenited themselves', (t) => {
-			assert.strictEqual(conjugate('fwampop', ['fì', 'pxe', '', '', '', '', ''], 'FN'), 'fì-pxe---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['tsa', 'pxe', '', '', '', '', ''], 'FN'), 'tsa-pxe---fwampop-----');
-			assert.strictEqual(conjugate('fwampop', ['pe', 'pxe', '', '', '', '', ''], 'FN'), 'pe-pe---fwampop-----'); // note the extra lenition
-			assert.strictEqual(conjugate('fwampop', ['fra', 'pxe', '', '', '', '', ''], 'FN'), 'fra-pxe---fwampop-----');
-			assert.strictEqual(conjugate('eylan', ['fì', 'pxe', '', '', '', '', ''], 'FN'), 'fì-px---eylan-----');
-			assert.strictEqual(conjugate('eylan', ['tsa', 'pxe', '', '', '', '', ''], 'FN'), 'tsa-px---eylan-----');
-			assert.strictEqual(conjugate('eylan', ['pe', 'pxe', '', '', '', '', ''], 'FN'), 'pe-p---eylan-----'); // note the extra lenition
-			assert.strictEqual(conjugate('eylan', ['fra', 'pxe', '', '', '', '', ''], 'FN'), 'fra-px---eylan-----');
-		});
-
-		test('when combined with a determiner, still lenite the noun', (t) => {
-			assert.strictEqual(conjugate('kelku', ['fì', 'me', '', '', '', '', ''], 'FN'), 'fì-me--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['tsa', 'me', '', '', '', '', ''], 'FN'), 'tsa-me--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['pe', 'me', '', '', '', '', ''], 'FN'), 'pe-me--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['fra', 'me', '', '', '', '', ''], 'FN'), 'fra-me--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['fì', 'pxe', '', '', '', '', ''], 'FN'), 'fì-pxe--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['tsa', 'pxe', '', '', '', '', ''], 'FN'), 'tsa-pxe--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['pe', 'pxe', '', '', '', '', ''], 'FN'), 'pe-pe--h-elku-----'); // note the extra lenition
-			assert.strictEqual(conjugate('kelku', ['fra', 'pxe', '', '', '', '', ''], 'FN'), 'fra-pxe--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['fì', 'ay', '', '', '', '', ''], 'FN'), 'f(ì)-ay--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['tsa', 'ay', '', '', '', '', ''], 'FN'), 'ts-ay--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['pe', 'ay', '', '', '', '', ''], 'FN'), 'p-ay--h-elku-----');
-			assert.strictEqual(conjugate('kelku', ['fra', 'ay', '', '', '', '', ''], 'FN'), 'fr-ay--h-elku-----');
+			test('when combined with a determiner, still lenites the noun', (t) => {
+				assert.strictEqual(conjugate('kelku', ['fì', 'ay', '', '', '', '', ''], 'FN'), 'f(ì)-ay--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['tsa', 'ay', '', '', '', '', ''], 'FN'), 'ts-ay--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['pe', 'ay', '', '', '', '', ''], 'FN'), 'p-ay--h-elku-----');
+				assert.strictEqual(conjugate('kelku', ['fra', 'ay', '', '', '', '', ''], 'FN'), 'fr-ay--h-elku-----');
+			});
 		});
 	});
 
