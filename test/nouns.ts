@@ -103,6 +103,22 @@ describe('noun conjugations', () => {
 			assert.strictEqual(conjugate('\'Eylan', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)---Eylan-----');
 		});
 
+		test('in the case of ay+, can be dropped if the noun underwent lenition', (t) => {
+			assert.strictEqual(conjugate('tute', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--s-ute-----');
+			assert.strictEqual(conjugate('pxen', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)--p-en-----');
+			assert.strictEqual(conjugate('\'eylan', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)---eylan-----');
+		});
+
+		test('in the case of ay+, cannot be dropped if the noun did not undergo lenition', (t) => {
+			assert.strictEqual(conjugate('lun', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---lun-----');
+			assert.strictEqual(conjugate('sngel', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---sngel-----');
+			assert.strictEqual(conjugate('zum', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---zum-----');
+		});
+
+		test('in the case of ay+, cannot be dropped in the case of \'u', (t) => {
+			assert.strictEqual(conjugate('\'u', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---u-----');
+		});
+
 		test('lenite the noun', (t) => {
 			assert.strictEqual(conjugate('kelku', ['', '', '', '', '', '', ''], 'FN'), '----kelku-----');
 			assert.strictEqual(conjugate('kelku', ['', 'me', '', '', '', '', ''], 'FN'), '-me--h-elku-----');
