@@ -11,7 +11,7 @@
  * verb - the verb stem in which infix positions are marked by two dots
  * infixes - an array with three infixes
  */
-export function conjugate(verb: string, infixes: [string, string, string]) {
+export function conjugate(verb: string, infixes: [string, string, string]): string {
 
 	let prefirst = infixes[0];
 	let first = infixes[1];

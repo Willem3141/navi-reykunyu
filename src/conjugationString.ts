@@ -14,9 +14,7 @@
  * (parses to kìyevame and kiyevame)
  */
 
-export{ formsFromString, stringAdmits };
-
-function formsFromString(formString: string): string[] {
+export function formsFromString(formString: string): string[] {
 	if (!formString) {
 		return [];
 	}
@@ -57,7 +55,7 @@ function formsRecursive(formString: string): string[] {
 	return [formString.split("-").join("")];
 }
 
-function stringAdmits(formString: string, target: string): boolean {
+export function stringAdmits(formString: string, target: string): boolean {
 	const forms = formsFromString(formString);
 	return forms.includes(target);
 }

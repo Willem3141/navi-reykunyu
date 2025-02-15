@@ -1,10 +1,3 @@
-export {
-	reloadData, getWord,
-	getResponsesFor, getSuggestionsFor, getReverseResponsesFor, getReverseSuggestionsFor,
-	getRandomWords, getAll, getRhymes, getAllSentences,
-	removeSentence, insertSentence, hasSentence, saveCorpus
-};
-
 import fs from 'fs';
 import levenshtein from 'js-levenshtein';
 
@@ -46,7 +39,7 @@ let allWordsOfType: { [type: string]: WordData[] } = {};
 
 reloadData();
 
-function reloadData() {
+export function reloadData() {
 	dictionary.reload();
 	reverseDictionary.reload();
 
@@ -205,11 +198,11 @@ function simplifiedTranslation(translation: Translated<string>[], language: stri
 	return result;
 }
 
-function getWord(id: number): WordData {
+export function getWord(id: number): WordData {
 	return dictionary.getById(id);
 }
 
-function getResponsesFor(query: string, dialect: Dialect): FromNaviResult {
+export function getResponsesFor(query: string, dialect: Dialect): FromNaviResult {
 	query = preprocess.preprocessQuery(query, dialect);
 	let results = [];
 
@@ -852,7 +845,7 @@ function mergeSiVerbs(results: FromNaviResult): void {
 	}
 }
 
-function getSuggestionsFor(query: string, language: string, dialect: Dialect): Suggestions {
+export function getSuggestionsFor(query: string, language: string, dialect: Dialect): Suggestions {
 	if (query.length < 3) {
 		return { 'results': [] };
 	}
@@ -879,7 +872,7 @@ function getSuggestionsFor(query: string, language: string, dialect: Dialect): S
 	};
 }
 
-function getReverseSuggestionsFor(query: string, language: string): Suggestions {
+export function getReverseSuggestionsFor(query: string, language: string): Suggestions {
 	if (query.length < 3) {
 		return { 'results': [] };
 	}
@@ -950,7 +943,7 @@ function typeName(type: string, language: string): string {
 	return types[type];
 }
 
-function getReverseResponsesFor(query: string, language: string, dialect: Dialect): ToNaviResult {
+export function getReverseResponsesFor(query: string, language: string, dialect: Dialect): ToNaviResult {
 	if (query === "") {
 		return [];
 	}
@@ -1040,7 +1033,7 @@ function getReverseResponsesFor(query: string, language: string, dialect: Dialec
 	return results;
 }
 
-function getRandomWords(number: number, dialect: Dialect, type?: string): WordData[] {
+export function getRandomWords(number: number, dialect: Dialect, type?: string): WordData[] {
 	let results = [];
 	let wordList = allWords;
 	if (type && allWordsOfType[type]) {
@@ -1070,11 +1063,11 @@ function getRandomWords(number: number, dialect: Dialect, type?: string): WordDa
 	return results;
 }
 
-function getAll(): WordData[] {
+export function getAll(): WordData[] {
 	return dictionary.getAll();
 }
 
-function getRhymes(query: string, dialect: Dialect): RhymesResult {
+export function getRhymes(query: string, dialect: Dialect): RhymesResult {
 	query = query.toLowerCase();
 
 	let words: RhymesResult = [];
@@ -1114,24 +1107,24 @@ function getRhymes(query: string, dialect: Dialect): RhymesResult {
 	return words;
 }
 
-function getAllSentences(): { [key: string]: Sentence } {
+export function getAllSentences(): { [key: string]: Sentence } {
 	return sentences;
 }
 
-function removeSentence(key: string): void {
+export function removeSentence(key: string): void {
 	delete sentences[key];
 	reloadData();
 }
 
-function insertSentence(key: string, sentence: Sentence): void {
+export function insertSentence(key: string, sentence: Sentence): void {
 	sentences[key] = sentence;
 	reloadData();
 }
 
-function hasSentence(key: string): boolean {
+export function hasSentence(key: string): boolean {
 	return sentences.hasOwnProperty(key);
 }
 
-function saveCorpus(): void {
+export function saveCorpus(): void {
 	fs.writeFileSync('./data/corpus.json', JSON.stringify(sentences));
 }

@@ -35,7 +35,7 @@ const strings: { [language: string]: { [key: string]: string } } = JSON.parse(st
 let lang = 'en';
 
 /** Sets the active language to the given ISO code. */
-export function setLanguage(l: string) {
+export function setLanguage(l: string): void {
 	lang = l;
 }
 
@@ -61,6 +61,6 @@ export function span_(key: string): string {
 }
 
 /** Returns the JSON with the translations. */
-export function getStringsJSON() {
+export function getStringsJSON(): string {
 	return stringsJSON;
 }

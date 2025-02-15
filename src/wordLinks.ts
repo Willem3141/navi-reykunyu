@@ -30,13 +30,11 @@
  * ```
  */
 
-export { enrichWordLinks, stripToLinkData }
-
 import * as dictionary from './dictionary';
 import * as output from './output';
 
 // Replaces word links in a string.
-function enrichWordLinks(text: string): LinkString {
+export function enrichWordLinks(text: string): LinkString {
 
 	// matches word links between brackets
 	const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
@@ -70,7 +68,7 @@ doesn't exist. This word link will look broken.`, 'invalid-word-link-reference')
 // relevant when making a word link (Na'vi word, type, and translations).
 // Calling this function makes the returned data smaller, and avoids potential
 // infinite loops if two words happen to have word links to each other.
-function stripToLinkData(word: WordData): WordData {
+export function stripToLinkData(word: WordData): WordData {
 	let result: WordData = {
 		"id": word["id"],
 		"word": word["word"],

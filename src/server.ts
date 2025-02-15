@@ -80,7 +80,7 @@ app.get('/help', function(req: Request, res: Response) {
 	res.render('help', pageVariables(req));
 });
 
-function setLanguage(req: Request) {
+function setLanguage(req: Request): void {
 	var lang = 'en';
 	if (req.headers.cookie) {
 		for (let cookie of req.headers.cookie.split('; ')) {

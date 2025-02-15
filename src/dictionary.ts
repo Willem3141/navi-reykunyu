@@ -7,8 +7,6 @@
 // uniquely define words by word and type too. We call the combination of a word
 // and its type the key of that word.
 
-export { reload, getById, get, getEditable, getOfTypes, getNotOfTypes, getAll, splitWordAndType };
-
 import fs from 'fs';
 
 import * as dialect from './dialect';
@@ -29,7 +27,7 @@ let wordTypeKeys: {[key: string]: number};
 reload();
 
 // Processes the dictionary data.
-function reload(): void {
+export function reload(): void {
 	try {
 		words = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
 	} catch (e) {
@@ -100,14 +98,14 @@ to be linked to from other words.`, 'duplicate-word-type');
 	}
 }
 
-function getById(id: number): WordData {
+export function getById(id: number): WordData {
 	return words[id];
 }
 
 // Returns the given word of the given type.
 // The returned object is a deep copy. Editing it won't change the data in the
 // dictionary itself (see also getEditable).
-function get(word: string, type: string, dialect: Dialect): WordData | null {
+export function get(word: string, type: string, dialect: Dialect): WordData | null {
 	if (searchables[dialect].hasOwnProperty(word)) {
 		for (let id of searchables[dialect][word]) {
 			let result = words[id];
@@ -121,7 +119,7 @@ function get(word: string, type: string, dialect: Dialect): WordData | null {
 
 // Returns the given word of the given type, without making a deep copy.
 // The word is assumed to be in FN.
-function getEditable(word: string, type: string): WordData | null {
+export function getEditable(word: string, type: string): WordData | null {
 	if (searchables['FN'].hasOwnProperty(word)) {
 		for (let id of searchables['FN'][word]) {
 			let result = words[id];
@@ -135,7 +133,7 @@ function getEditable(word: string, type: string): WordData | null {
 
 // Returns the given word of one of the given types. This returns an array
 // because more than one type may match.
-function getOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
+export function getOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
 	let results = [];
 	for (let type of types) {
 		let result = get(word, type, dialect);
@@ -148,7 +146,7 @@ function getOfTypes(word: string, types: string[], dialect: Dialect): WordData[]
 
 // Returns the given word that is not one of the given types. This returns an
 // array because more than one type may match.
-function getNotOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
+export function getNotOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
 	let results = [];
 	if (searchables[dialect].hasOwnProperty(word)) {
 		for (let id of searchables[dialect][word]) {
@@ -161,7 +159,7 @@ function getNotOfTypes(word: string, types: string[], dialect: Dialect): WordDat
 	return results;
 }
 
-function getAll(): WordData[] {
+export function getAll(): WordData[] {
 	return words;
 }
 
@@ -169,7 +167,7 @@ function deepCopy<T>(object: T): T {
 	return JSON.parse(JSON.stringify(object));
 }
 
-function splitWordAndType(wordType: string): [string, string] {
+export function splitWordAndType(wordType: string): [string, string] {
 	let i = wordType.indexOf(':');
 	return [wordType.substring(0, i), wordType.substring(i + 1)];
 }
