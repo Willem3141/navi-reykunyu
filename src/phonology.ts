@@ -64,17 +64,23 @@ const lenitions: Record<string, string> = {
  * simply the entire word.
  */
 export function lenite(word: string): [string, string] {
-	// 'rr and 'll are not lenited, since rr and ll cannot start a syllable
-	if (word.substring(0, 3) === "'ll" || word.substring(0, 3) === "'rr") {
-		return ["", word];
+	let lenitedConsonant = "";
+	let rest = word;
+
+	if (word.substring(0, 3).toLowerCase() === "'ll" || word.substring(0, 3).toLowerCase() === "'rr") {
+		// 'rr and 'll are not lenited, since rr and ll cannot start a syllable
+
+	} else if (word.substring(0, 2).toLowerCase() in lenitions) {
+		[lenitedConsonant, rest] = [lenitions[word.substring(0, 2).toLowerCase()], word.slice(2)];
+
+	} else if (word[0].toLowerCase() in lenitions) {
+		[lenitedConsonant, rest] = [lenitions[word[0].toLowerCase()], word.slice(1)];
 	}
 
-	if (word.substring(0, 2) in lenitions) {
-		return [lenitions[word.substring(0, 2)], word.slice(2)];
-	}
-	if (word[0] in lenitions) {
-		return [lenitions[word[0]], word.slice(1)];
+	// preserve initial uppercase letter
+	if (lenitedConsonant !== '' && word[0] !== word[0].toLowerCase()) {
+		lenitedConsonant = lenitedConsonant.toUpperCase();
 	}
 
-	return ["", word];
+	return [lenitedConsonant, rest];
 }

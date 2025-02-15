@@ -60,5 +60,16 @@ describe('phonology functions', () => {
 			testLenition('\'llngo', '', '\'llngo');
 			testLenition('\'rrta', '', '\'rrta');
 		});
+
+		test('still works if the word starts with an uppercase letter, and preserves the uppercase', (t) => {
+			testLenition('Pxir', 'P', 'ir');
+			testLenition('Tute', 'S', 'ute');
+			testLenition('Kelku', 'H', 'elku');
+			testLenition('Pizayu', 'F', 'izayu');
+			testLenition('Tute', 'S', 'ute');
+			testLenition('Kelku', 'H', 'elku');
+			testLenition('\'Awkx', '', 'Awkx');
+			testLenition('Tseng', 'S', 'eng');
+		});
 	});
 });

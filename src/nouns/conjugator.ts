@@ -77,8 +77,6 @@ let pluralFunctions: { [prefix: string]: PluralFunction } = {
  */
 export function conjugate(noun: string, affixes: string[], dialect: Dialect, isLoanword?: boolean): string {
 
-	const upperCase = noun.length > 0 && noun[0] !== noun[0].toLowerCase();
-	noun = noun.toLowerCase();
 	noun = noun.replace(/[-\[\]]/g, '').replaceAll('/', '');
 
 	// first find the stem
@@ -219,10 +217,6 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 		]);
 	}
 
-	if (upperCase) {
-		applyUpperCase(options);
-	}
-
 	return options.map((option) => option.join('-')).join(';');
 }
 
@@ -247,24 +241,6 @@ export function conjugateSimple(noun: string, pluralPrefix: string, caseSuffix: 
 			casePart;
 	}
 	return result;
-}
-
-function applyUpperCase(options: any): void {
-	for (let i = 0; i < options.length; i++) {
-		let option = options[i];
-
-		if (option.length === 3) {
-			// find the first alphabetic character in option[1] and uppercase it
-			option[1] = option[1].replace(/([^\{\}\[\]\/])/, (letter: string) => letter.toUpperCase());
-
-		} else if (option.length === 10) {
-			if (option[3] !== '') {
-				option[3] = option[3].replace(/./, (letter: string) => letter.toUpperCase());
-			} else {
-				option[4] = option[4].replace(/./, (letter: string) => letter.toUpperCase());
-			}
-		}
-	}
 }
 
 function subjectiveSuffix(noun: string): CaseSuffix {
@@ -365,7 +341,7 @@ function genitiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): C
 					dropCount: 1
 				};
 			} else {
-				if (noun === "omatikaya") {
+				if (noun === "Omatikaya") {
 					return äOrE;
 				} else {
 					return yäOrYe;
