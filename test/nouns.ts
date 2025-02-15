@@ -200,6 +200,11 @@ describe('noun conjugations', () => {
 				assert.strictEqual(conjugate('fwampop', ['', '', '', '', '', 'l', ''], 'FN'), '----fwampop----ìl-');
 			});
 
+			test('is -ìl for nouns ending in a pseudovowel', (t) => {
+				assert.strictEqual(conjugate('\'ewll', ['', '', '', '', '', 'l', ''], 'FN'), '----\'ewll----ìl-');
+				assert.strictEqual(conjugate('trr', ['', '', '', '', '', 'l', ''], 'FN'), '----trr----ìl-');
+			});
+
 			test('is -l for nouns ending in a vowel', (t) => {
 				assert.strictEqual(conjugate('kelku', ['', '', '', '', '', 'l', ''], 'FN'), '----kelku----l-');
 			});
@@ -220,6 +225,11 @@ describe('noun conjugations', () => {
 		describe('the patientive suffix', () => {
 			test('is -it/-ti for nouns ending in a consonant', (t) => {
 				assert.strictEqual(conjugate('fwampop', ['', '', '', '', '', 't', ''], 'FN'), '----fwampop----it/ti-');
+			});
+
+			test('is -it/-ti for nouns ending in a pseudovowel', (t) => {
+				assert.strictEqual(conjugate('\'ewll', ['', '', '', '', '', 't', ''], 'FN'), '----\'ewll----it/ti-');
+				assert.strictEqual(conjugate('trr', ['', '', '', '', '', 't', ''], 'FN'), '----trr----it/ti-');
 			});
 
 			test('is -t(i) for nouns ending in a vowel', (t) => {
@@ -253,6 +263,11 @@ describe('noun conjugations', () => {
 				assert.strictEqual(conjugate('fwampop', ['', '', '', '', '', 'r', ''], 'FN'), '----fwampop----ur-');
 			});
 
+			test('is -ur for nouns ending in a pseudovowel', (t) => {
+				assert.strictEqual(conjugate('\'ewll', ['', '', '', '', '', 'r', ''], 'FN'), '----\'ewll----ur-');
+				assert.strictEqual(conjugate('trr', ['', '', '', '', '', 'r', ''], 'FN'), '----trr----ur-');
+			});
+
 			test('is -ur/-ru for nouns ending in \'', (t) => {
 				assert.strictEqual(conjugate('olo\'', ['', '', '', '', '', 'r', ''], 'FN'), '----olo\'----ur/ru-');
 			});
@@ -283,6 +298,11 @@ describe('noun conjugations', () => {
 		describe('the genitive suffix', () => {
 			test('is -ä for nouns ending in a consonant', (t) => {
 				assert.strictEqual(conjugate('fwampop', ['', '', '', '', '', 'ä', ''], 'FN'), '----fwampop----ä-');
+			});
+
+			test('is -ä for nouns ending in a pseudovowel', (t) => {
+				assert.strictEqual(conjugate('\'ewll', ['', '', '', '', '', 'ä', ''], 'FN'), '----\'ewll----ä-');
+				assert.strictEqual(conjugate('trr', ['', '', '', '', '', 'ä', ''], 'FN'), '----trr----ä-');
 			});
 
 			test('is -ä for nouns ending in the vowels -o/-u', (t) => {
@@ -322,6 +342,11 @@ describe('noun conjugations', () => {
 		describe('the topical suffix', () => {
 			test('is -ìri for nouns ending in a consonant', (t) => {
 				assert.strictEqual(conjugate('fwampop', ['', '', '', '', '', 'ri', ''], 'FN'), '----fwampop----ìri-');
+			});
+
+			test('is -ìri for nouns ending in a pseudovowel', (t) => {
+				assert.strictEqual(conjugate('\'ewll', ['', '', '', '', '', 'ri', ''], 'FN'), '----\'ewll----ìri-');
+				assert.strictEqual(conjugate('trr', ['', '', '', '', '', 'ri', ''], 'FN'), '----trr----ìri-');
 			});
 
 			test('is -ri for nouns ending in a vowel', (t) => {
