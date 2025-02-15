@@ -95,13 +95,13 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 			determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
 		}
 
-	} else if (determinerPrefix[determinerPrefix.length - 1] === noun[0] &&
+	} else if (determinerPrefix[determinerPrefix.length - 1] === noun[0].toLowerCase() &&
 			plural === "" && stemPrefix === "") {
 		// special case: tsa- + atan -> tsatan, etc.
 		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
 
 	} else if (noun.length >= 2 && noun[0] === "'" &&
-		determinerPrefix[determinerPrefix.length - 1] === noun[1] &&
+		determinerPrefix[determinerPrefix.length - 1] === noun[1].toLowerCase() &&
 			plural === "" && stemPrefix === "") {
 		// special case: pe- + 'eveng -> peveng (combination of the case above and ' lenition)
 		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
@@ -120,7 +120,7 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 		}
 	}
 
-	if (dialect !== 'RN' && stemPrefix[stemPrefix.length - 1] === noun[0]) {
+	if (dialect !== 'RN' && stemPrefix[stemPrefix.length - 1] === noun[0].toLowerCase()) {
 		// special case: fne- + ekxan -> fnekxan, etc.
 		stemPrefix = stemPrefix.substring(0, stemPrefix.length - 1);
 	}
@@ -370,7 +370,7 @@ function topicalSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Ca
 // Numbers
 
 function dualPrefix(noun: string): PluralPrefix {
-	let first = phonology.lenite(noun).join('')[0];
+	let first = phonology.lenite(noun).join('')[0].toLowerCase();
 	if (first === "e" || first === "ew" || first === "ey") {
 		return 'm';
 	} else {
@@ -379,7 +379,7 @@ function dualPrefix(noun: string): PluralPrefix {
 }
 
 function trialPrefix(noun: string, dialect: Dialect): PluralPrefix {
-	let first = phonology.lenite(noun).join('')[0];
+	let first = phonology.lenite(noun).join('')[0].toLowerCase();
 	if (first === "e" || first === "ew" || first === "ey") {
 		return dialect === 'RN' ? 'b' : 'px';
 	} else {

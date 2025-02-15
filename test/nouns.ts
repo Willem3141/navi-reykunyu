@@ -33,6 +33,13 @@ describe('noun conjugations', () => {
 			assert.strictEqual(conjugate('atan', ['fra', '', '', '', '', '', ''], 'FN'), 'fr----atan-----');
 		});
 
+		test('contract when the noun starts with the capitalized same letter', (t) => {
+			assert.strictEqual(conjugate('Ìlva', ['fì', '', '', '', '', '', ''], 'FN'), 'f----Ìlva-----');
+			assert.strictEqual(conjugate('Atan', ['tsa', '', '', '', '', '', ''], 'FN'), 'ts----Atan-----');
+			assert.strictEqual(conjugate('Ekxan', ['pe', '', '', '', '', '', ''], 'FN'), 'p----Ekxan-----');
+			assert.strictEqual(conjugate('Atan', ['fra', '', '', '', '', '', ''], 'FN'), 'fr----Atan-----');
+		});
+
 		test('in the case of pe+, also contract if the noun starts with e- after lenition', (t) => {
 			assert.strictEqual(conjugate('\'eylan', ['pe', '', '', '', '', '', ''], 'FN'), 'p----eylan-----');
 		});
@@ -53,6 +60,13 @@ describe('noun conjugations', () => {
 			assert.strictEqual(conjugate('ekxan', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---ekxan-----');
 		});
 
+		test('in the case of me+ and pxe+, drop their -e if the noun starts with capitalized e-', (t) => {
+			assert.strictEqual(conjugate('Ekxan', ['', '', '', '', '', '', ''], 'FN'), '----Ekxan-----');
+			assert.strictEqual(conjugate('Ekxan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Ekxan-----');
+			assert.strictEqual(conjugate('Ekxan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Ekxan-----');
+			assert.strictEqual(conjugate('Ekxan', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---Ekxan-----');
+		});
+
 		test('in the case of me+ and pxe+, drop their -e if the noun starts with ew-/ey-', (t) => {
 			assert.strictEqual(conjugate('ewro', ['', '', '', '', '', '', ''], 'FN'), '----ewro-----');
 			assert.strictEqual(conjugate('ewro', ['', 'me', '', '', '', '', ''], 'FN'), '-m---ewro-----');
@@ -64,11 +78,29 @@ describe('noun conjugations', () => {
 			assert.strictEqual(conjugate('eyktan', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---eyktan-----');
 		});
 
+		test('in the case of me+ and pxe+, drop their -e if the noun starts with capitalized ew-/ey-', (t) => {
+			assert.strictEqual(conjugate('Ewro', ['', '', '', '', '', '', ''], 'FN'), '----Ewro-----');
+			assert.strictEqual(conjugate('Ewro', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Ewro-----');
+			assert.strictEqual(conjugate('Ewro', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Ewro-----');
+			assert.strictEqual(conjugate('Ewro', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---Ewro-----');
+			assert.strictEqual(conjugate('Eyktan', ['', '', '', '', '', '', ''], 'FN'), '----Eyktan-----');
+			assert.strictEqual(conjugate('Eyktan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Eyktan-----');
+			assert.strictEqual(conjugate('Eyktan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Eyktan-----');
+			assert.strictEqual(conjugate('Eyktan', ['', 'ay', '', '', '', '', ''], 'FN'), '-ay---Eyktan-----');
+		});
+
 		test('in the case of me+ and pxe+, drop their -e if the noun starts with e- after lenition', (t) => {
 			assert.strictEqual(conjugate('\'eylan', ['', '', '', '', '', '', ''], 'FN'), '----\'eylan-----');
 			assert.strictEqual(conjugate('\'eylan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---eylan-----');
 			assert.strictEqual(conjugate('\'eylan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---eylan-----');
 			assert.strictEqual(conjugate('\'eylan', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)---eylan-----');
+		});
+
+		test('in the case of me+ and pxe+, drop their -e if the noun starts with capitalized e- after lenition', (t) => {
+			assert.strictEqual(conjugate('\'Eylan', ['', '', '', '', '', '', ''], 'FN'), '----\'Eylan-----');
+			assert.strictEqual(conjugate('\'Eylan', ['', 'me', '', '', '', '', ''], 'FN'), '-m---Eylan-----');
+			assert.strictEqual(conjugate('\'Eylan', ['', 'pxe', '', '', '', '', ''], 'FN'), '-px---Eylan-----');
+			assert.strictEqual(conjugate('\'Eylan', ['', 'ay', '', '', '', '', ''], 'FN'), '-(ay)---Eylan-----');
 		});
 
 		test('lenite the noun', (t) => {
