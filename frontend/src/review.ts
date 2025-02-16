@@ -97,7 +97,7 @@ class ReviewPage {
 
 	fetchAndSetUp(): void {
 		const item = this.items[this.currentItemIndex];
-		this.currentSlide = new QuestionSlide(item, this.doneRedirectUrl, this.toNextItem.bind(this));
+		this.currentSlide = new QuestionSlide(item, this.toNextItem.bind(this), this.showDoneModal.bind(this));
 		const $container = $('#main-container');
 		$container.empty();
 		this.currentSlide.renderIn($container);
@@ -161,9 +161,11 @@ class ReviewPage {
 
 abstract class Slide {
 	toNextItem: (correct: boolean) => void;
+	exit: () => void;
 
-	constructor(toNextItem: (correct: boolean) => void) {
+	constructor(toNextItem: (correct: boolean) => void, exit: () => void) {
 		this.toNextItem = toNextItem;
+		this.exit = exit;
 	}
 
 	abstract renderIn($container: JQuery): void;
@@ -171,7 +173,6 @@ abstract class Slide {
 
 class QuestionSlide extends Slide {
 	word: WordData;
-	doneRedirectUrl: string;
 
 	$card?: JQuery;
 	$meaningInput!: JQuery;
@@ -181,10 +182,9 @@ class QuestionSlide extends Slide {
 	static readonly CORRECT_WAITING_TIME = 0;
 	static readonly INCORRECT_WAITING_TIME = 4000;
 
-	constructor(word: WordData, doneRedirectUrl: string, toNextItem: (correct: boolean) => void) {
-		super(toNextItem);
+	constructor(word: WordData, toNextItem: (correct: boolean) => void, exit: () => void) {
+		super(toNextItem, exit);
 		this.word = word;
-		this.doneRedirectUrl = doneRedirectUrl;
 	}
 
 	renderIn($container: JQuery): void {
@@ -217,9 +217,7 @@ class QuestionSlide extends Slide {
 			.popup({
 				position: 'top center'
 			})
-			.on('click', () => {
-				window.location.href = this.doneRedirectUrl;
-			})
+			.on('click', this.exit)
 			.appendTo($buttonsCard);
 	}
 
