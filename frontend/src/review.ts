@@ -3,7 +3,7 @@ import { buildQuestionCard, buildWordPill, getDisplayedNavi } from "./study-lib"
 /// List of alternatives for each word. If the user answers with an alternative
 /// in this list, the answer isn't marked incorrect, but instead they get the
 /// chance to try again.
-type Alternative = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction'];
+type Alternative = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form'];
 const alternatives: Record<string, Alternative[]> = {
 	'nìlam:adv': ['tatlam'],
 	'tatlam:adv': ['nìlam'],
@@ -52,6 +52,8 @@ const alternatives: Record<string, Alternative[]> = {
 	'teyr:adj': [['teyrpin', 'wrong-type']],
 	'layompin:n': [['layon', 'wrong-type']],
 	'layon:adj': [['layompin', 'wrong-type']],
+	'neympin:n': [['neyn', 'wrong-type']],
+	'neyn:adj': [['neympin', 'wrong-type']],
 	'\'aw:num': [['fko', 'wrong-type'], ['pum', 'wrong-type']],
 	'yawntu:n': ['yawnetu'],
 	'yawnetu:n': ['yawntu'],
@@ -63,7 +65,12 @@ const alternatives: Record<string, Alternative[]> = {
 	'tsatsenge:adv': ['tsatseng'],
 	'tem:v:in': [['toltem', 'wrong-type']],
 	'toltem:v:tr': [['tem', 'wrong-type']],
-	'\'em:v:tr': [['\'emyu', 'wrong-type']]
+	'\'em:v:tr': [['\'emyu', 'wrong-type']],
+	'fwa:ctr': ['a', ['fula', 'wrong-form'], ['futa', 'wrong-form'], ['fura', 'wrong-form'], ['furia', 'wrong-form']],
+	'a:part': ['fwa', 'fula', 'futa', 'fura', 'furia'],
+	'tsa\'u:pn': ['tsaw'],
+	'tìng nari:phr': ['nìn'],
+	'nìn:v:tr': ['tìng nari'],
 };
 
 class ReviewPage {
@@ -118,7 +125,15 @@ class ReviewPage {
 		this.addToLearnedList(correct);
 		if (correct) {
 			this.correctCount++;
+		} else {
+			// reinsert into queue
+			function randomBetween(min: number, max: number): number {
+				return Math.floor(min + Math.random() * (max - min));
+			}
+			const index = randomBetween(this.currentItemIndex + 1, this.items.length + 1);
+			this.items.splice(index, 0, this.items[this.currentItemIndex]);
 		}
+
 		this.currentItemIndex++;
 		this.updateProgress();
 		if (this.currentItemIndex >= this.items.length) {
@@ -158,6 +173,9 @@ class ReviewPage {
 	updateProgress(): void {
 		$('#progress-bar').progress(
 			'set progress', this.currentItemIndex
+		);
+		$('#progress-bar').progress(
+			'set total', this.items.length
 		);
 	}
 }
@@ -228,7 +246,7 @@ class QuestionSlide extends Slide {
 		return this.word['word_raw']['FN'].toLowerCase() + (this.word['type'] === 'n:si' ? ' si' : '');
 	}
 
-	isAlternative(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | null {
+	isAlternative(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form' | null {
 		const key = this.word['word_raw']['FN'] + ':' + this.word['type'];
 		if (alternatives[key]) {
 			for (let alternative of alternatives[key]) {

@@ -206,7 +206,8 @@
 		"check-button": "Check",
 		"synonym-note": "That may be correct, but we're looking for another word. Try again!",
 		"wrong-type-note": "We're looking for a word with a different word class. Try again!",
-		"wrong-direction-note": "We're looking for the Na'vi word with the given translation – not the other way round. Try again!"
+		"wrong-direction-note": "We're looking for the Na'vi word with the given translation – not the other way round. Try again!",
+		"wrong-form-note": "That's the correct word, but we're looking for the dictionary form. Try again!"
 	},
 	"de": {
 		"language": "Deutsch",
