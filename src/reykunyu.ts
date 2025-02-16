@@ -161,7 +161,7 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 		allWords.push(word);
 	}
 
-	let allWordsOfType: { [type: string]: WordData[] } = { };
+	allWordsOfType = { };
 	for (const type of ['n', 'adj', 'v:in', 'v:tr', 'adv', 'adp', 'aff:in']) {
 		allWordsOfType[type] = getAllWordsOfType(type, false);
 	}
