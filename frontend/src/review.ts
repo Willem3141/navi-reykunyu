@@ -88,6 +88,8 @@ class ReviewPage {
 				'value': 0,
 				'total': this.items.length,
 				'label': 'ratio',
+				'precision': 3,
+				'autoSuccess': false,
 				'text': {
 					'ratio': '{value}/{total}'
 				},
@@ -120,6 +122,7 @@ class ReviewPage {
 		this.currentItemIndex++;
 		this.updateProgress();
 		if (this.currentItemIndex >= this.items.length) {
+			$('#progress-bar').progress('set success');
 			this.showDoneModal();
 		} else {
 			this.fetchAndSetUp();
