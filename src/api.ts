@@ -42,7 +42,7 @@ router.get('/fwew',
 	parseStringParameter('tìpawm', 'get'),
 	parseDialectParameter('dialect', 'get'),
 	async (req, res) => {
-		let result = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
+		let result = reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
 		if (req.user) {
 			await userdata.augmentFromNaviResultWithUserData(req.user, result);
 		}
