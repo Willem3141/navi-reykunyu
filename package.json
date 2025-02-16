@@ -5,8 +5,8 @@
   "scripts": {
     "build": "npx gulp",
     "build-no-typecheck": "npx gulp buildWithoutTypecheck",
-    "start": "node dist/server.js",
-    "test": "npx tsx --test test/**.ts"
+    "start": "node --enable-source-maps dist/server.js",
+    "test": "npx tsx --enable-source-maps --test test/**.ts"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
