@@ -332,6 +332,9 @@ function getCandidates(word: string, dialect: Dialect): Omit<NounConjugationStep
 }
 
 function candidatePossible(candidate: Omit<NounConjugationStep, 'result'>): boolean {
+	if (candidate['root'] === '') {
+		return false;
+	}
 	const affixes = candidate["affixes"];
 	if (affixes[0] !== "" && affixes[1] === "(ay)") {
 		return false;
