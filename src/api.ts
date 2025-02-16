@@ -23,17 +23,21 @@ router.get('/fwew-search',
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	async (req, res) => {
-		let fromNaviResult = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
-		let toNaviResult = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
-		if (req.user) {
-			await userdata.augmentFromNaviResultWithUserData(req.user, fromNaviResult);
-			await userdata.augmentToNaviResultWithUserData(req.user, toNaviResult);
+	async (req, res, next) => {
+		try {
+			let fromNaviResult = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
+			let toNaviResult = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+			if (req.user) {
+				await userdata.augmentFromNaviResultWithUserData(req.user, fromNaviResult);
+				await userdata.augmentToNaviResultWithUserData(req.user, toNaviResult);
+			}
+			res.json({
+				'fromNa\'vi': fromNaviResult,
+				'toNa\'vi': toNaviResult
+			});
+		} catch (e) {
+			next(e);
 		}
-		res.json({
-			'fromNa\'vi': fromNaviResult,
-			'toNa\'vi': toNaviResult
-		});
 	}
 );
 
@@ -41,12 +45,16 @@ router.get('/fwew',
 	cors(),
 	parseStringParameter('tìpawm', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	async (req, res) => {
-		let result = reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
-		if (req.user) {
-			await userdata.augmentFromNaviResultWithUserData(req.user, result);
+	async (req, res, next) => {
+		try {
+			let result = reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
+			if (req.user) {
+				await userdata.augmentFromNaviResultWithUserData(req.user, result);
+			}
+			res.json(result);
+		} catch (e) {
+			next(e);
 		}
-		res.json(result);
 	}
 );
 
@@ -79,12 +87,16 @@ router.get('/search',
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	async (req, res) => {
-		let result = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
-		if (req.user) {
-			await userdata.augmentToNaviResultWithUserData(req.user, result);
+	async (req, res, next) => {
+		try {
+			let result = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+			if (req.user) {
+				await userdata.augmentToNaviResultWithUserData(req.user, result);
+			}
+			res.json(result);
+		} catch (e) {
+			next(e);
 		}
-		res.json(result);
 	}
 );
 
