@@ -11,7 +11,21 @@ function testLenition(input: string, expectedLenitedConsonant: string, expectedR
 
 describe('phonology functions', () => {
 
-	describe('lenition', () => {
+	describe('lower()', () => {
+		test('returns the lowercase version of the input', (t) => {
+			assert.strictEqual(phonology.lower('HI!'), 'hi!');
+		});
+
+		test('returns an empty string if the input is an empty string', (t) => {
+			assert.strictEqual(phonology.lower(''), '');
+		});
+
+		test('returns undefined if the input is undefined', (t) => {
+			assert.strictEqual(phonology.lower(undefined), undefined);
+		});
+	});
+
+	describe('lenite()', () => {
 		test('is applied to words starting with an ejective (px/tx/kx)', (t) => {
 			testLenition('pxir', 'p', 'ir');
 			testLenition('txele', 't', 'ele');

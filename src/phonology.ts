@@ -6,6 +6,21 @@
 const vowels = ["a", "ä", "e", "i", "ì", "o", "u", "ù"];
 const diphthongs = ["aw", "ay", "ew", "ey"];
 
+/**
+ * Lowercases the input and returns the result.
+ * 
+ * If the input is undefined, this returns undefined (as opposed to doing
+ * `input.toLowerCase()`, which crashes). This is useful for handling corner
+ * cases, e.g. `word[0].toLowerCase()` could crash if `word` is empty, while
+ * `lower(word[0])` always works.
+ */
+export function lower<T extends string | undefined>(word: T): T {
+	if (word === undefined) {
+		return undefined as T;
+	}
+	return word.toLowerCase() as T;
+}
+
 export function isVowel(char: string): boolean {
 	return vowels.includes(char);
 }
@@ -64,21 +79,21 @@ const lenitions: Record<string, string> = {
  * simply the entire word.
  */
 export function lenite(word: string): [string, string] {
-	let lenitedConsonant = "";
+	let lenitedConsonant = '';
 	let rest = word;
 
-	if (word.substring(0, 3).toLowerCase() === "'ll" || word.substring(0, 3).toLowerCase() === "'rr") {
+	if (lower(word.substring(0, 3)) === "'ll" || lower(word.substring(0, 3)) === "'rr") {
 		// 'rr and 'll are not lenited, since rr and ll cannot start a syllable
 
-	} else if (word.substring(0, 2).toLowerCase() in lenitions) {
+	} else if (lower(word.substring(0, 2)) in lenitions) {
 		[lenitedConsonant, rest] = [lenitions[word.substring(0, 2).toLowerCase()], word.slice(2)];
 
-	} else if (word[0].toLowerCase() in lenitions) {
-		[lenitedConsonant, rest] = [lenitions[word[0].toLowerCase()], word.slice(1)];
+	} else if (lower(word[0]) in lenitions) {
+		[lenitedConsonant, rest] = [lenitions[lower(word[0])], word.slice(1)];
 	}
 
 	// preserve initial uppercase letter
-	if (lenitedConsonant !== '' && word[0] !== word[0].toLowerCase()) {
+	if (lenitedConsonant !== '' && word[0] !== lower(word[0])) {
 		lenitedConsonant = lenitedConsonant.toUpperCase();
 	}
 

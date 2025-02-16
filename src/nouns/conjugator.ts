@@ -44,7 +44,7 @@
  * highlight it in the interface.)
  */
 
-import * as phonology from "../phonology";
+import { lenite, lower, startsWithVowel, endsInVowel, endsInConsonant } from "../phonology";
 
 type CaseFunction = (stem: string, dialect: Dialect, isLoanword?: boolean) => CaseSuffix;
 type CaseSuffix = string | { 'suffix': string, 'dropCount': number };
@@ -95,13 +95,13 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 			determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
 		}
 
-	} else if (determinerPrefix[determinerPrefix.length - 1] === noun[0].toLowerCase() &&
+	} else if (determinerPrefix[determinerPrefix.length - 1] === lower(noun[0]) &&
 			plural === "" && stemPrefix === "") {
 		// special case: tsa- + atan -> tsatan, etc.
 		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
 
 	} else if (noun.length >= 2 && noun[0] === "'" &&
-		determinerPrefix[determinerPrefix.length - 1] === noun[1].toLowerCase() &&
+		determinerPrefix[determinerPrefix.length - 1] === lower(noun[1]) &&
 			plural === "" && stemPrefix === "") {
 		// special case: pe- + 'eveng -> peveng (combination of the case above and ' lenition)
 		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
@@ -120,7 +120,7 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 		}
 	}
 
-	if (dialect !== 'RN' && stemPrefix[stemPrefix.length - 1] === noun[0].toLowerCase()) {
+	if (dialect !== 'RN' && stemPrefix[stemPrefix.length - 1] === lower(noun[0])) {
 		// special case: fne- + ekxan -> fnekxan, etc.
 		stemPrefix = stemPrefix.substring(0, stemPrefix.length - 1);
 	}
@@ -155,7 +155,7 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 
 	let lenitedConsonant, restOfStem;
 	if (needsLenition) {
-		[lenitedConsonant, restOfStem] = phonology.lenite(noun);
+		[lenitedConsonant, restOfStem] = lenite(noun);
 		restOfStem = restOfStem;
 	} else {
 		lenitedConsonant = '';
@@ -174,14 +174,14 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 		let [restOfStemWithoutVoiced, voicedConsonant] = voice(restOfStem);
 		if (voicedConsonant !== '') {
 			if (stemSuffix !== '' || determinerSuffix !== '') {
-				if (phonology.startsWithVowel(stemSuffix + determinerSuffix)) {
+				if (startsWithVowel(stemSuffix + determinerSuffix)) {
 					stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, caseSuffix]);
 				}
 			} else if (caseSuffix !== '') {
 				let vowelCaseSuffixOptions = [];
 				let consonantCaseSuffixOptions = [];
 				for (let suffix of caseSuffix.split('/')) {
-					if (phonology.startsWithVowel(suffix)) {
+					if (startsWithVowel(suffix)) {
 						vowelCaseSuffixOptions.push(suffix);
 					} else {
 						consonantCaseSuffixOptions.push(suffix);
@@ -254,7 +254,7 @@ function agentiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): C
 			'dropCount': 1
 		};
 	}
-	if (phonology.endsInVowel(noun)) {
+	if (endsInVowel(noun)) {
 		return 'l';
 	} else {
 		return 'ìl';
@@ -277,10 +277,10 @@ function patientiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean):
 			};
 		}
 	}
-	if (phonology.endsInVowel(noun)) {
+	if (endsInVowel(noun)) {
 		return 't(i)';
 	} else {
-		if (phonology.endsInConsonant(noun)) {
+		if (endsInConsonant(noun)) {
 			return 'it/ti';
 		} else {
 			if (noun.endsWith("ay")) {
@@ -301,10 +301,10 @@ function dativeSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Cas
 			'dropCount': 1
 		};
 	}
-	if (phonology.endsInVowel(noun)) {
+	if (endsInVowel(noun)) {
 		return 'r(u)';
 	} else {
-		if (phonology.endsInConsonant(noun)) {
+		if (endsInConsonant(noun)) {
 			if (noun.endsWith("'")) {
 				return 'ur/ru';
 			} else {
@@ -331,7 +331,7 @@ function genitiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): C
 			'dropCount': 1
 		};
 	}
-	if (phonology.endsInVowel(noun)) {
+	if (endsInVowel(noun)) {
 		if (noun.slice(-1) === "o" || noun.slice(-1) === "u") {
 			return äOrE;
 		} else {
@@ -360,7 +360,7 @@ function topicalSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Ca
 			'dropCount': 1
 		};
 	}
-	if (phonology.endsInConsonant(noun)) {
+	if (endsInConsonant(noun)) {
 		return 'ìri';
 	} else {
 		return 'ri';
@@ -370,7 +370,7 @@ function topicalSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Ca
 // Numbers
 
 function dualPrefix(noun: string): PluralPrefix {
-	let first = phonology.lenite(noun).join('')[0].toLowerCase();
+	let first = lower(lenite(noun).join('')[0]);
 	if (first === "e" || first === "ew" || first === "ey") {
 		return 'm';
 	} else {
@@ -379,7 +379,7 @@ function dualPrefix(noun: string): PluralPrefix {
 }
 
 function trialPrefix(noun: string, dialect: Dialect): PluralPrefix {
-	let first = phonology.lenite(noun).join('')[0].toLowerCase();
+	let first = lower(lenite(noun).join('')[0]);
 	if (first === "e" || first === "ew" || first === "ey") {
 		return dialect === 'RN' ? 'b' : 'px';
 	} else {
@@ -388,7 +388,7 @@ function trialPrefix(noun: string, dialect: Dialect): PluralPrefix {
 }
 
 function pluralPrefix(noun: string, dialect: Dialect, determinerPrefix: string): PluralPrefix {
-	let lenited = phonology.lenite(noun).join('');
+	let lenited = lenite(noun).join('');
 	if (lenited !== noun
 		&& noun !== "'u"  // 'u doesn't have short plural
 		&& determinerPrefix === "") {  // no short plural with fì- etc.

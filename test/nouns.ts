@@ -522,4 +522,21 @@ describe('noun conjugations', () => {
 			assert.strictEqual(conjugateSimple('Kelutral', 'ay', 'l', 'FN'), '(ay)-{H}elutral-ìl');
 		});
 	});
+
+	describe('tricky parsing cases: the parser', (t) => {
+		test('should never return empty roots', (t) => {
+			const result = parse('be', 'FN');
+			for (const possibility of result) {
+				if (possibility.root === '') {
+					assert.fail('parser returned empty root');
+				}
+			}
+		});
+
+		test('shouldn\'t crash on empty or short inputs', (t) => {
+			parse('', 'FN');
+			parse('a', 'FN');
+			parse('be', 'FN');
+		});
+	});
 });
