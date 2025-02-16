@@ -206,20 +206,26 @@ router.get('/rhymes',
 router.post('/user/mark-favorite',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
-	(req, res) => {
-		userdata.markFavorite(req.user!, req.args!['vocab'], () => {
+	async (req, res, next) => {
+		try {
+			await userdata.markFavorite(req.user!, req.args!['vocab']);
 			res.status(204).send();
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
 router.post('/user/unmark-favorite',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
-	(req, res) => {
-		userdata.unmarkFavorite(req.user!, req.args!['vocab'], () => {
+	async (req, res, next) => {
+		try {
+			await userdata.unmarkFavorite(req.user!, req.args!['vocab']);
 			res.status(204).send();
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
