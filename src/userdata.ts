@@ -6,7 +6,7 @@
 
 import db from './db';
 
-export async function augmentFromNaviResultWithUserData(user: Express.User, result: FromNaviResult) {
+export async function augmentFromNaviResultWithUserData(user: Express.User, result: FromNaviResult): Promise<void> {
 	const favorites = await getUserFavorites(user);
 	for (let piece of result) {
 		for (let word of piece['sì\'eyng']) {
@@ -17,7 +17,7 @@ export async function augmentFromNaviResultWithUserData(user: Express.User, resu
 	}
 }
 
-export async function augmentToNaviResultWithUserData(user: Express.User, result: ToNaviResult) {
+export async function augmentToNaviResultWithUserData(user: Express.User, result: ToNaviResult): Promise<void> {
 	const favorites = await getUserFavorites(user);
 	for (let word of result) {
 		if (favorites.includes(word.id)) {
@@ -42,32 +42,34 @@ async function getUserFavorites(user: Express.User): Promise<number[]> {
 }
 
 /// Marks a word as the user's favorite.
-export function markFavorite(user: Express.User, vocab: number, cb: Callback<void>): void {
-	db.run(`insert into favorite_words
-		values (?, ?)
-		on conflict do nothing`,
-		user.username, vocab, (err: any) => {
-			if (err) {
-				console.log(err);
-				throw err;
-			} else {
-				cb();
+export async function markFavorite(user: Express.User, vocab: number): Promise<void> {
+	return new Promise((fulfill, reject) => {
+		db.run(`insert into favorite_words
+			values (?, ?)
+			on conflict do nothing`,
+			user.username, vocab, (err: any) => {
+				if (err) {
+					reject(err);
+				} else {
+					fulfill();
+				}
 			}
-		}
-	);
+		);
+	});
 }
 
 /// Unmarks a word as the user's favorite.
-export function unmarkFavorite(user: Express.User, vocab: number, cb: Callback<void>): void {
-	db.run(`delete from favorite_words
-		where user=? and vocab=?`,
-		user.username, vocab, (err: any) => {
-			if (err) {
-				console.log(err);
-				throw err;
-			} else {
-				cb();
+export async function unmarkFavorite(user: Express.User, vocab: number): Promise<void> {
+	return new Promise((fulfill, reject) => {
+		db.run(`delete from favorite_words
+			where user=? and vocab=?`,
+			user.username, vocab, (err: any) => {
+				if (err) {
+					reject(err);
+				} else {
+					fulfill();
+				}
 			}
-		}
-	);
+		);
+	});
 }

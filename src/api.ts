@@ -23,17 +23,21 @@ router.get('/fwew-search',
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	async (req, res) => {
-		let fromNaviResult = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
-		let toNaviResult = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
-		if (req.user) {
-			await userdata.augmentFromNaviResultWithUserData(req.user, fromNaviResult);
-			await userdata.augmentToNaviResultWithUserData(req.user, toNaviResult);
+	async (req, res, next) => {
+		try {
+			let fromNaviResult = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
+			let toNaviResult = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+			if (req.user) {
+				await userdata.augmentFromNaviResultWithUserData(req.user, fromNaviResult);
+				await userdata.augmentToNaviResultWithUserData(req.user, toNaviResult);
+			}
+			res.json({
+				'fromNa\'vi': fromNaviResult,
+				'toNa\'vi': toNaviResult
+			});
+		} catch (e) {
+			next(e);
 		}
-		res.json({
-			'fromNa\'vi': fromNaviResult,
-			'toNa\'vi': toNaviResult
-		});
 	}
 );
 
@@ -41,12 +45,16 @@ router.get('/fwew',
 	cors(),
 	parseStringParameter('tìpawm', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	async (req, res) => {
-		let result = reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
-		if (req.user) {
-			await userdata.augmentFromNaviResultWithUserData(req.user, result);
+	async (req, res, next) => {
+		try {
+			let result = reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
+			if (req.user) {
+				await userdata.augmentFromNaviResultWithUserData(req.user, result);
+			}
+			res.json(result);
+		} catch (e) {
+			next(e);
 		}
-		res.json(result);
 	}
 );
 
@@ -79,12 +87,16 @@ router.get('/search',
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
-	async (req, res) => {
-		let result = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
-		if (req.user) {
-			await userdata.augmentToNaviResultWithUserData(req.user, result);
+	async (req, res, next) => {
+		try {
+			let result = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+			if (req.user) {
+				await userdata.augmentToNaviResultWithUserData(req.user, result);
+			}
+			res.json(result);
+		} catch (e) {
+			next(e);
 		}
-		res.json(result);
 	}
 );
 
@@ -194,39 +206,51 @@ router.get('/rhymes',
 router.post('/user/mark-favorite',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
-	(req, res) => {
-		userdata.markFavorite(req.user!, req.args!['vocab'], () => {
+	async (req, res, next) => {
+		try {
+			await userdata.markFavorite(req.user!, req.args!['vocab']);
 			res.status(204).send();
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
 router.post('/user/unmark-favorite',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
-	(req, res) => {
-		userdata.unmarkFavorite(req.user!, req.args!['vocab'], () => {
+	async (req, res, next) => {
+		try {
+			await userdata.unmarkFavorite(req.user!, req.args!['vocab']);
 			res.status(204).send();
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
 router.get('/srs/courses',
 	checkLoggedIn(),
-	(req, res) => {
-		zeykerokyu.getCourses((courses: Course[]) => {
+	async (req, res, next) => {
+		try {
+			const courses = await zeykerokyu.getCourses();
 			res.json(courses);
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
 router.get('/srs/lessons',
 	checkLoggedIn(),
 	parseIntegerParameter('courseId', 'get'),
-	(req, res) => {
-		zeykerokyu.getLessons(req.user!, req.args!['courseId'] - 1, (lessons: Lesson[]) => {
+	async (req, res, next) => {
+		try {
+			const lessons = await zeykerokyu.getLessons(req.user!, req.args!['courseId'] - 1);
 			res.json(lessons);
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
@@ -234,10 +258,13 @@ router.get('/srs/lesson',
 	checkLoggedIn(),
 	parseIntegerParameter('courseId', 'get'),
 	parseIntegerParameter('lessonId', 'get'),
-	(req, res) => {
-		zeykerokyu.getLessonData(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, (lessons: Lesson) => {
+	async (req, res, next) => {
+		try {
+			const lessons = await zeykerokyu.getLessonData(req.args!['courseId'] - 1, req.args!['lessonId'] - 1);
 			res.json(lessons);
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
@@ -245,10 +272,13 @@ router.get('/srs/items',
 	checkLoggedIn(),
 	parseIntegerParameter('courseId', 'get'),
 	parseIntegerParameter('lessonId', 'get'),
-	(req, res) => {
-		zeykerokyu.getItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!, (items: LearnableItem[]) => {
+	async (req, res, next) => {
+		try {
+			const items = await zeykerokyu.getItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!);
 			res.json(items);
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
@@ -256,51 +286,52 @@ router.get('/srs/learnable',
 	checkLoggedIn(),
 	parseIntegerParameter('courseId', 'get'),
 	parseIntegerParameter('lessonId', 'get'),
-	(req, res) => {
-		zeykerokyu.getLearnableItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!, (items: LearnableItem[]) => {
+	async (req, res, next) => {
+		try {
+			const items = zeykerokyu.getLearnableItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!);
 			res.json(items);
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
 router.get('/srs/reviewable',
 	checkLoggedIn(),
-	(req, res) => {
-		const courseId = parseInt(req.query['courseId'] as string, 10) - 1;
-		const lessonId = parseInt(req.query['lessonId'] as string, 10) - 1;
-		if (isNaN(courseId)) {
-			zeykerokyu.getReviewableItems(req.user!, (items: LearnableItem[]) => {
-				res.json(items);
-			});
-		} else if (isNaN(lessonId)) {
-			zeykerokyu.getReviewableItemsForCourse(courseId, req.user!, (items: LearnableItem[]) => {
-				res.json(items);
-			});
-		} else {
-			zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user!, (items: LearnableItem[]) => {
-				res.json(items);
-			});
+	async (req, res, next) => {
+		try {
+			const courseId = parseInt(req.query['courseId'] as string, 10) - 1;
+			const lessonId = parseInt(req.query['lessonId'] as string, 10) - 1;
+			let items: LearnableItem[];
+			if (isNaN(courseId)) {
+				items = await zeykerokyu.getReviewableItems(req.user!);
+			} else if (isNaN(lessonId)) {
+				items = await zeykerokyu.getReviewableItemsForCourse(courseId, req.user!);
+			} else {
+				items = await zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user!);
+			}
+			res.json(items);
+		} catch (e) {
+			next(e);
 		}
 	}
 );
 
 router.get('/srs/reviewable-count',
 	checkLoggedIn(),
-	(req, res) => {
-		const courseId = parseInt(req.query['courseId'] as string, 10) - 1;
-		const lessonId = parseInt(req.query['lessonId'] as string, 10) - 1;
-		if (isNaN(courseId)) {
-			zeykerokyu.getReviewableCount(req.user!, (count: number) => {
-				res.json(count);
-			});
-		} else if (isNaN(lessonId)) {
-			zeykerokyu.getReviewableCountForCourse(courseId, req.user!, (count: number) => {
-				res.json(count);
-			});
-		} else {
-			zeykerokyu.getReviewableCountForLesson(courseId, lessonId, req.user!, (count: number) => {
-				res.json(count);
-			});
+	async (req, res, next) => {
+		try {
+			const courseId = parseInt(req.query['courseId'] as string, 10) - 1;
+			const lessonId = parseInt(req.query['lessonId'] as string, 10) - 1;
+			if (isNaN(courseId)) {
+				res.json(await zeykerokyu.getReviewableCount(req.user!));
+			} else if (isNaN(lessonId)) {
+				res.json(await zeykerokyu.getReviewableCountForCourse(courseId, req.user!));
+			} else {
+				res.json(await zeykerokyu.getReviewableCountForLesson(courseId, lessonId, req.user!));
+			}
+		} catch (e) {
+			next(e);
 		}
 	}
 );
@@ -308,30 +339,39 @@ router.get('/srs/reviewable-count',
 router.post('/srs/mark-correct',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
-	(req, res) => {
-		zeykerokyu.processCorrectAnswer(req.user!, req.args!['vocab'], (items) => {
+	async (req, res, next) => {
+		try {
+			await zeykerokyu.processCorrectAnswer(req.user!, req.args!['vocab']);
 			res.status(204).send();
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
 router.post('/srs/mark-incorrect',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
-	(req, res) => {
-		zeykerokyu.processIncorrectAnswer(req.user!, req.args!['vocab'], () => {
+	async (req, res, next) => {
+		try {
+			await zeykerokyu.processIncorrectAnswer(req.user!, req.args!['vocab']);
 			res.status(204).send();
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
 router.post('/srs/mark-known',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
-	(req, res) => {
-		zeykerokyu.processKnownAnswer(req.user!, req.args!['vocab'], () => {
+	async (req, res, next) => {
+		try {
+			await zeykerokyu.processKnownAnswer(req.user!, req.args!['vocab']);
 			res.status(204).send();
-		});
+		} catch (e) {
+			next(e);
+		}
 	}
 );
 
