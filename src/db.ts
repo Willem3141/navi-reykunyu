@@ -96,6 +96,13 @@ db.serialize(() => {
 		salt blob,
 		is_admin integer
 	)`);
+
+	// table containing favorite words for each user
+	db.run(`create table if not exists favorite_words (
+		user text not null,
+		vocab integer,
+		primary key (user, vocab)
+	)`);
 });
 
 function preprocessLessons(course: any): void {

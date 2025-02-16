@@ -164,12 +164,8 @@
 	font-size: 110%;
 }
 
-.pronunciation-audio-buttons {
-	display: inline-block;
+.ui.buttons.pronunciation-audio-buttons {
 	margin-left: 10px;
-}
-
-.pronunciation-audio-button {
 	position: relative;
 	top: -1px;
 }
@@ -195,10 +191,14 @@
 	opacity: 0.6;
 }
 
-.result .result-word .edit-button {
+.result .result-word .word-toolbar {
 	margin-left: 26px;
 	position: relative;
-	top: -5px;
+	top: -6px;
+
+	.ui.button.favorite-button.active {
+		color: var(--warning-color) !important;
+	}
 }
 
 .result .result-item.conjugated-box {
