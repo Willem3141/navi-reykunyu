@@ -96,6 +96,7 @@ const alternatives: Record<string, Alternative[]> = {
 	'taweyk:conj': ['taweyka'],
 	'taweyka:conj': ['taweyk'],
 	'vaykrr:conj': [['vay', 'wrong-type']],
+	'kehe:part': ['kea'],
 };
 
 class ReviewPage {
@@ -272,7 +273,8 @@ class QuestionSlide extends Slide {
 	}
 
 	isAlternative(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form' | null {
-		const key = this.word['word_raw']['FN'] + ':' + this.word['type'];
+		let key = this.word['word_raw']['FN'] + ':' + this.word['type'];
+		key = key.toLowerCase();
 		if (alternatives[key]) {
 			for (let alternative of alternatives[key]) {
 				if (typeof alternative === 'string') {
