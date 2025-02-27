@@ -288,7 +288,7 @@ router.get('/srs/learnable',
 	parseIntegerParameter('lessonId', 'get'),
 	async (req, res, next) => {
 		try {
-			const items = zeykerokyu.getLearnableItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!);
+			const items = await zeykerokyu.getLearnableItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!);
 			res.json(items);
 		} catch (e) {
 			next(e);
