@@ -3,7 +3,7 @@
  * checking for vowels and consonants, et cetera.
  */
 
-const vowels = ["a", "ä", "e", "i", "ì", "o", "u", "ù"];
+const vowels = ["a", "ä", "e", "é", "i", "ì", "o", "u", "ù"];
 const diphthongs = ["aw", "ay", "ew", "ey"];
 
 /**

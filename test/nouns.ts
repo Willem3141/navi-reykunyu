@@ -321,6 +321,8 @@ describe('noun conjugations', () => {
 			});
 
 			test('is -l for nouns ending in a vowel', (t) => {
+				testConjugation('tute', ['', '', '', '', '', 'l', ''], '----tute----l-');
+				testConjugation('tuté', ['', '', '', '', '', 'l', ''], '----tuté----l-');
 				testConjugation('kelku', ['', '', '', '', '', 'l', ''], '----kelku----l-');
 			});
 
@@ -348,6 +350,8 @@ describe('noun conjugations', () => {
 			});
 
 			test('is -t(i) for nouns ending in a vowel', (t) => {
+				testConjugation('tute', ['', '', '', '', '', 't', ''], '----tute----t(i)-');
+				testConjugation('tuté', ['', '', '', '', '', 't', ''], '----tuté----t(i)-');
 				testConjugation('kelku', ['', '', '', '', '', 't', ''], '----kelku----t(i)-');
 			});
 
@@ -388,6 +392,8 @@ describe('noun conjugations', () => {
 			});
 
 			test('is -r(u) for nouns ending in a vowel', (t) => {
+				testConjugation('tute', ['', '', '', '', '', 'r', ''], '----tute----r(u)-');
+				testConjugation('tuté', ['', '', '', '', '', 'r', ''], '----tuté----r(u)-');
 				testConjugation('kelku', ['', '', '', '', '', 'r', ''], '----kelku----r(u)-');
 			});
 
@@ -428,7 +434,8 @@ describe('noun conjugations', () => {
 			test('is -yä for nouns ending in vowels other than -o/-u', (t) => {
 				testConjugation('\'ana', ['', '', '', '', '', 'ä', ''], '----\'ana----yä-');
 				testConjugation('ftxozä', ['', '', '', '', '', 'ä', ''], '----ftxozä----yä-');
-				testConjugation('fkxile', ['', '', '', '', '', 'ä', ''], '----fkxile----yä-');
+				testConjugation('tute', ['', '', '', '', '', 'ä', ''], '----tute----yä-');
+				testConjugation('tuté', ['', '', '', '', '', 'ä', ''], '----tuté----yä-');
 				testConjugation('awaiei', ['', '', '', '', '', 'ä', ''], '----awaiei----yä-');
 				testConjugation('vospxì', ['', '', '', '', '', 'ä', ''], '----vospxì----yä-');
 			});
@@ -465,6 +472,8 @@ describe('noun conjugations', () => {
 			});
 
 			test('is -ri for nouns ending in a vowel', (t) => {
+				testConjugation('tute', ['', '', '', '', '', 'ri', ''], '----tute----ri-');
+				testConjugation('tuté', ['', '', '', '', '', 'ri', ''], '----tuté----ri-');
 				testConjugation('kelku', ['', '', '', '', '', 'ri', ''], '----kelku----ri-');
 			});
 
