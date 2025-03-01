@@ -31,11 +31,11 @@ export async function getCourses(): Promise<Course[]> {
 	});
 }
 
-export async function getCourseData(courseId: number): Promise<Course> {
+export async function getCourse(courseId: number): Promise<Course> {
 	return new Promise((fulfill, reject) => {
 		db.get(`select id, name, description
 		from course
-		where id == ?`, courseId, (err, course: Course) => {
+		where id == ?1`, courseId, (err, course: Course) => {
 			if (err) {
 				reject(err);
 			}
@@ -44,22 +44,36 @@ export async function getCourseData(courseId: number): Promise<Course> {
 	});
 }
 
+/// SQL fragment that defines vocab_in_lesson_combined as vocab_in_lesson,
+/// which is assumed not to have any entries for the Your Favorites course,
+/// with these entries for the current user (assumed to be in ?1).
+const vocabInLessonCombinedDefinition = `
+with vocab_in_lesson_combined as (
+	select * from vocab_in_lesson
+	union
+	select 2, 0, row_number() over (), vocab, ""
+		from favorite_words
+		where user == ?1
+)\n`;
+
 /// Returns a list of available lessons in a course, with statistics for the
 /// given user.
 export async function getLessons(user: Express.User, courseId: number): Promise<Lesson[]> {
 	if (user) {
 		return new Promise((fulfill, reject) => {
-			db.all(`select l.id, l.name, l.introduction, l.conclusion,
-				(select count() from vocab_in_lesson v
-					where l.course_id == v.course_id and l.id == v.lesson_id) as total_count,
-				(select count() from vocab_in_lesson v, vocab_status s
-					where l.course_id == v.course_id and l.id == v.lesson_id
-					and v.vocab == s.vocab and s.user == ?1) as known_count,
-				(select count() from vocab_in_lesson v, vocab_status s
-					where l.course_id == v.course_id and l.id == v.lesson_id
-					and v.vocab == s.vocab and s.user == ?1 and s.next_review <= current_timestamp) as reviewable_count
-			from lesson l
-			where l.course_id = ?2`, user.username, courseId, (err: Error | null, lessons: Lesson[]) => {
+			db.all(vocabInLessonCombinedDefinition +
+				`select l.id, l.name, l.introduction, l.conclusion,
+					(select count() from vocab_in_lesson_combined v
+						where l.course_id == v.course_id and l.id == v.lesson_id) as total_count,
+					(select count() from vocab_in_lesson_combined v, vocab_status s
+						where l.course_id == v.course_id and l.id == v.lesson_id
+						and v.vocab == s.vocab and s.user == ?1) as known_count,
+					(select count() from vocab_in_lesson_combined v, vocab_status s
+						where l.course_id == v.course_id and l.id == v.lesson_id
+						and v.vocab == s.vocab and s.user == ?1 and s.next_review <= current_timestamp) as reviewable_count
+					from lesson l
+					where l.course_id = ?2
+				`, user.username, courseId, (err: Error | null, lessons: Lesson[]) => {
 				if (err) {
 					reject(err);
 				}
@@ -72,7 +86,7 @@ export async function getLessons(user: Express.User, courseId: number): Promise<
 			db.all(`select l.id, l.name, l.description,
 				(select count() from vocab_in_lesson v where l.id == v.lesson_id) as total_count,
 			from lesson l
-			where l.course_id = ?`, courseId, (err, lessons: Lesson[]) => {
+			where l.course_id = ?1`, courseId, (err, lessons: Lesson[]) => {
 				if (err) {
 					reject(err);
 				}
@@ -82,11 +96,11 @@ export async function getLessons(user: Express.User, courseId: number): Promise<
 	}
 }
 
-export async function getLessonData(courseId: number, lessonId: number): Promise<Lesson> {
+export async function getLesson(courseId: number, lessonId: number): Promise<Lesson> {
 	return new Promise((fulfill, reject) => {
 		db.get(`select course_id, id, name, introduction, conclusion
 		from lesson
-		where course_id == ? and id == ?`, courseId, lessonId, (err: Error | null, lesson: Lesson) => {
+		where course_id == ?1 and id == ?2`, courseId, lessonId, (err: Error | null, lesson: Lesson) => {
 			if (err) {
 				reject(err);
 			}
@@ -100,9 +114,10 @@ type UnprocessedLearnableItem = { 'vocab': number, 'comment'?: string };
 
 export async function getItemsForLesson(courseId: number, lessonId: number, user: Express.User): Promise<LearnableItem[]> {
 	return new Promise((fulfill, reject) => {
-		db.all(`select v.vocab, v.comment from vocab_in_lesson v
-			where v.course_id == ? and v.lesson_id == ?
-			`, courseId, lessonId, (err: Error | null, items: UnprocessedLearnableItem[]) => {
+		db.all(vocabInLessonCombinedDefinition +
+			`select v.vocab, v.comment from vocab_in_lesson_combined v
+				where v.course_id == ?2 and v.lesson_id == ?3
+			`, user.username, courseId, lessonId, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 				if (err) {
 					reject(err);
 				}
@@ -128,14 +143,15 @@ function vocabIDsToWordData(items: UnprocessedLearnableItem[]): LearnableItem[] 
 
 export async function getLearnableItemsForLesson(courseId: number, lessonId: number, user: Express.User): Promise<LearnableItem[]> {
 	return new Promise((fulfill, reject) => {
-		db.all(`select v.vocab, v.comment from vocab_in_lesson v
-			where v.course_id == ? and v.lesson_id == ?
-				and v.vocab not in (
-					select vocab
-					from vocab_status
-					where user == ?
-				)
-			`, courseId, lessonId, user.username, (err: Error | null, items: UnprocessedLearnableItem[]) => {
+		db.all(vocabInLessonCombinedDefinition +
+			`select v.vocab, v.comment from vocab_in_lesson_combined v
+				where v.course_id == ?2 and v.lesson_id == ?3
+					and v.vocab not in (
+						select vocab
+						from vocab_status
+						where user == ?1
+					)
+			`, user.username, courseId, lessonId, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 				if (err) {
 					reject(err);
 				}
@@ -147,12 +163,13 @@ export async function getLearnableItemsForLesson(courseId: number, lessonId: num
 
 export async function getReviewableItems(user: Express.User): Promise<LearnableItem[]> {
 	return new Promise((fulfill, reject) => {
-		db.all(`select distinct v.vocab
-			from vocab_status s, vocab_in_lesson v
-			where s.user == ?
-				and s.next_review <= current_timestamp
-				and v.vocab == s.vocab
-			order by random()
+		db.all(vocabInLessonCombinedDefinition +
+			`select distinct v.vocab
+				from vocab_status s, vocab_in_lesson_combined v
+				where s.user == ?1
+					and s.next_review <= current_timestamp
+					and v.vocab == s.vocab
+				order by random()
 			`, user.username, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 				if (err) {
 					reject(err);
@@ -165,11 +182,12 @@ export async function getReviewableItems(user: Express.User): Promise<LearnableI
 
 export async function getReviewableCount(user: Express.User): Promise<number> {
 	return new Promise((fulfill, reject) => {
-		db.get(`select count(distinct v.vocab)
-			from vocab_status s, vocab_in_lesson v
-			where s.user == ?
-				and s.next_review <= current_timestamp
-				and v.vocab == s.vocab
+		db.get(vocabInLessonCombinedDefinition +
+			`select count(distinct v.vocab)
+				from vocab_status s, vocab_in_lesson_combined v
+				where s.user == ?1
+					and s.next_review <= current_timestamp
+					and v.vocab == s.vocab
 			`, user.username, (err, result: Record<'count(distinct v.vocab)', number>) => {
 				if (err) {
 					reject(err);
@@ -182,13 +200,14 @@ export async function getReviewableCount(user: Express.User): Promise<number> {
 
 export async function getReviewableItemsForCourse(courseId: number, user: Express.User): Promise<LearnableItem[]> {
 	return new Promise((fulfill, reject) => {
-		db.all(`select distinct v.vocab
-			from vocab_status s, vocab_in_lesson v
-			where s.user == ?
-				and s.next_review <= current_timestamp
-				and v.vocab == s.vocab
-				and v.course_id == ?
-			order by random()
+		db.all(vocabInLessonCombinedDefinition +
+			`select distinct v.vocab
+				from vocab_status s, vocab_in_lesson_combined v
+				where s.user == ?1
+					and s.next_review <= current_timestamp
+					and v.vocab == s.vocab
+					and v.course_id == ?2
+				order by random()
 			`, user.username, courseId, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 				if (err) {
 					reject(err);
@@ -201,12 +220,13 @@ export async function getReviewableItemsForCourse(courseId: number, user: Expres
 
 export async function getReviewableCountForCourse(courseId: number, user: Express.User): Promise<number> {
 	return new Promise((fulfill, reject) => {
-		db.get(`select count(distinct v.vocab)
-			from vocab_status s, vocab_in_lesson v
-			where s.user == ?
-				and s.next_review <= current_timestamp
-				and v.vocab == s.vocab
-				and v.course_id == ?
+		db.get(vocabInLessonCombinedDefinition +
+			`select count(distinct v.vocab)
+				from vocab_status s, vocab_in_lesson_combined v
+				where s.user == ?1
+					and s.next_review <= current_timestamp
+					and v.vocab == s.vocab
+					and v.course_id == ?2
 			`, user.username, courseId, (err: Error | null, result: Record<'count(distinct v.vocab)', number>) => {
 				if (err) {
 					reject(err);
@@ -219,13 +239,14 @@ export async function getReviewableCountForCourse(courseId: number, user: Expres
 
 export async function getReviewableItemsForLesson(courseId: number, lessonId: number, user: Express.User): Promise<LearnableItem[]> {
 	return new Promise((fulfill, reject) => {
-		db.all(`select distinct v.vocab
-			from vocab_status s, vocab_in_lesson v
-			where s.user == ?
-				and s.next_review <= current_timestamp
-				and v.vocab == s.vocab
-				and v.course_id == ? and v.lesson_id == ?
-			order by random()
+		db.all(vocabInLessonCombinedDefinition +
+			`select distinct v.vocab
+				from vocab_status s, vocab_in_lesson_combined v
+				where s.user == ?1
+					and s.next_review <= current_timestamp
+					and v.vocab == s.vocab
+					and v.course_id == ?2 and v.lesson_id == ?3
+				order by random()
 			`, user.username, courseId, lessonId, (err: Error | null, items: UnprocessedLearnableItem[]) => {
 				if (err) {
 					reject(err);
@@ -238,12 +259,13 @@ export async function getReviewableItemsForLesson(courseId: number, lessonId: nu
 
 export async function getReviewableCountForLesson(courseId: number, lessonId: number, user: Express.User): Promise<number> {
 	return new Promise((fulfill, reject) => {
-		db.get(`select count(distinct v.vocab)
-			from vocab_status s, vocab_in_lesson v
-			where s.user == ?
-				and s.next_review <= current_timestamp
-				and v.vocab == s.vocab
-				and v.course_id == ? and v.lesson_id == ?
+		db.get(vocabInLessonCombinedDefinition +
+			`select count(distinct v.vocab)
+				from vocab_status s, vocab_in_lesson_combined v
+				where s.user == ?1
+					and s.next_review <= current_timestamp
+					and v.vocab == s.vocab
+					and v.course_id == ?2 and v.lesson_id == ?3
 			`, user.username, courseId, lessonId, (err: Error | null, result: Record<'count(distinct v.vocab)', number>) => {
 				if (err) {
 					reject(err);
@@ -279,16 +301,16 @@ export async function processCorrectAnswer(user: Express.User, vocab: number): P
 	return new Promise((fulfill, reject) => {
 		// get current SRS stage
 		db.get(`select srs_stage from vocab_status
-			where user == ?
-				and vocab == ?`,
+			where user == ?1
+				and vocab == ?2`,
 			user.username, vocab, (err: any, result: Record<'srs_stage', number>) => {
 				if (err) {
 					reject(err);
 				} else if (!result) {
 					// if not in database (= stage 0), insert it
 					db.run(`insert into vocab_status
-						values (?, ?, ?, current_timestamp)`,
-						user.username, vocab, 1, (err: any) => {
+						values (?1, ?2, 1, current_timestamp)`,
+						user.username, vocab, (err: any) => {
 							if (err) {
 								reject(err);
 							} else {
@@ -302,9 +324,9 @@ export async function processCorrectAnswer(user: Express.User, vocab: number): P
 					const stage = result['srs_stage'];
 					const newStage = Math.min(stage + 1, intervalDuration.length - 1);
 					db.run(`update vocab_status
-						set (srs_stage, next_review) = (?, datetime(current_timestamp, "+" || ?))
-						where user == ?
-							and vocab == ?`,
+						set (srs_stage, next_review) = (?1, datetime(current_timestamp, "+" || ?2))
+						where user == ?3
+							and vocab == ?4`,
 						newStage, intervalDuration[newStage], user.username, vocab, (err: any) => {
 							if (err) {
 								reject(err);
@@ -326,8 +348,8 @@ export async function processIncorrectAnswer(user: Express.User, vocab: number):
 	return new Promise((fulfill, reject) => {
 		// get current SRS stage
 		db.get(`select srs_stage from vocab_status
-			where user == ?
-				and vocab == ?`,
+			where user == ?1
+				and vocab == ?2`,
 			user.username, vocab, (err: any, result: Record<'srs_stage', number>) => {
 				if (err) {
 					reject(err);
@@ -339,9 +361,9 @@ export async function processIncorrectAnswer(user: Express.User, vocab: number):
 					let stage = result['srs_stage'];
 					const newStage = 1;
 					db.run(`update vocab_status
-						set (srs_stage, next_review) = (?, datetime(current_timestamp, "+" || ?))
-						where user == ?
-							and vocab == ?`,
+						set (srs_stage, next_review) = (?1, datetime(current_timestamp, "+" || ?2))
+						where user == ?3
+							and vocab == ?4`,
 						newStage, intervalDuration[newStage], user.username, vocab, (err: any) => {
 							if (err) {
 								reject(err);
@@ -362,7 +384,7 @@ export async function processIncorrectAnswer(user: Express.User, vocab: number):
 export async function processKnownAnswer(user: Express.User, vocab: number): Promise<void> {
 	return new Promise((fulfill, reject) => {
 		db.run(`insert into vocab_status
-			values (?, ?, ?, current_timestamp)`,
+			values (?1, ?2, ?3, current_timestamp)`,
 			user.username, vocab, intervalDuration.length - 1, (err: any) => {
 				if (err) {
 					reject(err);

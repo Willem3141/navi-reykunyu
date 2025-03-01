@@ -466,7 +466,7 @@ app.get('/study/course',
 				return;
 			}
 			let user = req.user;
-			const course = await zeykerokyu.getCourseData(courseId - 1);
+			const course = await zeykerokyu.getCourse(courseId - 1);
 			const lessons = await zeykerokyu.getLessons(user, courseId - 1);
 			const count = await zeykerokyu.getReviewableCountForCourse(courseId - 1, user);
 			res.render('study-course', pageVariables(req, { course: course, lessons: lessons, reviewableCount: count }));
@@ -491,8 +491,8 @@ app.get('/study/lesson',
 				res.send('400 Bad Request');
 				return;
 			}
-			const course = await zeykerokyu.getCourseData(courseId - 1);
-			const lesson = await zeykerokyu.getLessonData(courseId - 1, lessonId - 1);
+			const course = await zeykerokyu.getCourse(courseId - 1);
+			const lesson = await zeykerokyu.getLesson(courseId - 1, lessonId - 1);
 			res.render('study-session', pageVariables(req, { course: course, lesson: lesson }));
 		} catch (e) {
 			next(e);

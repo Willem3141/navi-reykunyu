@@ -260,7 +260,7 @@ router.get('/srs/lesson',
 	parseIntegerParameter('lessonId', 'get'),
 	async (req, res, next) => {
 		try {
-			const lessons = await zeykerokyu.getLessonData(req.args!['courseId'] - 1, req.args!['lessonId'] - 1);
+			const lessons = await zeykerokyu.getLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1);
 			res.json(lessons);
 		} catch (e) {
 			next(e);
