@@ -171,6 +171,13 @@ class ReviewPage {
 	}
 
 	showDoneModal(): void {
+		// if the user reviewed no words at all, don't show the modal and
+		// instead just redirect immediately
+		if (this.currentItemIndex === 0) {
+			window.location.href = this.doneRedirectUrl;
+			return;
+		}
+
 		const $modal = $('#lesson-done-modal');
 		$modal.find('#review-count').text(this.currentItemIndex);
 		let fraction = this.correctCount / this.currentItemIndex;
