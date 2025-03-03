@@ -1,0 +1,63 @@
+<div id="settings-modal" class="ui modal">
+	<div class="header"><%- _("settings") %></div>
+	<div class="scrolling content">
+		<div class="ui small header">
+			<%- _("settings-pronunciation") %>
+		</div>
+		<p><%- _("settings-pronunciation-explanation") %></p>
+		<div class="ui checkbox">
+			<input id="ipa-checkbox" type="checkbox" name="ipa">
+			<label for="ipa">
+				<%- _("settings-pronunciation-ipa") %>
+			</label>
+		</div>
+		<div class="ui small header">
+			<%- _("settings-dialect") %>
+		</div>
+		<p><%- _("settings-dialect-explanation") %></p>
+		<div class="ui radio checkbox">
+			<input id="dialect-fn-radiobutton" name="dialect" type="radio">
+			<label for="dialect-fn-radiobutton">
+				<%- _("settings-dialect-fn") %>
+				<br>
+				<p class="explanation">
+					<%- _("settings-dialect-fn-explanation") %>
+				</p>
+			</label>
+		</div>
+		<div class="ui radio checkbox">
+			<input id="dialect-both-radiobutton" name="dialect" type="radio">
+			<label for="dialect-both-radiobutton">
+				<%- _("settings-dialect-both") %>
+				<p class="explanation">
+					<%- _("settings-dialect-both-explanation") %>
+				</p>
+			</label>
+		</div>
+		<div class="ui radio disabled checkbox">
+			<input id="dialect-rn-radiobutton" name="dialect" type="radio" disabled="disabled">
+			<label for="dialect-rn-radiobutton">
+				<%- _("settings-dialect-rn") %>
+				<i><%- _("coming-soon") %></i>
+				<p class="explanation">
+					<%- _("settings-dialect-rn-explanation") %>
+				</p>
+			</label>
+		</div>
+		<div id="dialect-rn-warning" class="warning-block" style="display: none;">
+			<%- _("settings-dialect-rn-warning") %>
+		</div>
+		<div class="ui small header">
+			<%- _("settings-theme") %>
+		</div>
+		<p><%- _("settings-theme-explanation") %></p>
+	</div>
+	<div class="actions">
+		<div class="ui basic deny button">
+			<i class="close icon"></i> <%- _("dialog-cancel") %>
+		</div>
+		<div class="ui primary approve button">
+			<i class="checkmark icon"></i> <%- _("dialog-save") %>
+		</div>
+	</div>
+</div>
