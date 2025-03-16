@@ -61,8 +61,12 @@ const alternatives: Record<string, Alternative[]> = {
 	'tsenge:n': ['tseng'],
 	'fìtseng:adv': ['fìtsenge'],
 	'fìtsenge:adv': ['fìtseng'],
+	'fìtseng:n': ['fìtsenge'],
+	'fìtsenge:n': ['fìtseng'],
 	'tsatseng:adv': ['tsatsenge'],
 	'tsatsenge:adv': ['tsatseng'],
+	'tsatseng:n': ['tsatsenge'],
+	'tsatsenge:n': ['tsatseng'],
 	'tem:v:in': [['toltem', 'wrong-type']],
 	'toltem:v:tr': [['tem', 'wrong-type']],
 	'\'em:v:tr': [['\'emyu', 'wrong-type']],
@@ -97,6 +101,12 @@ const alternatives: Record<string, Alternative[]> = {
 	'taweyka:conj': ['taweyk'],
 	'vaykrr:conj': [['vay', 'wrong-type']],
 	'kehe:part': ['kea'],
+	'palulukan:n': ['palukan'],
+	'palukan:n': ['palulukan'],
+	'tìfkeytok:n': [['fkeyk', 'wrong-type']],
+	'fkeyk:aff:suf': [['tìfkeytok', 'wrong-type']],
+	'ye\'krr:adv': [['leye\'krr', 'wrong-type']],
+	'leye\'krr:adj': [['ye\'krr', 'wrong-type']],
 };
 
 class ReviewPage {
