@@ -57,7 +57,15 @@ db.serialize(() => {
 	)`);
 	db.run(`begin transaction`);
 	db.parallelize(() => {
-		const coursesData = JSON.parse(fs.readFileSync('./data/courses.json', 'utf8'));
+		let coursesData: any = {};
+		try {
+			coursesData = JSON.parse(fs.readFileSync('./data/courses.json', 'utf8'));
+		} catch (e) {
+			output.warning('Courses data not found');
+			output.hint(`Reykunyu uses a JSON file called courses.json that contains courses
+for the vocab study tool. This file does not seem to be present. This
+warning is harmless, but the vocab study tool won't work.`);
+		}
 		for (let i = 0; i < coursesData.length; i++) {
 			const course = coursesData[i];
 			db.run(`insert into course values (?, ?, ?)`, i, course['name'], course['description']);

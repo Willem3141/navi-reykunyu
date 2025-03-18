@@ -20,7 +20,7 @@ import * as verbConjugator from './verbs/conjugator';
 import * as verbParser from './verbs/parser';
 import * as wordLinks from './wordLinks';
 
-let sentences: {[key: string]: Sentence};
+let sentences: {[key: string]: Sentence} = {};
 try {
 	sentences = JSON.parse(fs.readFileSync('./data/corpus.json', 'utf8'));
 } catch (e) {
@@ -28,7 +28,6 @@ try {
 	output.hint(`Reykunyu uses a JSON file called corpus.json containing the example
 sentences. This file does not seem to be present. This warning is
 harmless, but Reykunyu won't find any example sentences.`);
-	sentences = {};
 }
 
 let pronounForms: { [form: string]: pronouns.ConjugatedPronoun } = {};
