@@ -733,38 +733,28 @@ class Reykunyu {
 	derivedSection(derived: WordData[]) {
 		let $derivedSection = $('<div/>').addClass('result-item derived');
 		$derivedSection.append($('<div/>').addClass('header').text(_('derived')));
-		let $derived = $('<div/>').addClass('body');
-
-		let first = true;
-		for (let word of derived) {
-			if (!first) {
-				$derived.append(' ');
-			}
-			$derived.append(createWordLink(word, this.getDialect(), this.getLanguage()));
-			first = false;
-		}
-
-		$derivedSection.append($derived);
+		$derivedSection.append(this.createWordLinkList(derived).addClass('body'));
 		return $derivedSection;
 	}
 
-	// ngop sästarsìmit aysätareyä
-	// aysätare - sästarsìm aylì'uä a tare fìlì'ut
 	seeAlsoSection(seeAlso: WordData[]) {
-		let $aysätare = $('<div/>').addClass('result-item see-also');
-		$aysätare.append($('<div/>').addClass('header').text(_('see-also')));
-		let $aysätareTxin = $('<div/>').addClass('body');
+		let $seeAlsoSection = $('<div/>').addClass('result-item see-also');
+		$seeAlsoSection.append($('<div/>').addClass('header').text(_('see-also')));
+		$seeAlsoSection.append(this.createWordLinkList(seeAlso).addClass('body'));
+		return $seeAlsoSection;
+	}
 
-		for (let i = 0; i < seeAlso.length; i++) {
-			if (i > 0) {
-				$aysätareTxin.append(', ');
+	createWordLinkList(derived: WordData[]) {
+		let $list = $('<div/>');
+		let first = true;
+		for (let word of derived) {
+			if (!first) {
+				$list.append(' ');
 			}
-			let link = seeAlso[i];
-			$aysätareTxin.append(createWordLink(link, this.getDialect(), this.getLanguage()));
+			$list.append(createWordLink(word, this.getDialect(), this.getLanguage()));
+			first = false;
 		}
-
-		$aysätare.append($aysätareTxin);
-		return $aysätare;
+		return $list;
 	}
 
 	// ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
@@ -1579,15 +1569,7 @@ class Reykunyu {
 				if (parseInt(stress, 10) > 0) {
 					$row.append($('<td/>').addClass('stressed-cell').html(_('stressed-on') + ' <b>' + stress + '</b>: '));
 				}
-				let $cell = $('<td/>');
-				let needsComma = false;
-				for (const word of rhymes[stress]) {
-					if (needsComma) {
-						$cell.append(', ');
-					}
-					$cell.append(createWordLink(word, this.getDialect(), this.getLanguage()));
-					needsComma = true;
-				}
+				let $cell = $('<td/>').append(this.createWordLinkList(rhymes[stress]));
 				$row.append($cell);
 				$table.append($row);
 			}
