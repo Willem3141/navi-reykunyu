@@ -6,6 +6,13 @@
 		<div class="container">
 			<%- include('header.ejs', { 'isMainPage': true }) %>
 
+			<% if (locals['dataErrorCount'] && dataErrorCount > 0) { %>
+				<div class="error-block">
+					<p><%- _('data-errors-detected-1') %> <%= dataErrorCount %> <%- _('data-errors-detected-2') %></p>
+					<p class="block-postscript"><%- _('only-for-admins') %></p>
+				</div>
+			<% } %>
+
 			<form id="search-form">
 				<div class="ui search fluid">
 					<div class="ui right action left icon input fluid">

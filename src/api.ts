@@ -203,6 +203,13 @@ router.get('/rhymes',
 	}
 );
 
+router.get('/data-errors',
+	checkLoggedIn(),
+	(req, res) => {
+		res.json(reykunyu.getDataErrors());
+	}
+);
+
 router.post('/user/mark-favorite',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),

@@ -27,7 +27,8 @@ let wordTypeKeys: {[key: string]: number};
 reload();
 
 // Processes the dictionary data.
-export function reload(): void {
+// Returns a list of data errors.
+export function reload(): string[] {
 	try {
 		words = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
 	} catch (e) {
@@ -52,6 +53,8 @@ export function reload(): void {
 	};
 
 	wordTypeKeys = {};
+
+	let dataErrors: string[] = [];
 
 	for (let i = 0; i < words.length; i++) {
 		let word = words[i];
@@ -88,14 +91,12 @@ export function reload(): void {
 		// put the word in the wordTypeKeys dictionary
 		let wordTypeKey = word['word_raw']['FN'] + ':' + word['type'];
 		if (wordTypeKeys.hasOwnProperty(wordTypeKey)) {
-			output.warning('Duplicate word/type ' + wordTypeKey + ' in words.json');
-			output.hint(`Reykunyu assumes there cannot be two identical words with the same word
-type (as word/type combinations are used to refer to words). Because
-there is a duplicate, the second word/type combination will not be able
-to be linked to from other words.`, 'duplicate-word-type');
+			dataErrors.push('Duplicate word/type [' + wordTypeKey + '] in words.json');
 		}
 		wordTypeKeys[wordTypeKey] = i;
 	}
+
+	return dataErrors;
 }
 
 export function getById(id: number): WordData {

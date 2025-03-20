@@ -10,7 +10,8 @@
 		"all-words.ts",
 		"study.ts",
 		"study-lib.ts",
-		"review.ts"
+		"review.ts",
+		"data-errors.ts"
 	],
 	"include": [
 		"*.d.ts",

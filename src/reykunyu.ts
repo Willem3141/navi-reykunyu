@@ -36,14 +36,17 @@ let pronounForms: { [form: string]: pronouns.ConjugatedPronoun } = {};
 let allWords: WordData[] = [];
 let allWordsOfType: { [type: string]: WordData[] } = {};
 
+let dataErrorList: string[] = [];
+
 reloadData();
 
 export function reloadData() {
-	dictionary.reload();
+	dataErrorList = dictionary.reload();
 	reverseDictionary.reload();
 
 	// preprocess all words
 	for (let word of dictionary.getAll()) {
+		const wordKey = word['na\'vi'] + ':' + word['type'];
 		// pronunciation
 		if (word['pronunciation']) {
 			for (let pronunciation of word['pronunciation']) {
@@ -56,7 +59,7 @@ export function reloadData() {
 
 		// etymology and derived words
 		if (word['etymology']) {
-			word['etymology'] = wordLinks.enrichWordLinks(word['etymology'] as unknown as string);
+			word['etymology'] = wordLinks.enrichWordLinks(word['etymology'] as unknown as string, wordKey, dataErrorList);
 			for (let piece of word['etymology']) {
 				if (typeof piece === "string") {
 					continue;
@@ -71,19 +74,17 @@ export function reloadData() {
 					}
 					result['derived'].push(wordLinks.stripToLinkData(word));
 				} else {
-					output.warning('Invalid reference to ' + navi + ':' + type + ' in etymology for ' + word);
-					output.hint(`The etymology data for a word refers to a word/type that doesn't
-exist. This etymology link will look broken in the word entry.`, 'invalid-etymology-reference');
+					dataErrorList.push('Invalid reference to [' + navi + ':' + type + '] in etymology for [' + wordKey + ']');
 				}
 			}
 		}
 
 		// meaning notes
 		if (word['meaning_note']) {
-			word['meaning_note'] = wordLinks.enrichWordLinks(word['meaning_note'] as unknown as string);
+			word['meaning_note'] = wordLinks.enrichWordLinks(word['meaning_note'] as unknown as string, wordKey, dataErrorList);
 		}
 		if (word['conjugation_note']) {
-			word['conjugation_note'] = wordLinks.enrichWordLinks(word['conjugation_note'] as unknown as string);
+			word['conjugation_note'] = wordLinks.enrichWordLinks(word['conjugation_note'] as unknown as string, wordKey, dataErrorList);
 		}
 
 		// see also
@@ -145,9 +146,8 @@ exist. This etymology link will look broken in the word entry.`, 'invalid-etymol
 						result['sentences'].push(sentences[sentenceKey]);
 					}
 				} else {
-					output.warning('Invalid reference to ' + r + ' in sentence ' + sentenceKey);
-					output.hint(`The sentence refers to a word/type that doesn't exist.`,
-						'invalid-sentence-reference');
+					// TODO For now, we ignore these errors
+					//dataErrorList.push('Invalid reference to [' + r + '] in sentence ' + sentenceKey);
 				}
 			}
 		}
@@ -1126,4 +1126,16 @@ export function hasSentence(key: string): boolean {
 
 export function saveCorpus(): void {
 	fs.writeFileSync('./data/corpus.json', JSON.stringify(sentences));
+}
+
+export function getDataErrors(): LinkString[] {
+	let result: LinkString[] = [];
+	for (let error of dataErrorList) {
+		result.push(wordLinks.enrichWordLinks(error, '', []));
+	}
+	return result;
+}
+
+export function getDataErrorCount(): number {
+	return dataErrorList.length;
 }

@@ -64,6 +64,9 @@ function pageVariables(req: Request, toAdd?: any) {
 		variables['messages'] = [];
 	}
 	variables['development'] = config.hasOwnProperty('development') && config['development'];
+	if (req.user?.is_admin) {
+		variables['dataErrorCount'] = reykunyu.getDataErrorCount();
+	}
 	return variables;
 }
 
@@ -426,6 +429,17 @@ app.get('/untranslated',
 			untranslated: untranslated,
 			language: translations.getLanguage()
 		}));
+	}
+);
+
+app.get('/data-errors',
+	(req, res) => {
+		if (!req.user || !req.user['is_admin']) {
+			res.status(403);
+			res.render('403', pageVariables(req));
+			return;
+		}
+		res.render('data-errors', pageVariables(req));
 	}
 );
 

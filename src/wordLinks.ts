@@ -33,8 +33,12 @@
 import * as dictionary from './dictionary';
 import * as output from './output';
 
-// Replaces word links in a string.
-export function enrichWordLinks(text: string): LinkString {
+// Replaces word links in the given string.
+// \param originWord The word that contains the data we're calling this function
+// for. This is for error reporting.
+// \param dataErrors A list of errors that a (potential) error will be appended
+// to.
+export function enrichWordLinks(text: string, originWord: string, dataErrors: string[]): LinkString {
 
 	// matches word links between brackets
 	const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
@@ -54,9 +58,8 @@ export function enrichWordLinks(text: string): LinkString {
 			if (word) {
 				list.push(stripToLinkData(word));
 			} else {
-				output.warning('Invalid reference to ' + key + ' in word link');
-				output.hint(`A word link refers to a word/type that
-doesn't exist. This word link will look broken.`, 'invalid-word-link-reference');
+				list.push('[' + key + ']');
+				dataErrors.push('Invalid reference to [' + key + '] in word link for [' + originWord + ']');
 			}
 			i++;  // skip type
 		}

@@ -10,6 +10,7 @@
 		"menu-etymology-editor": "Etymology editor",
 		"menu-sources-editor": "Sources editor",
 		"menu-corpus-editor": "Corpus editor",
+		"menu-data-errors": "Data errors",
 		"menu-logout": "Logout",
 		"menu-login": "Login",
 		"menu-settings": "Settings",
@@ -207,7 +208,12 @@
 		"synonym-note": "That may be correct, but we're looking for another word. Try again!",
 		"wrong-type-note": "We're looking for a word with a different word class. Try again!",
 		"wrong-direction-note": "We're looking for the Na'vi word with the given translation – not the other way round. Try again!",
-		"wrong-form-note": "That's the correct word, but we're looking for the dictionary form. Try again!"
+		"wrong-form-note": "That's the correct word, but we're looking for the dictionary form. Try again!",
+		"loading-error-list": "Loading error list…",
+		"no-errors": "No errors. Seysonìltsan!",
+		"data-errors-detected-1": "Reykunyu detected",
+		"data-errors-detected-2": "data consistency errors. Please check <i>Administration &gt; Data errors</i> for details.",
+		"only-for-admins": "(This message is visible only to admins.)"
 	},
 	"de": {
 		"language": "Deutsch",
@@ -220,6 +226,7 @@
 		"menu-etymology-editor": "Etymologien bearbeiten",
 		"menu-sources-editor": "Quellen bearbeiten",
 		"menu-corpus-editor": "Corpus bearbeiten",
+		"menu-data-errors": "Datenfehler",
 		"menu-logout": "Ausloggen",
 		"menu-login": "Einloggen",
 		"menu-settings": "Einstellungen",
@@ -316,7 +323,10 @@
 		"omitted-more": "mehr",
 		"not-found": "(nicht gefunden)",
 		"searching-error": "Bei der Suche ist etwas schiefgelaufen",
-		"searching-error-description": "Bitte versuche es später erneut. Falls dieses Problem fortbestehen sollte, <a href='//wimiso.nl/contact'>wende dich bitte an mich</a>."
+		"searching-error-description": "Bitte versuche es später erneut. Falls dieses Problem fortbestehen sollte, <a href='//wimiso.nl/contact'>wende dich bitte an mich</a>.",
+		"data-errors-detected-1": "Reykunyu hat",
+		"data-errors-detected-2": "Datenkonsistenzfehler gefunden. Siehe <i>Verwaltung &gt; Datenfehler</i> für weitere Informationen.",
+		"only-for-admins": "(Diese Meldung ist nur für Admins sichtbar.)"
 	},
 	"nl": {
 		"language": "Nederlands",
@@ -329,6 +339,7 @@
 		"menu-etymology-editor": "Etymologieën bewerken",
 		"menu-sources-editor": "Bronnen bewerken",
 		"menu-corpus-editor": "Corpus bewerken",
+		"menu-data-errors": "Datafouten",
 		"menu-logout": "Uitloggen",
 		"menu-login": "Inloggen",
 		"menu-settings": "Instellingen",
@@ -487,7 +498,10 @@
 		"exit-button-tooltip": "Deze knop beëindigt de les. Je voortgang wordt opgeslagen.",
 		"continue-button": "Verder",
 		"relearn-button": "Opnieuw leren",
-		"review-button": "Overhoren"
+		"review-button": "Overhoren",
+		"data-errors-detected-1": "Reykunyu heeft",
+		"data-errors-detected-2": "data-consistentiefouten gevonden. Bekijk <i>Administratie &gt; Datafouten</i> voor meer informatie.",
+		"only-for-admins": "(Dit bericht is alleen zichtbaar voor admins.)"
 	},
 	"x-navi": {
 		"language": "Na’vi",
