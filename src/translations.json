@@ -24,6 +24,7 @@
 		"dialog-save": "Save",
 		"dialog-close": "Close",
 		"dialog-login": "Login",
+		"dialog-continue": "Continue",
 		"login": "Login",
 		"login-explanation": "Logging in to Reykunyu allows you to study vocab and track your progress. Don't have an account yet? You can make one <a href=\"/signup\">here</a>.",
 		"login-username": "Username",
@@ -213,7 +214,15 @@
 		"no-errors": "No errors. Seysonìltsan!",
 		"data-errors-detected-1": "Reykunyu detected",
 		"data-errors-detected-2": "data consistency errors. Please check <i>Administration &gt; Data errors</i> for details.",
-		"only-for-admins": "(This message is visible only to admins.)"
+		"only-for-admins": "(This message is visible only to admins.)",
+		"monetization-message": "Reykunyu is a free service, but keeping it online costs money. To offset the operational costs, from today we will augment your search results with ads specifically tailored to optimize your experience. If you don't want to see ads, please <a id=\"monetization-optout-button\">click here</a>.",
+		"reykunyu-premium-header": "Reykunyu Premium",
+		"reykunyu-premium-explanation": "You can avoid seeing ads on Reykunyu by purchasing a subscription to Reykunyu Premium. Reykunyu Premium costs 100 Kelutral Diamonds (or whatever these things are called) per month, and has several other benefits:",
+		"reykunyu-premium-benefit-translator": "Unlimited usage of Reykunyu's AI-powered Na'vi-to-English translator!",
+		"reykunyu-premium-benefit-translator-condition": "(Fair use policy applies.)",
+		"reykunyu-premium-benefit-new-words": "Access to new words one week before they are publicly announced on Na'viteri!",
+		"reykunyu-premium-benefit-priority": "Priority service for fixing dictionary mistakes you reported!",
+		"reykunyu-premium-benefit-nft": "One exclusively-minted NFT of a Na'vi word of your choice!"
 	},
 	"de": {
 		"language": "Deutsch",
@@ -237,6 +246,7 @@
 		"dialog-save": "Speichern",
 		"dialog-close": "Schließen",
 		"dialog-login": "Login",
+		"dialog-continue": "Weiter",
 		"login": "Login",
 		"login-explanation": "Wenn du dich einloggst kannst du die Vokabellernfunktion nutzen und deinen Fortschritt speichern. Du hast noch keinen Account? <a href=\"/signup\">Hier</a> kannst du einen erstellen.",
 		"login-username": "Benutzername",
@@ -326,7 +336,15 @@
 		"searching-error-description": "Bitte versuche es später erneut. Falls dieses Problem fortbestehen sollte, <a href='//wimiso.nl/contact'>wende dich bitte an mich</a>.",
 		"data-errors-detected-1": "Reykunyu hat",
 		"data-errors-detected-2": "Datenkonsistenzfehler gefunden. Siehe <i>Verwaltung &gt; Datenfehler</i> für weitere Informationen.",
-		"only-for-admins": "(Diese Meldung ist nur für Admins sichtbar.)"
+		"only-for-admins": "(Diese Meldung ist nur für Admins sichtbar.)",
+		"monetization-message": "Reykunyu ist ein kostenloser Dienst, aber die Aufrechterhaltung des Angebots kostet Geld. Um die Betriebskosten zu kompensieren, werden wir ab heute deine Suchergebnisse mit speziell auf dich zugeschnittenen Anzeigen ergänzen, um dein Erlebnis zu optimieren. Wenn du keine Werbung sehen möchtest, klicke bitte <a id=\"monetization-optout-button\">hier</a>.",
+		"reykunyu-premium-header": "Reykunyu Premium",
+		"reykunyu-premium-explanation": "Du kannst Werbung auf Reykunyu ausblenden, indem du ein Abonnement für Reykunyu Premium erwerbst. Reykunyu Premium kostet 100 Kelutral Diamonds (oder wie auch immer diese Dinger heißen) pro Monat und bietet einige weitere Vorteile:",
+		"reykunyu-premium-benefit-translator": "Unbegrenzte Nutzung von Reykunyus KI-gesteuertem Na'vi-Deutsch-Übersetzer!",
+		"reykunyu-premium-benefit-translator-condition": "(Es gilt eine Fair Use Policy.)",
+		"reykunyu-premium-benefit-new-words": "Zugang zu neuen Wörtern eine Woche bevor sie auf Na'viteri veröffentlicht werden!",
+		"reykunyu-premium-benefit-priority": "Vorrangiger Service für die Behebung von Fehlern die du im Wörterbuch entdeckt hast!",
+		"reykunyu-premium-benefit-nft": "Eine exklusiv geprägte NFT eines Na'vi-Wortes deiner Wahl!"
 	},
 	"nl": {
 		"language": "Nederlands",
@@ -350,6 +368,7 @@
 		"dialog-save": "Opslaan",
 		"dialog-close": "Sluiten",
 		"dialog-login": "Inloggen",
+		"dialog-continue": "Doorgaan",
 		"login": "Inloggen",
 		"login-explanation": "Als je inlogt bij Reykunyu kun je woorden leren en je studievoortgang bijhouden. Heb je nog geen account, dan kun je er <a href=\"/signup\">hier</a> een aanmaken.",
 		"login-username": "Gebruikersnaam",
@@ -501,7 +520,15 @@
 		"review-button": "Overhoren",
 		"data-errors-detected-1": "Reykunyu heeft",
 		"data-errors-detected-2": "data-consistentiefouten gevonden. Bekijk <i>Administratie &gt; Datafouten</i> voor meer informatie.",
-		"only-for-admins": "(Dit bericht is alleen zichtbaar voor admins.)"
+		"only-for-admins": "(Dit bericht is alleen zichtbaar voor admins.)",
+		"monetization-message": "Reykunyu is een gratis dienst, maar het online houden ervan kost geld. Om de operationele kosten te compenseren, vullen we vanaf vandaag je zoekresultaten aan met advertenties die die specifiek zijn afgestemd op het optimaliseren van jouw ervaring. Als je geen advertenties wilt zien, klik dan <a id=\"monetization-optout-button\">hier</a>.",
+		"reykunyu-premium-header": "Reykunyu Premium",
+		"reykunyu-premium-explanation": "Je kunt de advertenties in Reykunyu weghalen door een abonnement op Reykunyu Premium te nemen. Reykunyu Premium kost 100 Kelutral Diamonds (of hoe ze die dingen ook noemen), en heeft ook meerdere extra voordelen:",
+		"reykunyu-premium-benefit-translator": "Onbeperkt gebruik van Reykunyu's AI-gebaseerde Na'vi-Nederlands-vertaler!",
+		"reykunyu-premium-benefit-translator-condition": "(Met inachtneming van de fair use policy.)",
+		"reykunyu-premium-benefit-new-words": "Toegang tot nieuwe woorden één week voordat ze aangekondigd worden op Na'viteri!",
+		"reykunyu-premium-benefit-priority": "Voorrang bij het verhelpen van fouten die je meldt in het woordenboek!",
+		"reykunyu-premium-benefit-nft": "Eén exclusieve NFT van een Na'vi-woord naar keuze!"
 	},
 	"x-navi": {
 		"language": "Na’vi",

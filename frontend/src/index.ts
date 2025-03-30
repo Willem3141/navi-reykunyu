@@ -1,4 +1,5 @@
 import { lemmaForm, addLemmaClass, getTranslation, getShortTranslation, createWordLink, appendLinkString } from './lib';
+import { initializeMonetization } from './monetization';
 
 class Reykunyu {
 
@@ -119,6 +120,8 @@ class Reykunyu {
 		$('#search-form').on('submit', () => { this.sngäiTìfwusew(false); return false; });
 
 		this.setUpAutocomplete();
+
+		initializeMonetization();
 	}
 
 	getMode(): string {

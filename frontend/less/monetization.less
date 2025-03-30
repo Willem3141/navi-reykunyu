@@ -1,0 +1,25 @@
+#monetization-optout-button {
+	cursor: pointer;
+}
+
+.benefits-list {
+	list-style: none;
+
+	li {
+		position: relative;
+
+		&:before {
+			content: '\2713';
+			font-size: 200%;
+			margin-right: 8px;
+			position: absolute;
+			color: var(--lenition-color);
+			top: -10px;
+			left: -25px;
+		}
+
+		&:not(:last-child) {
+			margin-bottom: 12px;
+		}
+	}
+}
