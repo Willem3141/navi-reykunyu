@@ -8,8 +8,9 @@ export function initializeMonetization() {
 }
 
 const ads: string[] = [
-	'<p>Getting bored of Na\'vi? Try learning Toki Pona instead &ndash; fewer words, less hassle!</p>',
-	'<p style="font-family: Exo;">Unobtanium now available for only $250,000 per ounce!</p><img src="/images/txantsan/rda.png">'
+	'<p style="font-variation-settings: &quot;CASL&quot; 1; text-align: center;">Getting bored of Na\'vi? Try learning Toki Pona instead &ndash; fewer words, less hassle!</p>',
+	'<p style="font-family: Exo;">Unobtanium now available for only<br>$250,000 per ounce!</p><img src="/images/txantsan/rda.png">',
+	'<p style="font-family: Exo;"><small>\'Ìnglìsì längu ngäzìk srak?</small><br>Kä ne numtseng Kìreysä!</p><img src="/images/txantsan/rda.png">'
 ];
 
 export function generateAd() {
