@@ -222,7 +222,8 @@
 		"reykunyu-premium-benefit-translator-condition": "(Fair use policy applies.)",
 		"reykunyu-premium-benefit-new-words": "Access to new words one week before they are publicly announced on Na'viteri!",
 		"reykunyu-premium-benefit-priority": "Priority service for fixing dictionary mistakes you reported!",
-		"reykunyu-premium-benefit-nft": "One exclusively-minted NFT of a Na'vi word of your choice!"
+		"reykunyu-premium-benefit-nft": "One exclusively-minted NFT of a Na'vi word of your choice!",
+		"ad-label": "Advertisement"
 	},
 	"de": {
 		"language": "Deutsch",
@@ -344,7 +345,8 @@
 		"reykunyu-premium-benefit-translator-condition": "(Es gilt eine Fair Use Policy.)",
 		"reykunyu-premium-benefit-new-words": "Zugang zu neuen Wörtern eine Woche bevor sie auf Na'viteri veröffentlicht werden!",
 		"reykunyu-premium-benefit-priority": "Vorrangiger Service für die Behebung von Fehlern die du im Wörterbuch entdeckt hast!",
-		"reykunyu-premium-benefit-nft": "Eine exklusiv geprägte NFT eines Na'vi-Wortes deiner Wahl!"
+		"reykunyu-premium-benefit-nft": "Eine exklusiv geprägte NFT eines Na'vi-Wortes deiner Wahl!",
+		"ad-label": "Werbung"
 	},
 	"nl": {
 		"language": "Nederlands",
@@ -528,7 +530,8 @@
 		"reykunyu-premium-benefit-translator-condition": "(Met inachtneming van de fair use policy.)",
 		"reykunyu-premium-benefit-new-words": "Toegang tot nieuwe woorden één week voordat ze aangekondigd worden op Na'viteri!",
 		"reykunyu-premium-benefit-priority": "Voorrang bij het verhelpen van fouten die je meldt in het woordenboek!",
-		"reykunyu-premium-benefit-nft": "Eén exclusieve NFT van een Na'vi-woord naar keuze!"
+		"reykunyu-premium-benefit-nft": "Eén exclusieve NFT van een Na'vi-woord naar keuze!",
+		"ad-label": "Advertentie"
 	},
 	"x-navi": {
 		"language": "Na’vi",

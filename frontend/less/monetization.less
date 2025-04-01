@@ -23,3 +23,56 @@
 		}
 	}
 }
+
+.txantsan-container {
+	border-top: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--border-color);
+	padding: 10px 0;
+	position: relative;
+
+	.txantsan-label {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: -12px;
+		text-align: center;
+		div {
+			display: inline;
+			padding: 0 10px;
+			background: var(--background-color);
+			text-transform: uppercase;
+			color: var(--border-color);
+		}
+	}
+
+	.txantsan {
+		display: flex;
+		min-height: 100px;
+		background: white;
+		color: black;
+		cursor: pointer;
+		padding: 10px;
+		font-size: 180%;
+
+		@media (max-width: 768px) {
+			flex-direction: column;
+			flex-grow: 0;
+			align-items: center;
+			text-align: center;
+		}
+
+		img {
+			position: absolute;
+			right: 10px;
+			top: 20px;
+			height: 80px;
+
+			@media (max-width: 768px) {
+				display: block;
+				position: relative;
+				top: auto;
+				right: auto;
+			}
+		}
+	}
+}

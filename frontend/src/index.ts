@@ -1,5 +1,5 @@
 import { lemmaForm, addLemmaClass, getTranslation, getShortTranslation, createWordLink, appendLinkString } from './lib';
-import { initializeMonetization } from './monetization';
+import { initializeMonetization, generateAd } from './monetization';
 
 class Reykunyu {
 
@@ -1310,6 +1310,10 @@ class Reykunyu {
 
 	createResults(results: FromNaviResultPiece, $block: JQuery): void {
 		if (results["sì'eyng"].length) {
+			if (Math.random() < 0.4) {
+				const $ad = generateAd();
+				$block.append($ad);
+			}
 			for (let i = 0; i < results["sì'eyng"].length; i++) {
 				$block.append(this.createResultBlock(i, results["sì'eyng"][i]));
 			}
