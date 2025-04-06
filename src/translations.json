@@ -50,6 +50,7 @@
 		"coming-soon": "(Coming soon!)",
 		"settings-dialect-rn-explanation": "Reykunyu shows exclusively Reef Na’vi spelling and pronunciation, and only recognizes searches in Reef Na’vi. Use this if you're interested only in Reef Na’vi.",
 		"settings-dialect-rn-warning": "<b>Warning:</b> Currently, the Reef Na’vi mode is still a <b>work in progress</b> and has limitations. As some RN rules have not yet been implemented, you may see incorrect results.",
+		"settings-font": "Font",
 		"settings-theme": "Theme",
 		"settings-theme-explanation": "Reykunyu supports light and dark themes. It automatically follows your browser settings, so if you want to switch, look in your browser’s settings panel (for example in Firefox: <i>Settings &gt; Language and Appearance &gt; Website appearance</i>).",
 		"type-n": "noun",
