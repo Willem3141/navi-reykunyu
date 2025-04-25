@@ -26,6 +26,7 @@ function compareNaviWords(a: string, b: string, i: number): number {
 	return naviSortAlphabet.indexOf(first) - naviSortAlphabet.indexOf(second);
 }
 
+
 db.serialize(() => {
 	// tables storing the courses and lessons
 	// (we regenerate these from courses.json on each Reykunyu startup)

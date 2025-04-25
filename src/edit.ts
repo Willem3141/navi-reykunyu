@@ -2,6 +2,7 @@
 // storing the history of these edits in data/history.json.
 
 import fs from 'fs';
+//import db from './db'; here as an example but maybe should do manually
 
 function readJson(): WordData[] {
 	return JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
@@ -13,23 +14,28 @@ function writeJson(json: WordData[]): void {
 
 export function getWordData(id: number): WordData {
 	const json = readJson();
-	const data = json[id];
-	if (!data) {
+	const idx = json.findIndex((w) => w.id == id);
+	if (idx == -1) {
 		throw Error('Tried to get word data for a non-existing ID');
 	}
+	const data = json[idx];
 	return data;
 }
 
 export function updateWordData(id: number, newData: WordData, user: Express.User): void {
 	const json = readJson();
-	const data = json[id];
+	const idx = json.findIndex((w) => w.id == id);
+	if (idx == -1) {
+		throw Error('Tried to get word data for a non-existing ID');
+	}
+	const data = json[idx];
 	if (!data) {
 		throw Error('Tried to update word data for a non-existing ID');
 	}
 	if (newData['id'] !== id) {
 		throw Error('Tried to update word data containing the incorrect ID');
 	}
-	json[id] = newData;
+	json[idx] = newData;
 	writeJson(json);
 
 	// add history entry
@@ -43,10 +49,35 @@ export function updateWordData(id: number, newData: WordData, user: Express.User
 	});
 	fs.writeFileSync("./data/history.json", JSON.stringify(history));
 }
+export function deleteWordData(id: number, user: Express.User): void {
+	const json = readJson();
+	const idx = json.findIndex((w) => w.id == id);
+	if (idx == -1) {
+		throw Error('Tried to get delete data for a non-existing ID');
+	}
+	const data = json[idx];
+        json.splice(idx,1);
+	writeJson(json);
+        console.log("deleted data",data);
+
+	// add history entry
+	let history = JSON.parse(fs.readFileSync('./data/history.json', 'utf8'));
+	history.push({
+		'user': user['username'],
+		'date': new Date(),
+		'id': id,
+		'deleted': 1,
+		'data': data
+	});
+	fs.writeFileSync("./data/history.json", JSON.stringify(history));
+	//db.run('delete from favorite_words where vocab = ?',id);
+	//db.run('delete from vocab_status where vocab = ?',id);
+}
 
 export function insertWordData(newData: WordData, user: Express.User): void {
 	const json = readJson();
-	const id = json.length;
+	const id = json[json.length-1]['id']+1;
+        
 	if (newData['id'] !== -1) {
 		throw Error('Tried to insert word data already containing an ID');
 	}
@@ -63,6 +94,8 @@ export function insertWordData(newData: WordData, user: Express.User): void {
 		'data': newData
 	});
 	fs.writeFileSync("./data/history.json", JSON.stringify(history));
+	console.log("debug test deleteWordData, with ",id);
+	deleteWordData(id,user);
 }
 
 export function getAll(): WordData[] {
