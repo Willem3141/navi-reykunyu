@@ -3,7 +3,7 @@
 		"strict": true,
 		"module": "amd",
 		"target": "es2016",
-		"noEmit": true
+		"noEmit": true,
 	},
 	"files": [
 		"index.ts",
@@ -11,10 +11,10 @@
 		"study.ts",
 		"study-lib.ts",
 		"review.ts",
-		"data-errors.ts"
+		"data-errors.ts",
 	],
 	"include": [
-		"*.d.ts",
+		"ui-translations.d.ts",
 		"../../src/types/api-types.d.ts"
 	]
 }

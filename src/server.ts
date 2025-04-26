@@ -19,8 +19,8 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 import * as dialect from './dialect';
 import * as edit from './edit';
 import * as output from './output';
-import * as reykunyu from './reykunyu';
 import * as zeykerokyu from './zeykerokyu';
+import Reykunyu from './reykunyu';
 
 import bodyParser from 'body-parser';
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -34,9 +34,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const staticRoot = './frontend/dist';
-app.use(express.static(staticRoot));
-
 app.use('/ayrel', express.static('./data/ayrel'));
 app.use('/fam', express.static('./data/fam'));
 
@@ -46,6 +43,29 @@ app.set('view engine', 'ejs');
 import * as translations from './translations';
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json', 'utf8'));
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
+
+export let reykunyu: Reykunyu;
+function initializeReykunyu() {
+	let dictionaryJSON;
+	try {
+		dictionaryJSON = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
+	} catch (e) {
+		output.error('words.json not found, exiting');
+		output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
+	This file does not seem to be present. If you want to run a local mirror
+	of the instance at https://reykunyu.lu, you can copy the dictionary data
+	from there:
+
+	$ wget -O data/words.json https://reykunyu.lu/words.json
+
+	Alternatively, you can start with an empty database:
+
+	$ echo "{}" > data/words.json`);
+		process.exit(1);
+	}
+	reykunyu = new Reykunyu(dictionaryJSON);
+}
+initializeReykunyu();
 
 /**
  * Returns the standard template variables for the given request, which should
@@ -121,6 +141,16 @@ app.get('/js/ui-translations.js',
 	}
 );
 
+app.get('/js/sw.js',
+	(req, res) => {
+		res.setHeader('Service-Worker-Allowed', '/');
+		res.sendFile('js/sw.js', { root: process.cwd() + '/frontend/dist' });
+	}
+);
+
+const staticRoot = './frontend/dist';
+app.use(express.static(staticRoot));
+
 app.get('/all',
 	(req, res) => {
 		res.render("fralì'u", pageVariables(req));
@@ -168,7 +198,7 @@ app.post('/add',
 		}
 
 		edit.insertWordData(data, req.user);
-		reykunyu.reloadData();
+		initializeReykunyu();
 		res.send({
 			'url': '/?q=' + dialect.makeRaw(data["na'vi"])
 		});
@@ -255,7 +285,7 @@ app.post('/edit',
 		}
 
 		edit.updateWordData(id, data, req.user);
-		reykunyu.reloadData();
+		initializeReykunyu();
 		res.send({
 			'url': '/?q=' + dialect.makeRaw(data["na'vi"])
 		});
@@ -299,7 +329,7 @@ app.get('/sources-editor',
 	}
 );
 
-app.get('/corpus-editor',
+/*app.get('/corpus-editor',
 	(req, res) => {
 		if (!req.user || !req.user['is_admin']) {
 			res.status(403);
@@ -414,7 +444,7 @@ app.post('/corpus-editor/edit',
 		reykunyu.saveCorpus();
 		res.send();
 	}
-);
+);*/
 
 app.get('/untranslated',
 	(req, res) => {

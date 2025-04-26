@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"module": "amd",
+		"target": "es2021",
+		"noEmit": true,
+		"lib": ["es2021", "webworker"],
+		"types": [],
+		"paths": {
+			"src/*": ["../../src/*"]
+		},
+		"rootDir": "../..",
+		"esModuleInterop": true
+	},
+	"files": [
+		"sw.ts"
+	],
+	"include": [
+		"../../src/types/api-types.d.ts"
+	]
+}

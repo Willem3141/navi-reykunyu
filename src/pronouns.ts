@@ -1,5 +1,5 @@
 import * as conjugationString from './conjugationString';
-import * as dictionary from './dictionary';
+import Dictionary from './dictionary';
 
 export type ConjugatedPronoun = {
 	'word': WordData,
@@ -7,7 +7,7 @@ export type ConjugatedPronoun = {
 	'case': string
 };
 
-export function getConjugatedForms(): {[form: string]: ConjugatedPronoun} {
+export function getConjugatedForms(dictionary: Dictionary): {[form: string]: ConjugatedPronoun} {
 	let forms: {[form: string]: ConjugatedPronoun} = {};
 
 	let plurals = ["", "me", "pxe", "ay"];

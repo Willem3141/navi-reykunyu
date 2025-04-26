@@ -1,20 +1,22 @@
 import express, { Request, Response, NextFunction } from 'express';
-const router = express.Router();
 import cors from 'cors';
 import fs from 'fs';
 
 import * as annotatedDictionary from './annotatedDictionary';
 import * as conjugationString from './conjugationString';
-import * as reykunyu from './reykunyu';
+import * as server from './server';
 import * as userdata from './userdata';
 import * as verbs from './verbs/conjugator';
 import * as zeykerokyu from './zeykerokyu';
+
+export let router = express.Router();
+export default router;
 
 router.get('/word',
 	cors(),
 	parseIntegerParameter('id', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getWord(req.args!['id']));
+		res.json(server.reykunyu.getWord(req.args!['id']));
 	}
 );
 
@@ -25,8 +27,8 @@ router.get('/fwew-search',
 	parseDialectParameter('dialect', 'get'),
 	async (req, res, next) => {
 		try {
-			let fromNaviResult = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
-			let toNaviResult = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+			let fromNaviResult = server.reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
+			let toNaviResult = server.reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
 			if (req.user) {
 				await userdata.augmentFromNaviResultWithUserData(req.user, fromNaviResult);
 				await userdata.augmentToNaviResultWithUserData(req.user, toNaviResult);
@@ -47,7 +49,7 @@ router.get('/fwew',
 	parseDialectParameter('dialect', 'get'),
 	async (req, res, next) => {
 		try {
-			let result = reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
+			let result = server.reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
 			if (req.user) {
 				await userdata.augmentFromNaviResultWithUserData(req.user, result);
 			}
@@ -64,8 +66,8 @@ router.get('/mok-suggest',
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		let suggestionsFrom = reykunyu.getSuggestionsFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
-		let suggestionsTo = reykunyu.getReverseSuggestionsFor(req.args!['query'], req.args!['language']);
+		let suggestionsFrom = server.reykunyu.getSuggestionsFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+		let suggestionsTo = server.reykunyu.getReverseSuggestionsFor(req.args!['query'], req.args!['language']);
 		res.json({
 			'results': suggestionsFrom['results'].concat(suggestionsTo['results'])
 		});
@@ -78,7 +80,7 @@ router.get('/mok',
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getSuggestionsFor(req.args!['tìpawm'], req.args!['language'], req.args!['dialect']));
+		res.json(server.reykunyu.getSuggestionsFor(req.args!['tìpawm'], req.args!['language'], req.args!['dialect']));
 	}
 );
 
@@ -89,7 +91,7 @@ router.get('/search',
 	parseDialectParameter('dialect', 'get'),
 	async (req, res, next) => {
 		try {
-			let result = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+			let result = server.reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
 			if (req.user) {
 				await userdata.augmentToNaviResultWithUserData(req.user, result);
 			}
@@ -104,7 +106,7 @@ router.get('/suggest',
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getReverseSuggestionsFor(req.args!['query'], req.args!['language']));
+		res.json(server.reykunyu.getReverseSuggestionsFor(req.args!['query'], req.args!['language']));
 	}
 );
 
@@ -167,7 +169,7 @@ router.get('/history/major-changes',
 
 router.get('/list/all',
 	(req, res) => {
-		res.json(reykunyu.getAll());
+		res.json(server.reykunyu.getAll());
 	}
 );
 
@@ -190,7 +192,7 @@ router.get('/random',
 	parseStringParameter('fnel', 'get', true),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getRandomWords(req.args!['holpxay'], req.args!['dialect'], req.args!['fnel']));
+		res.json(server.reykunyu.getRandomWords(req.args!['holpxay'], req.args!['dialect'], req.args!['fnel']));
 	}
 );
 
@@ -199,14 +201,14 @@ router.get('/rhymes',
 	parseStringParameter('tìpawm', 'get'),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getRhymes(req.args!['tìpawm'], req.args!['dialect']));
+		res.json(server.reykunyu.getRhymes(req.args!['tìpawm'], req.args!['dialect']));
 	}
 );
 
 router.get('/data-errors',
 	checkLoggedIn(),
 	(req, res) => {
-		res.json(reykunyu.getDataErrors());
+		res.json(server.reykunyu.getDataErrors());
 	}
 );
 
@@ -458,4 +460,3 @@ function parseIntegerParameter(name: string, type: 'get' | 'post') {
 	}
 }
 
-export default router;

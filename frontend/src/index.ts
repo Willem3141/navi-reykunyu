@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import { lemmaForm, addLemmaClass, getTranslation, getShortTranslation, createWordLink, appendLinkString } from './lib';
 
 class Reykunyu {
@@ -80,6 +82,30 @@ class Reykunyu {
 		// TODO temporary: show the RN warning iff RN is selected
 		$('#settings-modal .ui.radio.checkbox').on('click', () => {
 			$('#dialect-rn-warning').toggle($('#dialect-rn-radiobutton').prop('checked'));
+		});
+
+		$('#offline-mode-download-button').on('click', async () => {
+			$('#offline-mode-download-button').addClass('disabled');
+			$('#offline-mode-progress')
+				.text(_('settings-offline-mode-downloading'))
+				.show();
+
+			if (!('serviceWorker' in navigator)) {
+				$('#offline-mode-progress')
+					.text(_('settings-offline-mode-error-browser-support-missing'));
+				return;
+			}
+
+			try {
+				const registration = await navigator.serviceWorker.register('/js/sw.js', {
+					'scope': '/'
+				});
+			} catch (e) {
+				$('#offline-mode-progress')
+					.text(_('settings-offline-mode-error-while-installing'));
+				console.error(e);
+				return;
+			}
 		});
 
 		const self: Reykunyu = this;

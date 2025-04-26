@@ -2,8 +2,8 @@
 import fs from 'fs';
 import sqlite3 from 'sqlite3';
 
-import * as dictionary from './dictionary';
 import * as output from './output';
+import * as server from './server';
 
 const db = new sqlite3.Database('./data/reykunyu.db');
 
@@ -27,6 +27,9 @@ function compareNaviWords(a: string, b: string, i: number): number {
 }
 
 db.serialize(() => {
+	// TODO
+	
+	/*
 	// tables storing the courses and lessons
 	// (we regenerate these from courses.json on each Reykunyu startup)
 	db.run(`drop table if exists course`);
@@ -110,26 +113,26 @@ warning is harmless, but the vocab study tool won't work.`);
 		user text not null,
 		vocab integer,
 		primary key (user, vocab)
-	)`);
+	)`);*/
 });
 
 function preprocessLessons(course: any): void {
 	if (course.hasOwnProperty('rule')) {
 		let lessons = [];
 		if (course['rule'] === 'all') {
-			let words = dictionary.getAll().filter((w: WordData) => w['status'] !== 'unconfirmed' && w['status'] !== 'unofficial')
+			let words = server.reykunyu.dictionary.getAll().filter((w: WordData) => w['status'] !== 'unconfirmed' && w['status'] !== 'unofficial')
 				.map((w: WordData) => { return { 'id': w['id'] } });
 			words.sort((a: { 'id': number }, b: { 'id': number }) => {
 				return compareNaviWords(
-					dictionary.getById(a['id'])['word_raw']['FN'],
-					dictionary.getById(b['id'])['word_raw']['FN'], 0);
+					server.reykunyu.dictionary.getById(a['id'])['word_raw']['FN'],
+					server.reykunyu.dictionary.getById(b['id'])['word_raw']['FN'], 0);
 			});
 			// group into sets of 25 words
 			for (let i = 0; i < words.length; i += 25) {
 				const end = Math.min(i + 25, words.length);
 				lessons.push({
-					'name': dictionary.getById(words[i]['id'])['word_raw']['FN'] + ' – ' +
-						dictionary.getById(words[end - 1]['id'])['word_raw']['FN'],
+					'name': server.reykunyu.dictionary.getById(words[i]['id'])['word_raw']['FN'] + ' – ' +
+						server.reykunyu.dictionary.getById(words[end - 1]['id'])['word_raw']['FN'],
 					'words': words.slice(i, end)
 				});
 			}
@@ -146,8 +149,8 @@ function preprocessLessons(course: any): void {
 				if (typeof w === 'string') {
 					w = { 'word': w };
 				}
-				const [word, type] = dictionary.splitWordAndType(w['word']);
-				const entry = dictionary.get(word, type, 'FN');
+				const [word, type] = server.reykunyu.dictionary.splitWordAndType(w['word']);
+				const entry = server.reykunyu.dictionary.get(word, type, 'FN');
 				if (!entry) {
 					output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w['word']);
 					process.exit(1);

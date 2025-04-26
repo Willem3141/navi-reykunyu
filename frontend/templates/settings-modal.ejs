@@ -2,6 +2,17 @@
 	<div class="header"><%- _("settings") %></div>
 	<div class="scrolling content">
 		<div class="ui small header">
+			<%- _("settings-offline-mode") %>
+		</div>
+		<p><%- _("settings-offline-mode-explanation") %></p>
+		<div class="ui button" id="offline-mode-download-button">
+			<i class="cloud download icon"></i> <%- _("settings-offline-mode-download") %>
+		</div>
+		<span id="offline-mode-progress" style="display: none;"></span>
+		<div class="ui button" id="offline-mode-remove-button" style="display: none;">
+			<i class="x icon"></i> <%- _("settings-offline-mode-remove") %>
+		</div>
+		<div class="ui small header">
 			<%- _("settings-pronunciation") %>
 		</div>
 		<p><%- _("settings-pronunciation-explanation") %></p>

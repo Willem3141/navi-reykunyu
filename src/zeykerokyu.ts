@@ -130,13 +130,13 @@ export async function getItemsForLesson(courseId: number, lessonId: number, user
 function vocabIDsToWordData(items: UnprocessedLearnableItem[]): LearnableItem[] {
 	let result: LearnableItem[] = [];
 	for (let item of items) {
-		let resultItem: LearnableItem = { 
+		/*let resultItem: LearnableItem = { 
 			'vocab': reykunyu.getWord(item['vocab'])
 		};
 		if (item['comment']) {
 			resultItem['comment'] = item['comment'];
 		}
-		result.push(resultItem);
+		result.push(resultItem);*/ // TODO
 	}
 	return result;
 }
