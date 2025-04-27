@@ -73,8 +73,8 @@ initializeReykunyu();
  * custom variables to a given template, pass them via `toAdd`; these variables
  * are added to the standard ones.
  */
-function pageVariables(req: Request, toAdd?: any) {
-	let variables = { ...toAdd };
+function pageVariables(req: Request, toAdd?: any): any {
+	let variables: any = { ...toAdd };
 	variables['user'] = req.user;
 	variables['_'] = translations.span_;
 	if (req.session.messages) {
@@ -145,6 +145,19 @@ app.get('/js/sw.js',
 	(req, res) => {
 		res.setHeader('Service-Worker-Allowed', '/');
 		res.sendFile('js/sw.js', { root: process.cwd() + '/frontend/dist' });
+	}
+);
+
+// version of the index page without customization (for offline use)
+app.get('/offline',
+	(req, res) => {
+		let variables: any = {};
+		variables['_'] = translations.span_;
+		variables['development'] = config.hasOwnProperty('development') && config['development'];
+		variables['query'] = '';
+		variables['messages'] = [];
+		variables['offline'] = true;
+		res.render('index', variables);
 	}
 );
 

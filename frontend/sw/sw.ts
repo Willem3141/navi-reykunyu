@@ -19,7 +19,7 @@ export default null;
 declare var self: ServiceWorkerGlobalScope;
 
 const staticResourceNames = [
-	"/",
+	"/offline",
 	"/words.json",
 	"/css/index.css",
 	"/fonts/GentiumPlus-Regular.woff2",
@@ -58,12 +58,17 @@ self.addEventListener('activate', (event) => {
 });
 
 // fetch: intercept requests if the server is unreachable
-const cacheFirst = async (request: Request) => {
-	const responseFromCache = await caches.match(request);
+const cacheFallback = async (request: Request): Promise<Response> => {
+	const url = new URL(request.url);
+	const path = url.pathname;
+	const responseFromCache = await caches.match(path === '/' ? '/offline' : request);
 	if (responseFromCache) {
 		return responseFromCache;
 	}
-	return fetch(request);
+	return new Response('No network connection', {
+		'status': 408,
+		'headers': { 'Content-Type': 'text/plain' }
+	});
 };
 
 fetch('/words.json').then(async (res) => {
@@ -73,7 +78,7 @@ fetch('/words.json').then(async (res) => {
 	console.error('Couldn\'t fetch dictionary data', reason);
 });
 
-const getFallback = async (request: Request) => {
+const getOfflineResponse = async (request: Request): Promise<Response> => {
 	const url = new URL(request.url);
 	const path = url.pathname;
 	if (path === '/api/fwew-search') {
@@ -95,7 +100,7 @@ const getFallback = async (request: Request) => {
 
 	} else {
 		// else it's a static resource, so fetch it from the cache
-		return cacheFirst(request);
+		return cacheFallback(request);
 	}
 }
 
@@ -103,11 +108,11 @@ self.addEventListener("fetch", (event) => {
 	event.respondWith(
 		fetch(event.request).then((response) => {
 			if (!response.ok) {
-				return getFallback(event.request);
+				return getOfflineResponse(event.request);
 			}
 			return response;
 		}).catch((error) => {
-			return getFallback(event.request);
+			return getOfflineResponse(event.request);
 		})
 	);
 });
