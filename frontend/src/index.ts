@@ -101,10 +101,6 @@ class Reykunyu {
 				const registration = await navigator.serviceWorker.register('/js/sw.js', {
 					'scope': '/'
 				});
-				navigator.serviceWorker.ready.then(() => {
-					$('#offline-mode-progress').text('').hide();
-					$('#offline-mode-remove-button').show();
-				});
 			} catch (e) {
 				$('#offline-mode-progress')
 					.text(_('settings-offline-mode-error-while-installing'));
@@ -112,6 +108,14 @@ class Reykunyu {
 				return;
 			}
 		});
+
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.ready.then(() => {
+				$('#offline-mode-download-button').addClass('disabled');
+				$('#offline-mode-progress').text('').hide();
+				$('#offline-mode-remove-button').show();
+			});
+		}
 
 		$('#offline-mode-remove-button').on('click', async () => {
 			const registrations = await navigator.serviceWorker.getRegistrations();
