@@ -20,22 +20,25 @@ declare var self: ServiceWorkerGlobalScope;
 
 const staticResourceNames = [
 	"/",
-	"/words.json"
-	/*"/vendor/semantic/dist/semantic.css",
+	"/words.json",
 	"/css/index.css",
-	"/vendor/jquery/jquery-3.3.1.js",
-	"/vendor/semantic/dist/semantic.js",
-	"/js/ui-translations.js",
-	"/js/reykunyu.js",
-	"/ayvefya/sw-lib.js",
-	"/ayrel/reykunyu.svg",
-	"/ayrel/reykunyu.png",
-	"/ayrel/reykunyu-dark.svg",
-	"/ayrel/ke'u.svg",
-	"/aysrungsiyu/semantic/dist/themes/default/assets/fonts/icons.woff2",
+	"/fonts/GentiumPlus-Regular.woff2",
 	"/fonts/Recursive_VF_1.078.woff2",
-	"/ayrel/favicon.png",
-	"/manifest.webmanifest",*/
+	"/images/favicon.png",
+	"/images/ke'u.svg",
+	"/images/reykunyu-dark.svg",
+	"/images/reykunyu.png",
+	"/images/reykunyu.svg",
+	"/images/srungtsyìp.svg",
+	"/images/tsahey.svg",
+	"/js/index.js",
+	"/js/ui-translations.js",
+	"/manifest.webmanifest",
+	"/opensearch.xml",
+	"/vendor/jquery/jquery-3.3.1.js",
+	"/vendor/semantic/dist/semantic.css",
+	"/vendor/semantic/dist/semantic.js",
+	"/vendor/semantic/dist/themes/default/assets/fonts/icons.woff2",
 ];
 
 const cacheResources = async () => {
