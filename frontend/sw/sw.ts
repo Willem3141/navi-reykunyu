@@ -43,7 +43,7 @@ const staticResourceNames = [
 
 const cacheResources = async () => {
 	const cache = await caches.open('v1');
-	await cache.addAll(staticResourceNames)
+	await cache.addAll(staticResourceNames);
 }
 
 // installation: add necessary resources to the cache
@@ -53,7 +53,7 @@ self.addEventListener('install', (event) => {
 });
 
 // activation: always claim all clients
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', (event) => {
 	self.clients.claim();
 });
 
