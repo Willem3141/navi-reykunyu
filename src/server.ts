@@ -177,7 +177,6 @@ app.post('/add',
 
 app.get('/edit',
 	(req, res) => {
-        //console.log("edit",req,res);
 		if (!req.user || !req.user['is_admin']) {
 			res.status(403);
 			res.render('403', pageVariables(req));
