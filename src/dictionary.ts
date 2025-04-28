@@ -97,11 +97,6 @@ export function reload(): string[] {
 		}
 		wordTypeKeys[wordTypeKey] = id;
         words.set(id, word);
-        //uptight unnecessary test for shallow copy
-        let w = getById(id);
-        if ( w != word ){
-            throw new Error("Unequal!")
-        }
     }
 
 	return dataErrors;
@@ -113,7 +108,7 @@ export function getById(id: number): WordData {
         throw new Error("undefined id " + String(id));
     } else {
         return res;
-    }       
+    }
 }
 
 // Returns the given word of the given type.
@@ -128,7 +123,7 @@ export function get(word: string, type: string, dialect: Dialect): WordData | nu
 				return deepCopy(result);
 			}
 		}
-    } 
+	}
 	return null;
 }
 
@@ -176,7 +171,7 @@ export function getNotOfTypes(word: string, types: string[], dialect: Dialect): 
 
 export function getAll(): WordData[] {
     //return Array.from(words.values());
-    // only place this is exposed. 
+    // only place this is exposed.
 	return wordArray;
 }
 
