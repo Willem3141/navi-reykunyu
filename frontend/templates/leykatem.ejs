@@ -38,6 +38,15 @@ const types = [
 	['aff:suf', 'suffix']
 ]; %>
 
+<script>
+function onDeleteClick(){
+    let val = confirm("Really delete?");
+    if (! val ){
+        //document.getElementById("delete-button").href = "javascript:void(0)";
+    }
+    return val;
+}
+</script>
 <html>
 	<%- include('head.ejs', { 'title': 'Word editor' }) %>
 	<body data-url="<%= post_url %>">
@@ -272,7 +281,7 @@ const types = [
 				<a href="/" class="ui floated right submit button">
 					Cancel
 				<% if ( word['na\'vi'] ){ %>
-					<a href="/delete?word=<%= word['id'] %>" id="delete-button" class="ui floated right submit button" style="background-color: red;">
+					<a href="/delete?word=<%= word['id'] %>" id="delete-button" class="ui floated right submit button" style="background-color: red;" onclick="return onDeleteClick()">
     					Delete
 					</a>
 				<% } %>

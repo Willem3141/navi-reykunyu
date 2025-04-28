@@ -5,7 +5,7 @@
 	<body data-url="<%= post_url %>">
                     <div class="ui form">
 			<%- include('header.ejs') %>
-				<h2> Do you really want to delete <% word['na\'vi'] %>, <% word['id'] %>, <% word %> ?</h2>
+				<h2> Do you really want to delete id=<%- word['id'] %>, <%- word['na\'vi'] %> <%- word['type'] %> ?</h2>
 					<div id="save-button" class="ui floated right primary submit icon labeled button">
 						Save
 					<i class="check icon"></i>
