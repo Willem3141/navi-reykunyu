@@ -257,7 +257,6 @@ app.post('/delete', (req,res)=> {
 	const id = parseInt(req.query['word'] as string, 10);
 	console.log("deleting",id);
 	//edit.deleteWordData(id, req.user);
-	res.send({'url':'/history'});
 })
 
 app.post('/edit',
