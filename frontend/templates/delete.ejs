@@ -6,10 +6,9 @@
                     <div class="ui form">
 			<%- include('header.ejs') %>
 				<h2> Do you really want to delete id=<%- word['id'] %>, <%- word['na\'vi'] %> <%- word['type'] %> ?</h2>
-					<div id="save-button" class="ui floated right primary submit icon labeled button">
-						Save
-					<i class="check icon"></i>
-					</div>
+					<form method="post" action="/delete?word=<%= word['id'] %>">
+					<button type="submit" id="delete-button"">Delete</button>
+					</form>
 					<a href="/" class="ui floated right submit button"> Cancel </a>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
