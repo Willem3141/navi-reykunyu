@@ -268,6 +268,7 @@ app.post('/delete', (req,res)=> {
     }
 	console.log("deleting",id,"for user",req.user);
 	edit.deleteWordData(id,req.user);
+    reykunyu.reloadData();
     res.redirect('/history');
 })
 
