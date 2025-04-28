@@ -96,8 +96,8 @@ export function reload(): string[] {
 			dataErrors.push('Duplicate word/type [' + wordTypeKey + '] in words.json');
 		}
 		wordTypeKeys[wordTypeKey] = id;
-        words.set(id, word);
-    }
+		words.set(id, word);
+	}
 
 	return dataErrors;
 }
