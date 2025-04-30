@@ -30,6 +30,7 @@ reload();
 // Processes the dictionary data.
 // Returns a list of data errors.
 export function reload(): string[] {
+	words.clear();
 	try {
 		wordArray = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
 	} catch (e) {
