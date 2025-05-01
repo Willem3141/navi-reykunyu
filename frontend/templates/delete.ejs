@@ -7,7 +7,7 @@
 			<%- include('header.ejs') %>
 				<h2> Do you really want to delete id=<%- word['id'] %>, <%- word['na\'vi'] %> <%- word['type'] %> ?</h2>
 					<form method="post" action="/delete?word=<%= word['id'] %>">
-					<button type="submit" id="delete-button"">Delete</button>
+					<button type="submit" id="delete-button">Delete</button>
 					</form>
 					<a href="/" class="ui floated right submit button"> Cancel </a>
 		</div>
