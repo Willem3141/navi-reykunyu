@@ -381,6 +381,22 @@ export async function processIncorrectAnswer(user: Express.User, vocab: number):
 		);
 	});
 }
+export async function deleteVocab( table:string, vocab:number): Promise<void> {
+	const tables = ['vocab_status','favorite_words'];
+	if ( !tables.includes(table) ){
+		throw(`deleteVocab: illegal table ${table}. Should be one of ${tables}`);
+	}
+	const cmd = `delete from ${table} where vocab = ${vocab}`;
+	return new Promise((fulfill, reject) => {
+		db.run(cmd, (err: any) => {
+			if (err) {
+				reject(err);
+			} else {
+				fulfill();
+			}
+		});
+	});
+}
 
 /// Increases the SRS stage for an item to the maximum level, *and* schedules it
 /// for immediate review. Can be called only for items that are not yet in the

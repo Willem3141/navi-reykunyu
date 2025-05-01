@@ -245,7 +245,6 @@ app.get('/delete', (req,res)=> {
 		return;
 	}
 	const wordData = edit.getWordData(id);
-	console.log("setting up page for deletion",id,wordData);
 	res.render('delete',pageVariables(req,{
 		'post_url': '/delete',
 		'word': wordData
@@ -253,23 +252,23 @@ app.get('/delete', (req,res)=> {
 	)
 })
 
-app.post('/delete', (req,res)=> {
-    console.log("post delete with req",req);
-    if (!req.user || !req.user['is_admin']) {
-        res.status(403);
-        res.render('403', pageVariables(req));
-        return;
-    }
-    const id = parseInt(req.query['word'] as string, 10);
-    if (isNaN(id)) {
-        res.status(400);
-        res.send('400 Bad Request');
-        return;
-    }
-	console.log("deleting",id,"for user",req.user);
+app.post('/delete', async (req,res)=> {
+	if (!req.user || !req.user['is_admin']) {
+		res.status(403);
+		res.render('403', pageVariables(req));
+		return;
+	}
+	const id = parseInt(req.query['word'] as string, 10);
+	if (isNaN(id)) {
+		res.status(400);
+		res.send('400 Bad Request');
+		return;
+	}
+	await zeykerokyu.deleteVocab('vocab_status',id);
+	await zeykerokyu.deleteVocab('favorite_words',id);
 	edit.deleteWordData(id,req.user);
-    reykunyu.reloadData();
-    res.redirect('/history');
+	reykunyu.reloadData();
+	res.redirect('/history');
 })
 
 app.post('/edit',

@@ -2,7 +2,6 @@
 // storing the history of these edits in data/history.json.
 
 import fs from 'fs';
-//import db from './db'; here as an example but maybe should do manually
 
 function readJson(): WordData[] {
 	return JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
@@ -16,7 +15,7 @@ export function getWordData(id: number): WordData {
 	const json = readJson();
 	const idx = json.findIndex((w) => w.id == id);
 	if (idx == -1) {
-		throw Error('Tried to get word data for a non-existing ID');
+		throw Error(`Tried to get word data for a non-existing ID ${id}`);
 	}
 	const data = json[idx];
 	return data;
@@ -58,7 +57,6 @@ export function deleteWordData(id: number, user: Express.User): void {
 	const data = json[idx];
         json.splice(idx,1);
 	writeJson(json);
-        console.log("deleted data",data);
 
 	// add history entry
 	let history = JSON.parse(fs.readFileSync('./data/history.json', 'utf8'));
@@ -70,8 +68,6 @@ export function deleteWordData(id: number, user: Express.User): void {
 		'data': data
 	});
 	fs.writeFileSync("./data/history.json", JSON.stringify(history));
-	//db.run('delete from favorite_words where vocab = ?',id);
-	//db.run('delete from vocab_status where vocab = ?',id);
 }
 
 export function insertWordData(newData: WordData, user: Express.User): void {
