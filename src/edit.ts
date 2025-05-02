@@ -27,10 +27,7 @@ export function updateWordData(id: number, newData: WordData, user: Express.User
 	if (idx == -1) {
 		throw Error(`Tried to update word data for a non-existing ID ${id}`);
 	}
-	const data = json[idx];//not sure about this. Maybe use an at and catch?
-	if (!data) {
-		throw Error(`Tried to update word data for a non-existing ID ${id}`);
-	}
+	const data = json[idx];
 	if (newData['id'] !== id) {
 		throw Error('Tried to update word data containing the incorrect ID');
 	}
@@ -64,7 +61,7 @@ export function deleteWordData(id: number, user: Express.User): void {
 		'user': user['username'],
 		'date': new Date(),
 		'id': id,
-		'deleted': 1,
+		'type': 'deleted',
 		'data': data
 	});
 	fs.writeFileSync("./data/history.json", JSON.stringify(history));
