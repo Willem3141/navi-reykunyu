@@ -455,7 +455,9 @@ app.get('/study',
 			const courses = await zeykerokyu.getCourses();
 			if (req.user) {
 				const count = await zeykerokyu.getReviewableCount(req.user);
-				res.render('study', pageVariables(req, { courses: courses, reviewableCount: count }));
+				const learned = await zeykerokyu.getLearnedCount(req.user);
+                                const ratio = `${count}/${learned}`;
+				res.render('study', pageVariables(req, { courses: courses, reviewableCount: count, learned: learned, ratio: ratio }));
 			} else {
 				res.render('study-landing', pageVariables(req, { courses: courses }));
 			};
