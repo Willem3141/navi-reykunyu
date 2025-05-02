@@ -130,13 +130,17 @@ export async function getItemsForLesson(courseId: number, lessonId: number, user
 function vocabIDsToWordData(items: UnprocessedLearnableItem[]): LearnableItem[] {
 	let result: LearnableItem[] = [];
 	for (let item of items) {
-		let resultItem: LearnableItem = { 
-			'vocab': reykunyu.getWord(item['vocab'])
-		};
-		if (item['comment']) {
-			resultItem['comment'] = item['comment'];
+		try {
+			let resultItem: LearnableItem = { 
+				'vocab': reykunyu.getWord(item['vocab'])
+			};
+			if (item['comment']) {
+				resultItem['comment'] = item['comment'];
+			}
+			result.push(resultItem);
+		} catch (err){
+			console.log(err);
 		}
-		result.push(resultItem);
 	}
 	return result;
 }
@@ -375,6 +379,22 @@ export async function processIncorrectAnswer(user: Express.User, vocab: number):
 				}
 			}
 		);
+	});
+}
+export async function deleteVocab( table:string, vocab:number): Promise<void> {
+	const tables = ['vocab_status','favorite_words'];
+	if ( !tables.includes(table) ){
+		throw(`deleteVocab: illegal table ${table}. Should be one of ${tables}`);
+	}
+	const cmd = `delete from ${table} where vocab = ${vocab}`;
+	return new Promise((fulfill, reject) => {
+		db.run(cmd, (err: any) => {
+			if (err) {
+				reject(err);
+			} else {
+				fulfill();
+			}
+		});
 	});
 }
 

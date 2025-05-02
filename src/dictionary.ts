@@ -12,7 +12,8 @@ import fs from 'fs';
 import * as dialect from './dialect';
 import * as output from './output';
 
-let words: WordData[];
+let wordArray: WordData[];
+let words = new Map<number,WordData>();
 
 // dictionaries of all Na'vi words in the database, one per dialect
 // each dictionary is a mapping from strings to (arrays of) IDs in `words`
@@ -29,8 +30,9 @@ reload();
 // Processes the dictionary data.
 // Returns a list of data errors.
 export function reload(): string[] {
+	words.clear();
 	try {
-		words = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
+		wordArray = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
 	} catch (e) {
 		output.error('words.json not found, exiting');
 		output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
@@ -56,9 +58,10 @@ export function reload(): string[] {
 
 	let dataErrors: string[] = [];
 
-	for (let i = 0; i < words.length; i++) {
-		let word = words[i];
+	for (let i = 0; i < wordArray.length; i++) {
+		let word = wordArray[i];
 
+                let id = word['id'];
 		// dialect forms of the word
 		word['word'] = {
 			'combined': word["na'vi"],
@@ -79,12 +82,12 @@ export function reload(): string[] {
 			if (!searchables[dialect].hasOwnProperty(searchable)) {
 				searchables[dialect][searchable] = [];
 			}
-			searchables[dialect][searchable].push(i);
+			searchables[dialect][searchable].push(id);
 			if (!searchables['combined'].hasOwnProperty(searchable)) {
 				searchables['combined'][searchable] = [];
 			}
-			if (!searchables['combined'][searchable].includes(i)) {
-				searchables['combined'][searchable].push(i);
+			if (!searchables['combined'][searchable].includes(id)) {
+				searchables['combined'][searchable].push(id);
 			}
 		}
 
@@ -93,14 +96,20 @@ export function reload(): string[] {
 		if (wordTypeKeys.hasOwnProperty(wordTypeKey)) {
 			dataErrors.push('Duplicate word/type [' + wordTypeKey + '] in words.json');
 		}
-		wordTypeKeys[wordTypeKey] = i;
+		wordTypeKeys[wordTypeKey] = id;
+		words.set(id, word);
 	}
 
 	return dataErrors;
 }
 
 export function getById(id: number): WordData {
-	return words[id];
+    let res : WordData | undefined = words.get(id);
+    if ( res == undefined ) {
+        throw new Error("undefined id " + String(id));
+    } else {
+        return res;
+    }
 }
 
 // Returns the given word of the given type.
@@ -109,7 +118,8 @@ export function getById(id: number): WordData {
 export function get(word: string, type: string, dialect: Dialect): WordData | null {
 	if (searchables[dialect].hasOwnProperty(word)) {
 		for (let id of searchables[dialect][word]) {
-			let result = words[id];
+			let result = words.get(id);
+                if ( !result ) continue;
 			if (result['type'] === type) {
 				return deepCopy(result);
 			}
@@ -123,7 +133,7 @@ export function get(word: string, type: string, dialect: Dialect): WordData | nu
 export function getEditable(word: string, type: string): WordData | null {
 	if (searchables['FN'].hasOwnProperty(word)) {
 		for (let id of searchables['FN'][word]) {
-			let result = words[id];
+			let result = getById(id);
 			if (result['type'] === type) {
 				return result;
 			}
@@ -151,7 +161,7 @@ export function getNotOfTypes(word: string, types: string[], dialect: Dialect): 
 	let results = [];
 	if (searchables[dialect].hasOwnProperty(word)) {
 		for (let id of searchables[dialect][word]) {
-			let result = words[id];
+			let result = getById(id);
 			if (!types.includes(result['type'])) {
 				results.push(JSON.parse(JSON.stringify(result)));
 			}
@@ -161,7 +171,9 @@ export function getNotOfTypes(word: string, types: string[], dialect: Dialect): 
 }
 
 export function getAll(): WordData[] {
-	return words;
+    //return Array.from(words.values());
+    // only place this is exposed.
+	return wordArray;
 }
 
 function deepCopy<T>(object: T): T {

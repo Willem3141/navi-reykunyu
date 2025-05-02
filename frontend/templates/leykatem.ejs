@@ -271,6 +271,11 @@ const types = [
 				</a>
 				<a href="/" class="ui floated right submit button">
 					Cancel
+				<% if ( word['na\'vi'] ){ %>
+					<a href="/delete?word=<%= word['id'] %>" id="delete-button" class="ui floated right submit button red">
+    					Delete
+					</a>
+				<% } %>
 				</a>
 			</div>
 		</div>

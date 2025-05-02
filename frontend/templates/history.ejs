@@ -28,6 +28,8 @@
 						<td><%- htmlMarkup(item['data']['na\'vi']) %> <span class="muted">(<%= item['data']['type'] %>)</span></td>
 						<% if (item['old']) { %>
 							<td><span class="muted">edited</span></td>
+						<% } else if (item['type'] == 'deleted') { %>
+							<td><span class="muted">deleted</span></td>
 						<% } else { %>
 							<td><span class="muted">added</span></td>
 						<% } %>
