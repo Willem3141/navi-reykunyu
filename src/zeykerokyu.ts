@@ -275,9 +275,18 @@ export async function getReviewableCountForLesson(courseId: number, lessonId: nu
 		);
 	});
 }
-
-/// If an item is put into stage i, then its next review should be scheduled
-/// after time intervalDuration[i].
+export async function getLearnedCount( user: Express.User): Promise<number> {
+	return new Promise((fulfill, reject) => {
+		db.get(
+			`select count() from vocab_status where user=? and srs_stage > 0
+			`, user.username, (err: Error | null, result: Record<'count()', number>) => {
+				if (err) {
+					reject(err);
+				}
+				fulfill(result['count()']);
+			}
+		);
+	}); } /// If an item is put into stage i, then its next review should be scheduled /// after time intervalDuration[i].
 const intervalDuration = [
 	'0 hours',
 	'0 hours',
