@@ -1,10 +1,10 @@
 {
 	"compilerOptions": {
 		"strict": true,
-		"module": "amd",
-		"target": "es2021",
+		"module": "es2022",
+		"target": "es2022",
 		"noEmit": true,
-		"lib": ["es2021", "webworker"],
+		"lib": ["es2022", "webworker"],
 		"types": [],
 		"paths": {
 			"src/*": ["../../src/*"]

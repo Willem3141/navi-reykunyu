@@ -10,8 +10,6 @@ import Reykunyu from 'src/reykunyu';
 
 console.log('Starting Reykunyu\'s service worker');
 
-let reykunyu: Reykunyu;
-
 // TypeScript hack: TS doesn't know we are in a service worker, so it doesn't
 // declare self as a ServiceWorkerGlobalScope. We override that here; see
 // https://github.com/microsoft/TypeScript/issues/14877#issuecomment-493729050.
@@ -20,6 +18,7 @@ declare var self: ServiceWorkerGlobalScope;
 
 const staticResourceNames = [
 	"/offline",
+	"/offline/unavailable",
 	"/words.json",
 	"/css/index.css",
 	"/fonts/GentiumPlus-Regular.woff2",
@@ -65,18 +64,29 @@ const cacheFallback = async (request: Request): Promise<Response> => {
 	if (responseFromCache) {
 		return responseFromCache;
 	}
+	// fallback: offline unavailable page
+	const unavailableResponseFromCache = await caches.match('/offline/unavailable');
+	if (unavailableResponseFromCache) {
+		return unavailableResponseFromCache;
+	}
+	// if something went wrong: fallback to hardcoded error
 	return new Response('No network connection', {
 		'status': 408,
 		'headers': { 'Content-Type': 'text/plain' }
 	});
 };
 
-fetch('/words.json').then(async (res) => {
-	let dictionaryJSON = await res.json();
+let reykunyu: Reykunyu | null = null;
+
+const initializeReykunyu = async () => {
+	const words = await caches.match('/words.json');
+	if (!words) {
+		throw Error('Dictionary data not found in cache');
+	}
+	let dictionaryJSON = await words.json();
 	reykunyu = new Reykunyu(dictionaryJSON);
-}).catch((reason: any) => {
-	console.error('Couldn\'t fetch dictionary data', reason);
-});
+};
+const initializePromise = initializeReykunyu();
 
 const getOfflineResponse = async (request: Request): Promise<Response> => {
 	const url = new URL(request.url);
@@ -86,6 +96,13 @@ const getOfflineResponse = async (request: Request): Promise<Response> => {
 		const query = url.searchParams.get("query")!; // TODO proper error handling...
 		const language = url.searchParams.get("language")!;
 		const dialect = url.searchParams.get("dialect")! as Dialect;
+		await initializePromise;
+		if (!reykunyu) {
+			return new Response('Service worker couldn\'t access dictionary data', {
+				'status': 500,
+				'headers': { 'Content-Type': 'text/plain' }
+			});
+		}
 		let fromNaviResult = reykunyu.getResponsesFor(query, dialect);
 		let toNaviResult = reykunyu.getReverseResponsesFor(query, language, dialect);
 		let result = {

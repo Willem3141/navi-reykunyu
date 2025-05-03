@@ -99,7 +99,8 @@ class Reykunyu {
 
 			try {
 				const registration = await navigator.serviceWorker.register('/js/sw.js', {
-					'scope': '/'
+					'scope': '/',
+					'type': 'module'
 				});
 			} catch (e) {
 				$('#offline-mode-progress')

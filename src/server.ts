@@ -161,6 +161,16 @@ app.get('/offline',
 	}
 );
 
+app.get('/offline/unavailable',
+	(req, res) => {
+		let variables: any = {};
+		variables['_'] = translations.span_;
+		variables['development'] = config.hasOwnProperty('development') && config['development'];
+		variables['offline'] = true;
+		res.render('offline-unavailable', variables);
+	}
+);
+
 const staticRoot = './frontend/dist';
 app.use(express.static(staticRoot));
 
