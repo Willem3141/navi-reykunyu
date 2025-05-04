@@ -115,11 +115,13 @@ class Reykunyu {
 					'type': 'module'
 				});
 
-				// When we're done, show the remove instead of the download
-				// button.
-				$('#offline-mode-download-button').addClass('disabled');
-				$('#offline-mode-progress').text('').hide();
-				$('#offline-mode-remove-button').show();
+				// When the service worker is ready, show the remove instead of
+				// the download button.
+				navigator.serviceWorker.ready.then(() => {
+					$('#offline-mode-download-button').addClass('disabled');
+					$('#offline-mode-progress').text('').hide();
+					$('#offline-mode-remove-button').show();
+				});
 
 			} catch (e) {
 				$('#offline-mode-progress')
