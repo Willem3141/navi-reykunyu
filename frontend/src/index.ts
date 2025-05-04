@@ -1593,16 +1593,19 @@ class Reykunyu {
 		const $results = $('#results');
 		$.getJSON('/api/annotated/search', { 'query': query })
 			.done((result) => {
+				this.reloadIfOfflineStatusChanged(result);
 				$results.empty();
 
-				if (result.length) {
-					for (let i = 0; i < result.length; i++) {
-						const definition = result[i];
+				if (result['results'].length) {
+					for (let i = 0; i < result['results'].length; i++) {
+						const definition = result['results'][i];
 						$results.append(this.createAnnotatedBlock(definition));
 					}
 					$results.append(this.createAnnotatedFooter());
+				} else if (result.hasOwnProperty('offline') && result['offline']) {
+					$results.append(this.createErrorBlock(_('offline-unavailable'), _('offline-unavailable-annotated')));
 				} else {
-					$results.append(this.createErrorBlock(_("no-results"), _("no-results-description-annotated")));
+					$results.append(this.createErrorBlock(_('no-results'), _('no-results-description-annotated')));
 				}
 			})
 			.fail(() => {

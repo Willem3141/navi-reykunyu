@@ -148,6 +148,9 @@ const getOfflineResponse = async (request: Request): Promise<Response> => {
 			const second = url.searchParams.get('second')!;
 			result = conjugationString.formsFromString(verbs.conjugate(verb, [prefirst, first, second]));
 
+		} else if (path === '/api/annotated/search' || path === '/api/annotated/suggest') {
+			result = {'results': []};  // stub; AD search is not supported in offline mode
+
 		} else {
 			return new Response('Unknown API request', {
 				'status': 404,
