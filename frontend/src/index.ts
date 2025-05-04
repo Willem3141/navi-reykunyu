@@ -84,7 +84,7 @@ class Reykunyu {
 			$('#dialect-rn-warning').toggle($('#dialect-rn-radiobutton').prop('checked'));
 		});
 
-		// offline mode
+		// offline mode settings
 		$('#offline-mode-download-button').on('click', async () => {
 			$('#offline-mode-download-button').addClass('disabled');
 			$('#offline-mode-progress')
@@ -1445,6 +1445,7 @@ class Reykunyu {
 		const $modeTabs = $('#tab-mode-bar');
 		$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': this.getLanguage(), 'dialect': this.getDialect() })
 			.done((tìeyng) => {
+				this.reloadIfOfflineStatusChanged(tìeyng);
 				const fromNaviResult: FromNaviResult = tìeyng['fromNa\'vi'];
 				const toNaviResult: ToNaviResult = tìeyng['toNa\'vi'];
 				$results.empty();
@@ -1650,6 +1651,21 @@ class Reykunyu {
 				$results.empty();
 				$results.append(this.createErrorBlock(_('searching-error'), _('searching-error-description')));
 			});
+	}
+
+	/// Given a response from the server (which contains `offline`: true if it
+	/// came from the service worker), and the current offline status of the
+	/// page, check if the two are still in sync. If not, reload the page. This
+	/// way, we ensure that the “offline mode” label is shown to the user if the
+	/// latest search result came from the service worker, and it is not shown
+	/// anymore when the internet connection is restored.
+	reloadIfOfflineStatusChanged(response: any): void {
+		const responseCameFromServiceWorker: boolean = response.hasOwnProperty('offline') && response['offline'];
+		const pageWasLoadedInOfflineMode: boolean = $('body').hasClass('offline');
+
+		if (responseCameFromServiceWorker !== pageWasLoadedInOfflineMode) {
+			window.location.reload();
+		}
 	}
 }
 
