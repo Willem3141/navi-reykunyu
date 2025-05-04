@@ -171,10 +171,9 @@ const getOfflineResponse = async (request: Request): Promise<Response> => {
 
 self.addEventListener("fetch", (event) => {
 	event.respondWith(
+		// We fallback to generating an offline response when a network error
+		// occurred, but not when we get an HTTP error.
 		fetch(event.request).then((response) => {
-			if (!response.ok) {
-				return getOfflineResponse(event.request);
-			}
 			return response;
 		}).catch((error) => {
 			return getOfflineResponse(event.request);
