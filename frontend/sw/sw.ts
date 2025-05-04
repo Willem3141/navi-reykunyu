@@ -7,6 +7,8 @@
 // service worker basically runs Reykunyu's server code on the client side.
 
 import Reykunyu from 'src/reykunyu';
+import * as conjugationString from 'src/conjugationString';
+import * as verbs from 'src/verbs/conjugator';
 
 console.log('Starting Reykunyu\'s service worker');
 
@@ -137,6 +139,14 @@ const getOfflineResponse = async (request: Request): Promise<Response> => {
 
 		} else if (path === '/api/list/all') {
 			result = reykunyu.getAll();
+
+		} else if (path === '/api/conjugate/verb') {
+			result = reykunyu.getAll();
+			const verb = url.searchParams.get('verb')!;
+			const prefirst = url.searchParams.get('prefirst')!;
+			const first = url.searchParams.get('first')!;
+			const second = url.searchParams.get('second')!;
+			result = conjugationString.formsFromString(verbs.conjugate(verb, [prefirst, first, second]));
 
 		} else {
 			return new Response('Unknown API request', {
