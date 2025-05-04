@@ -1080,7 +1080,7 @@ export default class Reykunyu {
 	getRhymes(query: string, dialect: Dialect): RhymesResult {
 		query = query.toLowerCase();
 
-		let words: RhymesResult = [];
+		let words: WordData[][][] = [];
 
 		for (const word of this.dictionary.getAll()) {
 			if (word['pronunciation'] && word['pronunciation'].length > 0) {
@@ -1114,7 +1114,7 @@ export default class Reykunyu {
 			}
 		}
 
-		return words;
+		return {'results': words};
 	}
 
 	/*export function getAllSentences(): { [key: string]: Sentence } {

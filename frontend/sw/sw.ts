@@ -137,6 +137,11 @@ const getOfflineResponse = async (request: Request): Promise<Response> => {
 			const dialect = url.searchParams.get('dialect')! as Dialect;
 			result = reykunyu.getSuggestionsFor(query, language, dialect);
 
+		} else if (path === '/api/rhymes') {
+			const query = url.searchParams.get('tìpawm')!;
+			const dialect = url.searchParams.get('dialect')! as Dialect;
+			result = reykunyu.getRhymes(query, dialect);
+
 		} else if (path === '/api/list/all') {
 			result = reykunyu.getAll();
 

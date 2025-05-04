@@ -1648,20 +1648,22 @@ class Reykunyu {
 		const $results = $('#results');
 		$.getJSON('/api/rhymes', { 'tìpawm': tìpawm, 'dialect': this.getDialect() })
 			.done((response: RhymesResult) => {
+				this.reloadIfOfflineStatusChanged(response);
 				$results.empty();
 
-				if (response.length === 0) {
+				if (response['results'].length === 0) {
 					$results.append(this.createErrorBlock(_("no-results"), ''));
 				} else {
 					let $result = $('<div/>').addClass('result');
 					$results.append($result);
-					for (const syllableCount in response) {
-						if (parseInt(syllableCount, 10) > 0 && response[syllableCount]) {
-							$result.append(this.rhymesWithSyllableCountSection(parseInt(syllableCount, 10), response[syllableCount]));
+					for (const syllableCount in response['results']) {
+						if (parseInt(syllableCount, 10) > 0 && response['results'][syllableCount]) {
+							$result.append(this.rhymesWithSyllableCountSection(
+								parseInt(syllableCount, 10), response['results'][syllableCount]));
 						}
 					}
-					if (response[0]) {
-						$result.append(this.rhymesWithSyllableCountSection(0, response[0]));
+					if (response['results'][0]) {
+						$result.append(this.rhymesWithSyllableCountSection(0, response['results'][0]));
 					}
 				}
 			})
