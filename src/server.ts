@@ -90,6 +90,15 @@ function pageVariables(req: Request, toAdd?: any): any {
 	return variables;
 }
 
+function offlinePageVariables(req: Request, toAdd?: any): any {
+	let variables: any = { ...toAdd };
+	variables['_'] = translations.span_;
+	variables['messages'] = [];
+	variables['development'] = config.hasOwnProperty('development') && config['development'];
+	variables['offline'] = true;
+	return variables;
+}
+
 /**
  * Reads the `lang` cookie and sets the language (in the `translations` module)
  * accordingly.
@@ -148,26 +157,28 @@ app.get('/js/sw.js',
 	}
 );
 
-// version of the index page without customization (for offline use)
+// versions of the main pages without customization (for offline use)
 app.get('/offline',
 	(req, res) => {
-		let variables: any = {};
-		variables['_'] = translations.span_;
-		variables['development'] = config.hasOwnProperty('development') && config['development'];
-		variables['query'] = '';
-		variables['messages'] = [];
-		variables['offline'] = true;
-		res.render('index', variables);
+		res.render('index', offlinePageVariables(req, { query: '' }));
+	}
+);
+
+app.get('/offline/help',
+	(req, res) => {
+		res.render('help', offlinePageVariables(req));
+	}
+);
+
+app.get('/offline/all',
+	(req, res) => {
+		res.render('fralì\'u', offlinePageVariables(req));
 	}
 );
 
 app.get('/offline/unavailable',
 	(req, res) => {
-		let variables: any = {};
-		variables['_'] = translations.span_;
-		variables['development'] = config.hasOwnProperty('development') && config['development'];
-		variables['offline'] = true;
-		res.render('offline-unavailable', variables);
+		res.render('offline-unavailable', offlinePageVariables(req));
 	}
 );
 

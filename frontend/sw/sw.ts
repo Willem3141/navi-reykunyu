@@ -18,6 +18,8 @@ declare var self: ServiceWorkerGlobalScope;
 
 const staticResourceNames = [
 	"/offline",
+	"/offline/all",
+	"/offline/help",
 	"/offline/unavailable",
 	"/words.json",
 	"/css/index.css",
@@ -30,6 +32,8 @@ const staticResourceNames = [
 	"/images/reykunyu.svg",
 	"/images/srungtsyìp.svg",
 	"/images/tsahey.svg",
+	"/js/all-words.js",
+	"/js/help.js",
 	"/js/index.js",
 	"/js/ui-translations.js",
 	"/manifest.webmanifest",
@@ -56,18 +60,27 @@ self.addEventListener('activate', (event) => {
 	self.clients.claim();
 });
 
+const offlinePaths: Record<string, string> = {
+	'/': '/offline',
+	'/all': '/offline/all',
+	'/help': '/offline/help'
+};
+
 // fetch: intercept requests if the server is unreachable
 const cacheFallback = async (request: Request): Promise<Response> => {
 	const url = new URL(request.url);
 	const path = url.pathname;
-	const responseFromCache = await caches.match(path === '/' ? '/offline' : request);
+	const responseFromCache = await caches.match(offlinePaths.hasOwnProperty(path) ? offlinePaths[path] : request);
 	if (responseFromCache) {
 		return responseFromCache;
 	}
 	// fallback: offline unavailable page
 	const unavailableResponseFromCache = await caches.match('/offline/unavailable');
 	if (unavailableResponseFromCache) {
-		return unavailableResponseFromCache;
+		return new Response(unavailableResponseFromCache.body, {
+			'status': 408,
+			'headers': { 'Content-Type': 'text/html' }
+		});
 	}
 	// if something went wrong: fallback to hardcoded error
 	return new Response('No network connection', {
