@@ -85,6 +85,18 @@ class Reykunyu {
 		});
 
 		// offline mode settings
+
+		// If there already is a service worker, show the remove instead of the
+		// download button.
+		if ('serviceWorker' in navigator) {
+			if (navigator.serviceWorker.controller) {
+				$('#offline-mode-download-button').addClass('disabled');
+				$('#offline-mode-progress').text('').hide();
+				$('#offline-mode-remove-button').show();
+			}
+		}
+
+		// When the download button is clicked, install the service worker.
 		$('#offline-mode-download-button').on('click', async () => {
 			$('#offline-mode-download-button').addClass('disabled');
 			$('#offline-mode-progress')
@@ -98,10 +110,17 @@ class Reykunyu {
 			}
 
 			try {
-				const registration = await navigator.serviceWorker.register('/js/sw.js', {
+				await navigator.serviceWorker.register('/js/sw.js', {
 					'scope': '/',
 					'type': 'module'
 				});
+
+				// When we're done, show the remove instead of the download
+				// button.
+				$('#offline-mode-download-button').addClass('disabled');
+				$('#offline-mode-progress').text('').hide();
+				$('#offline-mode-remove-button').show();
+
 			} catch (e) {
 				$('#offline-mode-progress')
 					.text(_('settings-offline-mode-error-while-installing'));
@@ -110,14 +129,8 @@ class Reykunyu {
 			}
 		});
 
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.ready.then(() => {
-				$('#offline-mode-download-button').addClass('disabled');
-				$('#offline-mode-progress').text('').hide();
-				$('#offline-mode-remove-button').show();
-			});
-		}
-
+		// When the remove button is clicked, just uninstall all service
+		// workers.
 		$('#offline-mode-remove-button').on('click', async () => {
 			const registrations = await navigator.serviceWorker.getRegistrations();
 			for (const registration of registrations) {
