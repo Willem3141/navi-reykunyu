@@ -26,12 +26,16 @@ const staticResourceNames = [
 	"/fonts/GentiumPlus-Regular.woff2",
 	"/fonts/Recursive_VF_1.078.woff2",
 	"/images/favicon.png",
+	"/images/infixes-arrow.svg",
 	"/images/ke'u.svg",
+	"/images/pronunciation-arrow.svg",
 	"/images/reykunyu-dark.svg",
 	"/images/reykunyu.png",
 	"/images/reykunyu.svg",
 	"/images/srungtsyìp.svg",
+	"/images/translation-arrow.svg",
 	"/images/tsahey.svg",
+	"/images/type-arrow.svg",
 	"/js/all-words.js",
 	"/js/help.js",
 	"/js/index.js",
@@ -104,11 +108,8 @@ const initializePromise = initializeReykunyu();
 const getOfflineResponse = async (request: Request): Promise<Response> => {
 	const url = new URL(request.url);
 	const path = url.pathname;
-	if (path === '/api/fwew-search') {
-		// if it's a search, then search locally and return that
-		const query = url.searchParams.get("query")!; // TODO proper error handling...
-		const language = url.searchParams.get("language")!;
-		const dialect = url.searchParams.get("dialect")! as Dialect;
+	if (path.startsWith('/api')) {
+		// handle API calls locally
 		await initializePromise;
 		if (!reykunyu) {
 			return new Response('Service worker couldn\'t access dictionary data', {
@@ -116,13 +117,34 @@ const getOfflineResponse = async (request: Request): Promise<Response> => {
 				'headers': { 'Content-Type': 'text/plain' }
 			});
 		}
-		let fromNaviResult = reykunyu.getResponsesFor(query, dialect);
-		let toNaviResult = reykunyu.getReverseResponsesFor(query, language, dialect);
-		let result = {
-			'fromNa\'vi': fromNaviResult,
-			'toNa\'vi': toNaviResult,
-			'offline': true
-		};
+		let result: any = {};
+		if (path === '/api/fwew-search') {
+			const query = url.searchParams.get('query')!;
+			const language = url.searchParams.get('language')!;
+			const dialect = url.searchParams.get('dialect')! as Dialect;
+			const fromNaviResult = reykunyu.getResponsesFor(query, dialect);
+			const toNaviResult = reykunyu.getReverseResponsesFor(query, language, dialect);
+			result = {
+				'fromNa\'vi': fromNaviResult,
+				'toNa\'vi': toNaviResult
+			};
+
+		} else if (path === '/api/mok') {
+			const query = url.searchParams.get('tìpawm')!;
+			const language = url.searchParams.get('language')!;
+			const dialect = url.searchParams.get('dialect')! as Dialect;
+			result = reykunyu.getSuggestionsFor(query, language, dialect);
+
+		} else if (path === '/api/list/all') {
+			result = reykunyu.getAll();
+
+		} else {
+			return new Response('Unknown API request', {
+				'status': 404,
+				'headers': { 'Content-Type': 'text/plain' }
+			});
+		}
+		result['offline'] = true;
 		const response = new Response(JSON.stringify(result), {
 			headers: { 'Content-Type': 'application/json' }
 		});
