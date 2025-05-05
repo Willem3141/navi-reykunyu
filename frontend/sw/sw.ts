@@ -175,6 +175,11 @@ const getOfflineResponse = async (request: Request): Promise<Response> => {
 }
 
 self.addEventListener("fetch", (event) => {
+	// Leave POST requests alone.
+	if (event.request.method !== "GET") {
+		return;
+	}
+
 	event.respondWith(
 		// We fallback to generating an offline response when a network error
 		// occurred, but not when we get an HTTP error.
