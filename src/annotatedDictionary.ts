@@ -16,7 +16,7 @@ Dictionary will not work.`);
 	annotated = {};
 }
 
-export function getResponsesFor(query: string): string[] {
+export function getResponsesFor(query: string): {'results': string[]} {
 	// always pass combined here, as the Annotated Dictionary data is in FN;
 	// this way if someone inputs d, b, g they get preprocessed into tx, px, kx
 	query = preprocess.preprocessQuery(query, 'combined');
@@ -33,7 +33,7 @@ export function getResponsesFor(query: string): string[] {
 		}
 	}
 
-	return results;
+	return {'results': results};
 }
 
 export function getSuggestionsFor(query: string): Suggestions {

@@ -2,7 +2,7 @@
 
 <html>
 	<%- include('head.ejs') %>
-	<body<%- user ? ' class="logged-in' + (user['is_admin'] ? ' logged-in-admin' : '') + '"' : '' %>>
+	<body class="<%- locals['user'] ? ' logged-in' + (user['is_admin'] ? ' logged-in-admin' : '') : '' %><%- locals['offline'] ? ' offline' : '' %>">
 		<div class="container">
 			<%- include('header.ejs', { 'isMainPage': true }) %>
 

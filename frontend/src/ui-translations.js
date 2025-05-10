@@ -1,7 +1,7 @@
 let strings = {};
 
-// initialize the language dropdown
 $(function () {
+	// initialize the language dropdown
 	const $dropdown = $('#language-dropdown');
 	if ($dropdown.length) {
 		$dropdown.dropdown();
@@ -16,6 +16,12 @@ $(function () {
 		$dropdown.dropdown({
 			onChange: setNewLanguage
 		});
+	}
+
+	// if the page was loaded offline from the service worker, it may not have
+	// the correct language, so we need to immediately trigger a language update
+	if ($('body').hasClass('offline')) {
+		setNewLanguage(localStorage.getItem('reykunyu-language'));
 	}
 });
 

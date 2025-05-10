@@ -19,8 +19,8 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 import * as dialect from './dialect';
 import * as edit from './edit';
 import * as output from './output';
-import * as reykunyu from './reykunyu';
-import * as zeykerokyu from './zeykerokyu';
+import Reykunyu from './reykunyu';
+import Zeykerokyu from './zeykerokyu';
 
 import bodyParser from 'body-parser';
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -34,9 +34,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const staticRoot = './frontend/dist';
-app.use(express.static(staticRoot));
-
 app.use('/ayrel', express.static('./data/ayrel'));
 app.use('/fam', express.static('./data/fam'));
 
@@ -47,14 +44,51 @@ import * as translations from './translations';
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json', 'utf8'));
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
+export let reykunyu: Reykunyu;
+export let zeykerokyu: Zeykerokyu;
+
+function initializeReykunyu() {
+	let dictionaryJSON;
+	try {
+		dictionaryJSON = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
+	} catch (e) {
+		output.error('words.json not found, exiting');
+		output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
+This file does not seem to be present. If you want to run a local mirror
+of the instance at https://reykunyu.lu, you can copy the dictionary data
+from there:
+
+$ wget -O data/words.json https://reykunyu.lu/words.json
+
+Alternatively, you can start with an empty database:
+
+$ echo "{}" > data/words.json`);
+		process.exit(1);
+	}
+	reykunyu = new Reykunyu(dictionaryJSON);
+
+	let coursesJSON: any = [];
+	try {
+		coursesJSON = JSON.parse(fs.readFileSync('./data/courses.json', 'utf8'));
+	} catch (e) {
+		output.warning('Courses data not found');
+		output.hint(`Reykunyu uses a JSON file called courses.json that contains courses
+for the vocab study tool. This file does not seem to be present. This
+warning is harmless, but the vocab study tool won't work.`);
+	}
+	zeykerokyu = new Zeykerokyu(coursesJSON, reykunyu);
+}
+
+initializeReykunyu();
+
 /**
  * Returns the standard template variables for the given request, which should
  * be available for all pages (user, translation function, et cetera). To add
  * custom variables to a given template, pass them via `toAdd`; these variables
  * are added to the standard ones.
  */
-function pageVariables(req: Request, toAdd?: any) {
-	let variables = { ...toAdd };
+function pageVariables(req: Request, toAdd?: any): any {
+	let variables: any = { ...toAdd };
 	variables['user'] = req.user;
 	variables['_'] = translations.span_;
 	if (req.session.messages) {
@@ -67,6 +101,15 @@ function pageVariables(req: Request, toAdd?: any) {
 	if (req.user?.is_admin) {
 		variables['dataErrorCount'] = reykunyu.getDataErrorCount();
 	}
+	return variables;
+}
+
+function offlinePageVariables(req: Request, toAdd?: any): any {
+	let variables: any = { ...toAdd };
+	variables['_'] = translations.span_;
+	variables['messages'] = [];
+	variables['development'] = config.hasOwnProperty('development') && config['development'];
+	variables['offline'] = true;
 	return variables;
 }
 
@@ -121,6 +164,41 @@ app.get('/js/ui-translations.js',
 	}
 );
 
+app.get('/js/sw.js',
+	(req, res) => {
+		res.setHeader('Service-Worker-Allowed', '/');
+		res.sendFile('js/sw.js', { root: process.cwd() + '/frontend/dist' });
+	}
+);
+
+// versions of the main pages without customization (for offline use)
+app.get('/offline',
+	(req, res) => {
+		res.render('index', offlinePageVariables(req, { query: '' }));
+	}
+);
+
+app.get('/offline/help',
+	(req, res) => {
+		res.render('help', offlinePageVariables(req));
+	}
+);
+
+app.get('/offline/all',
+	(req, res) => {
+		res.render('fralì\'u', offlinePageVariables(req));
+	}
+);
+
+app.get('/offline/unavailable',
+	(req, res) => {
+		res.render('offline-unavailable', offlinePageVariables(req));
+	}
+);
+
+const staticRoot = './frontend/dist';
+app.use(express.static(staticRoot));
+
 app.get('/all',
 	(req, res) => {
 		res.render("fralì'u", pageVariables(req));
@@ -168,7 +246,7 @@ app.post('/add',
 		}
 
 		edit.insertWordData(data, req.user);
-		reykunyu.reloadData();
+		initializeReykunyu();
 		res.send({
 			'url': '/?q=' + dialect.makeRaw(data["na'vi"])
 		});
@@ -255,7 +333,7 @@ app.post('/edit',
 		}
 
 		edit.updateWordData(id, data, req.user);
-		reykunyu.reloadData();
+		initializeReykunyu();
 		res.send({
 			'url': '/?q=' + dialect.makeRaw(data["na'vi"])
 		});
@@ -299,7 +377,7 @@ app.get('/sources-editor',
 	}
 );
 
-app.get('/corpus-editor',
+/*app.get('/corpus-editor',
 	(req, res) => {
 		if (!req.user || !req.user['is_admin']) {
 			res.status(403);
@@ -414,7 +492,7 @@ app.post('/corpus-editor/edit',
 		reykunyu.saveCorpus();
 		res.send();
 	}
-);
+);*/
 
 app.get('/untranslated',
 	(req, res) => {

@@ -30,7 +30,7 @@
  * ```
  */
 
-import * as dictionary from './dictionary';
+import Dictionary from './dictionary';
 import * as output from './output';
 
 // Replaces word links in the given string.
@@ -38,7 +38,7 @@ import * as output from './output';
 // for. This is for error reporting.
 // \param dataErrors A list of errors that a (potential) error will be appended
 // to.
-export function enrichWordLinks(text: string, originWord: string, dataErrors: string[]): LinkString {
+export function enrichWordLinks(d: Dictionary, text: string, originWord: string, dataErrors: string[]): LinkString {
 
 	// matches word links between brackets
 	const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
@@ -54,7 +54,7 @@ export function enrichWordLinks(text: string, originWord: string, dataErrors: st
 			const navi = pieces[i];
 			const type = pieces[i + 1];
 			const key = navi + ':' + type;
-			const word = dictionary.get(navi, type, 'FN');
+			const word = d.get(navi, type, 'FN');
 			if (word) {
 				list.push(stripToLinkData(word));
 			} else {

@@ -151,7 +151,7 @@ declare type Sentence = {
 	source: string[]
 };
 
-declare type RhymesResult = WordData[][][];
+declare type RhymesResult = {'results': WordData[][][]};
 
 // SRS types
 declare type Course = {

@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import { lemmaForm, addLemmaClass, getTranslation, getShortTranslation, createWordLink, appendLinkString } from './lib';
 
 class Reykunyu {
@@ -80,6 +82,64 @@ class Reykunyu {
 		// TODO temporary: show the RN warning iff RN is selected
 		$('#settings-modal .ui.radio.checkbox').on('click', () => {
 			$('#dialect-rn-warning').toggle($('#dialect-rn-radiobutton').prop('checked'));
+		});
+
+		// offline mode settings
+
+		// If there already is a service worker, show the remove instead of the
+		// download button.
+		if ('serviceWorker' in navigator) {
+			if (navigator.serviceWorker.controller) {
+				$('#offline-mode-download-button').addClass('disabled');
+				$('#offline-mode-progress').text('').hide();
+				$('#offline-mode-remove-button').show();
+			}
+		}
+
+		// When the download button is clicked, install the service worker.
+		$('#offline-mode-download-button').on('click', async () => {
+			$('#offline-mode-download-button').addClass('disabled');
+			$('#offline-mode-progress')
+				.text(_('settings-offline-mode-downloading'))
+				.show();
+
+			if (!('serviceWorker' in navigator)) {
+				$('#offline-mode-progress')
+					.text(_('settings-offline-mode-error-browser-support-missing'));
+				return;
+			}
+
+			try {
+				await navigator.serviceWorker.register('/js/sw.js', {
+					'scope': '/',
+					'type': 'module'
+				});
+
+				// When the service worker is ready, show the remove instead of
+				// the download button.
+				navigator.serviceWorker.ready.then(() => {
+					$('#offline-mode-download-button').addClass('disabled');
+					$('#offline-mode-progress').text('').hide();
+					$('#offline-mode-remove-button').show();
+				});
+
+			} catch (e) {
+				$('#offline-mode-progress')
+					.text(_('settings-offline-mode-error-while-installing'));
+				console.error(e);
+				return;
+			}
+		});
+
+		// When the remove button is clicked, just uninstall all service
+		// workers.
+		$('#offline-mode-remove-button').on('click', async () => {
+			const registrations = await navigator.serviceWorker.getRegistrations();
+			for (const registration of registrations) {
+				registration.unregister();
+			}
+			$('#offline-mode-download-button').removeClass('disabled');
+			$('#offline-mode-remove-button').hide();
 		});
 
 		const self: Reykunyu = this;
@@ -462,7 +522,7 @@ class Reykunyu {
 	// lìupam[0] - aylì'kong lì'uä, fa pamrel a'aw (natkenong "lì-u-pam")
 	// lìupam[1] - holpxay lì'kongä a takuk lì'upam tsatseng ('awvea lì'kong: 1, muvea lì'kong: 2, saylahe)
 	// fnel - fnel lì'uä (kin taluna txo fnel livu "n:si", tsakrr zene sivung lì'ut alu " si")
-	pronunciationSection(lìupam: Pronunciation[] | undefined, fnel: string): JQuery | null {
+	pronunciationSection(lìupam: Pronunciation[] | undefined, fnel: string, includeAudio: boolean): JQuery | null {
 		if (!lìupam || lìupam.length === 0) {
 			return null;
 		}
@@ -489,7 +549,7 @@ class Reykunyu {
 			if (fnel === "n:si" || fnel === "nv:si") {
 				$tìlam.append(" si");
 			}
-			if (lìupam[i].hasOwnProperty('audio')) {
+			if (lìupam[i].hasOwnProperty('audio') && includeAudio) {
 				$tìlam.append(this.pronunciationAudioButtons(lìupam[i]['audio']));
 			}
 		}
@@ -499,7 +559,7 @@ class Reykunyu {
 		return $tìlam;
 	}
 
-	pronunciationSectionIpa(pronunciation: Pronunciation[] | undefined, fnel: string): JQuery | null {
+	pronunciationSectionIpa(pronunciation: Pronunciation[] | undefined, fnel: string, includeAudio: boolean): JQuery | null {
 		if (!pronunciation || pronunciation.length === 0) {
 			return null;
 		}
@@ -515,7 +575,7 @@ class Reykunyu {
 				$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
 				$result.append(' ');
 				$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
-				if (pronunciation[i].hasOwnProperty('audio')) {
+				if (pronunciation[i].hasOwnProperty('audio') && includeAudio) {
 					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
 				}
 				$result.append(' / ');
@@ -525,13 +585,13 @@ class Reykunyu {
 
 			} else if (dialect === 'combined') {
 				$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
-				if (pronunciation[i].hasOwnProperty('audio')) {
+				if (pronunciation[i].hasOwnProperty('audio') && includeAudio) {
 					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
 				}
 
 			} else {
 				$result.append($('<span/>').text(ipa[dialect]).addClass('ipa'));
-				if (ipa[dialect] === ipa['FN'] && pronunciation[i].hasOwnProperty('audio')) {
+				if (ipa[dialect] === ipa['FN'] && pronunciation[i].hasOwnProperty('audio') && includeAudio) {
 					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
 				}
 			}
@@ -1201,6 +1261,7 @@ class Reykunyu {
 	// query -- the query that the user searched for
 	createResultBlock(i: number, r: WordData) {
 		const $result = $('<div/>').addClass('result');
+		const inOfflineMode: boolean = $('body').hasClass('offline');
 
 		const $resultWord = $('<div/>').addClass('result-word');
 		$resultWord.append($('<span/>').addClass('id').text((i + 1) + '.'));
@@ -1215,12 +1276,12 @@ class Reykunyu {
 		}
 
 		if (this.getIPASetting()) {
-			const $pronunciation = this.pronunciationSectionIpa(r["pronunciation"], r["type"]);
+			const $pronunciation = this.pronunciationSectionIpa(r["pronunciation"], r["type"], !inOfflineMode);
 			if ($pronunciation) {
 				$resultWord.append($pronunciation);
 			}
 		} else {
-			const $pronunciation = this.pronunciationSection(r["pronunciation"], r["type"]);
+			const $pronunciation = this.pronunciationSection(r["pronunciation"], r["type"], !inOfflineMode);
 			if ($pronunciation) {
 				$resultWord.append($pronunciation);
 			}
@@ -1248,7 +1309,7 @@ class Reykunyu {
 			}
 		}
 
-		if (r["image"]) {
+		if (r["image"] && !inOfflineMode) {
 			$result.append(this.imageSection(r, r["image"]));
 		}
 
@@ -1400,6 +1461,7 @@ class Reykunyu {
 		const $modeTabs = $('#tab-mode-bar');
 		$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': this.getLanguage(), 'dialect': this.getDialect() })
 			.done((tìeyng) => {
+				this.reloadIfOfflineStatusChanged(tìeyng);
 				const fromNaviResult: FromNaviResult = tìeyng['fromNa\'vi'];
 				const toNaviResult: ToNaviResult = tìeyng['toNa\'vi'];
 				$results.empty();
@@ -1534,16 +1596,19 @@ class Reykunyu {
 		const $results = $('#results');
 		$.getJSON('/api/annotated/search', { 'query': query })
 			.done((result) => {
+				this.reloadIfOfflineStatusChanged(result);
 				$results.empty();
 
-				if (result.length) {
-					for (let i = 0; i < result.length; i++) {
-						const definition = result[i];
+				if (result['results'].length) {
+					for (let i = 0; i < result['results'].length; i++) {
+						const definition = result['results'][i];
 						$results.append(this.createAnnotatedBlock(definition));
 					}
 					$results.append(this.createAnnotatedFooter());
+				} else if (result.hasOwnProperty('offline') && result['offline']) {
+					$results.append(this.createErrorBlock(_('offline-unavailable'), _('offline-unavailable-annotated')));
 				} else {
-					$results.append(this.createErrorBlock(_("no-results"), _("no-results-description-annotated")));
+					$results.append(this.createErrorBlock(_('no-results'), _('no-results-description-annotated')));
 				}
 			})
 			.fail(() => {
@@ -1584,20 +1649,22 @@ class Reykunyu {
 		const $results = $('#results');
 		$.getJSON('/api/rhymes', { 'tìpawm': tìpawm, 'dialect': this.getDialect() })
 			.done((response: RhymesResult) => {
+				this.reloadIfOfflineStatusChanged(response);
 				$results.empty();
 
-				if (response.length === 0) {
+				if (response['results'].length === 0) {
 					$results.append(this.createErrorBlock(_("no-results"), ''));
 				} else {
 					let $result = $('<div/>').addClass('result');
 					$results.append($result);
-					for (const syllableCount in response) {
-						if (parseInt(syllableCount, 10) > 0 && response[syllableCount]) {
-							$result.append(this.rhymesWithSyllableCountSection(parseInt(syllableCount, 10), response[syllableCount]));
+					for (const syllableCount in response['results']) {
+						if (parseInt(syllableCount, 10) > 0 && response['results'][syllableCount]) {
+							$result.append(this.rhymesWithSyllableCountSection(
+								parseInt(syllableCount, 10), response['results'][syllableCount]));
 						}
 					}
-					if (response[0]) {
-						$result.append(this.rhymesWithSyllableCountSection(0, response[0]));
+					if (response['results'][0]) {
+						$result.append(this.rhymesWithSyllableCountSection(0, response['results'][0]));
 					}
 				}
 			})
@@ -1605,6 +1672,21 @@ class Reykunyu {
 				$results.empty();
 				$results.append(this.createErrorBlock(_('searching-error'), _('searching-error-description')));
 			});
+	}
+
+	/// Given a response from the server (which contains `offline`: true if it
+	/// came from the service worker), and the current offline status of the
+	/// page, check if the two are still in sync. If not, reload the page. This
+	/// way, we ensure that the “offline mode” label is shown to the user if the
+	/// latest search result came from the service worker, and it is not shown
+	/// anymore when the internet connection is restored.
+	reloadIfOfflineStatusChanged(response: any): void {
+		const responseCameFromServiceWorker: boolean = response.hasOwnProperty('offline') && response['offline'];
+		const pageWasLoadedInOfflineMode: boolean = $('body').hasClass('offline');
+
+		if (responseCameFromServiceWorker !== pageWasLoadedInOfflineMode) {
+			window.location.reload();
+		}
 	}
 }
 

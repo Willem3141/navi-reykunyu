@@ -7,168 +7,145 @@
 // uniquely define words by word and type too. We call the combination of a word
 // and its type the key of that word.
 
-import fs from 'fs';
-
 import * as dialect from './dialect';
-import * as output from './output';
 
-let words: WordData[];
+export default class Dictionary {
 
-// dictionaries of all Na'vi words in the database, one per dialect
-// each dictionary is a mapping from strings to (arrays of) IDs in `words`
-// used for searching
-let searchables: Record<Dialect, { [word: string]: number[] }>;
+	words: WordData[];
 
-// dictionary of all word:type keys in the database
-// this is a mapping from strings to IDs in `words`
-// used for resolving word links
-let wordTypeKeys: {[key: string]: number};
+	// dictionaries of all Na'vi words in the database, one per dialect
+	// each dictionary is a mapping from strings to (arrays of) IDs in `words`
+	// used for searching
+	searchables: Record<Dialect, { [word: string]: number[] }>;
 
-reload();
+	// dictionary of all word:type keys in the database
+	// this is a mapping from strings to IDs in `words`
+	// used for resolving word links
+	wordTypeKeys: { [key: string]: number };
 
-// Processes the dictionary data.
-// Returns a list of data errors.
-export function reload(): string[] {
-	try {
-		words = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
-	} catch (e) {
-		output.error('words.json not found, exiting');
-		output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
-	This file does not seem to be present. If you want to run a local mirror
-	of the instance at https://reykunyu.lu, you can copy the dictionary data
-	from there:
+	constructor(dictionaryJSON: any, dataErrors: string[]) {
+		this.words = dictionaryJSON;
 
-	$ wget -O data/words.json https://reykunyu.lu/words.json
-
-	Alternatively, you can start with an empty database:
-
-	$ echo "{}" > data/words.json`);
-		process.exit(1);
-	}
-
-	searchables = {
-		'FN': {},
-		'RN': {},
-		'combined': {}
-	};
-
-	wordTypeKeys = {};
-
-	let dataErrors: string[] = [];
-
-	for (let i = 0; i < words.length; i++) {
-		let word = words[i];
-
-		// dialect forms of the word
-		word['word'] = {
-			'combined': word["na'vi"],
-			'FN': dialect.combinedToFN(word["na'vi"]),
-			'RN': dialect.combinedToRN(word["na'vi"])
-		};
-		word['word_raw'] = {
-			'combined': dialect.makeRaw(word['word']['combined']),
-			'FN': dialect.makeRaw(word['word']['FN']),
-			'RN': dialect.makeRaw(word['word']['RN'])
+		this.searchables = {
+			'FN': {},
+			'RN': {},
+			'combined': {}
 		};
 
-		word["na'vi"] = word['word_raw']['FN'];  // for compatibility reasons
+		this.wordTypeKeys = {};
 
-		// put the word in the searchables dictionary
-		for (let dialect of ['FN', 'RN'] as Dialect[]) {
-			let searchable = word['word_raw'][dialect].toLowerCase();
-			if (!searchables[dialect].hasOwnProperty(searchable)) {
-				searchables[dialect][searchable] = [];
+		for (let i = 0; i < this.words.length; i++) {
+			let word = this.words[i];
+
+			// dialect forms of the word
+			word['word'] = {
+				'combined': word["na'vi"],
+				'FN': dialect.combinedToFN(word["na'vi"]),
+				'RN': dialect.combinedToRN(word["na'vi"])
+			};
+			word['word_raw'] = {
+				'combined': dialect.makeRaw(word['word']['combined']),
+				'FN': dialect.makeRaw(word['word']['FN']),
+				'RN': dialect.makeRaw(word['word']['RN'])
+			};
+
+			word["na'vi"] = word['word_raw']['FN'];  // for compatibility reasons
+
+			// put the word in the searchables dictionary
+			for (let dialect of ['FN', 'RN'] as Dialect[]) {
+				let searchable = word['word_raw'][dialect].toLowerCase();
+				if (!this.searchables[dialect].hasOwnProperty(searchable)) {
+					this.searchables[dialect][searchable] = [];
+				}
+				this.searchables[dialect][searchable].push(i);
+				if (!this.searchables['combined'].hasOwnProperty(searchable)) {
+					this.searchables['combined'][searchable] = [];
+				}
+				if (!this.searchables['combined'][searchable].includes(i)) {
+					this.searchables['combined'][searchable].push(i);
+				}
 			}
-			searchables[dialect][searchable].push(i);
-			if (!searchables['combined'].hasOwnProperty(searchable)) {
-				searchables['combined'][searchable] = [];
+
+			// put the word in the wordTypeKeys dictionary
+			let wordTypeKey = word['word_raw']['FN'] + ':' + word['type'];
+			if (this.wordTypeKeys.hasOwnProperty(wordTypeKey)) {
+				dataErrors.push('Duplicate word/type [' + wordTypeKey + '] in words.json');
 			}
-			if (!searchables['combined'][searchable].includes(i)) {
-				searchables['combined'][searchable].push(i);
-			}
-		}
-
-		// put the word in the wordTypeKeys dictionary
-		let wordTypeKey = word['word_raw']['FN'] + ':' + word['type'];
-		if (wordTypeKeys.hasOwnProperty(wordTypeKey)) {
-			dataErrors.push('Duplicate word/type [' + wordTypeKey + '] in words.json');
-		}
-		wordTypeKeys[wordTypeKey] = i;
-	}
-
-	return dataErrors;
-}
-
-export function getById(id: number): WordData {
-	return words[id];
-}
-
-// Returns the given word of the given type.
-// The returned object is a deep copy. Editing it won't change the data in the
-// dictionary itself (see also getEditable).
-export function get(word: string, type: string, dialect: Dialect): WordData | null {
-	if (searchables[dialect].hasOwnProperty(word)) {
-		for (let id of searchables[dialect][word]) {
-			let result = words[id];
-			if (result['type'] === type) {
-				return deepCopy(result);
-			}
+			this.wordTypeKeys[wordTypeKey] = i;
 		}
 	}
-	return null;
-}
 
-// Returns the given word of the given type, without making a deep copy.
-// The word is assumed to be in FN.
-export function getEditable(word: string, type: string): WordData | null {
-	if (searchables['FN'].hasOwnProperty(word)) {
-		for (let id of searchables['FN'][word]) {
-			let result = words[id];
-			if (result['type'] === type) {
-				return result;
+	getById(id: number): WordData {
+		return this.words[id];
+	}
+
+	// Returns the given word of the given type.
+	// The returned object is a deep copy. Editing it won't change the data in the
+	// dictionary itself (see also getEditable).
+	get(word: string, type: string, dialect: Dialect): WordData | null {
+		if (this.searchables[dialect].hasOwnProperty(word)) {
+			for (let id of this.searchables[dialect][word]) {
+				let result = this.words[id];
+				if (result['type'] === type) {
+					return Dictionary.deepCopy(result);
+				}
 			}
 		}
+		return null;
 	}
-	return null;
-}
 
-// Returns the given word of one of the given types. This returns an array
-// because more than one type may match.
-export function getOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
-	let results = [];
-	for (let type of types) {
-		let result = get(word, type, dialect);
-		if (result) {
-			results.push(result);
-		}
-	}
-	return results;
-}
-
-// Returns the given word that is not one of the given types. This returns an
-// array because more than one type may match.
-export function getNotOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
-	let results = [];
-	if (searchables[dialect].hasOwnProperty(word)) {
-		for (let id of searchables[dialect][word]) {
-			let result = words[id];
-			if (!types.includes(result['type'])) {
-				results.push(JSON.parse(JSON.stringify(result)));
+	// Returns the given word of the given type, without making a deep copy.
+	// The word is assumed to be in FN.
+	getEditable(word: string, type: string): WordData | null {
+		if (this.searchables['FN'].hasOwnProperty(word)) {
+			for (let id of this.searchables['FN'][word]) {
+				let result = this.words[id];
+				if (result['type'] === type) {
+					return result;
+				}
 			}
 		}
+		return null;
 	}
-	return results;
-}
 
-export function getAll(): WordData[] {
-	return words;
-}
+	// Returns the given word of one of the given types. This returns an array
+	// because more than one type may match.
+	getOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
+		let results = [];
+		for (let type of types) {
+			let result = this.get(word, type, dialect);
+			if (result) {
+				results.push(result);
+			}
+		}
+		return results;
+	}
 
-function deepCopy<T>(object: T): T {
-	return JSON.parse(JSON.stringify(object));
-}
+	// Returns the given word that is not one of the given types. This returns an
+	// array because more than one type may match.
+	getNotOfTypes(word: string, types: string[], dialect: Dialect): WordData[] {
+		let results = [];
+		if (this.searchables[dialect].hasOwnProperty(word)) {
+			for (let id of this.searchables[dialect][word]) {
+				let result = this.words[id];
+				if (!types.includes(result['type'])) {
+					results.push(JSON.parse(JSON.stringify(result)));
+				}
+			}
+		}
+		return results;
+	}
 
-export function splitWordAndType(wordType: string): [string, string] {
-	let i = wordType.indexOf(':');
-	return [wordType.substring(0, i), wordType.substring(i + 1)];
+	getAll(): WordData[] {
+		return this.words;
+	}
+
+	static deepCopy<T>(object: T): T {
+		return JSON.parse(JSON.stringify(object));
+	}
+
+	splitWordAndType(wordType: string): [string, string] {
+		let i = wordType.indexOf(':');
+		return [wordType.substring(0, i), wordType.substring(i + 1)];
+	}
 }

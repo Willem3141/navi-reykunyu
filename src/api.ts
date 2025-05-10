@@ -1,20 +1,21 @@
 import express, { Request, Response, NextFunction } from 'express';
-const router = express.Router();
 import cors from 'cors';
 import fs from 'fs';
 
 import * as annotatedDictionary from './annotatedDictionary';
 import * as conjugationString from './conjugationString';
-import * as reykunyu from './reykunyu';
+import * as server from './server';
 import * as userdata from './userdata';
 import * as verbs from './verbs/conjugator';
-import * as zeykerokyu from './zeykerokyu';
+
+export let router = express.Router();
+export default router;
 
 router.get('/word',
 	cors(),
 	parseIntegerParameter('id', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getWord(req.args!['id']));
+		res.json(server.reykunyu.getWord(req.args!['id']));
 	}
 );
 
@@ -25,8 +26,8 @@ router.get('/fwew-search',
 	parseDialectParameter('dialect', 'get'),
 	async (req, res, next) => {
 		try {
-			let fromNaviResult = reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
-			let toNaviResult = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+			let fromNaviResult = server.reykunyu.getResponsesFor(req.args!['query'], req.args!['dialect']);
+			let toNaviResult = server.reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
 			if (req.user) {
 				await userdata.augmentFromNaviResultWithUserData(req.user, fromNaviResult);
 				await userdata.augmentToNaviResultWithUserData(req.user, toNaviResult);
@@ -47,7 +48,7 @@ router.get('/fwew',
 	parseDialectParameter('dialect', 'get'),
 	async (req, res, next) => {
 		try {
-			let result = reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
+			let result = server.reykunyu.getResponsesFor(req.args!['tìpawm'], req.args!['dialect']);
 			if (req.user) {
 				await userdata.augmentFromNaviResultWithUserData(req.user, result);
 			}
@@ -64,8 +65,8 @@ router.get('/mok-suggest',
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		let suggestionsFrom = reykunyu.getSuggestionsFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
-		let suggestionsTo = reykunyu.getReverseSuggestionsFor(req.args!['query'], req.args!['language']);
+		let suggestionsFrom = server.reykunyu.getSuggestionsFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+		let suggestionsTo = server.reykunyu.getReverseSuggestionsFor(req.args!['query'], req.args!['language']);
 		res.json({
 			'results': suggestionsFrom['results'].concat(suggestionsTo['results'])
 		});
@@ -78,7 +79,7 @@ router.get('/mok',
 	parseStringParameter('language', 'get'),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getSuggestionsFor(req.args!['tìpawm'], req.args!['language'], req.args!['dialect']));
+		res.json(server.reykunyu.getSuggestionsFor(req.args!['tìpawm'], req.args!['language'], req.args!['dialect']));
 	}
 );
 
@@ -89,7 +90,7 @@ router.get('/search',
 	parseDialectParameter('dialect', 'get'),
 	async (req, res, next) => {
 		try {
-			let result = reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
+			let result = server.reykunyu.getReverseResponsesFor(req.args!['query'], req.args!['language'], req.args!['dialect']);
 			if (req.user) {
 				await userdata.augmentToNaviResultWithUserData(req.user, result);
 			}
@@ -104,7 +105,7 @@ router.get('/suggest',
 	parseStringParameter('query', 'get'),
 	parseStringParameter('language', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getReverseSuggestionsFor(req.args!['query'], req.args!['language']));
+		res.json(server.reykunyu.getReverseSuggestionsFor(req.args!['query'], req.args!['language']));
 	}
 );
 
@@ -167,7 +168,7 @@ router.get('/history/major-changes',
 
 router.get('/list/all',
 	(req, res) => {
-		res.json(reykunyu.getAll());
+		res.json(server.reykunyu.getAll());
 	}
 );
 
@@ -190,7 +191,7 @@ router.get('/random',
 	parseStringParameter('fnel', 'get', true),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getRandomWords(req.args!['holpxay'], req.args!['dialect'], req.args!['fnel']));
+		res.json(server.reykunyu.getRandomWords(req.args!['holpxay'], req.args!['dialect'], req.args!['fnel']));
 	}
 );
 
@@ -199,14 +200,14 @@ router.get('/rhymes',
 	parseStringParameter('tìpawm', 'get'),
 	parseDialectParameter('dialect', 'get'),
 	(req, res) => {
-		res.json(reykunyu.getRhymes(req.args!['tìpawm'], req.args!['dialect']));
+		res.json(server.reykunyu.getRhymes(req.args!['tìpawm'], req.args!['dialect']));
 	}
 );
 
 router.get('/data-errors',
 	checkLoggedIn(),
 	(req, res) => {
-		res.json(reykunyu.getDataErrors());
+		res.json(server.reykunyu.getDataErrors());
 	}
 );
 
@@ -240,7 +241,7 @@ router.get('/srs/courses',
 	checkLoggedIn(),
 	async (req, res, next) => {
 		try {
-			const courses = await zeykerokyu.getCourses();
+			const courses = await server.zeykerokyu.getCourses();
 			res.json(courses);
 		} catch (e) {
 			next(e);
@@ -253,7 +254,7 @@ router.get('/srs/lessons',
 	parseIntegerParameter('courseId', 'get'),
 	async (req, res, next) => {
 		try {
-			const lessons = await zeykerokyu.getLessons(req.user!, req.args!['courseId'] - 1);
+			const lessons = await server.zeykerokyu.getLessons(req.user!, req.args!['courseId'] - 1);
 			res.json(lessons);
 		} catch (e) {
 			next(e);
@@ -267,7 +268,7 @@ router.get('/srs/lesson',
 	parseIntegerParameter('lessonId', 'get'),
 	async (req, res, next) => {
 		try {
-			const lessons = await zeykerokyu.getLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1);
+			const lessons = await server.zeykerokyu.getLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1);
 			res.json(lessons);
 		} catch (e) {
 			next(e);
@@ -281,7 +282,7 @@ router.get('/srs/items',
 	parseIntegerParameter('lessonId', 'get'),
 	async (req, res, next) => {
 		try {
-			const items = await zeykerokyu.getItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!);
+			const items = await server.zeykerokyu.getItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!);
 			res.json(items);
 		} catch (e) {
 			next(e);
@@ -295,7 +296,7 @@ router.get('/srs/learnable',
 	parseIntegerParameter('lessonId', 'get'),
 	async (req, res, next) => {
 		try {
-			const items = await zeykerokyu.getLearnableItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!);
+			const items = await server.zeykerokyu.getLearnableItemsForLesson(req.args!['courseId'] - 1, req.args!['lessonId'] - 1, req.user!);
 			res.json(items);
 		} catch (e) {
 			next(e);
@@ -311,11 +312,11 @@ router.get('/srs/reviewable',
 			const lessonId = parseInt(req.query['lessonId'] as string, 10) - 1;
 			let items: LearnableItem[];
 			if (isNaN(courseId)) {
-				items = await zeykerokyu.getReviewableItems(req.user!);
+				items = await server.zeykerokyu.getReviewableItems(req.user!);
 			} else if (isNaN(lessonId)) {
-				items = await zeykerokyu.getReviewableItemsForCourse(courseId, req.user!);
+				items = await server.zeykerokyu.getReviewableItemsForCourse(courseId, req.user!);
 			} else {
-				items = await zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user!);
+				items = await server.zeykerokyu.getReviewableItemsForLesson(courseId, lessonId, req.user!);
 			}
 			res.json(items);
 		} catch (e) {
@@ -331,11 +332,11 @@ router.get('/srs/reviewable-count',
 			const courseId = parseInt(req.query['courseId'] as string, 10) - 1;
 			const lessonId = parseInt(req.query['lessonId'] as string, 10) - 1;
 			if (isNaN(courseId)) {
-				res.json(await zeykerokyu.getReviewableCount(req.user!));
+				res.json(await server.zeykerokyu.getReviewableCount(req.user!));
 			} else if (isNaN(lessonId)) {
-				res.json(await zeykerokyu.getReviewableCountForCourse(courseId, req.user!));
+				res.json(await server.zeykerokyu.getReviewableCountForCourse(courseId, req.user!));
 			} else {
-				res.json(await zeykerokyu.getReviewableCountForLesson(courseId, lessonId, req.user!));
+				res.json(await server.zeykerokyu.getReviewableCountForLesson(courseId, lessonId, req.user!));
 			}
 		} catch (e) {
 			next(e);
@@ -348,7 +349,7 @@ router.post('/srs/mark-correct',
 	parseIntegerParameter('vocab', 'post'),
 	async (req, res, next) => {
 		try {
-			await zeykerokyu.processCorrectAnswer(req.user!, req.args!['vocab']);
+			await server.zeykerokyu.processCorrectAnswer(req.user!, req.args!['vocab']);
 			res.status(204).send();
 		} catch (e) {
 			next(e);
@@ -361,7 +362,7 @@ router.post('/srs/mark-incorrect',
 	parseIntegerParameter('vocab', 'post'),
 	async (req, res, next) => {
 		try {
-			await zeykerokyu.processIncorrectAnswer(req.user!, req.args!['vocab']);
+			await server.zeykerokyu.processIncorrectAnswer(req.user!, req.args!['vocab']);
 			res.status(204).send();
 		} catch (e) {
 			next(e);
@@ -374,7 +375,7 @@ router.post('/srs/mark-known',
 	parseIntegerParameter('vocab', 'post'),
 	async (req, res, next) => {
 		try {
-			await zeykerokyu.processKnownAnswer(req.user!, req.args!['vocab']);
+			await server.zeykerokyu.processKnownAnswer(req.user!, req.args!['vocab']);
 			res.status(204).send();
 		} catch (e) {
 			next(e);
@@ -457,5 +458,3 @@ function parseIntegerParameter(name: string, type: 'get' | 'post') {
 		next();
 	}
 }
-
-export default router;
