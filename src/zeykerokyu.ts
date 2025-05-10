@@ -25,31 +25,29 @@ export default class Zeykerokyu {
 	/// them using the given JSON data.
 	private async initializeDatabase(coursesJSON: any) {
 		db.serialize(() => {
-			db.run(`begin transaction`);
-			db.run(`delete from course`);
-			db.run(`delete from lesson`);
 			db.run(`delete from vocab_in_lesson`);
-			db.parallelize(() => {
-				for (let i = 0; i < coursesJSON.length; i++) {
-					const course = coursesJSON[i];
-					db.run(`insert into course values (?, ?, ?)`, i, course['name'], course['description']);
-					this.preprocessLessons(course);
-					const lessons = course['lessons'];
-					for (let j = 0; j < lessons.length; j++) {
-						const lesson = lessons[j];
-						db.run(`insert into lesson values (?, ?, ?, ?, ?)`,
-							i, j, lesson['name'], lesson['introduction'], lesson['conclusion']);
-						
-						const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?, ?)`);
-						for (let k = 0; k < lesson['words'].length; k++) {
-							if (lesson['words'][k] !== null) {
-								vocabInsert.run(i, j, k, lesson['words'][k]['id'], lesson['words'][k]['comment']);
-							}
+			db.run(`delete from lesson`);
+			db.run(`delete from course`);
+			db.run(`begin transaction`);
+			for (let i = 0; i < coursesJSON.length; i++) {
+				const course = coursesJSON[i];
+				db.run(`insert into course values (?, ?, ?)`, i, course['name'], course['description']);
+				this.preprocessLessons(course);
+				const lessons = course['lessons'];
+				for (let j = 0; j < lessons.length; j++) {
+					const lesson = lessons[j];
+					db.run(`insert into lesson values (?, ?, ?, ?, ?)`,
+						i, j, lesson['name'], lesson['introduction'], lesson['conclusion']);
+					
+					const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?, ?)`);
+					for (let k = 0; k < lesson['words'].length; k++) {
+						if (lesson['words'][k] !== null) {
+							vocabInsert.run(i, j, k, lesson['words'][k]['id'], lesson['words'][k]['comment']);
 						}
-						vocabInsert.finalize();
 					}
+					vocabInsert.finalize();
 				}
-			});
+			}
 			db.run(`commit`);
 		});
 	}
