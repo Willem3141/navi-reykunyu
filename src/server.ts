@@ -19,8 +19,8 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 import * as dialect from './dialect';
 import * as edit from './edit';
 import * as output from './output';
-import * as zeykerokyu from './zeykerokyu';
 import Reykunyu from './reykunyu';
+import Zeykerokyu from './zeykerokyu';
 
 import bodyParser from 'body-parser';
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,6 +45,8 @@ const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json', '
 const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
 
 export let reykunyu: Reykunyu;
+export let zeykerokyu: Zeykerokyu;
+
 function initializeReykunyu() {
 	let dictionaryJSON;
 	try {
@@ -52,19 +54,31 @@ function initializeReykunyu() {
 	} catch (e) {
 		output.error('words.json not found, exiting');
 		output.hint(`Reykunyu gets its dictionary data from a JSON file called words.json.
-	This file does not seem to be present. If you want to run a local mirror
-	of the instance at https://reykunyu.lu, you can copy the dictionary data
-	from there:
+This file does not seem to be present. If you want to run a local mirror
+of the instance at https://reykunyu.lu, you can copy the dictionary data
+from there:
 
-	$ wget -O data/words.json https://reykunyu.lu/words.json
+$ wget -O data/words.json https://reykunyu.lu/words.json
 
-	Alternatively, you can start with an empty database:
+Alternatively, you can start with an empty database:
 
-	$ echo "{}" > data/words.json`);
+$ echo "{}" > data/words.json`);
 		process.exit(1);
 	}
 	reykunyu = new Reykunyu(dictionaryJSON);
+
+	let coursesJSON: any = [];
+	try {
+		coursesJSON = JSON.parse(fs.readFileSync('./data/courses.json', 'utf8'));
+	} catch (e) {
+		output.warning('Courses data not found');
+		output.hint(`Reykunyu uses a JSON file called courses.json that contains courses
+for the vocab study tool. This file does not seem to be present. This
+warning is harmless, but the vocab study tool won't work.`);
+	}
+	zeykerokyu = new Zeykerokyu(coursesJSON, reykunyu);
 }
+
 initializeReykunyu();
 
 /**

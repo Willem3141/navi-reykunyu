@@ -1,46 +1,17 @@
 // Reykunyu's user and session database
-import fs from 'fs';
 import sqlite3 from 'sqlite3';
-
-import * as output from './output';
-import * as server from './server';
 
 const db = new sqlite3.Database('./data/reykunyu.db');
 
-const naviSortAlphabet = " 'aäeéfghiìklmnoprstuvwxyz";
-
-// Compares Na'vi words a and b according to Na'vi ‘sorting rules’ (ä after a, ì
-// after i, digraphs sorted as if they were two letters using English spelling,
-// tìftang is sorted before everything else). A non-zero i specifies that the
-// first i characters of both strings are to be ignored. Returns a negative
-// value if a < b, a positive value if a > b, or 0 if a == b.
-function compareNaviWords(a: string, b: string, i: number): number {
-	if (a.length <= i || b.length <= i) {
-		return a.length - b.length;
-	}
-	const first = a[i].toLowerCase();
-	const second = b[i].toLowerCase();
-	if (first == second) {
-		return compareNaviWords(a, b, i + 1);
-	}
-	return naviSortAlphabet.indexOf(first) - naviSortAlphabet.indexOf(second);
-}
-
 db.serialize(() => {
-	// TODO
-	
-	/*
-	// tables storing the courses and lessons
-	// (we regenerate these from courses.json on each Reykunyu startup)
-	db.run(`drop table if exists course`);
-	db.run(`drop table if exists lesson`);
-	db.run(`drop table if exists vocab_in_lesson`);
-	db.run(`create table course (
+	// tables storing the courses and lessons (we regenerate these from
+	// courses.json on each Reykunyu startup; see zeykerokyu.ts)
+	db.run(`create table if not exists course (
 		id integer primary key,
 		name text not null,
 		description text not null
 	)`);
-	db.run(`create table lesson (
+	db.run(`create table if not exists lesson (
 		course_id integer,
 		id integer,
 		name text not null,
@@ -49,7 +20,7 @@ db.serialize(() => {
 		primary key (course_id, id),
 		foreign key (course_id) references course(id)
 	)`);
-	db.run(`create table vocab_in_lesson (
+	db.run(`create table if not exists vocab_in_lesson (
 		course_id integer,
 		lesson_id integer,
 		order_in_lesson integer,
@@ -58,36 +29,6 @@ db.serialize(() => {
 		primary key (course_id, lesson_id, order_in_lesson),
 		foreign key (course_id, lesson_id) references lesson(course_id, id)
 	)`);
-	db.run(`begin transaction`);
-	db.parallelize(() => {
-		let coursesData: any = {};
-		try {
-			coursesData = JSON.parse(fs.readFileSync('./data/courses.json', 'utf8'));
-		} catch (e) {
-			output.warning('Courses data not found');
-			output.hint(`Reykunyu uses a JSON file called courses.json that contains courses
-for the vocab study tool. This file does not seem to be present. This
-warning is harmless, but the vocab study tool won't work.`);
-		}
-		for (let i = 0; i < coursesData.length; i++) {
-			const course = coursesData[i];
-			db.run(`insert into course values (?, ?, ?)`, i, course['name'], course['description']);
-			preprocessLessons(course);
-			const lessons = course['lessons'];
-			for (let j = 0; j < lessons.length; j++) {
-				const lesson = lessons[j];
-				db.run(`insert into lesson values (?, ?, ?, ?, ?)`,
-					i, j, lesson['name'], lesson['introduction'], lesson['conclusion']);
-				
-				const vocabInsert = db.prepare(`insert into vocab_in_lesson values (?, ?, ?, ?, ?)`);
-				for (let k = 0; k < lesson['words'].length; k++) {
-					vocabInsert.run(i, j, k, lesson['words'][k]['id'], lesson['words'][k]['comment']);
-				}
-				vocabInsert.finalize();
-			}
-		}
-	});
-	db.run(`commit`);
 
 	// table containing each vocab item studied by some user, storing the SRS
 	// stage and when the next review will be
@@ -113,56 +54,7 @@ warning is harmless, but the vocab study tool won't work.`);
 		user text not null,
 		vocab integer,
 		primary key (user, vocab)
-	)`);*/
+	)`);
 });
-
-function preprocessLessons(course: any): void {
-	if (course.hasOwnProperty('rule')) {
-		let lessons = [];
-		if (course['rule'] === 'all') {
-			let words = server.reykunyu.dictionary.getAll().filter((w: WordData) => w['status'] !== 'unconfirmed' && w['status'] !== 'unofficial')
-				.map((w: WordData) => { return { 'id': w['id'] } });
-			words.sort((a: { 'id': number }, b: { 'id': number }) => {
-				return compareNaviWords(
-					server.reykunyu.dictionary.getById(a['id'])['word_raw']['FN'],
-					server.reykunyu.dictionary.getById(b['id'])['word_raw']['FN'], 0);
-			});
-			// group into sets of 25 words
-			for (let i = 0; i < words.length; i += 25) {
-				const end = Math.min(i + 25, words.length);
-				lessons.push({
-					'name': server.reykunyu.dictionary.getById(words[i]['id'])['word_raw']['FN'] + ' – ' +
-						server.reykunyu.dictionary.getById(words[end - 1]['id'])['word_raw']['FN'],
-					'words': words.slice(i, end)
-				});
-			}
-		}
-		course['lessons'] = lessons;
-		return;
-	}
-
-	for (let lesson of course['lessons']) {
-		let words = [];
-		if (lesson['words']) {
-			words = lesson['words'];
-			words = words.map((w: string | { 'word': string, 'comment'?: string }) => {
-				if (typeof w === 'string') {
-					w = { 'word': w };
-				}
-				const [word, type] = server.reykunyu.dictionary.splitWordAndType(w['word']);
-				const entry = server.reykunyu.dictionary.get(word, type, 'FN');
-				if (!entry) {
-					output.warning('Lesson ' + lesson['name'] + ' refers to non-existing word ' + w['word']);
-					process.exit(1);
-				}
-				return {
-					'id': entry['id'],
-					'comment': w['comment']
-				};
-			});
-		}
-		lesson['words'] = words;
-	}
-}
 
 export default db;
