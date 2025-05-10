@@ -522,7 +522,7 @@ class Reykunyu {
 	// lìupam[0] - aylì'kong lì'uä, fa pamrel a'aw (natkenong "lì-u-pam")
 	// lìupam[1] - holpxay lì'kongä a takuk lì'upam tsatseng ('awvea lì'kong: 1, muvea lì'kong: 2, saylahe)
 	// fnel - fnel lì'uä (kin taluna txo fnel livu "n:si", tsakrr zene sivung lì'ut alu " si")
-	pronunciationSection(lìupam: Pronunciation[] | undefined, fnel: string): JQuery | null {
+	pronunciationSection(lìupam: Pronunciation[] | undefined, fnel: string, includeAudio: boolean): JQuery | null {
 		if (!lìupam || lìupam.length === 0) {
 			return null;
 		}
@@ -549,7 +549,7 @@ class Reykunyu {
 			if (fnel === "n:si" || fnel === "nv:si") {
 				$tìlam.append(" si");
 			}
-			if (lìupam[i].hasOwnProperty('audio')) {
+			if (lìupam[i].hasOwnProperty('audio') && includeAudio) {
 				$tìlam.append(this.pronunciationAudioButtons(lìupam[i]['audio']));
 			}
 		}
@@ -559,7 +559,7 @@ class Reykunyu {
 		return $tìlam;
 	}
 
-	pronunciationSectionIpa(pronunciation: Pronunciation[] | undefined, fnel: string): JQuery | null {
+	pronunciationSectionIpa(pronunciation: Pronunciation[] | undefined, fnel: string, includeAudio: boolean): JQuery | null {
 		if (!pronunciation || pronunciation.length === 0) {
 			return null;
 		}
@@ -575,7 +575,7 @@ class Reykunyu {
 				$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
 				$result.append(' ');
 				$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
-				if (pronunciation[i].hasOwnProperty('audio')) {
+				if (pronunciation[i].hasOwnProperty('audio') && includeAudio) {
 					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
 				}
 				$result.append(' / ');
@@ -585,13 +585,13 @@ class Reykunyu {
 
 			} else if (dialect === 'combined') {
 				$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
-				if (pronunciation[i].hasOwnProperty('audio')) {
+				if (pronunciation[i].hasOwnProperty('audio') && includeAudio) {
 					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
 				}
 
 			} else {
 				$result.append($('<span/>').text(ipa[dialect]).addClass('ipa'));
-				if (ipa[dialect] === ipa['FN'] && pronunciation[i].hasOwnProperty('audio')) {
+				if (ipa[dialect] === ipa['FN'] && pronunciation[i].hasOwnProperty('audio') && includeAudio) {
 					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
 				}
 			}
@@ -1261,6 +1261,7 @@ class Reykunyu {
 	// query -- the query that the user searched for
 	createResultBlock(i: number, r: WordData) {
 		const $result = $('<div/>').addClass('result');
+		const inOfflineMode: boolean = $('body').hasClass('offline');
 
 		const $resultWord = $('<div/>').addClass('result-word');
 		$resultWord.append($('<span/>').addClass('id').text((i + 1) + '.'));
@@ -1275,12 +1276,12 @@ class Reykunyu {
 		}
 
 		if (this.getIPASetting()) {
-			const $pronunciation = this.pronunciationSectionIpa(r["pronunciation"], r["type"]);
+			const $pronunciation = this.pronunciationSectionIpa(r["pronunciation"], r["type"], !inOfflineMode);
 			if ($pronunciation) {
 				$resultWord.append($pronunciation);
 			}
 		} else {
-			const $pronunciation = this.pronunciationSection(r["pronunciation"], r["type"]);
+			const $pronunciation = this.pronunciationSection(r["pronunciation"], r["type"], !inOfflineMode);
 			if ($pronunciation) {
 				$resultWord.append($pronunciation);
 			}
@@ -1308,7 +1309,7 @@ class Reykunyu {
 			}
 		}
 
-		if (r["image"]) {
+		if (r["image"] && !inOfflineMode) {
 			$result.append(this.imageSection(r, r["image"]));
 		}
 
