@@ -12,7 +12,6 @@ $(function () {
 			localStorage.setItem('reykunyu-language', 'en');
 			$dropdown.dropdown('set selected', 'en');
 		}
-		$('.current-lang').text(_('language'));
 		$dropdown.dropdown({
 			onChange: setNewLanguage
 		});
@@ -31,7 +30,6 @@ function setNewLanguage(value) {
 	$('.translation').each(function() {
 		$(this).html(_($(this).attr('data-key')));
 	});
-	$('.current-lang').text(_('language'));
 }
 
 function _(key) {
