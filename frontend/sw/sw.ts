@@ -45,8 +45,8 @@ const staticResourceNames = [
 	"/manifest.webmanifest",
 	"/opensearch.xml",
 	"/vendor/jquery/jquery-3.3.1.js",
-	"/vendor/semantic/dist/semantic.css",
-	"/vendor/semantic/dist/semantic.js",
+	"/vendor/semantic/dist/semantic.min.css",
+	"/vendor/semantic/dist/semantic.min.js",
 	"/vendor/semantic/dist/themes/default/assets/fonts/icons.woff2",
 ];
 
