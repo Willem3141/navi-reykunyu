@@ -4,9 +4,9 @@ class AllWordsPage {
 	constructor() {
 		$('#type-filter-dropdown').dropdown('set selected', '.*');
 		$('#type-filter-dropdown').dropdown({
-			onChange: this.runFilter
+			onChange: this.runFilter.bind(this)
 		});
-		$('#filter-box').on('input', this.runFilter);
+		$('#filter-box').on('input', this.runFilter.bind(this));
 
 		$('#language-dropdown').dropdown({
 			onChange: (value) => {
