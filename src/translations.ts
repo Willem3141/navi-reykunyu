@@ -60,12 +60,18 @@ export function span_(key: string): string {
 	return '<span class="translation" data-key="' + key + '">' + _(key) + '</span>';
 }
 
+function escapeHTMLAttribute(attribute: string) {
+	return attribute.replaceAll('"', '&quot;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('&', '&amp;');
+}
+
 /**
  * Returns an HTML snippet with two attributes: data-content containing the
  * translation, and data-content-key with the key. This is meant for tooltips.
  */
 export function data_(key: string): string {
-	return 'data-content-key="' + key + '" data-content="' + _(key) + '"';
+	return 'data-content-key="' + key + '" data-content="' + escapeHTMLAttribute(_(key)) + '"';
 }
 
 /** Returns the JSON with the translations. */
