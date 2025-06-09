@@ -91,6 +91,7 @@ function pageVariables(req: Request, toAdd?: any): any {
 	let variables: any = { ...toAdd };
 	variables['user'] = req.user;
 	variables['_'] = translations.span_;
+	variables['data_'] = translations.data_;
 	if (req.session.messages) {
 		variables['messages'] = req.session.messages;
 		req.session.messages = [];

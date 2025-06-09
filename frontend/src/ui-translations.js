@@ -30,6 +30,9 @@ function setNewLanguage(value) {
 	$('.translation').each(function() {
 		$(this).html(_($(this).attr('data-key')));
 	});
+	$('[data-content-key]').each(function() {
+		$(this).attr('data-content', _($(this).attr('data-content-key')));
+	});
 }
 
 function _(key) {
