@@ -1,0 +1,129 @@
+<div id="infix-details-modal" class="ui modal">
+	<div class="header">Infixes for <span id="infix-details-word"></span><span id="infix-details-infixes" style="display: none;"></span></div>
+	<div class="content">
+		<p>Click the buttons below to indicate which infixes you want to use, and Reykunyu will show you the result below. Not
+			all combinations of infixes are possible. Buttons that would lead to impossible combinations will be automatically
+			disabled.</p>
+		<div class="ui form">
+			<div class="ui small header">
+				Pre-first position
+			</div>
+			<div class="field">
+				<label>Transitivity</label>
+				<div class="ui basic buttons">
+					<button id="no-transitivity-button" class="ui compact button infix-button active">None</button>
+					<button data-title='‹äp›' id="äp-button"
+						data-content='Reflexive: expresses that the action is applied to the subject itself (‘... hunts himself’)'
+						class="ui compact button infix-button">‹äp›</button>
+					<button data-title='‹eyk›' id="eyk-button"
+						data-content='Causative: expresses that the action was caused by the subject (‘... causes ... to hunt’)'
+						class="ui compact button infix-button">‹eyk›</button>
+					<button data-title='‹äp› + ‹eyk›' id="äpeyk-button"
+						data-content='Combination of the reflexive and causative (‘... causes ... to hunt himself’)'
+						class="ui compact button infix-button">‹äp› + ‹eyk›</button>
+				</div>
+			</div>
+			<div class="ui small header">
+				First position
+			</div>
+			<div class="two fields">
+				<div class="field">
+					<label>Mode</label>
+					<div class="ui basic buttons">
+						<button id="no-mode-button" class="ui compact button infix-button active">None</button>
+						<button data-title='‹iv›' id="iv-button"
+							data-content='Subjunctive: used in various grammatical structures (e.g. with modal verbs) and to express imagined or wished scenarios'
+							class="ui compact button infix-button">‹iv›</button>
+						<button data-title='‹us›' id="us-button"
+							data-content="Active participle: creates an adjective expressing that the noun is the subject of the verb's action"
+							class="ui compact button infix-button">‹us›</button>
+						<button data-title='‹awn›' id="awn-button"
+							data-content="Passive participle: creates an adjective expressing that the noun is the object of the verb's action"
+							class="ui compact button infix-button">‹awn›</button>
+					</div>
+				</div>
+				<div class="field">
+					<label>Aspect</label>
+					<div class="ui basic buttons">
+						<button id="no-aspect-button" class="ui compact button infix-button active">None</button>
+						<button data-title='‹ol›' id="ol-button"
+							data-content='Perfective: presents the action as a completed snapshot'
+							class="ui compact button infix-button">‹ol›</button>
+						<button data-title='‹er›' id="er-button"
+							data-content='Imperfective: presents the action as a background for other actions'
+							class="ui compact button infix-button">‹er›</button>
+					</div>
+				</div>
+			</div>
+			<div class="two fields">
+				<div class="field">
+					<label>Tense</label>
+					<div class="ui basic buttons">
+						<button id="no-tense-button" class="ui compact button infix-button active">None</button>
+						<button data-title='‹am›' id="am-button" data-content='General past: the action happened in the past'
+							class="ui compact button infix-button">‹am›</button>
+						<button data-title='‹ìm›' id="ìm-button"
+							data-content='Near past: the action happened just a short while ago'
+							class="ui compact button infix-button">‹ìm›</button>
+						<button data-title='‹ìy›' id="ìy-button" data-content='Near future: the action will happen in a short while'
+							class="ui compact button infix-button">‹ìy›</button>
+						<button data-title='‹ay›' id="ay-button" data-content='General future: the action will happen in the future'
+							class="ui compact button infix-button">‹ay›</button>
+					</div>
+				</div>
+				<div class="field">
+					<label>Intent</label>
+					<div class="ui basic buttons">
+						<button id="no-intent-button" class="ui compact button infix-button active">None</button>
+						<button data-title='-s-' id="s-button"
+							data-content='Intent: used with a future tense to express that the speaker has the intention to do the described action.'
+							class="ui compact button infix-button">-s-</button>
+					</div>
+				</div>
+			</div>
+			<div class="ui small header">
+				Second position
+			</div>
+			<div class="field">
+				<label>Mood</label>
+				<div class="ui basic buttons">
+					<button id="no-mood-button" class="ui compact button infix-button active">None</button>
+					<button data-title='‹ei›' id="ei-button" data-content='Positive mood: the speaker feels good about the action'
+						class="ui compact button infix-button">‹ei›</button>
+					<button data-title='‹äng›' id="äng-button" data-content='Negative mood: the speaker feels bad about the action'
+						class="ui compact button infix-button">‹äng›</button>
+					<button data-title='‹uy›' id="uy-button" data-content='Formal mood: used in formal and ceremonial settings'
+						class="ui compact button infix-button">‹uy›</button>
+					<button data-title='‹ats›' id="ats-button"
+						data-content='Inferential mood: marks a suppositional statement from evidence'
+						class="ui compact button infix-button">‹ats›</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="content">
+		<div class="ui header">
+			Result
+		</div>
+		<div class="ui segment">
+			<div class="ui stackable two column grid">
+				<div class="column">
+					<div id="infix-details-input"></div>
+					<div id="infix-details-input-translation"></div>
+				</div>
+				<div class="column">
+					<div id="infix-details-result"></div>
+					<div id="infix-details-result-translation"></div>
+				</div>
+			</div>
+			<div class="ui vertical divider">
+				&rarr;
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<div class="ui basic deny button">
+			<i class="close icon"></i> <%- _("dialog-close") %>
+		</div>
+	</div>
+</div>
