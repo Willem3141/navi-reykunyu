@@ -18,7 +18,7 @@ class AllWordsPage {
 
 		this.loadWordList();
 
-		$(window).on('resize scroll', this.updateToC);
+		$(window).on('resize scroll', this.updateToC.bind(this));
 	}
 
 	createErrorBlock(text: string, subText: string): JQuery {
