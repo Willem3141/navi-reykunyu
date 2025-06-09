@@ -13,6 +13,14 @@
 	margin-bottom: 5px;
 	box-shadow: 0 0 4px 4px var(--background-color);
 	z-index: 1;
+
+	.item {
+		cursor: pointer;
+
+		&.active {
+			cursor: default;
+		}
+	}
 }
 
 .api-output-description-table td {

@@ -4,9 +4,9 @@ class AllWordsPage {
 	constructor() {
 		$('#type-filter-dropdown').dropdown('set selected', '.*');
 		$('#type-filter-dropdown').dropdown({
-			onChange: this.runFilter
+			onChange: this.runFilter.bind(this)
 		});
-		$('#filter-box').on('input', this.runFilter);
+		$('#filter-box').on('input', this.runFilter.bind(this));
 
 		$('#language-dropdown').dropdown({
 			onChange: (value) => {
@@ -18,7 +18,7 @@ class AllWordsPage {
 
 		this.loadWordList();
 
-		$(window).on('resize scroll', this.updateToC);
+		$(window).on('resize scroll', this.updateToC.bind(this));
 	}
 
 	createErrorBlock(text: string, subText: string): JQuery {

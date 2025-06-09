@@ -36,6 +36,26 @@ function buildTypeScriptClient(cb) {
 	}).catch(() => { process.exit(1); });
 };
 
+function doTypecheckServiceWorker(cb) {
+	const tsProject = ts.createProject("./frontend/sw/tsconfig.json");
+	return tsProject.src()
+		.pipe(tsProject())
+		.on('error', () => { process.exit(1); });
+};
+
+function buildTypeScriptServiceWorker(cb) {
+	return esbuild.build({
+		entryPoints: [
+			'./frontend/sw/sw.ts'
+		],
+		bundle: true,
+		minify: true,
+		sourcemap: true,
+		outdir: './frontend/dist/js/',
+		target: 'es2016'
+	}).catch(() => { process.exit(1); });
+};
+
 function doTypecheckServer(cb) {
 	const tsProject = ts.createProject("./src/tsconfig.json");
 	return tsProject.src()
@@ -62,6 +82,7 @@ function buildTypeScriptServer(cb) {
 
 exports.buildLess = buildLess;
 exports.buildClient = series(doTypecheckClient, buildTypeScriptClient);
+exports.buildServiceWorker = series(doTypecheckServiceWorker, buildTypeScriptServiceWorker);
 exports.buildServer = series(doTypecheckServer, buildTypeScriptServer);
-exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptServer);
-exports.default = parallel(buildLess, exports.buildClient, exports.buildServer);
+exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptServiceWorker, buildTypeScriptServer);
+exports.default = parallel(buildLess, exports.buildClient, exports.buildServiceWorker, exports.buildServer);

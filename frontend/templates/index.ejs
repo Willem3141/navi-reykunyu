@@ -2,7 +2,7 @@
 
 <html>
 	<%- include('head.ejs') %>
-	<body<%- user ? ' class="logged-in' + (user['is_admin'] ? ' logged-in-admin' : '') + '"' : '' %>>
+	<body class="<%- locals['user'] ? ' logged-in' + (user['is_admin'] ? ' logged-in-admin' : '') : '' %><%- locals['offline'] ? ' offline' : '' %>">
 		<div class="container">
 			<%- include('header.ejs', { 'isMainPage': true }) %>
 
@@ -19,10 +19,10 @@
 						<i class="search icon"></i>
 						<input id="search-box" type="search" autofocus value="<%= query %>">
 						<div id="mode-direction" class="ui compact selection dropdown">
-							<span class="text">Na'vi &harr; <span class="current-lang">English</span></span>
+							<span class="text">Na'vi &harr; <%- _('language') %></span>
 							<i class="dropdown icon"></i>
 							<div class="menu">
-								<div class="item" data-value="reykunyu">Na'vi &harr; <span class="current-lang">English</span></div>
+								<div class="item" data-value="reykunyu">Na'vi &harr; <%- _('language') %></div>
 								<div class="item" data-value="annotated">Annotated Dictionary</div>
 								<div class="item" data-value="rhymes"><%- _("menu-rhymes") %></div>
 							</div>
@@ -174,7 +174,7 @@
 		<%- include('settings-modal.ejs') %>
 
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
-		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
 		<script src="/js/ui-translations.js"></script>
 		<script src="/js/index.js"></script>
 	</body>

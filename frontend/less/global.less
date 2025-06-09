@@ -6,6 +6,10 @@ i, em {
 	font-variation-settings: "slnt" -15;
 }
 
+html {
+	height: auto;
+}
+
 body {
 	font-size: 14px;
 	background-color: var(--background-color);
@@ -71,6 +75,8 @@ body.wide .container,
 table {
 	margin-top: 8px;
 	width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
 }
 
 table tr {
@@ -188,11 +194,17 @@ table.conjugation-table {
 }
 
 /* settings modal */
-#settings-modal .explanation {
-	line-height: 1.4285em;
-	padding-top: 2px;
-	padding-bottom: 5px;
-	color: var(--muted-color);
+#settings-modal {
+	.explanation {
+		line-height: 1.4285em;
+		padding-top: 2px;
+		padding-bottom: 5px;
+		color: var(--muted-color);
+	}
+
+	#offline-mode-progress {
+		padding-left: 20px;
+	}
 }
 
 /* sentence analysis */

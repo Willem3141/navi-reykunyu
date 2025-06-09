@@ -1,5 +1,5 @@
 {
-  "background_color": "#349DEC",
+  "background_color": "#ffffff",
   "description": "Online Na'vi dictionary",
   "display": "standalone",
   "icons": [
@@ -11,6 +11,7 @@
   ],
   "name": "Reykunyu",
   "short_name": "Reykunyu",
-  "start_url": "/"
+  "start_url": "/",
+  "theme_color": "#349dec"
 }
 
