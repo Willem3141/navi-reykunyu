@@ -343,6 +343,16 @@ router.get('/srs/reviewable-count',
 		}
 	}
 );
+router.get('/srs/learned-count',
+	checkLoggedIn(),
+	async (req, res, next) => {
+		try {
+			res.json(await server.zeykerokyu.getLearnedCount(req.user!));
+		} catch (e) {
+			next(e);
+		}
+	}
+);
 
 router.post('/srs/mark-correct',
 	checkLoggedIn(),

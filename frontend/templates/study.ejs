@@ -7,14 +7,21 @@
 			<%- include('header.ejs') %>
 		</div>
 		<div id="main-container" class="container">
-			<div class="buttons">
-				<a class="ui <%= reviewableCount === 0 ? 'disabled ' : '' %>labeled button" href="/study/review">
-					<div class="ui primary button">Review</div>
-					<div class="ui basic blue left pointing label"><%= reviewableCount %></div>
-				</a>
-			</div>
-			<h3><%- _('pick-a-course') %></h3>
-			<p><%- _('pick-a-course-note') %></p>
+			<% if (learnedCount > 0) { %>
+				<div>
+					<p><%- _('learned-count-1') %> <%= learnedCount %> <%- _('learned-count-2') %></p>
+					<div class="buttons">
+						<a class="ui <%= reviewableCount === 0 ? 'disabled ' : '' %>labeled button" href="/study/review">
+							<div class="ui primary button"><%- _('review-button') %></div>
+							<div class="ui basic blue left pointing label"><%= reviewableCount %></div>
+						</a>
+					</div>
+				</div>
+			<% } else { %>
+				<h3><%- _('pick-a-course') %></h3>
+				<p><%- _('pick-a-course-note') %></p>
+			<% } %>
+			<div class="ui section divider"></div>
 			<div class="ui two stackable cards">
 				<% for (let course of courses) { %>
 					<a class="card" href="/study/course?c=<%= course['id'] + 1 %>">
