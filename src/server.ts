@@ -349,20 +349,6 @@ app.get('/history',
 	}
 );
 
-app.get('/etymology-editor',
-	(req, res) => {
-		if (!req.user || !req.user['is_admin']) {
-			res.status(403);
-			res.render('403', pageVariables(req));
-			return;
-		}
-		res.render('etymologyEditor', pageVariables(req, {
-			'post_url': '/edit',
-			'words': edit.getAll()
-		}));
-	}
-);
-
 app.get('/sources-editor',
 	(req, res) => {
 		if (!req.user || !req.user['is_admin']) {
