@@ -955,8 +955,9 @@ class Reykunyu {
 		let infixesHtml = infixes.replace(".", "<span class='root-infix'>·</span>");
 		infixesHtml = infixesHtml.replace(".", "<span class='root-infix'>·</span>");
 		$body.html(infixesHtml + '&nbsp;&nbsp;');
-		let $infixDetailsButton = $('<button/>')
-			.addClass('ui circular basic icon button')
+		let $infixDetailsButton = $('<a/>')
+			.addClass('ui icon compact mini basic button')
+			.attr('data-tooltip', _('infix-viewer'))
 			.html('<i class="icon th list"></i>');
 		const self = this;
 		$infixDetailsButton.on("click", () => {
