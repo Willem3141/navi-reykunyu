@@ -144,7 +144,7 @@ class Reykunyu {
 
 		const self: Reykunyu = this;
 		$('.infix-button').on('click', (e) => {
-			$(e.target).addClass('active').siblings().removeClass('active');
+			$(e.target).closest('.infix-button').addClass('active').siblings().removeClass('active');
 			self.updateInfixDisabledButtons();
 			self.updateInfixResults();
 		});
