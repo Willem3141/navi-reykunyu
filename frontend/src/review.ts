@@ -107,6 +107,8 @@ const alternatives: Record<string, Alternative[]> = {
 	'fkeyk:aff:suf': [['tìfkeytok', 'wrong-type']],
 	'ye\'krr:adv': [['leye\'krr', 'wrong-type']],
 	'leye\'krr:adj': [['ye\'krr', 'wrong-type']],
+	'spe\'e:v:tr': [['tìspe\'e', 'wrong-type']],
+	'tìspe\'e:n': [['spe\'e', 'wrong-type']],
 };
 
 class ReviewPage {
