@@ -6,6 +6,7 @@ import assert from 'node:assert';
 import { conjugate, conjugateSimple } from '../src/nouns/conjugator';
 import { parse } from '../src/nouns/parser';
 import * as conjugationString from '../src/conjugationString';
+import { count } from 'node:console';
 
 /**
  * Performs one noun conjugation and noun parsing test.
@@ -27,15 +28,19 @@ function testConjugation(root: string, affixes: string[], expectedResult: string
 	assert.strictEqual(conjugationResult, expectedResult);
 
 	for (const conjugatedForm of conjugationString.formsFromString(expectedResult)) {
-		const parseResult = parse(conjugatedForm, dialect, loanword);
+		const parseResult = parse(conjugatedForm.toLowerCase(), dialect, loanword);
 		let found = false;
 		for (const possibility of parseResult) {
+			// ignore corrections; the parse result should be exact
+			if (possibility.correction) {
+				continue;
+			}
 			// special case for omitted (ay): the parser returns "(ay)" for
 			// that, but the conjugator just expects "ay"
 			if (possibility.affixes[1] === '(ay)') {
 				possibility.affixes[1] = 'ay';
 			}
-			if (possibility.root === root && JSON.stringify(possibility.affixes) === JSON.stringify(affixes)) {
+			if (possibility.root === root.toLowerCase() && JSON.stringify(possibility.affixes) === JSON.stringify(affixes)) {
 				found = true;
 			}
 		}

@@ -341,7 +341,7 @@ function genitiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): C
 					dropCount: 1
 				};
 			} else {
-				if (noun === "Omatikaya") {
+				if (noun.toLowerCase() === "omatikaya") {
 					return äOrE;
 				} else {
 					return yäOrYe;
