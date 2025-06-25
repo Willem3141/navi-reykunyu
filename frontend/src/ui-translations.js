@@ -17,11 +17,11 @@ $(function () {
 		});
 	}
 
-	// if the page was loaded offline from the service worker, it may not have
-	// the correct language, so we need to immediately trigger a language update
-	if ($('body').hasClass('offline')) {
-		setNewLanguage(localStorage.getItem('reykunyu-language'));
-	}
+	// If the page was loaded offline from the service worker, or it was loaded
+	// from the browser cache after a tab unload, it may not have the correct
+	// language. So we immediately trigger a language update, just in case. If
+	// the language was already correct, this won't do anything.
+	setNewLanguage(localStorage.getItem('reykunyu-language'));
 });
 
 function setNewLanguage(value) {
