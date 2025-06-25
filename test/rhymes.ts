@@ -18,6 +18,11 @@ describe('rhymes', () => {
 			assert.strictEqual(rhymes.rhymeEnding('hayalovay'), 'ay');
 		});
 
+		test('includes only the last pseudovowel, if the noun ends in a pseudovowel', (t) => {
+			assert.strictEqual(rhymes.rhymeEnding('trr'), 'rr');
+			assert.strictEqual(rhymes.rhymeEnding('\'ewll'), 'll');
+		});
+
 		test('is e even for nouns ending with é', (t) => {
 			assert.strictEqual(rhymes.rhymeEnding('tuté'), 'e');
 		});

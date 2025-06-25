@@ -12,6 +12,10 @@ export function rhymeEnding(word: string): string {
 	// ignore é and ù
 	word = word.replace('é', 'e');
 	word = word.replace('ù', 'u');
+	
+	if (word.endsWith('rr') || word.endsWith('ll')) {
+		return word.substring(word.length - 2);
+	}
 
 	let ending = '';
 	while (word.length > 0 && !phonology.endsInVowel(word)) {
