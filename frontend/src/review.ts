@@ -109,6 +109,16 @@ const alternatives: Record<string, Alternative[]> = {
 	'leye\'krr:adj': [['ye\'krr', 'wrong-type']],
 	'spe\'e:v:tr': [['tìspe\'e', 'wrong-type']],
 	'tìspe\'e:n': [['spe\'e', 'wrong-type']],
+	'hay:adj': [['nìhay', 'wrong-type']],
+	'nìhay:adv': [['hay', 'wrong-type']],
+	'fra\'u:pn': ['fraw'],
+	'fraw:pn': ['fra\'u'],
+	'penunyol:inter': ['nunyolpe'],
+	'nunyolpe:inter': ['penunyol'],
+	'pefyinep\'ang:inter': ['fyinep\'angpe'],
+	'fyinep\'angpe:inter': ['pefyinep\'ang'],
+	'pehrrlik:inter': ['krrlikpe'],
+	'krrlikpe:inter': ['pehrrlik'],
 };
 
 class ReviewPage {
