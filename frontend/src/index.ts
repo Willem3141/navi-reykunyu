@@ -4,6 +4,12 @@ import { lemmaForm, addLemmaClass, getTranslation, getShortTranslation, createWo
 
 class Reykunyu {
 
+	/// Maintains whether Reykunyu is currently trying to focus the input field
+	/// programmatically. This is important for event handling: a manual focus
+	/// event should trigger the autocomplete suggestions pane, but a
+	/// programmatic one shouldn't.
+	searchBoxFocusAutomaticallyTriggered = false;
+
 	constructor() {
 		// initialize UI elements
 		$('.ui.dropdown').dropdown();
@@ -12,8 +18,8 @@ class Reykunyu {
 		$('#language-dropdown').dropdown({
 			onChange: (value) => {
 				setNewLanguage(value);
-				this.sngäiTìfwusew(false);
 				this.setUpAutocomplete();
+				this.sngäiTìfwusew(false);
 				return false;
 			}
 		});
@@ -29,8 +35,8 @@ class Reykunyu {
 		$('#mode-direction').dropdown({
 			onChange: (value) => {
 				localStorage.setItem('reykunyu-mode', value);
-				this.sngäiTìfwusew(false);
 				this.setUpAutocomplete();
+				this.sngäiTìfwusew(false);
 				return false;
 			}
 		});
@@ -215,20 +221,29 @@ class Reykunyu {
 		} else {
 			url = 'api/suggest?language=' + this.getLanguage() + '&query={query}';
 		}
-		$('.ui.search').search({
+		// casting to <any> because for some reason the TS typings don't define
+		// searchOnFocus
+		$('.ui.search').search(<any>{
 			apiSettings: {
 				url: url
 			},
 			maxResults: 0,
 			searchDelay: 0,
+			searchOnFocus: false,
 			selector: {
 				'prompt': '#search-box'
 			},
 			showNoResults: false,
-			onSelect: (result) => {
+			onSelect: (result: any) => {
 				$('#search-box').val(result['title'].replace(/\<[^\>]*\>/g, ''));
 				this.sngäiTìfwusew();
 				return false;
+			}
+		});
+		$('#search-box').off('focus');
+		$('#search-box').on('focus', () => {
+			if (!this.searchBoxFocusAutomaticallyTriggered) {
+				$('.ui.search').search('query');
 			}
 		});
 	}
@@ -1453,7 +1468,9 @@ class Reykunyu {
 		} else {
 			console.error("Unexpected mode value '" + this.getMode() + "'");
 		}
+		this.searchBoxFocusAutomaticallyTriggered = true;
 		$('#search-box').trigger('select');
+		this.searchBoxFocusAutomaticallyTriggered = false;
 	}
 
 	doSearchNavi(): void {
