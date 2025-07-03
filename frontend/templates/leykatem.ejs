@@ -162,7 +162,7 @@ const types = [
 					<div class="eight wide field">
 						<label>Meaning note</label>
 						<textarea id="meaning-note-field" rows="2"><%= word['meaning_note'] %></textarea>
-						<span class="muted">Free-form additional information on the meaning of the word, such as a clarification on the scope of the word.</span>
+						<span class="muted">Free-form additional information on the meaning of the word, such as a clarification on the scope of the word. Can use references to other words of the form <b>[kaltxì:intj]</b> and external links of the form <b>[Pandorapedia](https://www.avatar.com/pandorapedia/)</b>.</span>
 					</div>
 					<div class="eight wide field">
 						<label>Conjugation note</label>
@@ -186,11 +186,13 @@ const types = [
 					<div class="twelve wide field">
 						<label>Status note <i>(optional)</i></label>
 						<input id="status-note-field" type="text" value="<%= word['status_note'] %>">
+						<span class="muted">If the status is set to unconfirmed, describe here why that is the case.</span>
 					</div>
 				</div>
 				<div class="field">
 					<label>Etymology</label>
 					<textarea id="etymology-field" rows="2"><%= word['etymology'] %></textarea>
+						<span class="muted">Standard form: <b>From ... + ... .</b> Can use references to other words of the form <b>[kaltxì:intj]</b>. This word will automatically end up in the “derived words” section of each referenced word.</span>
 				</div>
 
 				<div class="ui section divider"></div>
