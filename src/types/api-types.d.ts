@@ -48,7 +48,8 @@ declare type WordData = {
 	derived?: WordData[],
 	seeAlso?: WordData[],
 	favorite?: boolean,
-	sentences?: Sentence[]
+	sentences?: Sentence[],
+	references?: Record<string, WordData>
 };
 
 declare type Dialect = 'FN' | 'combined' | 'RN';
@@ -138,9 +139,7 @@ declare type CombinedAffixData = {
 
 declare type Source = [string, string, string, string];
 
-declare type LinkString = LinkStringPiece[];
-
-declare type LinkStringPiece = string | WordData;
+declare type LinkString = string;
 
 declare type Sentence = {
 	'na\'vi': [string, string[]][],

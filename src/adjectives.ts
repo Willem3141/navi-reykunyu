@@ -38,16 +38,7 @@ export function conjugate(adjective: string, form: 'predicative' | 'prenoun' | '
 }
 
 function isLeAdjective(etymology: LinkString): boolean {
-	for (let piece of etymology) {
-		if (typeof piece === 'string') {
-			continue;
-		}
-		if (piece.word.FN === 'le') {
-			return true;
-		}
-	}
-
-	return false;
+	return etymology.includes('[le:aff:pre]');
 }
 
 /**

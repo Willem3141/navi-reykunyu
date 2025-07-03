@@ -1,3 +1,5 @@
+import * as wordLinks from 'reykunyu/wordLinks';
+
 export function lemmaForm(word: WordData, dialect: 'FN' | 'combined' | 'RN'): string {
 	let type = word['type'];
 	let lemma = word['word'][dialect];
@@ -58,26 +60,28 @@ export function getTranslation<T>(tìralpeng: Translated<T>, language: string): 
 	}
 }
 
-export function createWordLink(link: LinkStringPiece, dialect: Dialect, language: string, referenceRatherThanLink?: boolean): JQuery {
-	if (typeof link === "string") {
-		return $('<b/>').text(link);
+export function createWordLink(target: WordData | null, dialect: Dialect, language: string, referenceRatherThanLink?: boolean): JQuery {
+	// Look up the word/type in the references.
+	if (target === null) {
+		return $('<b/>').text('[?]');
+	}
 
-	} else if (referenceRatherThanLink) {
-		const $piece = $('<span/>').addClass('reference').html(lemmaForm(link, dialect));
-		addLemmaClass($piece, link['type']);
+	if (referenceRatherThanLink) {
+		const $piece = $('<span/>').addClass('reference').html(lemmaForm(target, dialect));
+		addLemmaClass($piece, target['type']);
 		return $piece;
 
 	} else {
 		let $link = $('<a/>')
 			.addClass('word-link')
-			.attr('href', "/?q=" + link["word_raw"][dialect]);
+			.attr('href', "/?q=" + target["word_raw"][dialect]);
 		let $word = $('<span/>')
 			.addClass('navi')
-			.html(lemmaForm(link, dialect));
-		addLemmaClass($word, link["type"]);
+			.html(lemmaForm(target, dialect));
+		addLemmaClass($word, target["type"]);
 		$link.append($word);
 
-		let translation = getShortTranslation(link, language);
+		let translation = getShortTranslation(target, language);
 		let $translation = $('<span/>')
 			.addClass('translation')
 			.text(translation);
@@ -100,14 +104,20 @@ function processMarkdownLinks(text: string): JQuery {
 	return $result;
 }
 
-export function appendLinkString(linkString: LinkString, $div: JQuery, dialect: Dialect, language: string, referenceRatherThanLink?: boolean) {
-	for (let piece of linkString) {
-		if (typeof piece === 'string') {
-			$div.append(processMarkdownLinks(piece));
-		} else {
-			$div.append(createWordLink(piece, dialect, language, referenceRatherThanLink));
+export function appendLinkString(linkString: LinkString, word: WordData, $div: JQuery, dialect: Dialect, language: string, referenceRatherThanLink?: boolean) {
+	wordLinks.visitLinkString(linkString,
+		(text: string) => {
+			$div.append(processMarkdownLinks(text));
+		},
+		(referencedWord: string, type: string) => {
+			let key = referencedWord + ':' + type;
+			let target: WordData | null = null;
+			if (word['references'] !== undefined && word['references'][key] !== undefined) {
+				target = word['references'][key];
+			}
+			$div.append(createWordLink(target, dialect, language, referenceRatherThanLink));
 		}
-	}
+	);
 }
 
 export function toReadableType(type: string): string {

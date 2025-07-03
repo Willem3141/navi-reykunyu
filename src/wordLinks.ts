@@ -11,66 +11,81 @@
  * "See also → kaltxì (hello)." including a link to the word kaltxì so that
  * can find more information if necessary.
  * 
- * This file provides a function that finds word links in a string and enriches
- * them with (an abridged version) of the data for the corresponding word. The
- * output is an array that contains strings (for textual parts of the original
- * string, which are not word links) and objects (the data corresponding to a
- * word link). For example:
+ * This file provides a function that finds word links in a string and adds (an
+ * abridged version of) the data for the corresponding word to the `references`
+ * field of the word data. For example, for a word with the meaning_note above,
+ * it'll add a `references` field like this:
  * 
  * ```
- * [
- *     "See also ",
- *     {
- *         "na'vi": "kaltxì",
- *         "type": "intj",
- *         "translations": [...],
+ * {
+ *     ...,
+ *     references: {
+ *         "kaltxì:intj": {
+ *             "na'vi": "kaltxì",
+ *             "type": "intj",
+ *             "translations": [...],
+ *         }
  *     }
- *     ".",
- * ]
+ * }
  * ```
  */
 
 import Dictionary from './dictionary';
-import * as output from './output';
 
-// Replaces word links in the given string.
-// \param originWord The word that contains the data we're calling this function
-// for. This is for error reporting.
-// \param dataErrors A list of errors that a (potential) error will be appended
-// to.
-export function enrichWordLinks(d: Dictionary, text: string, originWord: string, dataErrors: string[]): LinkString {
+const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
 
-	// matches word links between brackets
-	const wordLinkRegex = /\[([^:\]]+):([^\]]+)\]/g;
-	let pieces = text.split(wordLinkRegex);
-
-	let list: LinkString = [];
+/**
+ * Calls user-specified functions for each piece of text and each reference in
+ * the given link string.
+ * @param textVisitor Function that is called for each piece of text.
+ * @param referenceVisitor Function that is called for each reference.
+ */
+export function visitLinkString(linkString: LinkString,
+	                            textVisitor: (text: string) => void,
+	                            referenceVisitor: (word: string, type: string) => void) {
+	let pieces = linkString.split(wordLinkRegex);
 	for (let i = 0; i < pieces.length; i++) {
 		if (i % 3 === 0) {
-			// string piece: just place it into the list
-			list.push(pieces[i]);
+			// string piece
+			textVisitor(pieces[i]);
 		} else {
 			// regex-matched piece: get object from dictionary
-			const navi = pieces[i];
+			const word = pieces[i];
 			const type = pieces[i + 1];
-			const key = navi + ':' + type;
-			const word = d.get(navi, type, 'FN');
-			if (word) {
-				list.push(stripToLinkData(word));
-			} else {
-				list.push('[' + key + ']');
-				dataErrors.push('Invalid reference to [' + key + '] in word link for [' + originWord + ']');
-			}
+			referenceVisitor(word, type);
 			i++;  // skip type
 		}
 	}
-	return list;
 }
 
-// Given a word object, returns an object that contains only the word data
-// relevant when making a word link (Na'vi word, type, and translations).
-// Calling this function makes the returned data smaller, and avoids potential
-// infinite loops if two words happen to have word links to each other.
+/**
+ * Adds references for word links in the given string.
+ * @param dataErrors A list of errors that (potential) errors will be appended
+ * to.
+ */
+export function addReferencesForLinkString(d: Dictionary, word: WordData, linkString: LinkString, dataErrors: string[]): void {
+	visitLinkString(linkString,
+		(text: string) => {},
+		(referencedWord: string, type: string) => {
+			const data = d.get(referencedWord, type, 'FN');
+			if (data !== null) {
+				if (word['references'] === undefined) {
+					word['references'] = {};
+				}
+				word['references'][referencedWord + ':' + type] = stripToLinkData(data);
+			} else {
+				dataErrors.push(word['na\'vi'] + ': invalid reference [' + referencedWord + ':' + type + ']');
+			}
+		}
+	);
+}
+
+/**
+ * Given a word object, returns an object that contains only the word data
+ * relevant when making a word link (Na'vi word, type, and translations).
+ * Calling this function makes the returned data smaller, and avoids potential
+ * infinite loops if two words happen to have word links to each other.
+ */
 export function stripToLinkData(word: WordData): WordData {
 	let result: WordData = {
 		"id": word["id"],

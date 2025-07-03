@@ -64,35 +64,27 @@ export default class Reykunyu {
 
 			// etymology and derived words
 			if (word['etymology']) {
-				word['etymology'] = wordLinks.enrichWordLinks(this.dictionary, word['etymology'] as unknown as string,
-					wordKey, this.dataErrorList);
-				for (let piece of word['etymology']) {
-					if (typeof piece === "string") {
-						continue;
-					}
-					const navi = piece["na'vi"].toLowerCase()
-						.replace(/[-\[\]]/g, '').replaceAll('/', '').replaceAll('ù', 'u');  // TODO replace by word_raw
-					const type = piece["type"];
-					const result = this.dictionary.getEditable(navi, type);
-					if (result) {
-						if (!result['derived']) {
-							result['derived'] = [];
+				wordLinks.addReferencesForLinkString(this.dictionary, word, word['etymology'], this.dataErrorList);
+				wordLinks.visitLinkString(word['etymology'],
+					() => {},
+					(referencedWord: string, type: string) => {
+						const editableData = this.dictionary.getEditable(referencedWord, type);
+						if (editableData) {
+							if (!editableData['derived']) {
+								editableData['derived'] = [];
+							}
+							editableData['derived'].push(wordLinks.stripToLinkData(word));
 						}
-						result['derived'].push(wordLinks.stripToLinkData(word));
-					} else {
-						this.dataErrorList.push('Invalid reference to [' + navi + ':' + type + '] in etymology for [' + wordKey + ']');
 					}
-				}
+				);
 			}
 
 			// meaning notes
 			if (word['meaning_note']) {
-				word['meaning_note'] = wordLinks.enrichWordLinks(this.dictionary, word['meaning_note'] as unknown as string,
-					wordKey, this.dataErrorList);
+				wordLinks.addReferencesForLinkString(this.dictionary, word, word['meaning_note'], this.dataErrorList);
 			}
 			if (word['conjugation_note']) {
-				word['conjugation_note'] = wordLinks.enrichWordLinks(this.dictionary, word['conjugation_note'] as unknown as string,
-					wordKey, this.dataErrorList);
+				wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'], this.dataErrorList);
 			}
 
 			// see also
@@ -1138,12 +1130,8 @@ export default class Reykunyu {
 		fs.writeFileSync('./data/corpus.json', JSON.stringify(sentences));
 	}*/
 
-	getDataErrors(): LinkString[] {
-		let result: LinkString[] = [];
-		for (const error of this.dataErrorList) {
-			result.push(wordLinks.enrichWordLinks(this.dictionary, error, '', []));
-		}
-		return result;
+	getDataErrors(): string[] {
+		return this.dataErrorList;
 	}
 
 	getDataErrorCount(): number {

@@ -2,8 +2,12 @@
 	"compilerOptions": {
 		"strict": true,
 		"module": "amd",
-		"target": "es2016",
+		"target": "es2021",
 		"noEmit": true,
+		"paths": {
+			"reykunyu/*": ["../../src/*"]
+		},
+		"rootDir": "../.."
 	},
 	"files": [
 		"index.ts",

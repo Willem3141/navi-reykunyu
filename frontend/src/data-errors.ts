@@ -25,8 +25,7 @@ class DataErrorsPage {
 					$('#no-errors').show();
 				} else {
 					for (let error of errors) {
-						let $item = $('<li/>');
-						appendLinkString(error, $item, 'FN', this.getLanguage());
+						let $item = $('<li/>').text(error);
 						$results.append($item);
 					}
 				}

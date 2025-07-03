@@ -705,9 +705,9 @@ class Reykunyu {
 		return $noteSection;
 	}
 
-	noteSection(note: LinkString) {
+	meaningNoteSection(word: WordData) {
 		let $noteSection = $('<div/>').addClass('result-item note');
-		appendLinkString(note, $noteSection, this.getDialect(), this.getLanguage());
+		appendLinkString(word['meaning_note']!, word, $noteSection, this.getDialect(), this.getLanguage());
 		return $noteSection;
 	}
 
@@ -796,19 +796,19 @@ class Reykunyu {
 		return $sourceSection;
 	}
 
-	etymologySection(etymology: LinkString) {
+	etymologySection(word: WordData) {
 		let $etymologySection = $('<div/>').addClass('result-item etymology');
 		$etymologySection.append($('<div/>').addClass('header').text(_('etymology')));
 		let $etymology = $('<div/>').addClass('body');
-		appendLinkString(etymology, $etymology, this.getDialect(), this.getLanguage());
+		appendLinkString(word['etymology']!, word, $etymology, this.getDialect(), this.getLanguage());
 		$etymologySection.append($etymology);
 		return $etymologySection;
 	}
 
-	derivedSection(derived: WordData[]) {
+	derivedSection(word: WordData) {
 		let $derivedSection = $('<div/>').addClass('result-item derived');
 		$derivedSection.append($('<div/>').addClass('header').text(_('derived')));
-		$derivedSection.append(this.createWordLinkList(derived).addClass('body'));
+		$derivedSection.append(this.createWordLinkList(word['derived']!).addClass('body'));
 		return $derivedSection;
 	}
 
@@ -833,7 +833,7 @@ class Reykunyu {
 	}
 
 	// ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
-	nounConjugationSection(conjugation: NounConjugation, note?: LinkString) {
+	nounConjugationSection(word: WordData, conjugation: NounConjugation, note?: LinkString) {
 		let $section = $('<details/>').addClass('result-item conjugation');
 		let $header = $('<summary/>').addClass('header').text(_('conjugated-forms')).appendTo($section);
 		let $headerHide = $('<span/>').addClass('header-hide').appendTo($header);
@@ -910,7 +910,7 @@ class Reykunyu {
 
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, $note, this.getDialect(), this.getLanguage());
+			appendLinkString(note, word, $note, this.getDialect(), this.getLanguage());
 			$body.append($note);
 		}
 
@@ -943,7 +943,7 @@ class Reykunyu {
 	}
 
 	// ngop hapxìt a wìntxu fya'ot a leykatem syonlì'uti
-	adjectiveConjugationSection(conjugation: AdjectiveConjugation, note?: LinkString): JQuery {
+	adjectiveConjugationSection(word: WordData, conjugation: AdjectiveConjugation, note?: LinkString): JQuery {
 		let $section = $('<div/>').addClass('result-item conjugation');
 		let $header = $('<div/>').addClass('header').text(_('attributive-forms')).appendTo($section);
 		let $body = $('<div/>').addClass('body').appendTo($section);
@@ -955,7 +955,7 @@ class Reykunyu {
 
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, $note, this.getDialect(), this.getLanguage());
+			appendLinkString(note, word, $note, this.getDialect(), this.getLanguage());
 			$body.append($note);
 		}
 
@@ -963,9 +963,9 @@ class Reykunyu {
 	}
 
 	// ngop hapxìt a wìntxu hemlì'uvit
-	infixesSection(word: string, infixes: string, note?: LinkString): JQuery {
+	infixesSection(word: WordData, navi: string, infixes: string, note?: LinkString): JQuery {
 		let $section = $('<div/>').addClass('result-item conjugation');
-		let $header = $('<div/>').addClass('header').text(_('infix-positions')).appendTo($section);
+		$('<div/>').addClass('header').text(_('infix-positions')).appendTo($section);
 		let $body = $('<div/>').addClass('body').appendTo($section);
 		let infixesHtml = infixes.replace(".", "<span class='root-infix'>·</span>");
 		infixesHtml = infixesHtml.replace(".", "<span class='root-infix'>·</span>");
@@ -977,8 +977,8 @@ class Reykunyu {
 		const self = this;
 		$infixDetailsButton.on("click", () => {
 			$('#infix-details-modal').modal("show");
-			$('#infix-details-word').text(word);
-			$('#infix-details-input').text(word);
+			$('#infix-details-word').text(navi);
+			$('#infix-details-input').text(navi);
 			$('#infix-details-infixes').text(infixes);
 			self.updateInfixDisabledButtons();
 			self.updateInfixResults();
@@ -986,7 +986,7 @@ class Reykunyu {
 		$body.append($infixDetailsButton);
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, $note, this.getDialect(), this.getLanguage());
+			appendLinkString(note, word, $note, this.getDialect(), this.getLanguage());
 			$body.append($note);
 		}
 		return $section;
@@ -1332,7 +1332,7 @@ class Reykunyu {
 		$result.append(this.translationSection(r["translations"]));
 
 		if (r["meaning_note"]) {
-			$result.append(this.noteSection(r["meaning_note"]));
+			$result.append(this.meaningNoteSection(r));
 		}
 
 		if (r["status"]) {
@@ -1340,23 +1340,23 @@ class Reykunyu {
 		}
 
 		if (r["etymology"]) {
-			$result.append(this.etymologySection(r["etymology"]));
+			$result.append(this.etymologySection(r));
 		}
 
 		if (r["derived"]) {
-			$result.append(this.derivedSection(r["derived"]));
+			$result.append(this.derivedSection(r));
 		}
 
 		if (r["conjugation"]) {
 			if (r["type"] === "n" || r["type"] === "pn" || r["type"] === "n:pr" || r["type"] === "ctr") {
-				$result.append(this.nounConjugationSection(<NounConjugation>r["conjugation"][this.getDialect()], r["conjugation_note"]));
+				$result.append(this.nounConjugationSection(r, <NounConjugation>r["conjugation"][this.getDialect()], r["conjugation_note"]));
 			} else if (r["type"] === "adj") {
-				$result.append(this.adjectiveConjugationSection(<AdjectiveConjugation>r["conjugation"][this.getDialect()], r["conjugation_note"]));
+				$result.append(this.adjectiveConjugationSection(r, <AdjectiveConjugation>r["conjugation"][this.getDialect()], r["conjugation_note"]));
 			}
 		}
 
 		if (r["infixes"]) {
-			$result.append(this.infixesSection(r["word_raw"][this.getDialect()], r["infixes"], r["conjugation_note"]));
+			$result.append(this.infixesSection(r, r["word_raw"][this.getDialect()], r["infixes"], r["conjugation_note"]));
 		}
 
 		if (r["sentences"] && r["sentences"].length) {

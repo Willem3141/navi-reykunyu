@@ -122,7 +122,7 @@ class AllWordsPage {
 		if (word['meaning_note'] && word['meaning_note'].length > 0) {
 			$block.append('. ');
 			const $meaningNote = $('<span/>').addClass('meaning-note');
-			appendLinkString(word['meaning_note'], $meaningNote, this.getDialect(), this.getLanguage(), true);
+			appendLinkString(word['meaning_note'], word, $meaningNote, this.getDialect(), this.getLanguage(), true);
 			$block.append($meaningNote);
 		}
 		if (word['etymology'] && word['etymology'].length > 0) {
@@ -133,7 +133,7 @@ class AllWordsPage {
 				$block.append('. ');
 			}
 			const $etymology = $('<span/>').addClass('etymology');
-			appendLinkString(word['etymology'], $etymology, this.getDialect(), this.getLanguage(), true);
+			appendLinkString(word['etymology'], word, $etymology, this.getDialect(), this.getLanguage(), true);
 			$block.append($etymology);
 		}
 		if (word['source']) {
@@ -156,7 +156,7 @@ class AllWordsPage {
 				if (i > 0) {
 					$seeAlso.append(', ');
 				}
-				appendLinkString([word['seeAlso'][i]], $seeAlso, this.getDialect(), this.getLanguage(), true);
+				$seeAlso.append(createWordLink(word['seeAlso'][i], this.getDialect(), this.getLanguage(), true));
 			}
 			$seeAlso.append(')');
 			$block.append($seeAlso);
