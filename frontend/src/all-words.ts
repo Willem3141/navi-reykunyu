@@ -119,14 +119,14 @@ class AllWordsPage {
 			}
 			$block.append($('<span/>').addClass('definition').html(getTranslation(word["translations"][i], this.getLanguage())));
 		}
-		if (word['meaning_note'] && word['meaning_note'].length > 0) {
+		if (word['meaning_note']) {
 			$block.append('. ');
 			const $meaningNote = $('<span/>').addClass('meaning-note');
-			appendLinkString(word['meaning_note'], word, $meaningNote, this.getDialect(), this.getLanguage(), true);
+			appendLinkString(getTranslation(word['meaning_note'], this.getLanguage()), word, $meaningNote, this.getDialect(), this.getLanguage(), true);
 			$block.append($meaningNote);
 		}
 		if (word['etymology'] && word['etymology'].length > 0) {
-			if (word['meaning_note'] && word['meaning_note'].length > 0) {
+			if (word['meaning_note']) {
 				// assume the meaning note already ends in '.'
 				$block.append(' ');
 			} else {

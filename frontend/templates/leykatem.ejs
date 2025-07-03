@@ -161,7 +161,27 @@ const types = [
 				<div class="fields">
 					<div class="eight wide field">
 						<label>Meaning note</label>
-						<textarea id="meaning-note-field" rows="2"><%= word['meaning_note'] %></textarea>
+						<table id="meaning-note-field" class="ui compact table">
+							<tbody>
+								<tr>
+									<td>
+										<% let meaningNoteTranslation = word['meaning_note'];
+										if (!meaningNoteTranslation) {
+											meaningNoteTranslation = '';
+										}
+										if (typeof meaningNoteTranslation === 'string') {
+											meaningNoteTranslation = {'en': meaningNoteTranslation};
+										} %>
+										<textarea id="meaning-note-field" rows="2" <% for (let lang of Object.keys(meaningNoteTranslation)) { if (lang !== 'en') { %> data-<%= lang %>="<%= meaningNoteTranslation[lang] %>"<% } } %>><%= meaningNoteTranslation['en'] %></textarea>
+									</td>
+									<td class="one wide">
+										<div class="translation-button ui floated small icon button" data-tooltip="Edit translations">
+											<i class="globe icon"></i>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 						<span class="muted">Free-form additional information on the meaning of the word, such as a clarification on the scope of the word. Can use references to other words of the form <b>[kaltxì:intj]</b> and external links of the form <b>[Pandorapedia](https://www.avatar.com/pandorapedia/)</b>.</span>
 					</div>
 					<div class="eight wide field">

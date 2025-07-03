@@ -26,7 +26,7 @@ declare type WordData = {
 	translations: Translated<string>[],
 	short_translation?: string,
 	short_translation_conjugated?: string,
-	meaning_note?: LinkString,
+	meaning_note?: Translated<LinkString>,  // may be LinkString in the database
 	infixes?: string,
 	conjugation?: {
 		FN: NounConjugation | AdjectiveConjugation,

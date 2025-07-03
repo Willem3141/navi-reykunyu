@@ -707,7 +707,7 @@ class Reykunyu {
 
 	meaningNoteSection(word: WordData) {
 		let $noteSection = $('<div/>').addClass('result-item note');
-		appendLinkString(word['meaning_note']!, word, $noteSection, this.getDialect(), this.getLanguage());
+		appendLinkString(getTranslation(word['meaning_note']!, this.getLanguage()), word, $noteSection, this.getDialect(), this.getLanguage());
 		return $noteSection;
 	}
 

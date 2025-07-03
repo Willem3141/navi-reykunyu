@@ -39,9 +39,19 @@ $(function() {
 		}
 		renumberMeanings();
 	});
-	$('#definition-field').on('click', '.translation-button', function () {
+
+	$('#source-field').on('click', '.add-source-button', function () {
 		const $tr = $(this).closest('tr');
-		const $field = $tr.find('input');
+		$tr.clone().insertAfter($tr);
+	});
+	$('#source-field').on('click', '.delete-source-button', function () {
+		const $tr = $(this).closest('tr');
+		$tr.remove();
+	});
+
+	$('body').on('click', '.translation-button', function () {
+		const $tr = $(this).closest('tr');
+		const $field = $tr.find('input, textarea');
 		const english = $field.val();
 		$('#translation-en-field').text(english);
 
@@ -53,15 +63,6 @@ $(function() {
 
 		$('#translations-modal').data('editing', $field);
 		$('#translations-modal').modal('show');
-	});
-
-	$('#source-field').on('click', '.add-source-button', function () {
-		const $tr = $(this).closest('tr');
-		$tr.clone().insertAfter($tr);
-	});
-	$('#source-field').on('click', '.delete-source-button', function () {
-		const $tr = $(this).closest('tr');
-		$tr.remove();
 	});
 
 	$('#save-button').on('click', function () {
@@ -111,6 +112,37 @@ function showHideInfixes() {
 	}
 }
 
+function collectTranslatedDefinitions($field) {
+	let translations = [];
+	const $rows = $field.find('tr');
+	$rows.each(function() {
+		let translation = {};
+		translation['en'] = $(this).find('input, textarea').val();
+		const languages = $(this).find('input, textarea').data();
+		for (let lang of Object.keys(languages)) {
+			translation[lang] = languages[lang];
+		}
+		translations.push(translation);
+	});
+	return translations;
+}
+
+function collectTranslations($field) {
+	let translations = {};
+	translations['en'] = $field.find('input, textarea').val();
+	if (translations['en'] === '') {
+		return undefined;
+	}
+	const languages = $field.find('input, textarea').data();
+	for (let lang of Object.keys(languages)) {
+		translations[lang] = languages[lang];
+	}
+	if (Object.keys(translations).length === 1 && Object.keys(translations)[0] === 'en') {
+		translations = translations['en'];
+	}
+	return translations;
+}
+
 function generateWordData() {
 	word = {};
 	word['id'] = id;
@@ -123,14 +155,8 @@ function generateWordData() {
 			throw new Error('Cannot save a verb without infix data');
 		}
 	}
-	if ($('#meaning-note-field').val()) {
-		word["meaning_note"] = $('#meaning-note-field').val();
-	}
-	if ($('#conjugation-note-field').val()) {
-		word["conjugation_note"] = $('#conjugation-note-field').val();
-	}
 	let pronunciations = [];
-	const $pronunciationRows= $('#pronunciation-field').find('tr');
+	const $pronunciationRows = $('#pronunciation-field').find('tr');
 	$pronunciationRows.each(function() {
 		if ($(this).find('.syllables-cell').val().length) {
 			let pronunciation = {
@@ -148,19 +174,13 @@ function generateWordData() {
 		word["pronunciation"] = pronunciations;
 	}
 
-	let translations = [];
-	const $rows = $('#definition-field').find('tr');
-	$rows.each(function() {
-		let translation = {};
-		translation['en'] = $(this).find('input').val();
-		const languages = $(this).find('input').data();
-		for (let lang of Object.keys(languages)) {
-			translation[lang] = languages[lang];
-		}
-		translations.push(translation);
-	});
+	word["translations"] = collectTranslatedDefinitions($('#definition-field'));
 
-	word["translations"] = translations;
+	word["meaning_note"] = collectTranslations($('#meaning-note-field'));
+
+	if ($('#conjugation-note-field').val()) {
+		word["conjugation_note"] = $('#conjugation-note-field').val();
+	}
 
 	if ($('#status-field').val() !== "none") {
 		word["status"] = $('#status-field').val();

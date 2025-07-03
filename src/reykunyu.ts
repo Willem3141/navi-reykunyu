@@ -81,7 +81,12 @@ export default class Reykunyu {
 
 			// meaning notes
 			if (word['meaning_note']) {
-				wordLinks.addReferencesForLinkString(this.dictionary, word, word['meaning_note'], this.dataErrorList);
+				if (typeof word['meaning_note'] === 'string') {
+					word['meaning_note'] = { 'en': word['meaning_note'] };
+				}
+				for (let language in word['meaning_note']) {
+					wordLinks.addReferencesForLinkString(this.dictionary, word, word['meaning_note'][language], this.dataErrorList);
+				}
 			}
 			if (word['conjugation_note']) {
 				wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'], this.dataErrorList);
