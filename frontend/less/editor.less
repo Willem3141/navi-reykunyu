@@ -1,0 +1,73 @@
+@import 'fonts.less';
+@import 'colors.less';
+@import 'development-banner.less';
+@import 'global.less';
+@import 'header.less';
+@import 'help.less';
+@import 'mass-editors.less';
+@import 'search-ui.less';
+@import 'semantic-overrides.less';
+@import 'word-list.less';
+
+#visual-page {
+	display: flex;
+	flex-direction: column;
+	padding: 5px 0px;
+
+	.field {
+		display: flex;
+		align-items: center;
+		margin: 5px 10px;
+
+		label {
+			text-align: right;
+			margin: 0;
+			margin-right: 7px;
+			flex: 155px 0 0;
+
+			.info-spawner {
+				display: inline-block;
+				color: var(--muted-color);
+				margin-left: 8px;
+
+				&:after {
+					white-space: unset;
+					width: 400px;
+				}
+			}
+		}
+
+		input,
+		.ui.selection.dropdown {
+			/*padding: 5px 7px;
+			min-height: auto;*/
+			flex: 1;
+		}
+
+		.field-buttons {
+			flex: 80px 0 0;
+		}
+	}
+
+	.buttons {
+		margin-left: 172px;
+
+		.button {
+			margin: 5px 0;
+		}
+	}
+}
+
+#preview-container {
+	padding-top: 6px;
+}
+
+textarea {
+	min-height: 38px;
+}
+
+.ui.action.input:not([class*="left action"]) > textarea {
+	border-top-right-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
+	border-right-color: transparent !important;
+}

@@ -91,6 +91,19 @@ export function createWordLink(target: WordData | null, dialect: Dialect, langua
 	}
 }
 
+export function createWordLinkList(derived: WordData[], dialect: Dialect, language: string) {
+	let $list = $('<div/>');
+	let first = true;
+	for (let word of derived) {
+		if (!first) {
+			$list.append(' ');
+		}
+		$list.append(createWordLink(word, dialect, language));
+		first = false;
+	}
+	return $list;
+}
+
 function processMarkdownLinks(text: string): JQuery {
 	let $result = $();
 	let pieces = text.split(/\[([^\]]+)\]\(([^)]+)\)/);
