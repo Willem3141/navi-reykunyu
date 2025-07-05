@@ -5,7 +5,7 @@ const esbuild = require('esbuild');
 const path = require('path');
 
 function buildLess(cb) {
-	return src(['./frontend/less/index.less', './frontend/less/study.less'])
+	return src(['./frontend/less/index.less', './frontend/less/study.less', './frontend/less/editor.less'])
 		.pipe(less({
 			paths: [path.join(__dirname, 'less')]
 		}))
@@ -24,6 +24,7 @@ function buildTypeScriptClient(cb) {
 		entryPoints: [
 			'./frontend/src/index.ts',
 			'./frontend/src/all-words.ts',
+			'./frontend/src/edit.ts',
 			'./frontend/src/study.ts',
 			'./frontend/src/review.ts',
 			'./frontend/src/data-errors.ts'
