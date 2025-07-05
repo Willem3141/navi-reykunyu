@@ -51,20 +51,12 @@ export default class Reykunyu {
 
 		// preprocess all words
 		for (let word of this.dictionary.getAll()) {
-			const wordKey = word['na\'vi'] + ':' + word['type'];
-			// pronunciation
-			if (word['pronunciation']) {
-				for (let pronunciation of word['pronunciation']) {
-					pronunciation['ipa'] = {
-						'FN': ipa.generateIpa(pronunciation, word['type'], 'FN'),
-						'RN': ipa.generateIpa(pronunciation, word['type'], 'RN')
-					};
-				}
-			}
+			this.preprocessWord(word);
+		}
 
-			// etymology and derived words
+		// find derived words
+		for (let word of this.dictionary.getAll()) {
 			if (word['etymology']) {
-				wordLinks.addReferencesForLinkString(this.dictionary, word, word['etymology'], this.dataErrorList);
 				wordLinks.visitLinkString(word['etymology'],
 					() => {},
 					(referencedWord: string, type: string) => {
@@ -77,52 +69,6 @@ export default class Reykunyu {
 						}
 					}
 				);
-			}
-
-			// meaning notes
-			if (word['meaning_note']) {
-				if (typeof word['meaning_note'] === 'string') {
-					word['meaning_note'] = { 'en': word['meaning_note'] };
-				}
-				for (let language in word['meaning_note']) {
-					wordLinks.addReferencesForLinkString(this.dictionary, word, word['meaning_note'][language], this.dataErrorList);
-				}
-			}
-			if (word['conjugation_note']) {
-				wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'], this.dataErrorList);
-			}
-
-			// see also
-			if (word['seeAlso']) {
-				for (let i = 0; i < word['seeAlso'].length; i++) {
-					let [navi, type] = this.dictionary.splitWordAndType((word['seeAlso'] as unknown as string[])[i]);
-					let result = this.dictionary.getEditable(navi, type);
-					if (result) {
-						word['seeAlso'][i] = wordLinks.stripToLinkData(result);
-					}
-				}
-			}
-			
-			// conjugation tables
-			if (word['conjugation']) {
-				let conjugation = (word['conjugation'] as any)['forms'];
-				word['conjugation'] = {
-					'FN': conjugation,
-					'combined': conjugation,
-					'RN': conjugation
-				};
-			} else if (word['type'] === 'n' || word['type'] === 'n:pr') {
-				word['conjugation'] = {
-					'FN': this.createNounConjugation(word, 'FN'),
-					'combined': this.createNounConjugation(word, 'combined'),
-					'RN': this.createNounConjugation(word, 'RN')
-				};
-			} else if (word['type'] === 'adj') {
-				word['conjugation'] = {
-					'FN': this.createAdjectiveConjugation(word, 'FN'),
-					'combined': this.createAdjectiveConjugation(word, 'combined'),
-					'RN': this.createAdjectiveConjugation(word, 'RN')
-				};
 			}
 		}
 
@@ -171,6 +117,69 @@ export default class Reykunyu {
 		}
 		for (const type of ['v:']) {
 			this.allWordsOfType[type] = this.getAllWordsOfType(type, true);
+		}
+	}
+
+	preprocessWord(word: WordData) {
+		// pronunciation
+		if (word['pronunciation']) {
+			for (let pronunciation of word['pronunciation']) {
+				pronunciation['ipa'] = {
+					'FN': ipa.generateIpa(pronunciation, word['type'], 'FN'),
+					'RN': ipa.generateIpa(pronunciation, word['type'], 'RN')
+				};
+			}
+		}
+
+		// etymology and derived words
+		if (word['etymology']) {
+			wordLinks.addReferencesForLinkString(this.dictionary, word, word['etymology'], this.dataErrorList);
+		}
+
+		// meaning notes
+		if (word['meaning_note']) {
+			if (typeof word['meaning_note'] === 'string') {
+				word['meaning_note'] = { 'en': word['meaning_note'] };
+			}
+			for (let language in word['meaning_note']) {
+				wordLinks.addReferencesForLinkString(this.dictionary, word, word['meaning_note'][language], this.dataErrorList);
+			}
+		}
+		if (word['conjugation_note']) {
+			wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'], this.dataErrorList);
+		}
+
+		// see also
+		if (word['seeAlso']) {
+			for (let i = 0; i < word['seeAlso'].length; i++) {
+				let [navi, type] = this.dictionary.splitWordAndType((word['seeAlso'] as unknown as string[])[i]);
+				let result = this.dictionary.getEditable(navi, type);
+				if (result) {
+					word['seeAlso'][i] = wordLinks.stripToLinkData(result);
+				}
+			}
+		}
+		
+		// conjugation tables
+		if (word['conjugation']) {
+			let conjugation = (word['conjugation'] as any)['forms'];
+			word['conjugation'] = {
+				'FN': conjugation,
+				'combined': conjugation,
+				'RN': conjugation
+			};
+		} else if (word['type'] === 'n' || word['type'] === 'n:pr') {
+			word['conjugation'] = {
+				'FN': this.createNounConjugation(word, 'FN'),
+				'combined': this.createNounConjugation(word, 'combined'),
+				'RN': this.createNounConjugation(word, 'RN')
+			};
+		} else if (word['type'] === 'adj') {
+			word['conjugation'] = {
+				'FN': this.createAdjectiveConjugation(word, 'FN'),
+				'combined': this.createAdjectiveConjugation(word, 'combined'),
+				'RN': this.createAdjectiveConjugation(word, 'RN')
+			};
 		}
 	}
 

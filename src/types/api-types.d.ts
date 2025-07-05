@@ -41,7 +41,7 @@ declare type WordData = {
 		by: string
 	},
 	image?: string,
-	source?: Source,
+	source?: Source[],
 	status?: 'loan' | 'unconfirmed' | 'unofficial',
 	status_note?: string,
 	etymology?: LinkString,
@@ -57,14 +57,14 @@ declare type Dialect = 'FN' | 'combined' | 'RN';
 declare type Pronunciation = {
 	syllables: string,
 	stressed: number,
-	audio: AudioData[],
+	audio: PronunciationAudio[],
 	ipa: {
 		FN: string,
 		RN: string
 	}
 };
 
-declare type AudioData = {
+declare type PronunciationAudio = {
 	file: string,
 	speaker: string
 }
@@ -137,7 +137,7 @@ declare type CombinedAffixData = {
 	combinedFrom: SimpleAffixData[]
 }
 
-declare type Source = [string, string, string, string];
+declare type Source = [string, string?, string?, string?];
 
 declare type LinkString = string;
 

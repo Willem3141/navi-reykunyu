@@ -72,7 +72,10 @@ class AllWordsPage {
 		return $pätsì;
 	}
 
-	sourceAbbreviation(source: string): string {
+	sourceAbbreviation(source: Source): string {
+		if (!source[1]) {
+			return '';
+		}
 		if (source[1].includes('naviteri.org')) {
 			return 'nt';
 		} else if (source[1].includes('forum.learnnavi.org')) {
@@ -138,14 +141,14 @@ class AllWordsPage {
 		}
 		if (word['source']) {
 			for (const s of word['source']) {
-				if (s.length < 3 || s[1].length == 0) {
+				if (s.length < 3 || !s[1] || s[1].length == 0) {
 					continue;
 				}
 				$block.append(' ');
 				$block.append($('<a/>')
 					.addClass('source-link')
 					.html(this.sourceAbbreviation(s))
-					.attr('title', s[0] + (s[2].length > 0 ? ' (' + s[2] + ')' : ''))
+					.attr('title', s[0] + (s[2] && s[2].length > 0 ? ' (' + s[2] + ')' : ''))
 					.attr('href', s[1]));
 			}
 		}

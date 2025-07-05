@@ -40,258 +40,56 @@ const types = [
 ]; %>
 
 <html>
-	<%- include('head.ejs', { 'title': 'Word editor' }) %>
+	<%- include('head.ejs', { 'title': 'Word editor', 'css': 'editor.css' }) %>
 	<body data-url="<%= post_url %>">
 		<div class="container">
 			<%- include('header.ejs') %>
+		</div>
 
-			<div class="ui form">
-				<h2>Base information</h2>
-				<div class="fields">
-					<div class="eight wide field">
-						<label>Root word</label>
-						<input id="root-field" type="text" placeholder="[ta]/ron" value="<%= word['na\'vi'] %>">
-						<span class="muted">Use FN spelling, but with <b>ù</b> where applicable. For multi-syllable words: mark syllable boundaries with <b>/</b> and the stressed syllable with <b>[...]</b>.</span>
-					</div>
-					<div class="eight wide field">
-						<label>Type</label>
-						<select id="type-field" class="ui selection dropdown">
-							<% for (let type of types) { %>
-							<option value="<%= type[0] %>"<%= word['type'] === type[0] ? " selected": "" %>><%= type[1] %></option>
-							<% } %>
-						</select>
-					</div>
-				</div>
-				<div class="fields">
-					<div class="eight wide field">
-						<label>Pronunciation</label>
-						<% if (!word.hasOwnProperty('pronunciation')) {
-							word['pronunciation'] = [];
-						} %>
-						<table id="pronunciation-field" class="ui compact table">
-							<tbody>
-								<% for (let i = 0; i < word['pronunciation'].length; i++) {
-									const pronunciation = word['pronunciation'][i]; %>
-								<tr>
-									<td>
-										<input class="syllables-cell" type="text" placeholder="ta-ron" value="<%= pronunciation['syllables'] %>">
-										<input style="display: none;" class="audio-cell" type="text" value="<%= pronunciation.hasOwnProperty('audio') ? JSON.stringify(pronunciation['audio']) : '' %>">
-									</td>
-									<td class="three wide">
-										<input class="stress-cell" type="number" placeholder="1" value="<%= pronunciation['stressed'] %>">
-									</td>
-									<td class="one wide">
-										<div class="ui floated small icon circular basic button colloquial-button <%= pronunciation['colloquial'] ? 'active' : '' %>" data-tooltip="If pressed, marks this pronunciation as colloquial">
-											<i class="bed icon"></i>
-										</div>
-									</td>
-									<td class="one wide">
-										<div class="ui floated small icon button delete-pronunciation-button">
-											<i class="delete icon"></i>
-										</div>
-									</td>
-									<td class="one wide">
-										<div class="ui floated small icon button add-pronunciation-button">
-											<i class="add icon"></i>
-										</div>
-									</td>
-								</tr>
-								<% } %>
-							</tbody>
-						</table>
-					</div>
-					<div class="eight wide field">
-						<div id="v-option" style="display: none;">
-							<label>Infix positions</label>
-							<input id="infixes-field" type="text" placeholder="t.ar.on" value="<%= word['infixes'] %>">
-							<span class="muted">Mark the infix positions with two dots.</span>
+		<div class="container wide">
+			<div class="ui grid">
+				<div class="doubling two column row">
+					<div class="column">
+						<div id="visual-or-json-tabs" class="ui top attached tabular menu">
+							<div class="item active" id="visual-tab">Visual editor</div>
+							<div class="item" id="json-tab">JSON</div>
 						</div>
-						<% if (word['conjugation']) { %>
-						<p class="warning">This word has a custom conjugation associated with it, which currently cannot be edited in the online editor.</p>
-						<% } %>
-						<% if (word['short_translation']) { %>
-						<p class="warning">This word has a short translation associated with it, which currently cannot be edited in the online editor.</p>
-						<% } %>
-						<% if (word['seeAlso']) { %>
-						<p class="warning">This word has a <i>See also</i> section, which currently cannot be edited in the online editor.</p>
-						<% } %>
-						<% if (word['image']) { %>
-						<p class="warning">This word has an image associated with it, which currently cannot be edited in the online editor.</p>
-						<% } %>
+						<div class="page ui form" id="visual-page">
+							<!--<div class="buttons">
+								<div class="ui basic compact button" data-tooltip="Only necessary if the pronunciation differs from the spelling."><i class="ui plus icon"></i> Pronunciation</div>
+							</div>
+							<div class="buttons">
+								<div class="ui basic compact button" id="add-definition-button"><i class="ui plus icon"></i> Definition</div>
+								<div class="ui basic compact button" id="add-meaning-note-button"><i class="ui plus icon"></i> Meaning note</div>
+								<div class="ui basic compact button" id="add-etymology-button"><i class="ui plus icon"></i> Etymology</div>
+								<div class="ui basic compact button" id="add-source-button"><i class="ui plus icon"></i> Source</div>
+								<div class="ui basic compact button" id="add-status-button"><i class="ui plus icon"></i> Status</div>
+								<div class="ui basic compact button" id="add-image-button"><i class="ui plus icon"></i> Image</div>
+							</div>-->
+						</div>
+						<div class="page" id="json-page" style="display: none;">
+							<div class="ui form" style="margin-top: 10px;">
+								<textarea id="json-field" rows="25"><%= JSON.stringify(word, null, 4); %></textarea>
+							</div>
+						</div>
 					</div>
-					<textarea style="display: none;" id="conjugation-field"><%= JSON.stringify(word['conjugation']) %></textarea>
-					<textarea style="display: none;" id="short-translation-field"><%= word['short_translation'] %></textarea>
-					<textarea style="display: none;" id="see-also-field"><%= JSON.stringify(word['seeAlso']) %></textarea>
-					<textarea style="display: none;" id="image-field"><%= word['image'] %></textarea>
-				</div>
-
-				<div class="ui section divider"></div>
-
-				<h2>Definition</h2>
-				<div class="field">
-					<table id="definition-field" class="ui compact definition table">
-						<tbody>
-							<% for (let i = 0; i < word['translations'].length; i++) {
-								const translation = word['translations'][i]; %>
-							<tr>
-								<td class="one wide id-cell"><%= i + 1 %>.</td>
-								<td>
-									<input type="text" placeholder="hunt" value="<%= translation['en'] %>"<% for (let lang of Object.keys(translation)) { if (lang !== 'en') { %> data-<%= lang %>="<%= translation[lang] %>"<% } } %>>
-								</td>
-								<td class="one wide">
-									<div class="translation-button ui floated small icon button" data-tooltip="Edit translations">
-										<i class="globe icon"></i>
-									</div>
-								</td>
-								<td class="one wide">
-									<div class="ui <%= word['translations'].length <= 1 ? 'disabled' : '' %> floated small icon button delete-meaning-button" data-tooltip="Delete this meaning">
-										<i class="delete icon"></i>
-									</div>
-								</td>
-								<td class="one wide">
-									<div class="ui floated small icon button add-meaning-button" data-tooltip="Add another meaning">
-										<i class="add icon"></i>
-									</div>
-								</td>
-							</tr>
-							<% } %>
-						</tbody>
-					</table>
-				</div>
-				<div class="fields">
-					<div class="eight wide field">
-						<label>Meaning note</label>
-						<table id="meaning-note-field" class="ui compact table">
-							<tbody>
-								<tr>
-									<td>
-										<% let meaningNoteTranslation = word['meaning_note'];
-										if (!meaningNoteTranslation) {
-											meaningNoteTranslation = '';
-										}
-										if (typeof meaningNoteTranslation === 'string') {
-											meaningNoteTranslation = {'en': meaningNoteTranslation};
-										} %>
-										<textarea id="meaning-note-field" rows="2" <% for (let lang of Object.keys(meaningNoteTranslation)) { if (lang !== 'en') { %> data-<%= lang %>="<%= meaningNoteTranslation[lang] %>"<% } } %>><%= meaningNoteTranslation['en'] %></textarea>
-									</td>
-									<td class="one wide">
-										<div class="translation-button ui floated small icon button" data-tooltip="Edit translations">
-											<i class="globe icon"></i>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-						<span class="muted">Free-form additional information on the meaning of the word, such as a clarification on the scope of the word. Can use references to other words of the form <b>[kaltxì:intj]</b> and external links of the form <b>[Pandorapedia](https://www.avatar.com/pandorapedia/)</b>.</span>
-					</div>
-					<div class="eight wide field">
-						<label>Conjugation note</label>
-						<textarea id="conjugation-note-field" rows="2"><%= word['conjugation_note'] %></textarea>
-						<span class="muted">In case this word has conjugation exceptions (e.g., missing or alternate forms), they can be noted here.</span>
+					<div class="column">
+						<div class="ui top attached tabular menu">
+							<div class="item active">Preview</div>
+						</div>
+						<div id="preview-container"></div>
 					</div>
 				</div>
+			</div>
+		</div>
 
-				<div class="ui section divider"></div>
-
-				<h2>Status and etymology</h2>
-				<div class="fields">
-					<div class="four wide field">
-						<label>Status</label>
-						<select id="status-field" class="ui selection dropdown">
-							<option value="none">&ndash;</option>
-							<option value="loan"<%= word['status'] === 'loan' ? ' selected' : '' %>>loan</option>
-							<option value="unconfirmed"<%= word['status'] === 'unconfirmed' ? ' selected' : '' %>>unconfirmed</option>
-						</select>
-					</div>
-					<div class="twelve wide field">
-						<label>Status note <i>(optional)</i></label>
-						<input id="status-note-field" type="text" value="<%= word['status_note'] %>">
-						<span class="muted">If the status is set to unconfirmed, describe here why that is the case.</span>
-					</div>
-				</div>
-				<div class="field">
-					<label>Etymology</label>
-					<textarea id="etymology-field" rows="2"><%= word['etymology'] %></textarea>
-						<span class="muted">Standard form: <b>From ... + ... .</b> Can use references to other words of the form <b>[kaltxì:intj]</b>. This word will automatically end up in the “derived words” section of each referenced word.</span>
-				</div>
-
-				<div class="ui section divider"></div>
-
-				<h2>Source</h2>
-				<% if (!word.hasOwnProperty('source')) {
-					word['source'] = [];
-				} %>
-				<table id="source-field" class="ui compact table">
-					<thead>
-						<tr>
-							<th class="four wide">Name</th>
-							<th class="three wide">URL</th>
-							<th class="three wide">Date</th>
-							<th>Remarks (optional)</th>
-							<th class="one wide"></th>
-							<th class="one wide"></th>
-						</tr>
-					</thead>
-					<tbody>
-						<% for (let i = 0; i < word['source'].length; i++) {
-							const source = word['source'][i]; %>
-						<tr>
-							<td>
-								<input class="source-name-field" type="text" value="<%= source[0] %>">
-							</td>
-							<td>
-								<input class="source-url-field" type="url" value="<%= source[1] %>">
-							</td>
-							<td>
-								<input class="source-date-field" type="date" value="<%= source[2] %>">
-							</td>
-							<td>
-								<input class="source-remarks-field" type="text" value="<%= source[3] %>">
-							</td>
-							<td class="one wide">
-								<div class="ui floated small icon button delete-source-button" data-tooltip="Delete this source">
-									<i class="delete icon"></i>
-								</div>
-							</td>
-							<td class="one wide">
-								<div class="ui floated small icon button add-source-button" data-tooltip="Add another source">
-									<i class="add icon"></i>
-								</div>
-							</td>
-						</tr>
-						<% } %>
-					</tbody>
-				</table>
-
-				<div class="ui section divider"></div>
-
-				<!--<h2>Image and audio</h2>
-				<p class="muted">These are not currently editable in this editor.</p>
-
-				<div class="fields">
-					<div class="eight wide field">
-						<label>Image</label>
-						<% if (word['image']) { %>
-						<img src="/ayrel/<%- word['image'] %>" style="width: 100%;">
-						<% } else { %>
-						<i>(no image)</i>
-						<% } %>
-					</div>
-					<div class="eight wide field">
-						<label>Audio</label>
-						<i>(no audio)</i>
-					</div>
-				</div>
-
-				<div class="ui section divider"></div>-->
-
+		<div class="container">
+			<div class="ui section divider"></div>
+			<div class="button-row"></div>
 				<div id="save-button" class="ui floated right primary submit icon labeled button">
 					<i class="check icon"></i>
 					Save
 				</div>
-				<a href="/edit/raw?word=<%= word['id'] %>" class="ui icon button">
-					<i class="edit icon"></i> Edit raw JSON
-				</a>
 				<a href="/" class="ui floated right submit button">
 					Cancel
 				</a>
@@ -334,8 +132,8 @@ const types = [
 
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
 		<script src="/vendor/semantic/dist/semantic.min.js"></script>
-		<script src="/js/edit.js"></script>
 		<script src="/js/ui-translations.js"></script>
+		<script src="/js/edit.js"></script>
 	</body>
 </html>
 
