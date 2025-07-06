@@ -16,7 +16,7 @@
 
 	.field {
 		display: flex;
-		align-items: center;
+		align-items: start;
 		margin: 5px 10px;
 
 		label {
@@ -24,6 +24,7 @@
 			margin: 0;
 			margin-right: 7px;
 			flex: 155px 0 0;
+			padding-top: 9px;
 
 			.info-spawner {
 				display: inline-block;
@@ -33,6 +34,10 @@
 				&:after {
 					white-space: unset;
 					width: 400px;
+				}
+
+				&:hover {
+					color: var(--primary-color);
 				}
 			}
 		}
@@ -44,26 +49,44 @@
 			flex: 1;
 		}
 
-		.field-buttons {
-			flex: 80px 0 0;
+		.row-buttons {
+			flex: 33px 0 0;
+
+			.delete-button {
+				display: inline-block;
+				color: var(--muted-color);
+				margin-left: 12px;
+				margin-top: 8px;
+				cursor: pointer;
+
+				&:hover {
+					color: var(--primary-color);
+				}
+			}
 		}
 	}
 
-	.buttons {
+	.add-button-container {
 		margin-left: 172px;
 
 		.button {
 			margin: 5px 0;
+			margin-right: 8px;
 		}
 	}
+}
+
+.ui.button.template-button {
+	margin-top: 5px;
 }
 
 #preview-container {
 	padding-top: 6px;
 }
 
-textarea {
+.ui.form textarea {
 	min-height: 38px;
+	padding: .67857143em 1em;
 }
 
 .ui.action.input:not([class*="left action"]) > textarea {

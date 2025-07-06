@@ -335,7 +335,13 @@ app.post('/edit/preview',
 		};
 		word["na'vi"] = word['word_raw']['FN'];
 
-		reykunyu.preprocessWord(word);
+		let dataErrorList: string[] = [];
+		reykunyu.preprocessWord(word, dataErrorList);
+		if (dataErrorList.length > 0) {
+			res.status(400);
+			res.send(dataErrorList);
+			return;
+		}
 
 		// find derived words (custom hack for the preview, because usually
 		// Reykunyu does this on startup)

@@ -51,7 +51,7 @@ export default class Reykunyu {
 
 		// preprocess all words
 		for (let word of this.dictionary.getAll()) {
-			this.preprocessWord(word);
+			this.preprocessWord(word, this.dataErrorList);
 		}
 
 		// find derived words
@@ -120,7 +120,7 @@ export default class Reykunyu {
 		}
 	}
 
-	preprocessWord(word: WordData) {
+	preprocessWord(word: WordData, dataErrorList: string[]) {
 		// pronunciation
 		if (word['pronunciation']) {
 			for (let pronunciation of word['pronunciation']) {
@@ -133,7 +133,7 @@ export default class Reykunyu {
 
 		// etymology and derived words
 		if (word['etymology']) {
-			wordLinks.addReferencesForLinkString(this.dictionary, word, word['etymology'], this.dataErrorList);
+			wordLinks.addReferencesForLinkString(this.dictionary, word, word['etymology'], dataErrorList);
 		}
 
 		// meaning notes
@@ -142,11 +142,11 @@ export default class Reykunyu {
 				word['meaning_note'] = { 'en': word['meaning_note'] };
 			}
 			for (let language in word['meaning_note']) {
-				wordLinks.addReferencesForLinkString(this.dictionary, word, word['meaning_note'][language], this.dataErrorList);
+				wordLinks.addReferencesForLinkString(this.dictionary, word, word['meaning_note'][language], dataErrorList);
 			}
 		}
 		if (word['conjugation_note']) {
-			wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'], this.dataErrorList);
+			wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'], dataErrorList);
 		}
 
 		// see also

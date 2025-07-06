@@ -130,6 +130,51 @@ const types = [
 			</div>
 		</div>
 
+		<div id="source-modal" class="ui modal">
+			<div class="header">Edit source</div>
+			<div class="scrolling content">
+				<div class="ui form">
+					<table class="ui compact celled definition table">
+						<tbody>
+							<tr>
+								<td class="three wide">Title</td>
+								<td class="eleven wide">
+									<input id="source-title-field" type="text"></input>
+									<div class="muted">Templates: <div class="ui basic compact button template-button" data-template="Na'viteri: “&lt;title&gt;”">Na'viteri</div> <div class="ui basic compact button template-button" data-template="Na'viteri comment: “&lt;title&gt;”">Na'viteri comment</div> <div class="ui basic compact button template-button" data-template="&lt;user&gt; on the LN Forum: “&lt;title&gt;”">LN Forum</div></div>
+								</td>
+							</tr>
+							<tr>
+								<td>URL</td>
+								<td>
+									<input id="source-url-field" type="url"></input>
+								</td>
+							</tr>
+							<tr>
+								<td>Date</td>
+								<td>
+									<input id="date-url-field" type="date"></input>
+								</td>
+							</tr>
+							<tr>
+								<td>Note <span class="muted">(optional)</span></td>
+								<td>
+									<input id="note-url-field" type="text"></input>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="actions">
+				<div id="source-modal-cancel-button" class="ui basic button">
+					<i class="close icon"></i> Cancel
+				</div>
+				<div id="source-modal-ok-button" class="ui primary approve button">
+					<i class="checkmark icon"></i> OK
+				</div>
+			</div>
+		</div>
+
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
 		<script src="/vendor/semantic/dist/semantic.min.js"></script>
 		<script src="/js/ui-translations.js"></script>
