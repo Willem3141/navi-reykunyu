@@ -271,7 +271,7 @@ class TranslatedStringEditField extends EditField<string | Translated<string>> {
 
 class SourceEditField extends EditField<Source> {
 	renderInput(): JQuery {
-		let $input = $('<div/>')
+		let $inputField = $('<div/>')
 			.addClass('ui action input')
 			.append($('<input/>')
 				.attr('id', this.attributeName + '-field')
@@ -279,36 +279,50 @@ class SourceEditField extends EditField<Source> {
 		let $button = $('<div/>')
 			.addClass('ui basic icon button')
 			.html('<i class="pencil alternate icon"></i>')
-			.appendTo($input);
+			.appendTo($inputField);
 		$button.on('click', () => {
-			$('#source-title-field').val($input.find('input').val()!);
+			const $input = $inputField.find('input');
+			$('#source-title-field').val($input.val()!);
+			$('#source-url-field').val($input.data('url') ?? '');
+			$('#source-date-field').val($input.data('date') ?? '');
+			$('#source-note-field').val($input.data('note') ?? '');
 			$('#source-modal').modal('show');
 			$('#source-modal-ok-button').off('click');
 			$('#source-modal-ok-button').on('click', () => {
-				$input.find('input').val($('#source-title-field').val()!);
+				$input.val($('#source-title-field').val()!);
+				$input.data('url', $('#source-url-field').val()!);
+				$input.data('date', $('#source-date-field').val()!);
+				$input.data('note', $('#source-note-field').val()!);
 				if (this.onChanged) {
 					this.onChanged();
 				}
 			});
 		});
-		return $input;
+		return $inputField;
 	}
 	inputToValue($row: JQuery): Source {
 		const $input = $row.find('input');
 		let source: Source = [
 			$input.val() as string
 		];
-		if ($input.data('url')) {
-			source.length = 2;
-			source[1] = $input.data('url');
-		}
-		if ($input.data('date')) {
-			source.length = 3;
-			source[2] = $input.data('date');
-		}
 		if ($input.data('note')) {
 			source.length = 4;
+			source[1] = '';
+			source[2] = '';
 			source[3] = $input.data('note');
+		}
+		if ($input.data('date')) {
+			if (source.length < 3) {
+				source.length = 3;
+			}
+			source[1] = '';
+			source[2] = $input.data('date');
+		}
+		if ($input.data('url')) {
+			if (source.length < 2) {
+				source.length = 2;
+			}
+			source[1] = $input.data('url');
 		}
 		return source;
 	}
@@ -363,6 +377,14 @@ class EditPage {
 		definitionField.setMaxCount(Infinity);
 		this.fields.push(definitionField);
 
+		let shortTranslationField = new StringEditField('short_translation', 'Short translation', updateFunction);
+		shortTranslationField.setInfoText('By default Reykunyu takes the part of the first definition ' +
+			'until the first comma, minus any parenthesized parts, as a “short translation”. ' +
+			'For the few words for which this isn\'t desirable, ' +
+			'you can manually enter a short translation to override this (for the English translation only).');
+		shortTranslationField.setMinCount(0);
+		this.fields.push(shortTranslationField);
+
 		let meaningNoteField = new TranslatedStringEditField('meaning_note', 'Meaning note', updateFunction);
 		meaningNoteField.setInfoText('Free-form additional information on the meaning of the word, ' +
 			'such as a clarification on the scope of the word. Can use references to other words ' +
@@ -379,6 +401,12 @@ class EditPage {
 			'This word will automatically end up in the “derived words” section of each referenced word.');
 		etymologyField.setMinCount(0);
 		this.fields.push(etymologyField);
+
+		let imageField = new StringEditField('image', 'Image', updateFunction);
+		imageField.setInfoText('File name of an image to show. Note: you cannot upload ' +
+			'new images using this editor. The image already has to be on the server for this to work.');
+		imageField.setMinCount(0);
+		this.fields.push(imageField);
 
 		let sourceField = new SourceEditField('source', 'Source', updateFunction);
 		sourceField.setInfoText('A source for this word. There can be more than one. ' +

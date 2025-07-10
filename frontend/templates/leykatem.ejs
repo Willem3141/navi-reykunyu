@@ -86,13 +86,17 @@ const types = [
 		<div class="container">
 			<div class="ui section divider"></div>
 			<div class="button-row"></div>
-				<div id="save-button" class="ui floated right primary submit icon labeled button">
+				<a href="/" class="ui basic submit button">
+					Cancel
+				</a>
+				<div id="save-and-add-another-button" class="ui submit icon labeled button">
+					<i class="check icon"></i>
+					Save and add another
+				</div>
+				<div id="save-button" class="ui primary submit icon labeled button">
 					<i class="check icon"></i>
 					Save
 				</div>
-				<a href="/" class="ui floated right submit button">
-					Cancel
-				</a>
 			</div>
 		</div>
 
@@ -152,13 +156,13 @@ const types = [
 							<tr>
 								<td>Date</td>
 								<td>
-									<input id="date-url-field" type="date"></input>
+									<input id="source-date-field" type="date"></input>
 								</td>
 							</tr>
 							<tr>
 								<td>Note <span class="muted">(optional)</span></td>
 								<td>
-									<input id="note-url-field" type="text"></input>
+									<input id="source-note-field" type="text"></input>
 								</td>
 							</tr>
 						</tbody>
