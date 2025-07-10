@@ -437,6 +437,24 @@ class EditPage {
 			this.renderPreview();
 		});
 
+		$('#save-button').on('click', () => {
+			try {
+				$('#save-button').addClass('loading');
+				const wordData = $('#json-field').val() as string;
+				const id = JSON.parse(wordData)['id'];
+				const url = $('body').data('url');
+				$.post(url, {
+					'id': id,
+					'data': wordData
+				}, function (data) {
+					document.location.href = data['url'];
+				});
+			} catch (e) {
+				$('#save-button').removeClass('loading');
+				alert(e);
+			}
+		});
+
 		// language dropdown
 		$('#language-dropdown').dropdown({
 			onChange: (value) => {
