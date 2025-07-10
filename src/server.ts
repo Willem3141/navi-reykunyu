@@ -217,8 +217,10 @@ app.get('/add',
 		res.render('leykatem', pageVariables(req, {
 			'post_url': '/add',
 			'word': {
-				"na'vi": '',
-				"translations": [{'en': ''}]
+				'id': -1,
+				'na\'vi': '',
+				'type': 'n',
+				'translations': [{'en': ''}]
 			}
 		}));
 	}
