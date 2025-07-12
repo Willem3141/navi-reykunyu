@@ -371,8 +371,15 @@ class SourceEditField extends EditField<Source> {
 
 class EditPage {
 	fields: EditField<any>[] = [];
+	warnOnUnload = false;
 
 	constructor() {
+		window.addEventListener('beforeunload', (event) => {
+			if (this.warnOnUnload) {
+				event.preventDefault();
+			}
+		});
+
 		let rootField = new StringEditField('na\'vi', 'Root word');
 		rootField.setInfoText('Use FN spelling, but with ù where applicable. ' +
 			'For multi-syllable words: mark syllable boundaries with / and the ' +
@@ -442,16 +449,19 @@ class EditPage {
 		this.updateInfixPositionFieldLimits(infixField);
 		for (let field of this.fields) {
 			field.setOnChanged(() => {
+				this.warnOnUnload = true;
 				this.fieldsToJSON();
 				this.renderPreview();
 			});
 			field.setOnRowCountChanged(() => {
+				this.warnOnUnload = true;
 				this.fieldsToJSON();
 				this.resortRows();
 				this.renderPreview();
 			});
 		}
 		typeField.setOnChanged(() => {
+			this.warnOnUnload = true;
 			this.fieldsToJSON();
 			this.updateInfixPositionFieldLimits(infixField);
 			this.fieldsToJSON();
