@@ -128,8 +128,10 @@ abstract class EditField<T> {
 	}
 
 	updateToJSON(word: any): void {
-		let value: any = undefined;
-		if (this.maxCount === 1) {
+		let value: any;
+		if (this.maxCount === 0) {
+			value = undefined;
+		} else if (this.maxCount === 1) {
 			if (this.$rows.length > 0) {
 				value = this.inputToValue(this.$rows[0]);
 			}
