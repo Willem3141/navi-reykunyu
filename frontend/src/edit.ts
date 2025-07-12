@@ -432,8 +432,16 @@ class EditPage {
 		sourceField.setMinCount(0);
 		sourceField.setMaxCount(Infinity);
 
+		let seeAlsoField = new StringEditField('seeAlso', 'See also');
+		seeAlsoField.setInfoText('The See also section contains words that are otherwise related to this word. ' +
+			'Words that are already linked from the other sections don\'t need to be repeated ' +
+			'in the See also section. Use the syntax kaltxì:intj.');
+		seeAlsoField.setMinCount(0);
+		seeAlsoField.setMaxCount(Infinity);
+
 		this.fields = [idField, rootField, typeField, infixField, definitionField,
-			shortTranslationField, meaningNoteField, conjugationNoteField, etymologyField, imageField, sourceField];
+			shortTranslationField, meaningNoteField, conjugationNoteField, etymologyField,
+			imageField, sourceField, seeAlsoField];
 		this.jsonToFields();
 		for (let field of this.fields) {
 			field.setOnChanged(() => {
