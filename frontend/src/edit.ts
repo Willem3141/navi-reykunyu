@@ -40,6 +40,7 @@ abstract class EditField<T> {
 		if (this.$rows.length > maxCount) {
 			this.setNumberOfRows(maxCount);
 		}
+			this.updateButtonVisibility();
 	}
 	setOnChanged(onChanged: () => void) {
 		this.onChanged = onChanged;
@@ -374,9 +375,6 @@ class EditPage {
 	fields: EditField<any>[] = [];
 
 	constructor() {
-		let idField = new NumberEditField('id', 'ID');
-		idField.setInfoText('Numerical ID for Reykunyu\'s internal use. Not editable.');
-
 		let rootField = new StringEditField('na\'vi', 'Root word');
 		rootField.setInfoText('Use FN spelling, but with ù where applicable. ' +
 			'For multi-syllable words: mark syllable boundaries with / and the ' +
@@ -439,10 +437,11 @@ class EditPage {
 		seeAlsoField.setMinCount(0);
 		seeAlsoField.setMaxCount(Infinity);
 
-		this.fields = [idField, rootField, typeField, infixField, definitionField,
+		this.fields = [rootField, typeField, infixField, definitionField,
 			shortTranslationField, meaningNoteField, conjugationNoteField, etymologyField,
 			imageField, sourceField, seeAlsoField];
 		this.jsonToFields();
+		this.updateInfixPositionFieldLimits(infixField);
 		for (let field of this.fields) {
 			field.setOnChanged(() => {
 				this.fieldsToJSON();
@@ -456,15 +455,7 @@ class EditPage {
 		}
 		typeField.setOnChanged(() => {
 			this.fieldsToJSON();
-			let jsonString = $('#json-field').val() as string;
-			let json: WordData = JSON.parse(jsonString);
-			if (json['type'].startsWith('v:')) {
-				infixField.setMinCount(1);
-				infixField.setMaxCount(1);
-			} else {
-				infixField.setMinCount(0);
-				infixField.setMaxCount(0);
-			}
+			this.updateInfixPositionFieldLimits(infixField);
 			this.fieldsToJSON();
 			this.renderPreview();
 		});
@@ -549,6 +540,18 @@ class EditPage {
 					.appendTo('#visual-page');
 			}
 			field.getAddButton().appendTo($visualPage.children().last());
+		}
+	}
+
+	updateInfixPositionFieldLimits(infixField: StringEditField): void {
+		let jsonString = $('#json-field').val() as string;
+		let json: WordData = JSON.parse(jsonString);
+		if (json['type'].startsWith('v:')) {
+			infixField.setMinCount(1);
+			infixField.setMaxCount(1);
+		} else {
+			infixField.setMinCount(0);
+			infixField.setMaxCount(0);
 		}
 	}
 
