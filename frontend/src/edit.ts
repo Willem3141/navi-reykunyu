@@ -549,6 +549,13 @@ class EditPage {
 			const $td = $(e.target).closest('td');
 			$td.find('input').val($(e.target).attr('data-template')!);
 		});
+		
+		$('#translations-modal-cancel-button').on('click', () => {
+			$('#translations-modal').modal('hide');
+		});
+		$('#source-modal-cancel-button').on('click', () => {
+			$('#source-modal').modal('hide');
+		});
 	}
 
 	resortRows(): void {
