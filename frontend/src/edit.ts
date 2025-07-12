@@ -130,12 +130,10 @@ abstract class EditField<T> {
 
 	updateToJSON(word: any): void {
 		let value: any;
-		if (this.maxCount === 0) {
+		if (this.$rows.length === 0) {
 			value = undefined;
 		} else if (this.maxCount === 1) {
-			if (this.$rows.length > 0) {
-				value = this.inputToValue(this.$rows[0]);
-			}
+			value = this.inputToValue(this.$rows[0]);
 		} else {
 			value = [];
 			for (let $row of this.$rows) {
