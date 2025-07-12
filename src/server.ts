@@ -283,32 +283,6 @@ app.get('/edit',
 	}
 );
 
-app.get('/edit/raw',
-	(req, res) => {
-		if (!req.user || !req.user['is_admin']) {
-			res.status(403);
-			res.render('403', pageVariables(req));
-			return;
-		}
-		if (!req.query.hasOwnProperty('word')) {
-			res.status(400);
-			res.send('400 Bad Request');
-			return;
-		}
-		const id = parseInt(req.query['word'] as string, 10);
-		if (isNaN(id)) {
-			res.status(400);
-			res.send('400 Bad Request');
-			return;
-		}
-		const wordData = edit.getWordData(id);
-		res.render('leykatem-yrr', pageVariables(req, {
-			'post_url': '/edit',
-			'word': wordData
-		}));
-	}
-);
-
 app.post('/edit/preview',
 	(req, res) => {
 		if (!req.user || !req.user['is_admin']) {
