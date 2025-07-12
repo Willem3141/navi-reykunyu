@@ -427,6 +427,7 @@ class EditPage {
 
 		this.fields = [idField, rootField, typeField, infixField, definitionField,
 			shortTranslationField, meaningNoteField, etymologyField, imageField, sourceField];
+		this.jsonToFields();
 		for (let field of this.fields) {
 			field.setOnChanged(() => {
 				this.fieldsToJSON();
@@ -452,7 +453,6 @@ class EditPage {
 			this.fieldsToJSON();
 			this.renderPreview();
 		});
-		this.jsonToFields();
 
 		let $addButtonContainer = $('<div/>')
 			.addClass('add-button-container')
