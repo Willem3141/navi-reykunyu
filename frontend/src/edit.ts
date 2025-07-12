@@ -180,26 +180,13 @@ abstract class EditField<T> {
 	abstract inputFromValue($row: JQuery, value: T): void;
 }
 
-class NumberEditField extends EditField<number> {
-	renderInput(): JQuery {
-		return $('<input/>')
-			.attr('id', this.attributeName + '-field')
-			.attr('disabled', '')
-			.on('input', this.callOnChanged.bind(this));
-	}
-	inputToValue($row: JQuery): number {
-		let value = $row.find('input').val() as string;
-		return parseInt(value, 10);
-	}
-	inputFromValue($row: JQuery, value: number): void {
-		$row.find('input').val(value);
-	}
-}
+class ChoiceEditField extends EditField<string> {
+	choices: Record<string, string>;
 
-class TypeEditField extends EditField<string> {
-	readonly types = ['n', 'n:pr', 'n:si', 'pn', 'adj', 'num', 'adv', 'adp', 'adp:len',
-		'intj', 'part', 'conj', 'ctr', 'v:?', 'v:in', 'v:tr', 'v:m', 'v:si', 'v:cp',
-		'phr', 'inter', 'aff:pre', 'aff:pre:len', 'aff:in', 'aff:suf'];
+	constructor(attributeName: string, label: string, choices: Record<string, string>) {
+		super(attributeName, label);
+		this.choices = choices;
+	}
 
 	renderInput(): JQuery {
 		let $select = $('<select/>')
@@ -207,10 +194,10 @@ class TypeEditField extends EditField<string> {
 			.addClass('ui selection dropdown')
 			.on('input', this.callOnChanged.bind(this));
 		
-		for (let type of this.types) {
+		for (let type of Object.keys(this.choices)) {
 			let $option = $('<option/>')
 				.attr('value', type)
-				.text(type + ' (' + _('type-' + type) + ')');
+				.text(this.choices[type]);
 			$select.append($option);
 		}
 
@@ -409,7 +396,33 @@ class EditPage {
 			'For multi-syllable words: mark syllable boundaries with / and the ' +
 			'stressed syllable with [...]. For example: kal/[txì].');
 
-		let typeField = new TypeEditField('type', 'Type');
+		let typeField = new ChoiceEditField('type', 'Type', {
+			'n': 'noun',
+			'n:pr': 'proper noun',
+			'n:si': 'si-verb complement',
+			'pn': 'pronoun',
+			'adj': 'adjective',
+			'num': 'numeral',
+			'adv': 'adverb',
+			'adp': 'adposition',
+			'adp:len': 'adposition (leniting)',
+			'intj': 'interjection',
+			'part': 'particle',
+			'conj': 'conjunction',
+			'ctr': 'contraction (‘f-word’)',
+			'v:?': 'verb (unknown type)',
+			'v:in': 'verb (intransitive)',
+			'v:tr': 'verb (transitive)',
+			'v:m': 'verb (modal)',
+			'v:si': 'verb (si itself)',
+			'v:cp': 'verb (copula)',
+			'phr': 'phrase',
+			'inter': 'interrogative',
+			'aff:pre': 'prefix',
+			'aff:pre:len': 'prefix (leniting)',
+			'aff:in': 'infix',
+			'aff:suf': 'suffix'
+		});
 		typeField.setInfoText('The word class of this word.');
 
 		let infixField = new StringEditField('infixes', 'Infix positions');
@@ -466,11 +479,22 @@ class EditPage {
 		seeAlsoField.setMinCount(0);
 		seeAlsoField.setMaxCount(Infinity);
 
+		let statusField = new ChoiceEditField('status', 'Status', {
+			'loan': 'Loanword', 'unconfirmed': 'Unconfirmed', 'unofficial': 'Unofficial'
+		});
+		statusField.setInfoText('An optional status flag for this word. ' +
+			'Use this if the word is a loanword from an Earth language or if it has not been confirmed by Pawl.');
+		statusField.setMinCount(0);
+
+		let statusNoteField = new StringEditField('status_note', 'Status note');
+		statusNoteField.setInfoText('Optional note about the status of this word.');
+		statusNoteField.setMinCount(0);
+
 		this.fields = [rootField, typeField, infixField, definitionField,
 			shortTranslationField, meaningNoteField, conjugationNoteField, etymologyField,
-			imageField, sourceField, seeAlsoField];
+			imageField, sourceField, seeAlsoField, statusField, statusNoteField];
 		this.jsonToFields();
-		this.updateInfixPositionFieldLimits(infixField);
+		this.updateFieldLimits(infixField, statusNoteField);
 		for (let field of this.fields) {
 			field.setOnChanged(() => {
 				this.warnOnUnload = true;
@@ -478,7 +502,10 @@ class EditPage {
 				this.renderPreview();
 			});
 			field.setOnRowCountChanged(() => {
+				console.log('wee woo row count changed');
 				this.warnOnUnload = true;
+				this.fieldsToJSON();
+				this.updateFieldLimits(infixField, statusNoteField);
 				this.fieldsToJSON();
 				this.resortRows();
 				this.renderPreview();
@@ -487,7 +514,14 @@ class EditPage {
 		typeField.setOnChanged(() => {
 			this.warnOnUnload = true;
 			this.fieldsToJSON();
-			this.updateInfixPositionFieldLimits(infixField);
+			this.updateFieldLimits(infixField, statusNoteField);
+			this.fieldsToJSON();
+			this.renderPreview();
+		});
+		statusField.setOnChanged(() => {
+			this.warnOnUnload = true;
+			this.fieldsToJSON();
+			this.updateFieldLimits(infixField, statusNoteField);
 			this.fieldsToJSON();
 			this.renderPreview();
 		});
@@ -582,7 +616,7 @@ class EditPage {
 		}
 	}
 
-	updateInfixPositionFieldLimits(infixField: StringEditField): void {
+	updateFieldLimits(infixField: StringEditField, statusNoteField: StringEditField): void {
 		let jsonString = $('#json-field').val() as string;
 		let json: WordData = JSON.parse(jsonString);
 		if (json['type'].startsWith('v:')) {
@@ -591,6 +625,11 @@ class EditPage {
 		} else {
 			infixField.setMinCount(0);
 			infixField.setMaxCount(0);
+		}
+		if (json['status'] && json['status'].length > 0) {
+			statusNoteField.setMaxCount(1);
+		} else {
+			statusNoteField.setMaxCount(0);
 		}
 	}
 

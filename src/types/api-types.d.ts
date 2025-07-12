@@ -42,7 +42,7 @@ declare type WordData = {
 	},
 	image?: string,
 	source?: Source[],
-	status?: 'loan' | 'unconfirmed' | 'unofficial',
+	status?: Status,
 	status_note?: string,
 	etymology?: LinkString,
 	derived?: WordData[],
@@ -138,6 +138,8 @@ declare type CombinedAffixData = {
 }
 
 declare type Source = [string, string?, string?, string?];
+
+declare type Status = 'loan' | 'unconfirmed' | 'unofficial'
 
 declare type LinkString = string;
 
