@@ -251,20 +251,44 @@ class TranslatedStringEditField extends EditField<string | Translated<string>> {
 	}
 
 	renderInput(): JQuery {
-		let $input = $('<div/>')
+		let $input = $(this.multiLine ? '<textarea/>' : '<input/>')
+			.attr('id', this.attributeName + '-field')
+			.on('input', this.callOnChanged.bind(this));
+		let $inputField = $('<div/>')
 			.addClass('ui action input')
-			.append($(this.multiLine ? '<textarea/>' : '<input/>')
-				.attr('id', this.attributeName + '-field')
-				.on('input', this.callOnChanged.bind(this))
-			)
-			.append($('<div/>')
-				.addClass('ui basic icon button')
-				.html('<i class="globe icon"></i>')
-			);
+			.append($input);
 		if (this.multiLine) {
-			$input.find('textarea').attr('rows', 4);
+			$inputField.find('textarea').attr('rows', 4);
 		}
-		return $input;
+		let $button = $('<div/>')
+			.addClass('ui basic icon button')
+			.html('<i class="globe icon"></i>')
+			.appendTo($inputField);
+		$button.on('click', () => {
+			$('#translations-modal input').val('');
+			$('#translation-en-field').val($input.val()!);
+			let languages = $input.data();
+			for (let lang of Object.keys(languages)) {
+				$('#translation-' + lang + '-field').val(languages[lang]);
+			}
+			$('#translations-modal').modal('show');
+			$('#translations-modal-ok-button').off('click');
+			$('#translations-modal-ok-button').on('click', () => {
+				$input.val($('#translation-en-field').val()!);
+				$('#translations-modal input').each(function() {
+					let id = $(this).attr('id')!;
+					let lang = id.split('-')[1];
+					let value = $(this).val() as string;
+					if (value.length) {
+						$input.data()[lang] = value;
+					} else {
+						$input.removeData(lang);
+					}
+				});
+				this.callOnChanged();
+			});
+		});
+		return $inputField;
 	}
 	inputToValue($row: JQuery): string | Translated<string> {
 		const $input = $row.find('input, textarea');

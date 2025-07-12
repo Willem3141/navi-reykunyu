@@ -10,33 +10,6 @@
 	['Polish', 'pl'],
 	['Russian', 'ru'],
 	['Swedish', 'sv'],
-];
-const types = [
-	['n', 'noun'],
-	['n:pr', 'proper noun'],
-	['n:si', 'si-verb complement'],
-	['pn', 'pronoun'],
-	['adj', 'adjective'],
-	['num', 'numeral'],
-	['adv', 'adverb'],
-	['adp', 'adposition'],
-	['adp:len', 'adposition (leniting)'],
-	['intj', 'interjection'],
-	['part', 'particle'],
-	['conj', 'conjunction'],
-	['ctr', 'contraction (‘f-word’)'],
-	['v:?', 'verb (unknown type)'],
-	['v:in', 'verb (intransitive)'],
-	['v:tr', 'verb (transitive)'],
-	['v:m', 'verb (modal)'],
-	['v:si', 'verb (si itself)'],
-	['v:cp', 'verb (copula)'],
-	['phr', 'phrase'],
-	['inter', 'interrogative'],
-	['aff:pre', 'prefix'],
-	['aff:pre:len', 'prefix (leniting)'],
-	['aff:in', 'infix'],
-	['aff:suf', 'suffix']
 ]; %>
 
 <html>
@@ -108,7 +81,11 @@ const types = [
 						<tbody>
 							<tr>
 								<td class="three wide">English</td>
-								<td id="translation-en-field" class="eleven wide">to hunt</td>
+								<td>
+									<div class="field">
+										<input id="translation-en-field" type="text"></input>
+									</div>
+								</td>
 							</tr>
 							<% for (let lang of languages) { %>
 							<tr>
