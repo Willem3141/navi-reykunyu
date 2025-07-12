@@ -409,6 +409,11 @@ class EditPage {
 		meaningNoteField.setStoreOnlyEnglishAsString(true);
 		meaningNoteField.setMultiLine(true);
 
+		let conjugationNoteField = new StringEditField('conjugation_note', 'Conjugation note');
+		conjugationNoteField.setInfoText('In case this word has conjugation exceptions ' +
+			'(e.g., missing or alternate forms), they can be noted here.');
+		conjugationNoteField.setMinCount(0);
+
 		let etymologyField = new StringEditField('etymology', 'Etymology');
 		etymologyField.setInfoText('Standard form: From ... + ... . ' +
 			'Can use references to other words of the form [kaltxì:intj]. ' +
@@ -428,7 +433,7 @@ class EditPage {
 		sourceField.setMaxCount(Infinity);
 
 		this.fields = [idField, rootField, typeField, infixField, definitionField,
-			shortTranslationField, meaningNoteField, etymologyField, imageField, sourceField];
+			shortTranslationField, meaningNoteField, conjugationNoteField, etymologyField, imageField, sourceField];
 		this.jsonToFields();
 		for (let field of this.fields) {
 			field.setOnChanged(() => {
