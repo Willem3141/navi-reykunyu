@@ -9,23 +9,20 @@ abstract class EditField<T> {
 	private minCount: number = 1;
 	private maxCount: number = 1;
 	protected onChanged?: () => void;
+	protected onRowCountChanged?: () => void;
 
 	private $rows: JQuery[] = [];
 	private $addButton: JQuery;
 
-	constructor(attributeName: string, label: string, onChanged: () => void) {
+	constructor(attributeName: string, label: string) {
 		this.attributeName = attributeName;
 		this.label = label;
-		this.onChanged = onChanged;
 
 		this.$addButton = $('<div/>')
 			.addClass('ui basic compact button add-button')
 			.html('<i class="ui plus icon"></i> ' + this.label);
 		this.$addButton.on('click', () => {
 			this.setNumberOfRows(this.$rows.length + 1);
-			if (this.onChanged) {
-				this.onChanged();
-			}
 		});
 	}
 
@@ -34,9 +31,21 @@ abstract class EditField<T> {
 	}
 	setMinCount(minCount: number) {
 		this.minCount = minCount;
+		if (this.$rows.length < minCount) {
+			this.setNumberOfRows(minCount);
+		}
 	}
 	setMaxCount(maxCount: number) {
 		this.maxCount = maxCount;
+		if (this.$rows.length > maxCount) {
+			this.setNumberOfRows(maxCount);
+		}
+	}
+	setOnChanged(onChanged: () => void) {
+		this.onChanged = onChanged;
+	}
+	setOnRowCountChanged(onRowCountChanged: () => void) {
+		this.onRowCountChanged = onRowCountChanged;
 	}
 
 	getAttributeName(): string {
@@ -47,6 +56,10 @@ abstract class EditField<T> {
 	}
 
 	private setNumberOfRows(count: number) {
+		if (count == this.$rows.length) {
+			return;
+		}
+
 		while (count > this.$rows.length) {
 			let $row = $('<div/>')
 				.addClass('field row')
@@ -81,9 +94,10 @@ abstract class EditField<T> {
 		}
 
 		this.updateButtonVisibility();
+		this.callOnRowCountChanged();
 	}
 
-	updateButtonVisibility() {
+	private updateButtonVisibility() {
 		for (let $row of this.$rows) {
 			let $buttons = $row.find('.row-buttons')
 			$buttons.empty();
@@ -101,9 +115,7 @@ abstract class EditField<T> {
 					$row.remove();
 					this.$rows.splice(this.$rows.indexOf($row), 1);
 					this.updateButtonVisibility();
-					if (this.onChanged) {
-						this.onChanged();
-					}
+					this.callOnRowCountChanged();
 				});
 			}
 		}
@@ -151,6 +163,17 @@ abstract class EditField<T> {
 		}
 	}
 
+	protected callOnChanged() {
+		if (this.onChanged) {
+			this.onChanged();
+		}
+	}
+	protected callOnRowCountChanged() {
+		if (this.onRowCountChanged) {
+			this.onRowCountChanged();
+		}
+	}
+
 	abstract renderInput(): JQuery;
 	abstract inputToValue($row: JQuery): T;
 	abstract inputFromValue($row: JQuery, value: T): void;
@@ -160,7 +183,8 @@ class NumberEditField extends EditField<number> {
 	renderInput(): JQuery {
 		return $('<input/>')
 			.attr('id', this.attributeName + '-field')
-			.attr('disabled', '');
+			.attr('disabled', '')
+			.on('input', this.callOnChanged.bind(this));
 	}
 	inputToValue($row: JQuery): number {
 		let value = $row.find('input').val() as string;
@@ -179,7 +203,8 @@ class TypeEditField extends EditField<string> {
 	renderInput(): JQuery {
 		let $select = $('<select/>')
 			.attr('id', this.attributeName + '-field')
-			.addClass('ui selection dropdown');
+			.addClass('ui selection dropdown')
+			.on('input', this.callOnChanged.bind(this));
 		
 		for (let type of this.types) {
 			let $option = $('<option/>')
@@ -201,7 +226,8 @@ class TypeEditField extends EditField<string> {
 class StringEditField extends EditField<string> {
 	renderInput(): JQuery {
 		return $('<input/>')
-			.attr('id', this.attributeName + '-field');
+			.attr('id', this.attributeName + '-field')
+			.on('input', this.callOnChanged.bind(this));
 	}
 	inputToValue($row: JQuery): string {
 		return $row.find('input').val() as string;
@@ -228,6 +254,7 @@ class TranslatedStringEditField extends EditField<string | Translated<string>> {
 			.addClass('ui action input')
 			.append($(this.multiLine ? '<textarea/>' : '<input/>')
 				.attr('id', this.attributeName + '-field')
+				.on('input', this.callOnChanged.bind(this))
 			)
 			.append($('<div/>')
 				.addClass('ui basic icon button')
@@ -275,6 +302,7 @@ class SourceEditField extends EditField<Source> {
 			.addClass('ui action input')
 			.append($('<input/>')
 				.attr('id', this.attributeName + '-field')
+				.on('input', this.callOnChanged.bind(this))
 			);
 		let $button = $('<div/>')
 			.addClass('ui basic icon button')
@@ -293,9 +321,7 @@ class SourceEditField extends EditField<Source> {
 				$input.data('url', $('#source-url-field').val()!);
 				$input.data('date', $('#source-date-field').val()!);
 				$input.data('note', $('#source-note-field').val()!);
-				if (this.onChanged) {
-					this.onChanged();
-				}
+				this.callOnChanged();
 			});
 		});
 		return $inputField;
@@ -346,46 +372,33 @@ class EditPage {
 	fields: EditField<any>[] = [];
 
 	constructor() {
-		let updateFunction = () => {
-			this.fieldsToJSON();
-			this.resortRows();
-			this.renderPreview();
-		};
-
-		let idField = new NumberEditField('id', 'ID', updateFunction);
+		let idField = new NumberEditField('id', 'ID');
 		idField.setInfoText('Numerical ID for Reykunyu\'s internal use. Not editable.');
-		this.fields.push(idField);
 
-		let rootField = new StringEditField('na\'vi', 'Root word', updateFunction);
+		let rootField = new StringEditField('na\'vi', 'Root word');
 		rootField.setInfoText('Use FN spelling, but with ù where applicable. ' +
 			'For multi-syllable words: mark syllable boundaries with / and the ' +
 			'stressed syllable with [...]. For example: kal/[txì].');
-		this.fields.push(rootField);
 
-		let typeField = new TypeEditField('type', 'Type', updateFunction);
+		let typeField = new TypeEditField('type', 'Type');
 		typeField.setInfoText('The word class of this word.');
-		this.fields.push(typeField);
 
-		let infixField = new StringEditField('infixes', 'Infix positions', updateFunction);
+		let infixField = new StringEditField('infixes', 'Infix positions');
 		infixField.setInfoText('Mark the infix positions with two dots.');
-		infixField.setMinCount(0);
-		this.fields.push(infixField);
 
-		let definitionField = new TranslatedStringEditField('translations', 'Definition', updateFunction);
+		let definitionField = new TranslatedStringEditField('translations', 'Definition');
 		definitionField.setInfoText('The English translation. Enter translations to ' +
 			'other languages using the globe icon button on the right.');
 		definitionField.setMaxCount(Infinity);
-		this.fields.push(definitionField);
 
-		let shortTranslationField = new StringEditField('short_translation', 'Short translation', updateFunction);
+		let shortTranslationField = new StringEditField('short_translation', 'Short translation');
 		shortTranslationField.setInfoText('By default Reykunyu takes the part of the first definition ' +
 			'until the first comma, minus any parenthesized parts, as a “short translation”. ' +
 			'For the few words for which this isn\'t desirable, ' +
 			'you can manually enter a short translation to override this (for the English translation only).');
 		shortTranslationField.setMinCount(0);
-		this.fields.push(shortTranslationField);
 
-		let meaningNoteField = new TranslatedStringEditField('meaning_note', 'Meaning note', updateFunction);
+		let meaningNoteField = new TranslatedStringEditField('meaning_note', 'Meaning note');
 		meaningNoteField.setInfoText('Free-form additional information on the meaning of the word, ' +
 			'such as a clarification on the scope of the word. Can use references to other words ' +
 			'of the form [kaltxì:intj] and external links of the form ' +
@@ -393,29 +406,52 @@ class EditPage {
 		meaningNoteField.setMinCount(0);
 		meaningNoteField.setStoreOnlyEnglishAsString(true);
 		meaningNoteField.setMultiLine(true);
-		this.fields.push(meaningNoteField);
 
-		let etymologyField = new StringEditField('etymology', 'Etymology', updateFunction);
+		let etymologyField = new StringEditField('etymology', 'Etymology');
 		etymologyField.setInfoText('Standard form: From ... + ... . ' +
 			'Can use references to other words of the form [kaltxì:intj]. ' +
 			'This word will automatically end up in the “derived words” section of each referenced word.');
 		etymologyField.setMinCount(0);
-		this.fields.push(etymologyField);
 
-		let imageField = new StringEditField('image', 'Image', updateFunction);
+		let imageField = new StringEditField('image', 'Image');
 		imageField.setInfoText('File name of an image to show. Note: you cannot upload ' +
 			'new images using this editor. The image already has to be on the server for this to work.');
 		imageField.setMinCount(0);
-		this.fields.push(imageField);
 
-		let sourceField = new SourceEditField('source', 'Source', updateFunction);
+		let sourceField = new SourceEditField('source', 'Source');
 		sourceField.setInfoText('A source for this word. There can be more than one. ' +
 			'Sources should contain URL and date, if available, and can contain a short note. ' +
 			'Enter these using the pencil icon button on the right.');
 		sourceField.setMinCount(0);
 		sourceField.setMaxCount(Infinity);
-		this.fields.push(sourceField);
 
+		this.fields = [idField, rootField, typeField, infixField, definitionField,
+			shortTranslationField, meaningNoteField, etymologyField, imageField, sourceField];
+		for (let field of this.fields) {
+			field.setOnChanged(() => {
+				this.fieldsToJSON();
+				this.renderPreview();
+			});
+			field.setOnRowCountChanged(() => {
+				this.fieldsToJSON();
+				this.resortRows();
+				this.renderPreview();
+			});
+		}
+		typeField.setOnChanged(() => {
+			this.fieldsToJSON();
+			let jsonString = $('#json-field').val() as string;
+			let json: WordData = JSON.parse(jsonString);
+			if (json['type'].startsWith('v:')) {
+				infixField.setMinCount(1);
+				infixField.setMaxCount(1);
+			} else {
+				infixField.setMinCount(0);
+				infixField.setMaxCount(0);
+			}
+			this.fieldsToJSON();
+			this.renderPreview();
+		});
 		this.jsonToFields();
 
 		let $addButtonContainer = $('<div/>')
@@ -426,11 +462,6 @@ class EditPage {
 		}
 		this.resortRows();
 		this.renderPreview();
-
-		$('#visual-page').on('input', 'input, textarea, select', () => {
-			this.fieldsToJSON();
-			this.renderPreview();
-		});
 
 		$('#json-field').on('input', () => {
 			this.jsonToFields();
