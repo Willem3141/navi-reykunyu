@@ -16,6 +16,8 @@
 		"study-lib.ts",
 		"review.ts",
 		"data-errors.ts",
+		"edit.ts",
+		"word-result-block.ts",
 	],
 	"include": [
 		"ui-translations.d.ts",

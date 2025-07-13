@@ -19,6 +19,7 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 import * as dialect from './dialect';
 import * as edit from './edit';
 import * as output from './output';
+import * as wordLinks from './wordLinks';
 import Reykunyu from './reykunyu';
 import Zeykerokyu from './zeykerokyu';
 
@@ -187,7 +188,7 @@ app.get('/offline/help',
 
 app.get('/offline/all',
 	(req, res) => {
-		res.render('fralì\'u', offlinePageVariables(req));
+		res.render('all-words', offlinePageVariables(req));
 	}
 );
 
@@ -202,7 +203,7 @@ app.use(express.static(staticRoot));
 
 app.get('/all',
 	(req, res) => {
-		res.render("fralì'u", pageVariables(req));
+		res.render('all-words', pageVariables(req));
 	}
 );
 
@@ -213,11 +214,13 @@ app.get('/add',
 			res.render('403', pageVariables(req));
 			return;
 		}
-		res.render('leykatem', pageVariables(req, {
+		res.render('edit', pageVariables(req, {
 			'post_url': '/add',
 			'word': {
-				"na'vi": '',
-				"translations": [{'en': ''}]
+				'id': -1,
+				'na\'vi': '',
+				'type': 'n',
+				'translations': [{'en': ''}]
 			}
 		}));
 	}
@@ -273,36 +276,69 @@ app.get('/edit',
 			return;
 		}
 		const wordData = edit.getWordData(id);
-		res.render('leykatem', pageVariables(req, {
+		res.render('edit', pageVariables(req, {
 			'post_url': '/edit',
 			'word': wordData
 		}));
 	}
 );
 
-app.get('/edit/raw',
+app.post('/edit/preview',
 	(req, res) => {
 		if (!req.user || !req.user['is_admin']) {
 			res.status(403);
 			res.render('403', pageVariables(req));
 			return;
 		}
-		if (!req.query.hasOwnProperty('word')) {
+		if (!req.body.hasOwnProperty('data')) {
 			res.status(400);
 			res.send('400 Bad Request');
 			return;
 		}
-		const id = parseInt(req.query['word'] as string, 10);
-		if (isNaN(id)) {
+		let dataString = req.body['data'] as string;
+		let word: WordData = JSON.parse(dataString);
+
+		// preprocessing: copied from dictionary.ts
+		word['word'] = {
+			'combined': word["na'vi"],
+			'FN': dialect.combinedToFN(word["na'vi"]),
+			'RN': dialect.combinedToRN(word["na'vi"])
+		};
+		word['word_raw'] = {
+			'combined': dialect.makeRaw(word['word']['combined']),
+			'FN': dialect.makeRaw(word['word']['FN']),
+			'RN': dialect.makeRaw(word['word']['RN'])
+		};
+		word["na'vi"] = word['word_raw']['FN'];
+
+		let dataErrorList: string[] = [];
+		reykunyu.preprocessWord(word, dataErrorList);
+		if (dataErrorList.length > 0) {
 			res.status(400);
-			res.send('400 Bad Request');
+			res.send(dataErrorList);
 			return;
 		}
-		const wordData = edit.getWordData(id);
-		res.render('leykatem-yrr', pageVariables(req, {
-			'post_url': '/edit',
-			'word': wordData
-		}));
+
+		// find derived words (custom hack for the preview, because usually
+		// Reykunyu does this on startup)
+		for (let other of reykunyu.dictionary.getAll()) {
+			if (other['etymology']) {
+				if (other['etymology'].includes('[' + word['word_raw']['FN'] + ':' + word['type'])) {
+					if (!word['derived']) {
+						word['derived'] = [];
+					}
+					word['derived'].push(wordLinks.stripToLinkData(other));
+				}
+			}
+		}
+
+		// sort derived words
+		if (word['derived']) {
+			word['derived'].sort(function (a, b) {
+				return a["na'vi"].localeCompare(b["na'vi"]);  // TODO use word_raw
+			});
+		}
+		res.send(word);
 	}
 );
 

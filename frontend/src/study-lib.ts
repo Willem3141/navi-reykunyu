@@ -94,7 +94,7 @@ export function buildWordCard(word: WordData, onFlip?: () => void): JQuery {
 
 	if (word['meaning_note']) {
 		const $meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($back);
-		appendLinkString(word['meaning_note'], word, $meaningNote, 'FN', 'en');
+		appendLinkString(word['meaning_note']['en'], word, $meaningNote, 'FN', 'en');
 	}
 
 	if (word['etymology']) {

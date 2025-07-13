@@ -26,7 +26,7 @@ declare type WordData = {
 	translations: Translated<string>[],
 	short_translation?: string,
 	short_translation_conjugated?: string,
-	meaning_note?: LinkString,
+	meaning_note?: Translated<LinkString>,  // may be LinkString in the database
 	infixes?: string,
 	conjugation?: {
 		FN: NounConjugation | AdjectiveConjugation,
@@ -41,8 +41,8 @@ declare type WordData = {
 		by: string
 	},
 	image?: string,
-	source?: Source,
-	status?: 'loan' | 'unconfirmed' | 'unofficial',
+	source?: Source[],
+	status?: Status,
 	status_note?: string,
 	etymology?: LinkString,
 	derived?: WordData[],
@@ -57,14 +57,14 @@ declare type Dialect = 'FN' | 'combined' | 'RN';
 declare type Pronunciation = {
 	syllables: string,
 	stressed: number,
-	audio: AudioData[],
+	audio: PronunciationAudio[],
 	ipa: {
 		FN: string,
 		RN: string
 	}
 };
 
-declare type AudioData = {
+declare type PronunciationAudio = {
 	file: string,
 	speaker: string
 }
@@ -137,7 +137,9 @@ declare type CombinedAffixData = {
 	combinedFrom: SimpleAffixData[]
 }
 
-declare type Source = [string, string, string, string];
+declare type Source = [string, string?, string?, string?];
+
+declare type Status = 'loan' | 'unconfirmed' | 'unofficial'
 
 declare type LinkString = string;
 
