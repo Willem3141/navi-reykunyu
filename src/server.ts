@@ -188,7 +188,7 @@ app.get('/offline/help',
 
 app.get('/offline/all',
 	(req, res) => {
-		res.render('fralì\'u', offlinePageVariables(req));
+		res.render('all-words', offlinePageVariables(req));
 	}
 );
 
@@ -203,7 +203,7 @@ app.use(express.static(staticRoot));
 
 app.get('/all',
 	(req, res) => {
-		res.render("fralì'u", pageVariables(req));
+		res.render('all-words', pageVariables(req));
 	}
 );
 
@@ -214,7 +214,7 @@ app.get('/add',
 			res.render('403', pageVariables(req));
 			return;
 		}
-		res.render('leykatem', pageVariables(req, {
+		res.render('edit', pageVariables(req, {
 			'post_url': '/add',
 			'word': {
 				'id': -1,
@@ -276,7 +276,7 @@ app.get('/edit',
 			return;
 		}
 		const wordData = edit.getWordData(id);
-		res.render('leykatem', pageVariables(req, {
+		res.render('edit', pageVariables(req, {
 			'post_url': '/edit',
 			'word': wordData
 		}));
