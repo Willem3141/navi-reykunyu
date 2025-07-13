@@ -547,7 +547,8 @@ class EditPage {
 				$.post(url, {
 					'id': id,
 					'data': wordData
-				}, function (data) {
+				}, (data) => {
+					this.warnOnUnload = false;
 					document.location.href = data['url'];
 				});
 			} catch (e) {
