@@ -1,7 +1,5 @@
 import WordResultBlock from './word-result-block';
 
-type FieldType = 'string' | 'number';
-
 abstract class EditField<T> {
 	private label: string;
 	private infoText?: string;
@@ -40,7 +38,7 @@ abstract class EditField<T> {
 		if (this.$rows.length > maxCount) {
 			this.setNumberOfRows(maxCount);
 		}
-			this.updateButtonVisibility();
+		this.updateButtonVisibility();
 	}
 	setOnChanged(onChanged: () => void) {
 		this.onChanged = onChanged;
