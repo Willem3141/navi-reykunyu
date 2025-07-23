@@ -89,26 +89,14 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 }
 
 export function conjugateSimple(noun: string, pluralPrefix: string, caseSuffix: string, dialect: Dialect, isLoanword?: boolean) {
-	const conjugation = conjugate(noun, ['', pluralPrefix, '', '','', caseSuffix, ''], dialect, isLoanword);
-	const options = conjugation.split(';');
-	let result = '';
-	for (const option of options) {
-		if (result !== '') {
-			result += ';';
-		}
-		const parts = option.split('-');
-		const pluralPart = parts[1];
-		const lenitedPart = parts[3];
-		const stemPart = parts[4];
-		const voicedPart = parts[5];
-		const casePart = parts[8];
-		result += pluralPart + '-' +
-			(lenitedPart !== '' ? '{' + lenitedPart + '}' : '') +
-			stemPart +
-			(voicedPart !== '' ? '{' + voicedPart + '}' : '') + '-' +
-			casePart;
+	let conjugation = conjugate(noun, ['', pluralPrefix, '', '','', caseSuffix, ''], dialect, isLoanword);
+	if (pluralPrefix === '') {
+		conjugation = '-' + conjugation;
 	}
-	return result;
+	if (caseSuffix === '') {
+		conjugation = conjugation + '-';
+	}
+	return conjugation;
 }
 
 function subjectiveSuffix(noun: string): Suffix {
