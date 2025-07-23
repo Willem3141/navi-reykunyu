@@ -72,13 +72,9 @@ const lenitions: Record<string, string> = {
 };
 
 /**
- * Returns the lenited form of the given word. The return value is an array
- * containing first the actually lenited first consonant, and second the
- * (unchanged) rest of the word. If the given word is not lenitable, the first
- * element of the return value is an empty string, while the second element is
- * simply the entire word.
+ * Returns the lenited form of the given word.
  */
-export function lenite(word: string): [string, string] {
+export function lenite(word: string): string {
 	let lenitedConsonant = '';
 	let rest = word;
 
@@ -97,5 +93,5 @@ export function lenite(word: string): [string, string] {
 		lenitedConsonant = lenitedConsonant.toUpperCase();
 	}
 
-	return [lenitedConsonant, rest];
+	return lenitedConsonant + rest;
 }
