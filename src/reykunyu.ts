@@ -43,7 +43,7 @@ export default class Reykunyu {
 	constructor(dictionaryJSON: any) {
 		this.loadData(dictionaryJSON);
 	}
-	
+
 	loadData(dictionaryJSON: any) {
 		this.dataErrorList = [];
 		this.dictionary = new Dictionary(dictionaryJSON, this.dataErrorList);
@@ -159,7 +159,7 @@ export default class Reykunyu {
 				}
 			}
 		}
-		
+
 		// conjugation tables
 		if (word['conjugation']) {
 			let conjugation = (word['conjugation'] as any)['forms'];

@@ -8,7 +8,7 @@ const diphthongs = ["aw", "ay", "ew", "ey"];
 
 /**
  * Lowercases the input and returns the result.
- * 
+ *
  * If the input is undefined, this returns undefined (as opposed to doing
  * `input.toLowerCase()`, which crashes). This is useful for handling corner
  * cases, e.g. `word[0].toLowerCase()` could crash if `word` is empty, while
@@ -74,7 +74,7 @@ const lenitions: Record<string, string> = {
 /**
  * Returns the lenited form of the given word.
  */
-export function lenite(word: string): string {
+export function lenite(word: string): [string, string] {
 	let lenitedConsonant = '';
 	let rest = word;
 
@@ -93,5 +93,5 @@ export function lenite(word: string): string {
 		lenitedConsonant = lenitedConsonant.toUpperCase();
 	}
 
-	return lenitedConsonant + rest;
+	return [lenitedConsonant, rest];
 }

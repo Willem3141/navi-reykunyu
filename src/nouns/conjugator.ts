@@ -92,6 +92,14 @@ export function conjugateSimple(noun: string, pluralPrefix: string, caseSuffix: 
 	let conjugation = conjugate(noun, ['', pluralPrefix, '', '','', caseSuffix, ''], dialect, isLoanword);
 	if (pluralPrefix === '') {
 		conjugation = '-' + conjugation;
+	} else {
+		let conjugationPieces = conjugation.split('-');
+		const [lenitedConsonant, _] = lenite(noun);
+		if (lenitedConsonant) {
+			conjugationPieces[1] = '{' + conjugationPieces[1].substring(0, lenitedConsonant.length) + '}' +
+				conjugationPieces[1].substring(lenitedConsonant.length);
+		}
+		conjugation = conjugationPieces.join('-');
 	}
 	if (caseSuffix === '') {
 		conjugation = conjugation + '-';
@@ -229,13 +237,13 @@ function findDeterminerAndPluralPrefix(determinerPrefix: string, pluralPrefix: s
 function applyPrefix(noun: string, prefix: Prefix): string {
 	let optional = false;
 	if (prefix.lenites) {
-		let lenited = lenite(noun);
+		let lenited = lenite(noun).join('');
 		if (prefix.optionalIfLenitable && noun !== lenited && noun !== '\'u') {
 			optional = true;
 		}
-		noun = lenite(noun);
+		noun = lenited;
 	}
-	if (endsInVowel(prefix.text) && prefix.text[prefix.text.length - 1] === noun[0].toLowerCase()) {
+	if (endsInVowel(prefix.text) && noun.length > 0 && prefix.text[prefix.text.length - 1] === noun[0].toLowerCase()) {
 		// TODO don't do this for RN
 		prefix.text = prefix.text.substring(0, prefix.text.length - 1);
 	}
