@@ -29,13 +29,6 @@ export function formsFromString(formString: string): string[] {
 
 function formsRecursive(formString: string): string[] {
 
-	// parse parentheses
-	let parenRegex = /([^(]*)\(([^)]*)\)(.*)/;
-	let result = parenRegex.exec(formString);
-	if (result) {
-		return formsRecursive(result[1] + result[2] + result[3]).concat(formsRecursive(result[1] + result[3]));
-	}
-
 	// parse slashes
 	let parts = formString.split("-");
 	for (let i = 0; i < parts.length; i++) {
@@ -50,6 +43,13 @@ function formsRecursive(formString: string): string[] {
 			}
 			return forms;
 		}
+	}
+
+	// parse parentheses
+	let parenRegex = /([^(]*)\(([^)]*)\)(.*)/;
+	let result = parenRegex.exec(formString);
+	if (result) {
+		return formsRecursive(result[1] + result[2] + result[3]).concat(formsRecursive(result[1] + result[3]));
 	}
 
 	return [formString.split("-").join("")];

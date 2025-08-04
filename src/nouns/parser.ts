@@ -121,7 +121,7 @@ function tryPluralPrefixes(candidate: Omit<NounConjugationStep, 'result'>): Omit
 	tryPrefix("be", "pxe");
 	tryPrefix("b", "pxe");
 	tryPrefix("ay", "ay");
-	tryPrefix("", "(ay)");
+	tryPrefix("", "ay");
 
 	return candidates;
 }

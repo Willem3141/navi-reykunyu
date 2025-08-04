@@ -43,7 +43,7 @@ export default class Reykunyu {
 	constructor(dictionaryJSON: any) {
 		this.loadData(dictionaryJSON);
 	}
-	
+
 	loadData(dictionaryJSON: any) {
 		this.dataErrorList = [];
 		this.dictionary = new Dictionary(dictionaryJSON, this.dataErrorList);
@@ -159,7 +159,7 @@ export default class Reykunyu {
 				}
 			}
 		}
-		
+
 		// conjugation tables
 		if (word['conjugation']) {
 			let conjugation = (word['conjugation'] as any)['forms'];
@@ -335,8 +335,8 @@ export default class Reykunyu {
 			return [word, "'" + word];
 		}
 
-		// word starts with ejective or ts
-		if (word[1] === "x" || word.substring(0, 2) === "ts" || ['b', 'd', 'g'].includes(word[0])) {
+		// word starts with tìftang, ejective or ts
+		if (word[0] === '\'' || word[1] === "x" || word.substring(0, 2) === "ts" || ['b', 'd', 'g'].includes(word[0])) {
 			return [];
 		}
 

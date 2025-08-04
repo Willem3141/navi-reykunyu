@@ -22,12 +22,15 @@ import { count } from 'node:console';
  * Therefore this method merely tests if the expected root/affix combination is
  * in the result set.
  */
-function testConjugation(root: string, affixes: string[], expectedResult: string, loanword?: boolean): void {
+function testConjugation(root: string, affixes: string[], expectedResult: string[], loanword?: boolean): void {
 	let dialect = 'FN';
-	const conjugationResult = conjugate(root, affixes, dialect, loanword);
-	assert.strictEqual(conjugationResult, expectedResult);
+	const conjugationResult = conjugationString.formsFromString(conjugate(root, affixes, dialect, loanword));
+	if (!areArraysEqual(conjugationResult, expectedResult)) {
+		assert.fail('Conjugation result didn\'t match expected value: ' +
+			JSON.stringify(conjugationResult) + ' != ' + JSON.stringify(expectedResult));
+	}
 
-	for (const conjugatedForm of conjugationString.formsFromString(expectedResult)) {
+	for (const conjugatedForm of expectedResult) {
 		const parseResult = parse(conjugatedForm.toLowerCase(), dialect, loanword);
 		let found = false;
 		for (const possibility of parseResult) {
@@ -51,465 +54,480 @@ function testConjugation(root: string, affixes: string[], expectedResult: string
 	}
 }
 
+/** Determines whether two arrays have identical elements. */
+function areArraysEqual(a: string[], b: string[]): boolean {
+	if (a.length !== b.length) {
+		return false;
+	}
+	a = a.sort();
+	b = b.sort();
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] !== b[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
 describe('noun conjugations', () => {
 
 	describe('determiner prefixes', () => {
 		test('are prepended to the noun', (t) => {
-			testConjugation('fwampop', ['fì', '', '', '', '', '', ''], 'fì----fwampop-----');
-			testConjugation('fwampop', ['tsa', '', '', '', '', '', ''], 'tsa----fwampop-----');
-			testConjugation('fwampop', ['pe', '', '', '', '', '', ''], 'pe----fwampop-----');
-			testConjugation('fwampop', ['fra', '', '', '', '', '', ''], 'fra----fwampop-----');
+			testConjugation('fwampop', ['fì', '', '', '', '', '', ''], ['fìfwampop']);
+			testConjugation('fwampop', ['tsa', '', '', '', '', '', ''], ['tsafwampop']);
+			testConjugation('fwampop', ['pe', '', '', '', '', '', ''], ['pefwampop']);
+			testConjugation('fwampop', ['fra', '', '', '', '', '', ''], ['frafwampop']);
 		});
 
 		test('in the case of pe+, lenite the noun', (t) => {
-			testConjugation('kelku', ['pe', '', '', '', '', '', ''], 'pe---h-elku-----');
+			testConjugation('kelku', ['pe', '', '', '', '', '', ''], ['pehelku']);
 		});
 
 		test('in the case of other determiners, do not lenite the noun', (t) => {
-			testConjugation('kelku', ['fì', '', '', '', '', '', ''], 'fì----kelku-----');
-			testConjugation('kelku', ['tsa', '', '', '', '', '', ''], 'tsa----kelku-----');
-			testConjugation('kelku', ['fra', '', '', '', '', '', ''], 'fra----kelku-----');
+			testConjugation('kelku', ['fì', '', '', '', '', '', ''], ['fìkelku']);
+			testConjugation('kelku', ['tsa', '', '', '', '', '', ''], ['tsakelku']);
+			testConjugation('kelku', ['fra', '', '', '', '', '', ''], ['frakelku']);
 		});
 
 		test('contract when the noun starts with the same letter', (t) => {
-			testConjugation('ìlva', ['fì', '', '', '', '', '', ''], 'f----ìlva-----');
-			testConjugation('atan', ['tsa', '', '', '', '', '', ''], 'ts----atan-----');
-			testConjugation('ekxan', ['pe', '', '', '', '', '', ''], 'p----ekxan-----');
-			testConjugation('atan', ['fra', '', '', '', '', '', ''], 'fr----atan-----');
+			testConjugation('ìlva', ['fì', '', '', '', '', '', ''], ['fìlva']);
+			testConjugation('atan', ['tsa', '', '', '', '', '', ''], ['tsatan']);
+			testConjugation('ekxan', ['pe', '', '', '', '', '', ''], ['pekxan']);
+			testConjugation('atan', ['fra', '', '', '', '', '', ''], ['fratan']);
 		});
 
 		test('contract when the noun starts with the capitalized same letter', (t) => {
-			testConjugation('Ìlva', ['fì', '', '', '', '', '', ''], 'f----Ìlva-----');
-			testConjugation('Atan', ['tsa', '', '', '', '', '', ''], 'ts----Atan-----');
-			testConjugation('Ekxan', ['pe', '', '', '', '', '', ''], 'p----Ekxan-----');
-			testConjugation('Atan', ['fra', '', '', '', '', '', ''], 'fr----Atan-----');
+			testConjugation('Ìlva', ['fì', '', '', '', '', '', ''], ['fÌlva']);
+			testConjugation('Atan', ['tsa', '', '', '', '', '', ''], ['tsAtan']);
+			testConjugation('Ekxan', ['pe', '', '', '', '', '', ''], ['pEkxan']);
+			testConjugation('Atan', ['fra', '', '', '', '', '', ''], ['frAtan']);
 		});
 
-		test('in the case of pe+, also contract if the noun starts with e- after lenition', (t) => {
-			testConjugation('\'eylan', ['pe', '', '', '', '', '', ''], 'p----eylan-----');
+		test('in the case of pe+, also contract if the noun starts with -e after lenition', (t) => {
+			testConjugation('\'eylan', ['pe', '', '', '', '', '', ''], ['peylan']);
 		});
 	});
 
 	describe('plural prefixes', () => {
 		describe('the dual prefix', () => {
 			test('is prepended to the noun', (t) => {
-				testConjugation('fwampop', ['', 'me', '', '', '', '', ''], '-me---fwampop-----');
+				testConjugation('fwampop', ['', 'me', '', '', '', '', ''], ['mefwampop']);
 			});
 
 			test('preserves the initial uppercase letter of the noun', (t) => {
-				testConjugation('Fwampop', ['', 'me', '', '', '', '', ''], '-me---Fwampop-----');
+				testConjugation('Fwampop', ['', 'me', '', '', '', '', ''], ['meFwampop']);
 			});
 
 			test('drops its -e if the noun starts with e-', (t) => {
-				testConjugation('ekxan', ['', 'me', '', '', '', '', ''], '-m---ekxan-----');
-				testConjugation('Ekxan', ['', 'me', '', '', '', '', ''], '-m---Ekxan-----');
+				testConjugation('ekxan', ['', 'me', '', '', '', '', ''], ['mekxan']);
+				testConjugation('Ekxan', ['', 'me', '', '', '', '', ''], ['mEkxan']);
 			});
 
 			test('drops its -e if the noun starts with ew-/ey-', (t) => {
-				testConjugation('ewro', ['', 'me', '', '', '', '', ''], '-m---ewro-----');
-				testConjugation('Ewro', ['', 'me', '', '', '', '', ''], '-m---Ewro-----');
-				testConjugation('eyktan', ['', 'me', '', '', '', '', ''], '-m---eyktan-----');
-				testConjugation('Eyktan', ['', 'me', '', '', '', '', ''], '-m---Eyktan-----');
+				testConjugation('ewro', ['', 'me', '', '', '', '', ''], ['mewro']);
+				testConjugation('Ewro', ['', 'me', '', '', '', '', ''], ['mEwro']);
+				testConjugation('eyktan', ['', 'me', '', '', '', '', ''], ['meyktan']);
+				testConjugation('Eyktan', ['', 'me', '', '', '', '', ''], ['mEyktan']);
 			});
 
 			test('drops its -e if the noun starts with e- after lenition', (t) => {
-				testConjugation('\'eylan', ['', 'me', '', '', '', '', ''], '-m---eylan-----');
-				testConjugation('\'Eylan', ['', 'me', '', '', '', '', ''], '-m---Eylan-----');
+				testConjugation('\'eylan', ['', 'me', '', '', '', '', ''], ['meylan']);
+				testConjugation('\'Eylan', ['', 'me', '', '', '', '', ''], ['mEylan']);
 			});
 
 			test('lenites the noun', (t) => {
-				testConjugation('kelku', ['', 'me', '', '', '', '', ''], '-me--h-elku-----');
+				testConjugation('kelku', ['', 'me', '', '', '', '', ''], ['mehelku']);
 			});
 
 			test('doesn\'t lenite the noun if it starts with \'ll/\'rr', (t) => {
-				testConjugation('\'llngo', ['', 'me', '', '', '', '', ''], '-me---\'llngo-----');
-				testConjugation('\'rrpxom', ['', 'me', '', '', '', '', ''], '-me---\'rrpxom-----');
+				testConjugation('\'llngo', ['', 'me', '', '', '', '', ''], ['me\'llngo']);
+				testConjugation('\'rrpxom', ['', 'me', '', '', '', '', ''], ['me\'rrpxom']);
 			});
 
 			test('lenites the noun even if it starts with an uppercase letter', (t) => {
-				testConjugation('Kelku', ['', 'me', '', '', '', '', ''], '-me--H-elku-----');
-				testConjugation('Txon', ['', 'me', '', '', '', '', ''], '-me--T-on-----');
+				testConjugation('Kelku', ['', 'me', '', '', '', '', ''], ['meHelku']);
+				testConjugation('Txon', ['', 'me', '', '', '', '', ''], ['meTon']);
 			});
 
 			test('is placed after a determiner prefix', (t) => {
-				testConjugation('fwampop', ['fì', 'me', '', '', '', '', ''], 'fì-me---fwampop-----');
-				testConjugation('fwampop', ['tsa', 'me', '', '', '', '', ''], 'tsa-me---fwampop-----');
-				testConjugation('fwampop', ['pe', 'me', '', '', '', '', ''], 'pe-me---fwampop-----');
-				testConjugation('fwampop', ['fra', 'me', '', '', '', '', ''], 'fra-me---fwampop-----');
+				testConjugation('fwampop', ['fì', 'me', '', '', '', '', ''], ['fìmefwampop']);
+				testConjugation('fwampop', ['tsa', 'me', '', '', '', '', ''], ['tsamefwampop']);
+				testConjugation('fwampop', ['pe', 'me', '', '', '', '', ''], ['pemefwampop']);
+				testConjugation('fwampop', ['fra', 'me', '', '', '', '', ''], ['framefwampop']);
 			});
 
 			test('when combined with a determiner, still lenites the noun', (t) => {
-				testConjugation('kelku', ['fì', 'me', '', '', '', '', ''], 'fì-me--h-elku-----');
-				testConjugation('kelku', ['tsa', 'me', '', '', '', '', ''], 'tsa-me--h-elku-----');
-				testConjugation('kelku', ['pe', 'me', '', '', '', '', ''], 'pe-me--h-elku-----');
-				testConjugation('kelku', ['fra', 'me', '', '', '', '', ''], 'fra-me--h-elku-----');
+				testConjugation('kelku', ['fì', 'me', '', '', '', '', ''], ['fìmehelku']);
+				testConjugation('kelku', ['tsa', 'me', '', '', '', '', ''], ['tsamehelku']);
+				testConjugation('kelku', ['pe', 'me', '', '', '', '', ''], ['pemehelku']);
+				testConjugation('kelku', ['fra', 'me', '', '', '', '', ''], ['framehelku']);
 			});
 		});
 
 		describe('the trial prefix', () => {
 			test('is prepended to the noun', (t) => {
-				testConjugation('fwampop', ['', 'pxe', '', '', '', '', ''], '-pxe---fwampop-----');
+				testConjugation('fwampop', ['', 'pxe', '', '', '', '', ''], ['pxefwampop']);
 			});
 
 			test('preserves the initial uppercase letter of the noun', (t) => {
-				testConjugation('Fwampop', ['', 'pxe', '', '', '', '', ''], '-pxe---Fwampop-----');
+				testConjugation('Fwampop', ['', 'pxe', '', '', '', '', ''], ['pxeFwampop']);
 			});
 
 			test('drops its -e if the noun starts with e-', (t) => {
-				testConjugation('ekxan', ['', 'pxe', '', '', '', '', ''], '-px---ekxan-----');
-				testConjugation('Ekxan', ['', 'pxe', '', '', '', '', ''], '-px---Ekxan-----');
+				testConjugation('ekxan', ['', 'pxe', '', '', '', '', ''], ['pxekxan']);
+				testConjugation('Ekxan', ['', 'pxe', '', '', '', '', ''], ['pxEkxan']);
 			});
 
 			test('drops its -e if the noun starts with ew-/ey-', (t) => {
-				testConjugation('ewro', ['', 'pxe', '', '', '', '', ''], '-px---ewro-----');
-				testConjugation('Ewro', ['', 'pxe', '', '', '', '', ''], '-px---Ewro-----');
-				testConjugation('eyktan', ['', 'pxe', '', '', '', '', ''], '-px---eyktan-----');
-				testConjugation('Eyktan', ['', 'pxe', '', '', '', '', ''], '-px---Eyktan-----');
+				testConjugation('ewro', ['', 'pxe', '', '', '', '', ''], ['pxewro']);
+				testConjugation('Ewro', ['', 'pxe', '', '', '', '', ''], ['pxEwro']);
+				testConjugation('eyktan', ['', 'pxe', '', '', '', '', ''], ['pxeyktan']);
+				testConjugation('Eyktan', ['', 'pxe', '', '', '', '', ''], ['pxEyktan']);
 			});
 
 			test('drops its -e if the noun starts with e- after lenition', (t) => {
-				testConjugation('\'eylan', ['', 'pxe', '', '', '', '', ''], '-px---eylan-----');
-				testConjugation('\'Eylan', ['', 'pxe', '', '', '', '', ''], '-px---Eylan-----');
+				testConjugation('\'eylan', ['', 'pxe', '', '', '', '', ''], ['pxeylan']);
+				testConjugation('\'Eylan', ['', 'pxe', '', '', '', '', ''], ['pxEylan']);
 			});
 
 			test('lenites the noun', (t) => {
-				testConjugation('kelku', ['', 'pxe', '', '', '', '', ''], '-pxe--h-elku-----');
+				testConjugation('kelku', ['', 'pxe', '', '', '', '', ''], ['pxehelku']);
 			});
 
 			test('doesn\'t lenite the noun if it starts with \'ll/\'rr', (t) => {
-				testConjugation('\'llngo', ['', 'pxe', '', '', '', '', ''], '-pxe---\'llngo-----');
-				testConjugation('\'rrpxom', ['', 'pxe', '', '', '', '', ''], '-pxe---\'rrpxom-----');
+				testConjugation('\'llngo', ['', 'pxe', '', '', '', '', ''], ['pxe\'llngo']);
+				testConjugation('\'rrpxom', ['', 'pxe', '', '', '', '', ''], ['pxe\'rrpxom']);
 			});
 
 			test('lenites the noun even if it starts with an uppercase letter', (t) => {
-				testConjugation('Kelku', ['', 'pxe', '', '', '', '', ''], '-pxe--H-elku-----');
-				testConjugation('Txon', ['', 'pxe', '', '', '', '', ''], '-pxe--T-on-----');
+				testConjugation('Kelku', ['', 'pxe', '', '', '', '', ''], ['pxeHelku']);
+				testConjugation('Txon', ['', 'pxe', '', '', '', '', ''], ['pxeTon']);
 			});
 
 			test('is placed after a determiner prefix', (t) => {
-				testConjugation('fwampop', ['fì', 'pxe', '', '', '', '', ''], 'fì-pxe---fwampop-----');
-				testConjugation('fwampop', ['tsa', 'pxe', '', '', '', '', ''], 'tsa-pxe---fwampop-----');
-				testConjugation('fwampop', ['fra', 'pxe', '', '', '', '', ''], 'fra-pxe---fwampop-----');
+				testConjugation('fwampop', ['fì', 'pxe', '', '', '', '', ''], ['fìpxefwampop']);
+				testConjugation('fwampop', ['tsa', 'pxe', '', '', '', '', ''], ['tsapxefwampop']);
+				testConjugation('fwampop', ['fra', 'pxe', '', '', '', '', ''], ['frapxefwampop']);
 			});
 
 			test('when combined with pe+, gets lenited itself', (t) => {
-				testConjugation('fwampop', ['pe', 'pxe', '', '', '', '', ''], 'pe-pe---fwampop-----');
+				testConjugation('fwampop', ['pe', 'pxe', '', '', '', '', ''], ['pepefwampop']);
 			});
 
 			test('when combined with a determiner, still lenites the noun', (t) => {
-				testConjugation('kelku', ['fì', 'pxe', '', '', '', '', ''], 'fì-pxe--h-elku-----');
-				testConjugation('kelku', ['tsa', 'pxe', '', '', '', '', ''], 'tsa-pxe--h-elku-----');
-				testConjugation('kelku', ['pe', 'pxe', '', '', '', '', ''], 'pe-pe--h-elku-----');
-				testConjugation('kelku', ['fra', 'pxe', '', '', '', '', ''], 'fra-pxe--h-elku-----');
+				testConjugation('kelku', ['fì', 'pxe', '', '', '', '', ''], ['fìpxehelku']);
+				testConjugation('kelku', ['tsa', 'pxe', '', '', '', '', ''], ['tsapxehelku']);
+				testConjugation('kelku', ['pe', 'pxe', '', '', '', '', ''], ['pepehelku']);
+				testConjugation('kelku', ['fra', 'pxe', '', '', '', '', ''], ['frapxehelku']);
 			});
 		});
 
 		describe('the general plural prefix', () => {
 			test('is prepended to the noun', (t) => {
-				testConjugation('fwampop', ['', 'ay', '', '', '', '', ''], '-ay---fwampop-----');
+				testConjugation('fwampop', ['', 'ay', '', '', '', '', ''], ['ayfwampop']);
 			});
 
 			test('preserves the initial uppercase letter of the noun', (t) => {
-				testConjugation('Fwampop', ['', 'ay', '', '', '', '', ''], '-ay---Fwampop-----');
+				testConjugation('Fwampop', ['', 'ay', '', '', '', '', ''], ['ayFwampop']);
 			});
 
 			test('lenites the noun', (t) => {
-				testConjugation('kelku', ['', 'ay', '', '', '', '', ''], '-(ay)--h-elku-----');
+				testConjugation('kelku', ['', 'ay', '', '', '', '', ''], ['ayhelku', 'helku']);
 			});
 
 			test('doesn\'t lenite the noun if it starts with \'ll/\'rr', (t) => {
-				testConjugation('\'llngo', ['', 'ay', '', '', '', '', ''], '-ay---\'llngo-----');
-				testConjugation('\'rrpxom', ['', 'ay', '', '', '', '', ''], '-ay---\'rrpxom-----');
+				testConjugation('\'llngo', ['', 'ay', '', '', '', '', ''], ['ay\'llngo']);
+				testConjugation('\'rrpxom', ['', 'ay', '', '', '', '', ''], ['ay\'rrpxom']);
 			});
 
 			test('lenites the noun even if it starts with an uppercase letter', (t) => {
-				testConjugation('Kelku', ['', 'ay', '', '', '', '', ''], '-(ay)--H-elku-----');
-				testConjugation('Txon', ['', 'ay', '', '', '', '', ''], '-(ay)--T-on-----');
+				testConjugation('Kelku', ['', 'ay', '', '', '', '', ''], ['ayHelku', 'Helku']);
+				testConjugation('Txon', ['', 'ay', '', '', '', '', ''], ['ayTon', 'Ton']);
 			});
 
 			test('is optional if the noun underwent lenition', (t) => {
-				testConjugation('tute', ['', 'ay', '', '', '', '', ''], '-(ay)--s-ute-----');
-				testConjugation('pxen', ['', 'ay', '', '', '', '', ''], '-(ay)--p-en-----');
-				testConjugation('\'eylan', ['', 'ay', '', '', '', '', ''], '-(ay)---eylan-----');
+				testConjugation('tute', ['', 'ay', '', '', '', '', ''], ['aysute', 'sute']);
+				testConjugation('pxen', ['', 'ay', '', '', '', '', ''], ['aypen', 'pen']);
+				testConjugation('\'eylan', ['', 'ay', '', '', '', '', ''], ['ayeylan', 'eylan']);
 			});
 
 			test('is not optional if the noun did not undergo lenition', (t) => {
-				testConjugation('lun', ['', 'ay', '', '', '', '', ''], '-ay---lun-----');
-				testConjugation('sngel', ['', 'ay', '', '', '', '', ''], '-ay---sngel-----');
-				testConjugation('zum', ['', 'ay', '', '', '', '', ''], '-ay---zum-----');
+				testConjugation('lun', ['', 'ay', '', '', '', '', ''], ['aylun']);
+				testConjugation('sngel', ['', 'ay', '', '', '', '', ''], ['aysngel']);
+				testConjugation('zum', ['', 'ay', '', '', '', '', ''], ['ayzum']);
 			});
 
 			test('is not optional in the case of \'u', (t) => {
-				testConjugation('\'u', ['', 'ay', '', '', '', '', ''], '-ay---u-----');
+				testConjugation('\'u', ['', 'ay', '', '', '', '', ''], ['ayu']);
 			});
 
 			test('is placed after a determiner prefix', (t) => {
-				testConjugation('fwampop', ['fì', 'ay', '', '', '', '', ''], 'f(ì)-ay---fwampop-----');
-				testConjugation('fwampop', ['tsa', 'ay', '', '', '', '', ''], 'ts-ay---fwampop-----');
-				testConjugation('fwampop', ['pe', 'ay', '', '', '', '', ''], 'p-ay---fwampop-----');
-				testConjugation('fwampop', ['fra', 'ay', '', '', '', '', ''], 'fr-ay---fwampop-----');
+				testConjugation('fwampop', ['fì', 'ay', '', '', '', '', ''], ['fìayfwampop', 'fayfwampop']);
+				testConjugation('fwampop', ['tsa', 'ay', '', '', '', '', ''], ['tsayfwampop']);
+				testConjugation('fwampop', ['pe', 'ay', '', '', '', '', ''], ['payfwampop']);
+				testConjugation('fwampop', ['fra', 'ay', '', '', '', '', ''], ['frayfwampop']);
 			});
 
 			test('when combined with a determiner, still lenites the noun', (t) => {
-				testConjugation('kelku', ['fì', 'ay', '', '', '', '', ''], 'f(ì)-ay--h-elku-----');
-				testConjugation('kelku', ['tsa', 'ay', '', '', '', '', ''], 'ts-ay--h-elku-----');
-				testConjugation('kelku', ['pe', 'ay', '', '', '', '', ''], 'p-ay--h-elku-----');
-				testConjugation('kelku', ['fra', 'ay', '', '', '', '', ''], 'fr-ay--h-elku-----');
+				testConjugation('kelku', ['fì', 'ay', '', '', '', '', ''], ['fìayhelku', 'fayhelku']);
+				testConjugation('kelku', ['tsa', 'ay', '', '', '', '', ''], ['tsayhelku']);
+				testConjugation('kelku', ['pe', 'ay', '', '', '', '', ''], ['payhelku']);
+				testConjugation('kelku', ['fra', 'ay', '', '', '', '', ''], ['frayhelku']);
 			});
 		});
 	});
 
 	describe('stem prefixes', () => {
 		test('are prepended to the noun', (t) => {
-			testConjugation('fwampop', ['', '', 'fne', '', '', '', ''], '--fne--fwampop-----');
+			testConjugation('fwampop', ['', '', 'fne', '', '', '', ''], ['fnefwampop']);
 		});
 
 		test('are placed after a plural prefix', (t) => {
-			testConjugation('fwampop', ['', 'me', 'fne', '', '', '', ''], '-me-fne--fwampop-----');
+			testConjugation('fwampop', ['', 'me', 'fne', '', '', '', ''], ['mefnefwampop']);
 		});
 
 		test('do not cause lenition', (t) => {
-			testConjugation('kelku', ['', '', 'fne', '', '', '', ''], '--fne--kelku-----');
+			testConjugation('kelku', ['', '', 'fne', '', '', '', ''], ['fnekelku']);
 		});
 
 		test('block earlier leniting prefixes from leniting the noun', (t) => {
-			testConjugation('kelku', ['pe', '', 'fne', '', '', '', ''], 'pe--fne--kelku-----');
-			testConjugation('kelku', ['', 'ay', 'fne', '', '', '', ''], '-ay-fne--kelku-----');
+			testConjugation('kelku', ['pe', '', 'fne', '', '', '', ''], ['pefnekelku']);
+			testConjugation('kelku', ['', 'ay', 'fne', '', '', '', ''], ['ayfnekelku']);
 		});
 
 		test('contract when the noun starts with the same letter', (t) => {
-			testConjugation('ekxan', ['', '', 'fne', '', '', '', ''], '--fn--ekxan-----');
+			testConjugation('ekxan', ['', '', 'fne', '', '', '', ''], ['fnekxan']);
 		});
 	});
 
 	describe('stem suffixes', () => {
 		test('are appended to the noun', (t) => {
-			testConjugation('fwampop', ['', '', '', 'fkeyk', '', '', ''], '----fwampop--fkeyk---');
-			testConjugation('fwampop', ['', '', '', 'tsyìp', '', '', ''], '----fwampop--tsyìp---');
+			testConjugation('fwampop', ['', '', '', 'fkeyk', '', '', ''], ['fwampopfkeyk']);
+			testConjugation('fwampop', ['', '', '', 'tsyìp', '', '', ''], ['fwampoptsyìp']);
 		});
 
 		test('are placed before a determiner suffix', (t) => {
-			testConjugation('ya', ['', '', '', 'fkeyk', 'pe', '', ''], '----ya--fkeyk-pe--');
+			testConjugation('ya', ['', '', '', 'fkeyk', 'pe', '', ''], ['yafkeykpe']);
 		});
 
 		test('determine the form of a following case suffix', (t) => {
-			testConjugation('ya', ['', '', '', 'fkeyk', '', 't', ''], '----ya--fkeyk--it/ti-');
-			testConjugation('ya', ['', '', '', 'tsyìp', '', 'r', ''], '----ya--tsyìp--ur-');
+			testConjugation('ya', ['', '', '', 'fkeyk', '', 't', ''], ['yafkeykit', 'yafkeykti']);
+			testConjugation('ya', ['', '', '', 'tsyìp', '', 'r', ''], ['yatsyìpur']);
 		});
 	});
 
 	describe('determiner suffixes', () => {
 		test('are appended to the noun', (t) => {
-			testConjugation('fwampop', ['', '', '', '', 'pe', '', ''], '----fwampop---pe--');
-			testConjugation('fwampop', ['', '', '', '', 'o', '', ''], '----fwampop---o--');
+			testConjugation('fwampop', ['', '', '', '', 'pe', '', ''], ['fwampoppe']);
+			testConjugation('fwampop', ['', '', '', '', 'o', '', ''], ['fwampopo']);
 		});
 
 		test('are placed before a case suffix', (t) => {
-			testConjugation('ya', ['', '', '', '', 'pe', 'l', ''], '----ya---pe-l-');
+			testConjugation('ya', ['', '', '', '', 'pe', 'l', ''], ['yapel']);
 		});
 
 		test('determine the form of a following case suffix', (t) => {
-			testConjugation('fwampop', ['', '', '', '', 'pe', 't', ''], '----fwampop---pe-t(i)-');
-			testConjugation('fwampop', ['', '', '', '', 'o', 'r', ''], '----fwampop---o-r(u)-');
+			testConjugation('fwampop', ['', '', '', '', 'pe', 't', ''], ['fwampoppet', 'fwampoppeti']);
+			testConjugation('fwampop', ['', '', '', '', 'o', 'r', ''], ['fwampopor', 'fwampoporu']);
 		});
 	});
 
 	describe('case suffixes', () => {
 		describe('the agentive suffix', () => {
 			test('is -ìl for nouns ending in a consonant', (t) => {
-				testConjugation('fwampop', ['', '', '', '', '', 'l', ''], '----fwampop----ìl-');
+				testConjugation('fwampop', ['', '', '', '', '', 'l', ''], ['fwampopìl']);
 			});
 
 			test('is -ìl for nouns ending in a pseudovowel', (t) => {
-				testConjugation('\'ewll', ['', '', '', '', '', 'l', ''], '----\'ewll----ìl-');
-				testConjugation('trr', ['', '', '', '', '', 'l', ''], '----trr----ìl-');
+				testConjugation('\'ewll', ['', '', '', '', '', 'l', ''], ['\'ewllìl']);
+				testConjugation('trr', ['', '', '', '', '', 'l', ''], ['trrìl']);
 			});
 
 			test('is -l for nouns ending in a vowel', (t) => {
-				testConjugation('tute', ['', '', '', '', '', 'l', ''], '----tute----l-');
-				testConjugation('tuté', ['', '', '', '', '', 'l', ''], '----tuté----l-');
-				testConjugation('kelku', ['', '', '', '', '', 'l', ''], '----kelku----l-');
+				testConjugation('tute', ['', '', '', '', '', 'l', ''], ['tutel']);
+				testConjugation('tuté', ['', '', '', '', '', 'l', ''], ['tutél']);
+				testConjugation('kelku', ['', '', '', '', '', 'l', ''], ['kelkul']);
 			});
 
 			test('is -ìl for nouns ending in a diphthong', (t) => {
-				testConjugation('taw', ['', '', '', '', '', 'l', ''], '----taw----ìl-');
-				testConjugation('pay', ['', '', '', '', '', 'l', ''], '----pay----ìl-');
-				testConjugation('fahew', ['', '', '', '', '', 'l', ''], '----fahew----ìl-');
-				testConjugation('kxeyey', ['', '', '', '', '', 'l', ''], '----kxeyey----ìl-');
+				testConjugation('taw', ['', '', '', '', '', 'l', ''], ['tawìl']);
+				testConjugation('pay', ['', '', '', '', '', 'l', ''], ['payìl']);
+				testConjugation('fahew', ['', '', '', '', '', 'l', ''], ['fahewìl']);
+				testConjugation('kxeyey', ['', '', '', '', '', 'l', ''], ['kxeyeyìl']);
 			});
 
 			test('is -ìl for loanwords ending in -ì, with the -ì dropping', (t) => {
-				testConjugation('Kelnì', ['', '', '', '', '', 'l', ''], '----Keln----ìl-', true);
-				testConjugation('Kerìsmìsì', ['', '', '', '', '', 'l', ''], '----Kerìsmìs----ìl-', true);
+				testConjugation('Kelnì', ['', '', '', '', '', 'l', ''], ['Kelnìl'], true);
+				testConjugation('Kerìsmìsì', ['', '', '', '', '', 'l', ''], ['Kerìsmìsìl'], true);
 			});
 		});
 
 		describe('the patientive suffix', () => {
 			test('is -it/-ti for nouns ending in a consonant', (t) => {
-				testConjugation('fwampop', ['', '', '', '', '', 't', ''], '----fwampop----it/ti-');
+				testConjugation('fwampop', ['', '', '', '', '', 't', ''], ['fwampopit', 'fwampopti']);
 			});
 
 			test('is -it/-ti for nouns ending in a pseudovowel', (t) => {
-				testConjugation('\'ewll', ['', '', '', '', '', 't', ''], '----\'ewll----it/ti-');
-				testConjugation('trr', ['', '', '', '', '', 't', ''], '----trr----it/ti-');
+				testConjugation('\'ewll', ['', '', '', '', '', 't', ''], ['\'ewllit', '\'ewllti']);
+				testConjugation('trr', ['', '', '', '', '', 't', ''], ['trrit', 'trrti']);
 			});
 
 			test('is -t(i) for nouns ending in a vowel', (t) => {
-				testConjugation('tute', ['', '', '', '', '', 't', ''], '----tute----t(i)-');
-				testConjugation('tuté', ['', '', '', '', '', 't', ''], '----tuté----t(i)-');
-				testConjugation('kelku', ['', '', '', '', '', 't', ''], '----kelku----t(i)-');
+				testConjugation('tute', ['', '', '', '', '', 't', ''], ['tutet', 'tuteti']);
+				testConjugation('tuté', ['', '', '', '', '', 't', ''], ['tutét', 'tutéti']);
+				testConjugation('kelku', ['', '', '', '', '', 't', ''], ['kelkut', 'kelkuti']);
 			});
 
 			test('is -it/-ti for nouns ending in the diphthongs -aw/-ew', (t) => {
-				testConjugation('taw', ['', '', '', '', '', 't', ''], '----taw----it/ti-');
-				testConjugation('fahew', ['', '', '', '', '', 't', ''], '----fahew----it/ti-');
+				testConjugation('taw', ['', '', '', '', '', 't', ''], ['tawit', 'tawti']);
+				testConjugation('fahew', ['', '', '', '', '', 't', ''], ['fahewit', 'fahewti']);
 			});
 
 			test('is -(i)t/-ti for nouns ending in the diphthong -ay', (t) => {
-				testConjugation('pay', ['', '', '', '', '', 't', ''], '----pay----it/t(i)-');
+				testConjugation('pay', ['', '', '', '', '', 't', ''], ['payit', 'payt', 'payti']);
 			});
 
 			test('is -t/-ti for nouns ending in the diphthong -ey', (t) => {
-				testConjugation('kxeyey', ['', '', '', '', '', 't', ''], '----kxeyey----t(i)-');
+				testConjugation('kxeyey', ['', '', '', '', '', 't', ''], ['kxeyeyt', 'kxeyeyti']);
 			});
 
 			test('is -it for loanwords ending in -ì, with the -ì dropping', (t) => {
-				testConjugation('Kelnì', ['', '', '', '', '', 't', ''], '----Keln----it-', true);
+				testConjugation('Kelnì', ['', '', '', '', '', 't', ''], ['Kelnit'], true);
 			});
 
 			test('is -it/-ti for loanwords ending in -ì with preceding f/s/ts, with the -ì dropping', (t) => {
-				testConjugation('Kerìsmìsì', ['', '', '', '', '', 't', ''], '----Kerìsmìs----it/ti-', true);
+				testConjugation('Kerìsmìsì', ['', '', '', '', '', 't', ''], ['Kerìsmìsit', 'Kerìsmìsti'], true);
 			});
 		});
 
 		describe('the dative suffix', () => {
 			test('is -ur for nouns ending in a consonant', (t) => {
-				testConjugation('fwampop', ['', '', '', '', '', 'r', ''], '----fwampop----ur-');
+				testConjugation('fwampop', ['', '', '', '', '', 'r', ''], ['fwampopur']);
 			});
 
 			test('is -ur for nouns ending in a pseudovowel', (t) => {
-				testConjugation('\'ewll', ['', '', '', '', '', 'r', ''], '----\'ewll----ur-');
-				testConjugation('trr', ['', '', '', '', '', 'r', ''], '----trr----ur-');
+				testConjugation('\'ewll', ['', '', '', '', '', 'r', ''], ['\'ewllur']);
+				testConjugation('trr', ['', '', '', '', '', 'r', ''], ['trrur']);
 			});
 
 			test('is -ur/-ru for nouns ending in \'', (t) => {
-				testConjugation('olo\'', ['', '', '', '', '', 'r', ''], '----olo\'----ur/ru-');
+				testConjugation('olo\'', ['', '', '', '', '', 'r', ''], ['olo\'ur', 'olo\'ru']);
 			});
 
 			test('is -r(u) for nouns ending in a vowel', (t) => {
-				testConjugation('tute', ['', '', '', '', '', 'r', ''], '----tute----r(u)-');
-				testConjugation('tuté', ['', '', '', '', '', 'r', ''], '----tuté----r(u)-');
-				testConjugation('kelku', ['', '', '', '', '', 'r', ''], '----kelku----r(u)-');
+				testConjugation('tute', ['', '', '', '', '', 'r', ''], ['tuter', 'tuteru']);
+				testConjugation('tuté', ['', '', '', '', '', 'r', ''], ['tutér', 'tutéru']);
+				testConjugation('kelku', ['', '', '', '', '', 'r', ''], ['kelkur', 'kelkuru']);
 			});
 
 			test('is -ur/-ru for nouns ending in the diphthongs -ay/-ey', (t) => {
-				testConjugation('pay', ['', '', '', '', '', 'r', ''], '----pay----ur/ru-');
-				testConjugation('kxeyey', ['', '', '', '', '', 'r', ''], '----kxeyey----ur/ru-');
+				testConjugation('pay', ['', '', '', '', '', 'r', ''], ['payur', 'payru']);
+				testConjugation('kxeyey', ['', '', '', '', '', 'r', ''], ['kxeyeyur', 'kxeyeyru']);
 			});
 
 			test('is -(u)r/-ru for nouns ending in the diphthong -aw', (t) => {
-				testConjugation('taw', ['', '', '', '', '', 'r', ''], '----taw----ur/r(u)-');
+				testConjugation('taw', ['', '', '', '', '', 'r', ''], ['tawur', 'tawr', 'tawru']);
 			});
 
 			test('is -r/-ru for nouns ending in the diphthong -ew', (t) => {
-				testConjugation('fahew', ['', '', '', '', '', 'r', ''], '----fahew----r(u)-');
+				testConjugation('fahew', ['', '', '', '', '', 'r', ''], ['fahewr', 'fahewru']);
 			});
 
 			test('is -ur for loanwords ending in -ì, with the -ì dropping', (t) => {
-				testConjugation('Kelnì', ['', '', '', '', '', 'r', ''], '----Keln----ur-', true);
-				testConjugation('Kerìsmìsì', ['', '', '', '', '', 'r', ''], '----Kerìsmìs----ur-', true);
+				testConjugation('Kelnì', ['', '', '', '', '', 'r', ''], ['Kelnur'], true);
+				testConjugation('Kerìsmìsì', ['', '', '', '', '', 'r', ''], ['Kerìsmìsur'], true);
 			});
 		});
 
 		describe('the genitive suffix', () => {
 			test('is -ä for nouns ending in a consonant', (t) => {
-				testConjugation('fwampop', ['', '', '', '', '', 'ä', ''], '----fwampop----ä-');
+				testConjugation('fwampop', ['', '', '', '', '', 'ä', ''], ['fwampopä']);
 			});
 
 			test('is -ä for nouns ending in a pseudovowel', (t) => {
-				testConjugation('\'ewll', ['', '', '', '', '', 'ä', ''], '----\'ewll----ä-');
-				testConjugation('trr', ['', '', '', '', '', 'ä', ''], '----trr----ä-');
+				testConjugation('\'ewll', ['', '', '', '', '', 'ä', ''], ['\'ewllä']);
+				testConjugation('trr', ['', '', '', '', '', 'ä', ''], ['trrä']);
 			});
 
 			test('is -ä for nouns ending in the vowels -o/-u', (t) => {
-				testConjugation('alo', ['', '', '', '', '', 'ä', ''], '----alo----ä-');
-				testConjugation('kelku', ['', '', '', '', '', 'ä', ''], '----kelku----ä-');
+				testConjugation('alo', ['', '', '', '', '', 'ä', ''], ['aloä']);
+				testConjugation('kelku', ['', '', '', '', '', 'ä', ''], ['kelkuä']);
 			});
 
 			test('is -yä for nouns ending in vowels other than -o/-u', (t) => {
-				testConjugation('\'ana', ['', '', '', '', '', 'ä', ''], '----\'ana----yä-');
-				testConjugation('ftxozä', ['', '', '', '', '', 'ä', ''], '----ftxozä----yä-');
-				testConjugation('tute', ['', '', '', '', '', 'ä', ''], '----tute----yä-');
-				testConjugation('tuté', ['', '', '', '', '', 'ä', ''], '----tuté----yä-');
-				testConjugation('awaiei', ['', '', '', '', '', 'ä', ''], '----awaiei----yä-');
-				testConjugation('vospxì', ['', '', '', '', '', 'ä', ''], '----vospxì----yä-');
+				testConjugation('\'ana', ['', '', '', '', '', 'ä', ''], ['\'anayä']);
+				testConjugation('ftxozä', ['', '', '', '', '', 'ä', ''], ['ftxozäyä']);
+				testConjugation('tute', ['', '', '', '', '', 'ä', ''], ['tuteyä']);
+				testConjugation('tuté', ['', '', '', '', '', 'ä', ''], ['tutéyä']);
+				testConjugation('awaiei', ['', '', '', '', '', 'ä', ''], ['awaieiyä']);
+				testConjugation('vospxì', ['', '', '', '', '', 'ä', ''], ['vospxìyä']);
 			});
 
 			test('is -iä for nouns ending in -ia, with the -ia dropping', (t) => {
-				testConjugation('soaia', ['', '', '', '', '', 'ä', ''], '----soai----ä-');
+				testConjugation('soaia', ['', '', '', '', '', 'ä', ''], ['soaiä']);
 			});
 
 			test('is -ä for the word Omatikaya', (t) => {
-				testConjugation('Omatikaya', ['', '', '', '', '', 'ä', ''], '----Omatikaya----ä-');
+				testConjugation('Omatikaya', ['', '', '', '', '', 'ä', ''], ['Omatikayaä']);
 			});
 
 			test('is -ä for nouns ending in a diphthong', (t) => {
-				testConjugation('taw', ['', '', '', '', '', 'ä', ''], '----taw----ä-');
-				testConjugation('pay', ['', '', '', '', '', 'ä', ''], '----pay----ä-');
-				testConjugation('fahew', ['', '', '', '', '', 'ä', ''], '----fahew----ä-');
-				testConjugation('kxeyey', ['', '', '', '', '', 'ä', ''], '----kxeyey----ä-');
+				testConjugation('taw', ['', '', '', '', '', 'ä', ''], ['tawä']);
+				testConjugation('pay', ['', '', '', '', '', 'ä', ''], ['payä']);
+				testConjugation('fahew', ['', '', '', '', '', 'ä', ''], ['fahewä']);
+				testConjugation('kxeyey', ['', '', '', '', '', 'ä', ''], ['kxeyeyä']);
 			});
 
 			test('is -ä for loanwords ending in -ì, with the -ì dropping', (t) => {
-				testConjugation('Kelnì', ['', '', '', '', '', 'ä', ''], '----Keln----ä-', true);
-				testConjugation('Kerìsmìsì', ['', '', '', '', '', 'ä', ''], '----Kerìsmìs----ä-', true);
+				testConjugation('Kelnì', ['', '', '', '', '', 'ä', ''], ['Kelnä'], true);
+				testConjugation('Kerìsmìsì', ['', '', '', '', '', 'ä', ''], ['Kerìsmìsä'], true);
 			});
 		});
 
 		describe('the topical suffix', () => {
 			test('is -ìri for nouns ending in a consonant', (t) => {
-				testConjugation('fwampop', ['', '', '', '', '', 'ri', ''], '----fwampop----ìri-');
+				testConjugation('fwampop', ['', '', '', '', '', 'ri', ''], ['fwampopìri']);
 			});
 
 			test('is -ìri for nouns ending in a pseudovowel', (t) => {
-				testConjugation('\'ewll', ['', '', '', '', '', 'ri', ''], '----\'ewll----ìri-');
-				testConjugation('trr', ['', '', '', '', '', 'ri', ''], '----trr----ìri-');
+				testConjugation('\'ewll', ['', '', '', '', '', 'ri', ''], ['\'ewllìri']);
+				testConjugation('trr', ['', '', '', '', '', 'ri', ''], ['trrìri']);
 			});
 
 			test('is -ri for nouns ending in a vowel', (t) => {
-				testConjugation('tute', ['', '', '', '', '', 'ri', ''], '----tute----ri-');
-				testConjugation('tuté', ['', '', '', '', '', 'ri', ''], '----tuté----ri-');
-				testConjugation('kelku', ['', '', '', '', '', 'ri', ''], '----kelku----ri-');
+				testConjugation('tute', ['', '', '', '', '', 'ri', ''], ['tuteri']);
+				testConjugation('tuté', ['', '', '', '', '', 'ri', ''], ['tutéri']);
+				testConjugation('kelku', ['', '', '', '', '', 'ri', ''], ['kelkuri']);
 			});
 
 			test('is -ri for nouns ending in a diphthong', (t) => {
-				testConjugation('taw', ['', '', '', '', '', 'ri', ''], '----taw----ri-');
-				testConjugation('pay', ['', '', '', '', '', 'ri', ''], '----pay----ri-');
-				testConjugation('fahew', ['', '', '', '', '', 'ri', ''], '----fahew----ri-');
-				testConjugation('kxeyey', ['', '', '', '', '', 'ri', ''], '----kxeyey----ri-');
+				testConjugation('taw', ['', '', '', '', '', 'ri', ''], ['tawri']);
+				testConjugation('pay', ['', '', '', '', '', 'ri', ''], ['payri']);
+				testConjugation('fahew', ['', '', '', '', '', 'ri', ''], ['fahewri']);
+				testConjugation('kxeyey', ['', '', '', '', '', 'ri', ''], ['kxeyeyri']);
 			});
 
 			test('is -ìri for loanwords ending in -ì, with the -ì dropping', (t) => {
-				testConjugation('Kelnì', ['', '', '', '', '', 'ri', ''], '----Keln----ìri-', true);
-				testConjugation('Kerìsmìsì', ['', '', '', '', '', 'ri', ''], '----Kerìsmìs----ìri-', true);
+				testConjugation('Kelnì', ['', '', '', '', '', 'ri', ''], ['Kelnìri'], true);
+				testConjugation('Kerìsmìsì', ['', '', '', '', '', 'ri', ''], ['Kerìsmìsìri'], true);
 			});
 		});
 
 		describe('an adposition', () => {
 			test('is appended to the noun', (t) => {
-				testConjugation('fwampop', ['', '', '', '', '', 'talun', ''], '----fwampop----talun-');
-				testConjugation('fwampop', ['', '', '', '', '', 'mì', ''], '----fwampop----mì-');
+				testConjugation('fwampop', ['', '', '', '', '', 'talun', ''], ['fwampoptalun']);
+				testConjugation('fwampop', ['', '', '', '', '', 'mì', ''], ['fwampopmì']);
 			});
 		});
 	});
 
 	describe('final suffixes', () => {
 		test('are appended to the noun', (t) => {
-			testConjugation('fwampop', ['', '', '', '', '', '', 'sì'], '----fwampop-----sì');
+			testConjugation('fwampop', ['', '', '', '', '', '', 'sì'], ['fwampopsì']);
 		});
 		test('are placed after a case suffix', (t) => {
-			testConjugation('fwampop', ['', '', '', '', '', 'l', 'sì'], '----fwampop----ìl-sì');
-			testConjugation('fwampop', ['', '', '', '', '', 'ftu', 'to'], '----fwampop----ftu-to');
+			testConjugation('fwampop', ['', '', '', '', '', 'l', 'sì'], ['fwampopìlsì']);
+			testConjugation('fwampop', ['', '', '', '', '', 'ftu', 'to'], ['fwampopftuto']);
 		});
 	});
 

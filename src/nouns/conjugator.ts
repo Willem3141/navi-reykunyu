@@ -46,8 +46,10 @@
 
 import { lenite, lower, startsWithVowel, endsInVowel, endsInConsonant } from "../phonology";
 
-type CaseFunction = (stem: string, dialect: Dialect, isLoanword?: boolean) => CaseSuffix;
-type CaseSuffix = string | { 'suffix': string, 'dropCount': number };
+type Prefix = { text: string, lenites: boolean, optionalIfLenitable?: boolean };
+type Suffix = { text: string, dropCount?: number };
+
+type CaseFunction = (stem: string, dialect: Dialect, isLoanword?: boolean) => Suffix;
 
 const caseFunctions: { [suffix: string]: CaseFunction } = {
 	"": subjectiveSuffix,
@@ -56,16 +58,6 @@ const caseFunctions: { [suffix: string]: CaseFunction } = {
 	"r": dativeSuffix,
 	"ä": genitiveSuffix,
 	"ri": topicalSuffix
-};
-
-type PluralFunction = (stem: string, dialect: Dialect, determinerPrefix: string) => PluralPrefix;
-type PluralPrefix = string;
-
-let pluralFunctions: { [prefix: string]: PluralFunction } = {
-	"me": dualPrefix,
-	"pxe": trialPrefix,
-	"ay": pluralPrefix,
-	"(ay)": pluralPrefix
 };
 
 /**
@@ -79,323 +71,199 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 
 	noun = noun.replace(/[-\[\]]/g, '').replaceAll('/', '');
 
-	// first find the stem
-	let plural = affixes[1];
-	let stemPrefix = affixes[2];
-	let stemSuffix = affixes[3];
-	let determinerSuffix = affixes[4];
+	// Apply the prefixes from inside out.
+	noun = applyPrefix(noun, { text: affixes[2], lenites: false });
+	noun = applyPrefix(noun, findDeterminerAndPluralPrefix(affixes[0], affixes[1]));
 
-	// prefixes
-	let determinerPrefix = affixes[0];
-	if (determinerPrefix !== "" && plural === "ay") {
-		// special case: fì- + ay- -> fay-, etc.
-		if (determinerPrefix === "fì") {
-			determinerPrefix = "f(ì)";  // Horen §3.3.1
-		} else {
-			determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
-		}
-
-	} else if (determinerPrefix[determinerPrefix.length - 1] === lower(noun[0]) &&
-			plural === "" && stemPrefix === "") {
-		// special case: tsa- + atan -> tsatan, etc.
-		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
-
-	} else if (noun.length >= 2 && noun[0] === "'" &&
-		determinerPrefix[determinerPrefix.length - 1] === lower(noun[1]) &&
-			plural === "" && stemPrefix === "") {
-		// special case: pe- + 'eveng -> peveng (combination of the case above and ' lenition)
-		determinerPrefix = determinerPrefix.substring(0, determinerPrefix.length - 1);
-	}
-
-	let pluralPrefix = "";
-	if (affixes[1] !== "") {
-		pluralPrefix = pluralFunctions[plural](
-			stemPrefix + noun, dialect, determinerPrefix);
-
-		// special case: pe- can lenite pxe-
-		if (determinerPrefix === "pe" && (pluralPrefix === "pxe" || pluralPrefix === "be")) {
-			pluralPrefix = "pe";
-		} else if (determinerPrefix === "pe" && (pluralPrefix === "px" || pluralPrefix === "b")) {
-			pluralPrefix = "p";
-		}
-	}
-
-	if (dialect !== 'RN' && stemPrefix[stemPrefix.length - 1] === lower(noun[0])) {
-		// special case: fne- + ekxan -> fnekxan, etc.
-		stemPrefix = stemPrefix.substring(0, stemPrefix.length - 1);
-	}
-
-	// suffixes
-	let caseSuffix: CaseSuffix = "";
+	// Apply the suffixes from inside out.
+	noun = applySuffix(noun, { text: affixes[3] });
+	noun = applySuffix(noun, { text: affixes[4] });
 	if (caseFunctions.hasOwnProperty(affixes[5])) {
-		caseSuffix = caseFunctions[affixes[5]](noun + stemSuffix + determinerSuffix, dialect, isLoanword);
+		noun = applySuffix(noun, caseFunctions[affixes[5]](noun, dialect, isLoanword));
 	} else {
-		caseSuffix = affixes[5];
+		noun = applySuffix(noun, { text: affixes[5] });
 	}
-	if (typeof caseSuffix !== 'string') {
-		noun = noun.slice(0, -caseSuffix['dropCount']);
-		caseSuffix = caseSuffix['suffix'];
-	}
+	noun = applySuffix(noun, { text: affixes[6] });
 
-	let finalSuffix = affixes[6];
-
-	// if we are looking at a plural, do lenition
-	// also do lenition if we have the pe- prefix (but not if
-	// there is a plural prefix in between, blocking it)
-
-	/* Note: we do not lenite if there is a stem prefix.
-	 * This works only because the only stem prefix is fne-, which is
-	 * non-lenitable anyway. If a lenitable stem prefix gets introduced,
-	 * this will need to be updated to lenite the stem prefix (and keep the
-	 * lenited letter of the stem prefix separate, and so on).
-	 */
-	let needsLenition =
-		(plural !== "" || (plural === "" && (determinerPrefix === "pe" || determinerPrefix === "p"))) &&
-		stemPrefix === "";
-
-	let lenitedConsonant, restOfStem;
-	if (needsLenition) {
-		[lenitedConsonant, restOfStem] = lenite(noun);
-		restOfStem = restOfStem;
-	} else {
-		lenitedConsonant = '';
-		restOfStem = noun;
-	}
-
-	// for RN, we need to change a final ejective to a voiced stop if the
-	// suffix starts with a vowel
-
-	/* A problem here is that if the suffix is a case suffix, then it may
-	 * have more than one form (e.g., -it/-ti) of which one starts with a vowel
-	 * and the other one doesn't.
-	 */
-	let stemVoicingOptions = [];
-	if (dialect === 'RN') {
-		let [restOfStemWithoutVoiced, voicedConsonant] = voice(restOfStem);
-		if (voicedConsonant !== '') {
-			if (stemSuffix !== '' || determinerSuffix !== '') {
-				if (startsWithVowel(stemSuffix + determinerSuffix)) {
-					stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, caseSuffix]);
-				}
-			} else if (caseSuffix !== '') {
-				let vowelCaseSuffixOptions = [];
-				let consonantCaseSuffixOptions = [];
-				for (let suffix of caseSuffix.split('/')) {
-					if (startsWithVowel(suffix)) {
-						vowelCaseSuffixOptions.push(suffix);
-					} else {
-						consonantCaseSuffixOptions.push(suffix);
-					}
-				}
-				if (consonantCaseSuffixOptions.length > 0) {
-					stemVoicingOptions.push([restOfStem, '', consonantCaseSuffixOptions.join('/')]);
-				}
-				if (vowelCaseSuffixOptions.length > 0) {
-					stemVoicingOptions.push([restOfStemWithoutVoiced, voicedConsonant, vowelCaseSuffixOptions.join('/')]);
-				}
-			}
-		}
-	}
-	if (stemVoicingOptions.length === 0) {
-		stemVoicingOptions.push([restOfStem, '', caseSuffix]);
-	}
-
-	// finally, output the results
-	let options = [];
-	for (let [stem, voiced, caseSuffix] of stemVoicingOptions) {
-		options.push([
-			determinerPrefix,
-			pluralPrefix,
-			stemPrefix,
-			lenitedConsonant,
-			stem,
-			voiced,
-			stemSuffix,
-			determinerSuffix,
-			caseSuffix,
-			finalSuffix
-		]);
-	}
-
-	return options.map((option) => option.join('-')).join(';');
+	return noun;
 }
 
 export function conjugateSimple(noun: string, pluralPrefix: string, caseSuffix: string, dialect: Dialect, isLoanword?: boolean) {
-	const conjugation = conjugate(noun, ['', pluralPrefix, '', '','', caseSuffix, ''], dialect, isLoanword);
-	const options = conjugation.split(';');
-	let result = '';
-	for (const option of options) {
-		if (result !== '') {
-			result += ';';
+	let conjugation = conjugate(noun, ['', pluralPrefix, '', '','', caseSuffix, ''], dialect, isLoanword);
+	if (pluralPrefix === '') {
+		conjugation = '-' + conjugation;
+	} else {
+		let conjugationPieces = conjugation.split('-');
+		const [lenitedConsonant, _] = lenite(noun);
+		if (lenitedConsonant) {
+			conjugationPieces[1] = '{' + conjugationPieces[1].substring(0, lenitedConsonant.length) + '}' +
+				conjugationPieces[1].substring(lenitedConsonant.length);
 		}
-		const parts = option.split('-');
-		const pluralPart = parts[1];
-		const lenitedPart = parts[3];
-		const stemPart = parts[4];
-		const voicedPart = parts[5];
-		const casePart = parts[8];
-		result += pluralPart + '-' +
-			(lenitedPart !== '' ? '{' + lenitedPart + '}' : '') +
-			stemPart +
-			(voicedPart !== '' ? '{' + voicedPart + '}' : '') + '-' +
-			casePart;
+		conjugation = conjugationPieces.join('-');
 	}
-	return result;
+	if (caseSuffix === '') {
+		conjugation = conjugation + '-';
+	}
+	return conjugation;
 }
 
-function subjectiveSuffix(noun: string): CaseSuffix {
-	return '';
+function subjectiveSuffix(noun: string): Suffix {
+	return { text: '' };
 }
 
-function agentiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): CaseSuffix {
+function agentiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
 	if (isLoanword && noun.endsWith('ì')) {
-		return {
-			'suffix': 'ìl',
-			'dropCount': 1
-		};
+		return { text: 'ìl', dropCount: 1 };
 	}
 	if (endsInVowel(noun)) {
-		return 'l';
+		return { text: 'l' };
 	} else {
-		return 'ìl';
+		return { text: 'ìl' };
 	}
 }
 
-function patientiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): CaseSuffix {
+function patientiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
 	if (isLoanword && noun.endsWith('ì')) {
-		// if the loanword ends in -fì, -sì, or -tsì, then phonologically we can
-		// replace the -ì by -ti
+		// If the loanword ends in -fì, -sì, or -tsì, then phonologically we can
+		// replace the -ì by -ti.
 		if (['f', 's'].includes(noun[noun.length - 2])) {
-			return {
-				'suffix': 'it/ti',
-				'dropCount': 1
-			};
+			return { text: 'it/ti', dropCount: 1 };
 		} else {
-			return {
-				'suffix': 'it',
-				'dropCount': 1
-			};
+			return { text: 'it', dropCount: 1 };
 		}
 	}
 	if (endsInVowel(noun)) {
-		return 't(i)';
+		return { text: 't(i)' };
 	} else {
 		if (endsInConsonant(noun)) {
-			return 'it/ti';
+			return { text: 'it/ti' };
 		} else {
-			if (noun.endsWith("ay")) {
-				return 'it/t(i)';
-			} else if (noun.endsWith("ey")) {
-				return 't(i)';
+			if (noun.endsWith('ay')) {
+				return { text: 'it/t(i)' };
+			} else if (noun.endsWith('ey')) {
+				return { text: 't(i)' };
 			} else {
-				return 'it/ti';
+				return { text: 'it/ti' };
 			}
 		}
 	}
 }
 
-function dativeSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): CaseSuffix {
+function dativeSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
 	if (isLoanword && noun.endsWith('ì')) {
-		return {
-			'suffix': 'ur',
-			'dropCount': 1
-		};
+		return { text: 'ur', dropCount: 1 };
 	}
 	if (endsInVowel(noun)) {
-		return 'r(u)';
+		return { text: 'r(u)' };
 	} else {
 		if (endsInConsonant(noun)) {
-			if (noun.endsWith("'")) {
-				return 'ur/ru';
+			if (noun.endsWith('\'')) {
+				return { text: 'ur/ru' };
 			} else {
-				return 'ur';
+				return { text: 'ur' };
 			}
 		} else {
-			if (noun.endsWith("aw")) {
-				return 'ur/r(u)';
-			} else if (noun.endsWith("ew")) {
-				return 'r(u)';
+			if (noun.endsWith('aw')) {
+				return { text: 'ur/r(u)' };
+			} else if (noun.endsWith('ew')) {
+				return { text: 'r(u)' };
 			} else {
-				return 'ur/ru';
+				return { text: 'ur/ru' };
 			}
 		}
 	}
 }
 
-function genitiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): CaseSuffix {
-	const äOrE = dialect === 'RN' ? 'ä/e' : 'ä';
-	const yäOrYe = dialect === 'RN' ? 'yä/ye' : 'yä';
+function genitiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
 	if (isLoanword && noun.endsWith('ì')) {
-		return {
-			'suffix': äOrE,
-			'dropCount': 1
-		};
+		return { text: 'ä', dropCount: 1 };
 	}
 	if (endsInVowel(noun)) {
 		if (noun.slice(-1) === "o" || noun.slice(-1) === "u") {
-			return äOrE;
+			return { text: 'ä' };
 		} else {
 			if (noun.slice(-2) === "ia") {
-				return {
-					suffix: äOrE,
-					dropCount: 1
-				};
+				return { text: 'ä', dropCount: 1 };
 			} else {
 				if (noun.toLowerCase() === "omatikaya") {
-					return äOrE;
+					return { text: 'ä' };
 				} else {
-					return yäOrYe;
+					return { text: 'yä' };
 				}
 			}
 		}
 	} else {
-		return äOrE;
+		return { text: 'ä' };
 	}
 }
 
-function topicalSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): CaseSuffix {
+function topicalSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
 	if (isLoanword && noun.endsWith('ì')) {
-		return {
-			'suffix': 'ìri',
-			'dropCount': 1
-		};
+		return { text: 'ìri', dropCount: 1 };
 	}
 	if (endsInConsonant(noun)) {
-		return 'ìri';
+		return { text: 'ìri' };
 	} else {
-		return 'ri';
+		return { text: 'ri' };
 	}
 }
 
-// Numbers
-
-function dualPrefix(noun: string): PluralPrefix {
-	let first = lower(lenite(noun).join('')[0]);
-	if (first === "e" || first === "ew" || first === "ey") {
-		return 'm';
+function findDeterminerAndPluralPrefix(determinerPrefix: string, pluralPrefix: string): Prefix {
+	let prefixes = [
+		['', 'me+', 'pxe+', 'ay+'],
+		['fì', 'fìme+', 'fìpxe+', 'f(ì)ay+'],
+		['tsa', 'tsame+', 'tsapxe+', 'tsay+'],
+		['pe+', 'peme+', 'pepe+', 'pay+'],
+		['fra', 'frame+', 'frapxe+', 'fray+'],
+	];
+	let determinerIndex = ['', 'fì', 'tsa', 'pe', 'fra'].indexOf(determinerPrefix);
+	let pluralIndex = ['', 'me', 'pxe', 'ay'].indexOf(pluralPrefix);
+	if (determinerIndex === -1) {
+		throw new Error('Trying to conjugate a noun with invalid determiner prefix ' + determinerPrefix);
+	}
+	if (pluralIndex === -1) {
+		throw new Error('Trying to conjugate a noun with invalid plural prefix ' + pluralPrefix);
+	}
+	let prefix = prefixes[determinerIndex][pluralIndex];
+	if (prefix === 'ay+') {
+		return { text: 'ay', lenites: true, optionalIfLenitable: true };
+	} else if (prefix.endsWith('+')) {
+		return { text: prefix.substring(0, prefix.length - 1), lenites: true };
 	} else {
-		return 'me';
+		return { text: prefix, lenites: false };
 	}
 }
 
-function trialPrefix(noun: string, dialect: Dialect): PluralPrefix {
-	let first = lower(lenite(noun).join('')[0]);
-	if (first === "e" || first === "ew" || first === "ey") {
-		return dialect === 'RN' ? 'b' : 'px';
-	} else {
-		return dialect === 'RN' ? 'be' : 'pxe';
+function applyPrefix(noun: string, prefix: Prefix): string {
+	let optional = false;
+	if (prefix.lenites) {
+		let lenited = lenite(noun).join('');
+		if (prefix.optionalIfLenitable && noun !== lenited && noun !== '\'u') {
+			optional = true;
+		}
+		noun = lenited;
 	}
+	if (endsInVowel(prefix.text) && noun.length > 0 && prefix.text[prefix.text.length - 1] === noun[0].toLowerCase()) {
+		// TODO don't do this for RN
+		prefix.text = prefix.text.substring(0, prefix.text.length - 1);
+	}
+	if (prefix.text === '') {
+		return noun;
+	}
+	if (optional) {
+		prefix.text = '(' + prefix.text + ')';
+	}
+	return prefix.text + '-' + noun;
 }
 
-function pluralPrefix(noun: string, dialect: Dialect, determinerPrefix: string): PluralPrefix {
-	let lenited = lenite(noun).join('');
-	if (lenited !== noun
-		&& noun !== "'u"  // 'u doesn't have short plural
-		&& determinerPrefix === "") {  // no short plural with fì- etc.
-		return '(ay)';
-	} else {
-		return 'ay';
+function applySuffix(noun: string, suffix: Suffix): string {
+	if (suffix.dropCount) {
+		noun = noun.substring(0, noun.length - suffix.dropCount);
 	}
+	if (suffix.text === '') {
+		return noun;
+	}
+	return noun + '-' + suffix.text;
 }
 
 let voicings: Record<string, string> = {
