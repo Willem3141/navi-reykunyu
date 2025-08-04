@@ -109,6 +109,7 @@ function pageVariables(req: Request, toAdd?: any): any {
 function offlinePageVariables(req: Request, toAdd?: any): any {
 	let variables: any = { ...toAdd };
 	variables['_'] = translations.span_;
+	variables['data_'] = translations.data_;
 	variables['messages'] = [];
 	variables['development'] = config.hasOwnProperty('development') && config['development'];
 	variables['offline'] = true;
