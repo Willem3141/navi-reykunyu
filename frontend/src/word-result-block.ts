@@ -106,6 +106,10 @@ export default class WordResultBlock {
 		if (r["seeAlso"]) {
 			this.$element.append(this.seeAlsoSection(r["seeAlso"]));
 		}
+
+		if (r['todo'] && $('body').hasClass('logged-in-admin')) {
+			this.$element.append(this.todoSection(r['todo']));
+		}
 	}
 
 	// tìng fnelä tstxoti angim
@@ -677,6 +681,14 @@ export default class WordResultBlock {
 		$seeAlsoSection.append($('<div/>').addClass('header').text(_('see-also')));
 		$seeAlsoSection.append(createWordLinkList(seeAlso, this.dialect, this.language).addClass('body'));
 		return $seeAlsoSection;
+	}
+
+	todoSection(todo: string) {
+		let $todoSection = $('<div/>').addClass('result-item warning-block todo');
+		$('<b/>').text('To do: ').appendTo($todoSection);
+		$('<span/>').text(todo).appendTo($todoSection);
+		$('<p/>').addClass("block-postscript").text(_('only-for-admins')).appendTo($todoSection);
+		return $todoSection;
 	}
 
 	// ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti

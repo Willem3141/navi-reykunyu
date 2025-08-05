@@ -490,9 +490,14 @@ class EditPage {
 		statusNoteField.setInfoText('Optional note about the status of this word.');
 		statusNoteField.setMinCount(0);
 
+		let todoField = new StringEditField('todo', 'To do');
+		todoField.setInfoText('Comments about how this word definition should be improved. ' +
+			'These aren\'t shown to “normal” users (only to administrators).');
+		todoField.setMinCount(0);
+
 		this.fields = [rootField, typeField, infixField, definitionField,
 			shortTranslationField, meaningNoteField, conjugationNoteField, etymologyField,
-			imageField, sourceField, seeAlsoField, statusField, statusNoteField];
+			imageField, sourceField, seeAlsoField, statusField, statusNoteField, todoField];
 		this.jsonToFields();
 		this.updateFieldLimits(infixField, statusNoteField);
 		for (let field of this.fields) {

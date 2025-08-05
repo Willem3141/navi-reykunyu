@@ -47,6 +47,7 @@ declare type WordData = {
 	etymology?: LinkString,
 	derived?: WordData[],
 	seeAlso?: WordData[],
+	todo?: string,
 	favorite?: boolean,
 	sentences?: Sentence[],
 	references?: Record<string, WordData>
