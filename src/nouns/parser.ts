@@ -219,14 +219,14 @@ function tryDeterminerSuffixes(candidate: Omit<NounConjugationStep, 'result'>): 
 let adpositions = {
 	'FN': [
 		"äo", "eo", "fa", "few", "fkip", "fpi", "ftu", "ftumfa", "ftuopa", "hu",
-		"ìlä", "io", "ka", "kam", "kay", "kip", "krrka", "kxamlä", "lisre", "lok",
+		"ìlä", "io", "ka", "kam", "kay", "ken", "kip", "krrka", "kxamlä", "lisre", "lok",
 		"luke", "maw", "mì", "mìkam", "mungwrr", "na", "ne", "nemfa", "nuä",
 		"pxaw", "pxel", "pximaw", "pxisre", "raw", "ro", "rofa", "sìn", "sko",
 		"sre", "ta", "tafkip", "takip", "talun", "teri", "uo", "vay", "wä", "yoa"
 	],
 	'RN': [
 		"äo", "eo", "fa", "few", "fkip", "fpi", "ftu", "ftumfa", "ftuopa", "hu",
-		"ìlä", "ile", "io", "ka", "kam", "kay", "kip", "krrka", "gamlä", "gamle", "lisre", "lok",
+		"ìlä", "ile", "io", "ka", "kam", "kay", "ken", "kip", "krrka", "gamlä", "gamle", "lisre", "lok",
 		"luke", "maw", "mì", "mìkam", "mùngwrr", "na", "ne", "nemfa", "nuä",
 		"baw", "bel", "bimaw", "bisre", "raw", "ro", "rofa", "sìn", "sko",
 		"sre", "ta", "tafkip", "takip", "talun", "teri", "uo", "vay", "wä", "yoa"
