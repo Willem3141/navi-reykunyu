@@ -44,12 +44,13 @@ let translators: Record<string, Record<string, (translation: string, data: any) 
 		'fì': (t, d) => (d['hasPluralPrefix'] ? 'these ' : 'this ') + t,
 		'tsa': (t, d) => (d['hasPluralPrefix'] ? 'those ' : 'that ') + t,
 		'fra': (t, d) => (d['hasPluralPrefix'] ? 'all ' : 'every ') + t,
-		
+
 		'me': (t) => 'two ' + pluralize(t),
 		'pxe': (t) => 'three ' + pluralize(t),
 		'ay': (t) => pluralize(t),
 
 		'fne': (t) => 'type of ' + toAccusative(t),
+		'munsna': (t) => 'pair of ' + pluralize(t),
 
 		'tsyìp': (t) => 'little ' + t,
 		'fkeyk': (t) => 'state of ' + toAccusative(t),

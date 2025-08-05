@@ -6,7 +6,7 @@
  *
  *  0. determiner prefix: "fì", "tsa", "pe", "fra"
  *  1. plural prefix: "me", "pxe", "ay", "(ay)"
- *  2. stem prefix: "fne"
+ *  2. stem prefix: "fne", "munsna"
  *     stem
  *  3. stem suffix: "tsyìp", "fkeyk"
  *  4. determiner suffix: "pe", "o"

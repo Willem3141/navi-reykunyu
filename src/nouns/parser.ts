@@ -146,6 +146,7 @@ function tryStemPrefixes(candidate: Omit<NounConjugationStep, 'result'>): Omit<N
 	};
 	tryPrefix("fne", "fne");
 	tryPrefix("fn", "fne");
+	tryPrefix("munsna", "munsna");
 
 	return candidates;
 }
