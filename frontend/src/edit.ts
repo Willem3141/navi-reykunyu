@@ -191,7 +191,7 @@ class ChoiceEditField extends EditField<string> {
 			.attr('id', this.attributeName + '-field')
 			.addClass('ui selection dropdown')
 			.on('input', this.callOnChanged.bind(this));
-		
+
 		for (let type of Object.keys(this.choices)) {
 			let $option = $('<option/>')
 				.attr('value', type)
@@ -447,10 +447,12 @@ class EditPage {
 		meaningNoteField.setStoreOnlyEnglishAsString(true);
 		meaningNoteField.setMultiLine(true);
 
-		let conjugationNoteField = new StringEditField('conjugation_note', 'Conjugation note');
+		let conjugationNoteField = new TranslatedStringEditField('conjugation_note', 'Conjugation note');
 		conjugationNoteField.setInfoText('In case this word has conjugation exceptions ' +
 			'(e.g., missing or alternate forms), they can be noted here.');
 		conjugationNoteField.setMinCount(0);
+		conjugationNoteField.setStoreOnlyEnglishAsString(true);
+		conjugationNoteField.setMultiLine(true);
 
 		let etymologyField = new StringEditField('etymology', 'Etymology');
 		etymologyField.setInfoText('Standard form: From ... + ... . ' +
@@ -582,7 +584,7 @@ class EditPage {
 			const $td = $(e.target).closest('td');
 			$td.find('input').val($(e.target).attr('data-template')!);
 		});
-		
+
 		$('#translations-modal-cancel-button').on('click', () => {
 			$('#translations-modal').modal('hide');
 		});

@@ -680,7 +680,7 @@ export default class WordResultBlock {
 	}
 
 	// ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
-	nounConjugationSection(word: WordData, conjugation: NounConjugation, note?: LinkString) {
+	nounConjugationSection(word: WordData, conjugation: NounConjugation, note?: Translated<LinkString>) {
 		let $section = $('<details/>').addClass('result-item conjugation');
 		let $header = $('<summary/>').addClass('header').text(_('conjugated-forms')).appendTo($section);
 		let $headerHide = $('<span/>').addClass('header-hide').appendTo($header);
@@ -757,7 +757,7 @@ export default class WordResultBlock {
 
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, word, $note, this.dialect, this.language);
+			appendLinkString(getTranslation(note, this.language), word, $note, this.dialect, this.language);
 			$body.append($note);
 		}
 
@@ -790,7 +790,7 @@ export default class WordResultBlock {
 	}
 
 	// ngop hapxìt a wìntxu fya'ot a leykatem syonlì'uti
-	adjectiveConjugationSection(word: WordData, conjugation: AdjectiveConjugation, note?: LinkString): JQuery {
+	adjectiveConjugationSection(word: WordData, conjugation: AdjectiveConjugation, note?: Translated<LinkString>): JQuery {
 		let $section = $('<div/>').addClass('result-item conjugation');
 		let $header = $('<div/>').addClass('header').text(_('attributive-forms')).appendTo($section);
 		let $body = $('<div/>').addClass('body').appendTo($section);
@@ -809,7 +809,7 @@ export default class WordResultBlock {
 
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, word, $note, this.dialect, this.language);
+			appendLinkString(getTranslation(note, this.language), word, $note, this.dialect, this.language);
 			$body.append($note);
 		}
 
@@ -817,7 +817,7 @@ export default class WordResultBlock {
 	}
 
 	// ngop hapxìt a wìntxu hemlì'uvit
-	infixesSection(word: WordData, navi: string, infixes: string, note?: LinkString): JQuery {
+	infixesSection(word: WordData, navi: string, infixes: string, note?: Translated<LinkString>): JQuery {
 		let $section = $('<div/>').addClass('result-item conjugation');
 		$('<div/>').addClass('header').text(_('infix-positions')).appendTo($section);
 		let $body = $('<div/>').addClass('body').appendTo($section);
@@ -846,7 +846,7 @@ export default class WordResultBlock {
 		$body.append($infixDetailsButton);
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, word, $note, this.dialect, this.language);
+			appendLinkString(getTranslation(note, this.language), word, $note, this.dialect, this.language);
 			$body.append($note);
 		}
 		return $section;

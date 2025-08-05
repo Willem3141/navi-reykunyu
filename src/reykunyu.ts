@@ -146,7 +146,12 @@ export default class Reykunyu {
 			}
 		}
 		if (word['conjugation_note']) {
-			wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'], dataErrorList);
+			if (typeof word['conjugation_note'] === 'string') {
+				word['conjugation_note'] = { 'en': word['conjugation_note'] };
+			}
+			for (let language in word['conjugation_note']) {
+				wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'][language], dataErrorList);
+			}
 		}
 
 		// see also
