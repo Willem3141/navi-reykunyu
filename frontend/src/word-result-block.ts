@@ -795,9 +795,16 @@ export default class WordResultBlock {
 		let $header = $('<div/>').addClass('header').text(_('attributive-forms')).appendTo($section);
 		let $body = $('<div/>').addClass('body').appendTo($section);
 
-		let html = "&lt;" + _('type-n') + "&gt; " + this.nounConjugationString(conjugation["prefixed"]);
-		html += "&nbsp;&nbsp;<span class='muted'>" + _('or') + "</span>&nbsp;&nbsp;";
-		html += this.nounConjugationString(conjugation["suffixed"]) + " &lt;" + _('type-n') + "&gt;";
+		let html = '';
+		if (conjugation['prefixed']) {
+			html = "&lt;" + _('type-n') + "&gt; " + this.nounConjugationString(conjugation["prefixed"]);
+		}
+		if (conjugation['prefixed'] && conjugation['suffixed']) {
+			html += "&nbsp;&nbsp;<span class='muted'>" + _('or') + "</span>&nbsp;&nbsp;";
+		}
+		if (conjugation['suffixed']) {
+			html += this.nounConjugationString(conjugation["suffixed"]) + " &lt;" + _('type-n') + "&gt;";
+		}
 		$body.html(html);
 
 		if (note) {

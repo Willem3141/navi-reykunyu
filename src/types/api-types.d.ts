@@ -76,8 +76,8 @@ declare type Translated<T> = {
 declare type NounConjugation = string[][];
 
 declare type AdjectiveConjugation = {
-	prefixed: string,
-	suffixed: string
+	prefixed?: string,
+	suffixed?: string
 };
 
 declare type ConjugationStep = ({
