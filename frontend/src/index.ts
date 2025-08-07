@@ -518,7 +518,7 @@ class Reykunyu {
 	createAnnotatedFooter(): JQuery {
 		let block = $('<div/>')
 			.addClass('credits-footer')
-			.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2025-02-03');
+			.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2025-08-05');
 		return block;
 	}
 
