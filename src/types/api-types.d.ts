@@ -35,11 +35,7 @@ declare type WordData = {
 	},
 	conjugation_note?: LinkString,
 	conjugated?: ConjugationStep[],
-	externalLenition?: {
-		from: string,
-		to: string,
-		by: string
-	},
+	externalLenition?: ExternalLenition,
 	image?: string,
 	source?: Source[],
 	status?: Status,
@@ -122,6 +118,12 @@ declare type OtherConjugationStep = {
 	root: string,
 	result: string[],
 	correction?: string
+};
+
+declare type ExternalLenition = {
+	from: string,
+	to: string,
+	by: string
 };
 
 declare type AffixData = SimpleAffixData | CombinedAffixData;
