@@ -33,7 +33,7 @@ declare type WordData = {
 		combined: NounConjugation | AdjectiveConjugation,
 		RN: NounConjugation | AdjectiveConjugation
 	},
-	conjugation_note?: LinkString,
+	conjugation_note?: Translated<LinkString>,  // may be LinkString in the database
 	conjugated?: ConjugationStep[],
 	externalLenition?: ExternalLenition,
 	image?: string,
@@ -43,6 +43,7 @@ declare type WordData = {
 	etymology?: LinkString,
 	derived?: WordData[],
 	seeAlso?: WordData[],
+	todo?: string,
 	favorite?: boolean,
 	sentences?: Sentence[],
 	references?: Record<string, WordData>
@@ -72,8 +73,8 @@ declare type Translated<T> = {
 declare type NounConjugation = string[][];
 
 declare type AdjectiveConjugation = {
-	prefixed: string,
-	suffixed: string
+	prefixed?: string,
+	suffixed?: string
 };
 
 declare type ConjugationStep = ({

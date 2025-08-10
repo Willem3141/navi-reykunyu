@@ -106,6 +106,10 @@ export default class WordResultBlock {
 		if (r["seeAlso"]) {
 			this.$element.append(this.seeAlsoSection(r["seeAlso"]));
 		}
+
+		if (r['todo'] && $('body').hasClass('logged-in-admin')) {
+			this.$element.append(this.todoSection(r['todo']));
+		}
 	}
 
 	// tìng fnelä tstxoti angim
@@ -699,8 +703,16 @@ export default class WordResultBlock {
 		return $seeAlsoSection;
 	}
 
+	todoSection(todo: string) {
+		let $todoSection = $('<div/>').addClass('result-item warning-block todo');
+		$('<b/>').text('To do: ').appendTo($todoSection);
+		$('<span/>').text(todo).appendTo($todoSection);
+		$('<p/>').addClass("block-postscript").text(_('only-for-admins')).appendTo($todoSection);
+		return $todoSection;
+	}
+
 	// ngop hapxìt a wìntxu fya'ot a leykatem tstxolì'uti
-	nounConjugationSection(word: WordData, conjugation: NounConjugation, note?: LinkString) {
+	nounConjugationSection(word: WordData, conjugation: NounConjugation, note?: Translated<LinkString>) {
 		let $section = $('<details/>').addClass('result-item conjugation');
 		let $header = $('<summary/>').addClass('header').text(_('conjugated-forms')).appendTo($section);
 		let $headerHide = $('<span/>').addClass('header-hide').appendTo($header);
@@ -777,7 +789,7 @@ export default class WordResultBlock {
 
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, word, $note, this.dialect, this.language);
+			appendLinkString(getTranslation(note, this.language), word, $note, this.dialect, this.language);
 			$body.append($note);
 		}
 
@@ -810,19 +822,26 @@ export default class WordResultBlock {
 	}
 
 	// ngop hapxìt a wìntxu fya'ot a leykatem syonlì'uti
-	adjectiveConjugationSection(word: WordData, conjugation: AdjectiveConjugation, note?: LinkString): JQuery {
+	adjectiveConjugationSection(word: WordData, conjugation: AdjectiveConjugation, note?: Translated<LinkString>): JQuery {
 		let $section = $('<div/>').addClass('result-item conjugation');
 		let $header = $('<div/>').addClass('header').text(_('attributive-forms')).appendTo($section);
 		let $body = $('<div/>').addClass('body').appendTo($section);
 
-		let html = "&lt;" + _('type-n') + "&gt; " + this.nounConjugationString(conjugation["prefixed"]);
-		html += "&nbsp;&nbsp;<span class='muted'>" + _('or') + "</span>&nbsp;&nbsp;";
-		html += this.nounConjugationString(conjugation["suffixed"]) + " &lt;" + _('type-n') + "&gt;";
+		let html = '';
+		if (conjugation['prefixed']) {
+			html = "&lt;" + _('type-n') + "&gt; " + this.nounConjugationString(conjugation["prefixed"]);
+		}
+		if (conjugation['prefixed'] && conjugation['suffixed']) {
+			html += "&nbsp;&nbsp;<span class='muted'>" + _('or') + "</span>&nbsp;&nbsp;";
+		}
+		if (conjugation['suffixed']) {
+			html += this.nounConjugationString(conjugation["suffixed"]) + " &lt;" + _('type-n') + "&gt;";
+		}
 		$body.html(html);
 
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, word, $note, this.dialect, this.language);
+			appendLinkString(getTranslation(note, this.language), word, $note, this.dialect, this.language);
 			$body.append($note);
 		}
 
@@ -830,7 +849,7 @@ export default class WordResultBlock {
 	}
 
 	// ngop hapxìt a wìntxu hemlì'uvit
-	infixesSection(word: WordData, navi: string, infixes: string, note?: LinkString): JQuery {
+	infixesSection(word: WordData, navi: string, infixes: string, note?: Translated<LinkString>): JQuery {
 		let $section = $('<div/>').addClass('result-item conjugation');
 		$('<div/>').addClass('header').text(_('infix-positions')).appendTo($section);
 		let $body = $('<div/>').addClass('body').appendTo($section);
@@ -859,7 +878,7 @@ export default class WordResultBlock {
 		$body.append($infixDetailsButton);
 		if (note) {
 			const $note = $('<div/>').addClass("conjugation-note");
-			appendLinkString(note, word, $note, this.dialect, this.language);
+			appendLinkString(getTranslation(note, this.language), word, $note, this.dialect, this.language);
 			$body.append($note);
 		}
 		return $section;

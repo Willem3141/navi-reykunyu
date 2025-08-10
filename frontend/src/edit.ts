@@ -191,7 +191,7 @@ class ChoiceEditField extends EditField<string> {
 			.attr('id', this.attributeName + '-field')
 			.addClass('ui selection dropdown')
 			.on('input', this.callOnChanged.bind(this));
-		
+
 		for (let type of Object.keys(this.choices)) {
 			let $option = $('<option/>')
 				.attr('value', type)
@@ -447,10 +447,12 @@ class EditPage {
 		meaningNoteField.setStoreOnlyEnglishAsString(true);
 		meaningNoteField.setMultiLine(true);
 
-		let conjugationNoteField = new StringEditField('conjugation_note', 'Conjugation note');
+		let conjugationNoteField = new TranslatedStringEditField('conjugation_note', 'Conjugation note');
 		conjugationNoteField.setInfoText('In case this word has conjugation exceptions ' +
 			'(e.g., missing or alternate forms), they can be noted here.');
 		conjugationNoteField.setMinCount(0);
+		conjugationNoteField.setStoreOnlyEnglishAsString(true);
+		conjugationNoteField.setMultiLine(true);
 
 		let etymologyField = new StringEditField('etymology', 'Etymology');
 		etymologyField.setInfoText('Standard form: From ... + ... . ' +
@@ -488,9 +490,14 @@ class EditPage {
 		statusNoteField.setInfoText('Optional note about the status of this word.');
 		statusNoteField.setMinCount(0);
 
+		let todoField = new StringEditField('todo', 'To do');
+		todoField.setInfoText('Comments about how this word definition should be improved. ' +
+			'These aren\'t shown to “normal” users (only to administrators).');
+		todoField.setMinCount(0);
+
 		this.fields = [rootField, typeField, infixField, definitionField,
 			shortTranslationField, meaningNoteField, conjugationNoteField, etymologyField,
-			imageField, sourceField, seeAlsoField, statusField, statusNoteField];
+			imageField, sourceField, seeAlsoField, statusField, statusNoteField, todoField];
 		this.jsonToFields();
 		this.updateFieldLimits(infixField, statusNoteField);
 		for (let field of this.fields) {
@@ -582,7 +589,7 @@ class EditPage {
 			const $td = $(e.target).closest('td');
 			$td.find('input').val($(e.target).attr('data-template')!);
 		});
-		
+
 		$('#translations-modal-cancel-button').on('click', () => {
 			$('#translations-modal').modal('hide');
 		});

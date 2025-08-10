@@ -146,7 +146,12 @@ export default class Reykunyu {
 			}
 		}
 		if (word['conjugation_note']) {
-			wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'], dataErrorList);
+			if (typeof word['conjugation_note'] === 'string') {
+				word['conjugation_note'] = { 'en': word['conjugation_note'] };
+			}
+			for (let language in word['conjugation_note']) {
+				wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'][language], dataErrorList);
+			}
 		}
 
 		// see also
@@ -603,10 +608,13 @@ export default class Reykunyu {
 		adjectiveResults.forEach((adjResult) => {
 			let results = this.dictionary.getOfTypes(adjResult['root'], ['adj', 'num'], dialect);
 			for (let adjective of results) {
-				let conjugation = conjugationString.formsFromString(
-					adjectives.conjugate(adjResult["root"], adjResult["form"], adjective["etymology"]));
+				let conjugation = adjectives.conjugate(adjResult["root"], adjResult["form"], adjective["etymology"]);
+				if (conjugation === null) {
+					continue;
+				}
+				let conjugationForms = conjugationString.formsFromString(conjugation);
 				let adjResultCopy = JSON.parse(JSON.stringify(adjResult));
-				adjResultCopy["result"] = conjugation;
+				adjResultCopy["result"] = conjugationForms;
 				adjective["conjugated"] = [{
 					"type": "adj",
 					"conjugation": adjResultCopy
@@ -809,10 +817,15 @@ export default class Reykunyu {
 	}
 
 	private createAdjectiveConjugation(word: WordData, dialect: Dialect): AdjectiveConjugation {
-		const conjugation = {
-			"prefixed": adjectives.conjugate(word['word_raw'][dialect], 'postnoun', word["etymology"], dialect),
-			"suffixed": adjectives.conjugate(word['word_raw'][dialect], 'prenoun', word["etymology"], dialect)
-		};
+		const conjugation: AdjectiveConjugation = {};
+		const prefixed = adjectives.conjugate(word['word_raw'][dialect], 'postnoun', word["etymology"], dialect);
+		if (prefixed !== null) {
+			conjugation['prefixed'] = prefixed;
+		}
+		const suffixed = adjectives.conjugate(word['word_raw'][dialect], 'prenoun', word["etymology"], dialect);
+		if (suffixed !== null) {
+			conjugation['suffixed'] = suffixed;
+		}
 		return conjugation;
 	}
 
