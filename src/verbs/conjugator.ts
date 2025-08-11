@@ -27,7 +27,7 @@ export function conjugate(verb: string, infixes: [string, string, string]): stri
 	let afterSecond = verb.substring(secondPos + 1);
 
 	if (first === "ìyev") {
-		first = "ìyev/iyev";
+		first = "ìyev,iyev";
 	}
 
 	// special cases for second infix
@@ -42,7 +42,7 @@ export function conjugate(verb: string, infixes: [string, string, string]): stri
 	// Horen §2.3.5.2
 	if (second === "äng") {
 		if (afterSecond.charAt(0) === "i") {
-			second = "äng/eng";
+			second = "äng,eng";
 		}
 	}
 

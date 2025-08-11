@@ -68,9 +68,6 @@ const caseFunctions: { [suffix: string]: CaseFunction } = {
  *           above
  */
 export function conjugate(noun: string, affixes: string[], dialect: Dialect, isLoanword?: boolean): string {
-
-	noun = noun.replace(/[-\[\]]/g, '').replaceAll('/', '');
-
 	// Apply the prefixes from inside out.
 	noun = applyPrefix(noun, { text: affixes[2], lenites: false });
 	noun = applyPrefix(noun, findDeterminerAndPluralPrefix(affixes[0], affixes[1]));
@@ -127,7 +124,7 @@ function patientiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean):
 		// If the loanword ends in -fì, -sì, or -tsì, then phonologically we can
 		// replace the -ì by -ti.
 		if (['f', 's'].includes(noun[noun.length - 2])) {
-			return { text: 'it/ti', dropCount: 1 };
+			return { text: 'it,ti', dropCount: 1 };
 		} else {
 			return { text: 'it', dropCount: 1 };
 		}
@@ -136,14 +133,14 @@ function patientiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean):
 		return { text: 't(i)' };
 	} else {
 		if (endsInConsonant(noun)) {
-			return { text: 'it/ti' };
+			return { text: 'it,ti' };
 		} else {
 			if (noun.endsWith('ay')) {
-				return { text: 'it/t(i)' };
+				return { text: 'it,t(i)' };
 			} else if (noun.endsWith('ey')) {
 				return { text: 't(i)' };
 			} else {
-				return { text: 'it/ti' };
+				return { text: 'it,ti' };
 			}
 		}
 	}
@@ -158,17 +155,17 @@ function dativeSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suf
 	} else {
 		if (endsInConsonant(noun)) {
 			if (noun.endsWith('\'')) {
-				return { text: 'ur/ru' };
+				return { text: 'ur,ru' };
 			} else {
 				return { text: 'ur' };
 			}
 		} else {
 			if (noun.endsWith('aw')) {
-				return { text: 'ur/r(u)' };
+				return { text: 'ur,r(u)' };
 			} else if (noun.endsWith('ew')) {
 				return { text: 'r(u)' };
 			} else {
-				return { text: 'ur/ru' };
+				return { text: 'ur,ru' };
 			}
 		}
 	}
