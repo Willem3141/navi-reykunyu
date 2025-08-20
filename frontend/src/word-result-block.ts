@@ -54,8 +54,8 @@ export default class WordResultBlock {
 
 		$resultWord.appendTo(this.$element);
 
-		if (r["conjugated"] && r["conjugated"].length > 0) {
-			const $conjugatedBox = this.conjugatedBox(r["conjugated"]);
+		if ((r["conjugated"] && r["conjugated"].length > 0) || r['externalLenition']) {
+			const $conjugatedBox = this.conjugatedBox(r["conjugated"], r['externalLenition']);
 			if ($conjugatedBox) {
 				this.$element.append($conjugatedBox);
 			}
@@ -153,67 +153,87 @@ export default class WordResultBlock {
 	}
 
 	// creates a box showing the conjugated form of a word
-	conjugatedBox(conjugation: ConjugationStep[]): JQuery | null {
+	conjugatedBox(conjugation: ConjugationStep[] | undefined, externalLenition: ExternalLenition | undefined): JQuery | null {
 		let $conjugatedBox = $('<div/>')
 			.addClass('result-item conjugated-box');
 		let boxIsEmpty = true;
 
-		for (let i = 0; i < conjugation.length; i++) {
+		if (conjugation) {
+			for (let i = 0; i < conjugation.length; i++) {
+				let $item = $('<div/>')
+					.addClass('conjugated-box-item');
+
+				let type = conjugation[i]["type"];
+				let c = conjugation[i]["conjugation"];
+				if (c["result"].length == 1
+					&& c["result"][0].toLowerCase() == c["root"].toLowerCase()
+					&& !c.hasOwnProperty("correction")) {
+					continue;
+				}
+				boxIsEmpty = false;
+
+				let $explanation;
+				switch (type) {
+					case "n":
+						$explanation = this.nounConjugationExplanation(<NounConjugationStep>c);
+						break;
+					case "v":
+						$explanation = this.verbConjugationExplanation(<VerbConjugationStep>c);
+						break;
+					case "adj":
+						$explanation = this.adjectiveConjugationExplanation(<AdjectiveConjugationStep>c);
+						break;
+					case "v_to_n":
+						$explanation = this.verbToNounConjugationExplanation(<NounConjugationStep>c);
+						break;
+					case "v_to_adj":
+						$explanation = this.verbToAdjectiveConjugationExplanation(<NounConjugationStep>c);
+						break;
+					case "v_to_part":
+						$explanation = this.verbToParticipleConjugationExplanation(<NounConjugationStep>c);
+						break;
+					case "adj_to_adv":
+						$explanation = this.adjectiveToAdverbConjugationExplanation(<NounConjugationStep>c);
+						break;
+					case "gerund":
+						$explanation = this.gerundConjugationExplanation(<OtherConjugationStep>c);
+						break;
+				}
+				if (this.language == "en" && conjugation[i].hasOwnProperty('translation')) {
+					$explanation.append($('<span/>')
+						.addClass('operator')
+						.html('&rarr;'));
+					$explanation.append($('<span/>')
+						.addClass('translation')
+						.html('&ldquo;' + conjugation[i]['translation'] + '&rdquo;'));
+				}
+				$item.append($explanation);
+
+				if (conjugation[i]["affixes"] && conjugation[i]["affixes"]!.length) {
+					$item.append(this.affixesSection(conjugation[i]["affixes"]!));
+				}
+
+				$conjugatedBox.append($item);
+			}
+		}
+
+		if (externalLenition) {
 			let $item = $('<div/>')
 				.addClass('conjugated-box-item');
-
-			let type = conjugation[i]["type"];
-			let c = conjugation[i]["conjugation"];
-			if (c["result"].length == 1
-				&& c["result"][0].toLowerCase() == c["root"].toLowerCase()
-				&& !c.hasOwnProperty("correction")) {
-				continue;
-			}
 			boxIsEmpty = false;
 
-			let $explanation;
-			switch (type) {
-				case "n":
-					$explanation = this.nounConjugationExplanation(<NounConjugationStep>c);
-					break;
-				case "v":
-					$explanation = this.verbConjugationExplanation(<VerbConjugationStep>c);
-					break;
-				case "adj":
-					$explanation = this.adjectiveConjugationExplanation(<AdjectiveConjugationStep>c);
-					break;
-				case "v_to_n":
-					$explanation = this.verbToNounConjugationExplanation(<NounConjugationStep>c);
-					break;
-				case "v_to_adj":
-					$explanation = this.verbToAdjectiveConjugationExplanation(<NounConjugationStep>c);
-					break;
-				case "v_to_part":
-					$explanation = this.verbToParticipleConjugationExplanation(<NounConjugationStep>c);
-					break;
-				case "adj_to_adv":
-					$explanation = this.adjectiveToAdverbConjugationExplanation(<NounConjugationStep>c);
-					break;
-				case "gerund":
-					$explanation = this.gerundConjugationExplanation(<OtherConjugationStep>c);
-					break;
-			}
-			if (this.language == "en" && conjugation[i].hasOwnProperty('translation')) {
-				$explanation.append($('<span/>')
-					.addClass('operator')
-					.html('&rarr;'));
-				$explanation.append($('<span/>')
-					.addClass('translation')
-					.html('&ldquo;' + conjugation[i]['translation'] + '&rdquo;'));
-			}
-			$item.append($explanation);
+			let $conjugation = $('<div/>').addClass('conjugation-explanation');
 
-			if (conjugation[i]["affixes"] && conjugation[i]["affixes"]!.length) {
-				$item.append(this.affixesSection(conjugation[i]["affixes"]!));
-			}
+			$('<span/>').addClass('word').text(externalLenition['by']).appendTo($conjugation);
+			$('<span/>').addClass('operator').text('+').appendTo($conjugation);
+			$('<span/>').addClass('word').text(externalLenition['from']).appendTo($conjugation);
+			$('<span/>').addClass('operator').text('=').appendTo($conjugation);
+			$('<span/>').addClass('word').text(externalLenition['by'] + ' ' + externalLenition['to']).appendTo($conjugation);
 
+			$item.append($conjugation);
 			$conjugatedBox.append($item);
 		}
+
 		if (boxIsEmpty) {
 			return null;
 		}
@@ -784,7 +804,7 @@ export default class WordResultBlock {
 				formatted += " <span class='muted'>" + _('or') + "</span> ";
 			}
 
-			let m = c[k].match(/(.*-\)?)(.*)(-.*)/);
+			let m = c[k].replaceAll(',', '/').match(/(.*-\)?)(.*)(-.*)/);
 
 			if (m) {
 				if (m[1] !== "-") {
