@@ -378,6 +378,59 @@ app.post('/edit',
 	}
 );
 
+app.post('/translate',
+	(req, res) => {
+		if (!req.user || !req.user['is_admin']) {
+			res.status(403);
+			res.render('403', pageVariables(req));
+			return;
+		}
+		if (!req.body.hasOwnProperty('id') || !req.body.hasOwnProperty('field') || !req.body.hasOwnProperty('language') ||
+				!req.body.hasOwnProperty('translation')) {
+			res.status(400);
+			res.send('400 Bad Request');
+			return;
+		}
+		const id = parseInt(req.body['id'], 10);
+		if (isNaN(id)) {
+			res.status(400);
+			res.send('400 Bad Request');
+			return;
+		}
+		let field = req.body['field']
+		if (field !== 'translations' && field !== 'meaning_note' && field !== 'conjugation_note') {
+			res.status(400);
+			res.send('400 Bad Request');
+			return;
+		}
+		let index = -1;
+		if (field === 'translations') {
+			if (!req.body.hasOwnProperty('index')) {
+				res.status(400);
+				res.send('400 Bad Request');
+				return;
+			}
+			index = parseInt(req.body['index'], 10);
+			if (isNaN(index)) {
+				res.status(400);
+				res.send('400 Bad Request');
+				return;
+			}
+		}
+
+		const language = req.body['language'];
+		if (!['da', 'nl', 'et', 'fr', 'de', 'hu', 'pl', 'ru', 'sv'].includes(language)) {
+			res.status(400);
+			res.send('400 Bad Request');
+			return;
+		}
+
+		edit.updateTranslation(id, field, index, language, req.body['translation'], req.user);
+		initializeReykunyu();
+		res.status(204).send();
+	}
+);
+
 app.get('/history',
 	(req, res) => {
 		let historyData = JSON.parse(fs.readFileSync('./data/history.json', 'utf8'));
@@ -397,6 +450,19 @@ app.get('/sources-editor',
 		res.render('sourcesEditor', pageVariables(req, {
 			'post_url': '/edit',
 			'words': edit.getAll()
+		}));
+	}
+);
+
+app.get('/translations-editor',
+	(req, res) => {
+		if (!req.user || !req.user['is_admin']) {
+			res.status(403);
+			res.render('403', pageVariables(req));
+			return;
+		}
+		res.render('translations-editor', pageVariables(req, {
+			'post_url': '/translate'
 		}));
 	}
 );
@@ -526,7 +592,7 @@ app.get('/untranslated',
 			return;
 		}
 		let untranslated = edit.getUntranslated(translations.getLanguage());
-			
+
 		res.render('untranslated', pageVariables(req, {
 			untranslated: untranslated,
 			language: translations.getLanguage()
@@ -657,4 +723,3 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 app.listen(config["port"], function() {
 	console.log('listening on *:' + config["port"]);
 });
-

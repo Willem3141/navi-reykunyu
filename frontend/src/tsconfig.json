@@ -18,6 +18,7 @@
 		"data-errors.ts",
 		"edit.ts",
 		"word-result-block.ts",
+		"translations-editor.ts",
 	],
 	"include": [
 		"ui-translations.d.ts",

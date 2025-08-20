@@ -31,48 +31,7 @@
 			</div>
 		</div>
 
-		<div class="container word-list-toc">
-			<div class="">
-				<div class="ui search">
-					<div class="ui right action left icon input">
-						<i class="filter icon"></i>
-						<input id="filter-box" type="search" placeholder="Filter…">
-						<div id="type-filter-dropdown" class="ui compact selection dropdown">
-							<span class="text"><%- _('all-word-types') %></span>
-							<i class="dropdown icon"></i>
-							<div class="menu">
-								<div class="item" data-value=".*"><%- _('all-word-types') %></div>
-								<div class="item" data-value="n(:pr)?"><%- _('type-n') %></div>
-								<div class="item subitem" data-value="n:pr"><%- _('type-n:pr') %></div>
-								<div class="item" data-value="(v:.*|n:si)"><%- _('verb') %></div>
-								<div class="item subitem" data-value="v:tr"><%- _('type-v:tr') %></div>
-								<div class="item subitem" data-value="v:in"><%- _('type-v:in') %></div>
-								<div class="item subitem" data-value="n:si"><%- _('type-n:si') %></div>
-								<div class="item subitem" data-value="v:m"><%- _('type-v:m') %></div>
-								<div class="item subitem" data-value="v:cp"><%- _('type-v:cp') %></div>
-								<div class="item" data-value="pn"><%- _('type-pn') %></div>
-								<div class="item" data-value="adj"><%- _('type-adj') %></div>
-								<div class="item" data-value="num"><%- _('type-num') %></div>
-								<div class="item" data-value="adv"><%- _('type-adv') %></div>
-								<div class="item" data-value="adp(:len)?"><%- _('type-adp') %></div>
-								<div class="item" data-value="intj"><%- _('type-intj') %></div>
-								<div class="item" data-value="part"><%- _('type-part') %></div>
-								<div class="item" data-value="conj"><%- _('type-conj') %></div>
-								<div class="item" data-value="ctr"><%- _('type-ctr') %></div>
-								<div class="item" data-value="phr"><%- _('type-phr') %></div>
-								<div class="item" data-value="inter"><%- _('type-inter') %></div>
-								<div class="item" data-value="aff:.*"><%- _('affix') %></div>
-								<div class="item subitem" data-value="aff:pre(:len)?"><%- _('type-aff:pre') %></div>
-								<div class="item subitem" data-value="aff:in"><%- _('type-aff:in') %></div>
-								<div class="item subitem" data-value="aff:suf"><%- _('type-aff:suf') %></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="ui basic buttons" id="toc-bar">
-			</div>
-		</div>
+		<%- include('all-words-toc.ejs') %>
 
 		<div class="container">
 			<div class="word-list" id="word-list-result">
@@ -92,4 +51,3 @@
 		<script src="/js/all-words.js"></script>
 	</body>
 </html>
-
