@@ -1,7 +1,7 @@
 import csv
 import json
 
-languages = ['en', 'de', 'nl', 'fr', 'da', 'hu', 'x-navi', 'et', 'pl', 'ru', 'sv']
+languages = ['en', 'de', 'nl', 'fr', 'da', 'hu', 'x-navi', 'et', 'pl', 'ru', 'sv', 'it']
 
 translations = {}
 for lang in languages:
