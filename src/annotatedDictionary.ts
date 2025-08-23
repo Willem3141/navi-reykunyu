@@ -26,12 +26,6 @@ export function getResponsesFor(query: string): {'results': string[]} {
 	if (annotated.hasOwnProperty(query)) {
 		results = results.concat(annotated[query]);
 	}
-	let upperCasedQuery = query[0].toUpperCase() + query.substring(1);
-	if (upperCasedQuery !== query) {
-		if (annotated.hasOwnProperty(upperCasedQuery)) {
-			results = results.concat(annotated[upperCasedQuery]);
-		}
-	}
 
 	return {'results': results};
 }
