@@ -95,5 +95,5 @@ export function conjugate(verb: string, infixes: [string, string, string]): stri
 	handlePseudovowelContraction('ll', 'ol');
 	handlePseudovowelContraction('rr', 'er');
 
-	return [beforeFirst, prefirst, first, between, second, afterSecond].join('-');
+	return [beforeFirst, prefirst, first, between, second, afterSecond].join(':');
 }

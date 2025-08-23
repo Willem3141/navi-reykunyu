@@ -533,25 +533,25 @@ describe('noun conjugations', () => {
 
 	describe('simplified conjugation output', () => {
 		test('behaves correctly with a case ending', (t) => {
-			assert.strictEqual(conjugateSimple('tute', '', 'l', 'FN'), '-tute-l');
+			assert.strictEqual(conjugateSimple('tute', '', 'l', 'FN'), ':tute:l');
 		});
 
 		test('behaves correctly with a plural prefix', (t) => {
-			assert.strictEqual(conjugateSimple('fwampop', 'me', '', 'FN'), 'me-fwampop-');
-			assert.strictEqual(conjugateSimple('fwampop', 'pxe', '', 'FN'), 'pxe-fwampop-');
-			assert.strictEqual(conjugateSimple('fwampop', 'ay', '', 'FN'), 'ay-fwampop-');
-			assert.strictEqual(conjugateSimple('tute', 'me', '', 'FN'), 'me-{s}ute-');
-			assert.strictEqual(conjugateSimple('tute', 'pxe', '', 'FN'), 'pxe-{s}ute-');
-			assert.strictEqual(conjugateSimple('tute', 'ay', '', 'FN'), '(ay)-{s}ute-');
+			assert.strictEqual(conjugateSimple('fwampop', 'me', '', 'FN'), 'me:fwampop:');
+			assert.strictEqual(conjugateSimple('fwampop', 'pxe', '', 'FN'), 'pxe:fwampop:');
+			assert.strictEqual(conjugateSimple('fwampop', 'ay', '', 'FN'), 'ay:fwampop:');
+			assert.strictEqual(conjugateSimple('tute', 'me', '', 'FN'), 'me:{s}ute:');
+			assert.strictEqual(conjugateSimple('tute', 'pxe', '', 'FN'), 'pxe:{s}ute:');
+			assert.strictEqual(conjugateSimple('tute', 'ay', '', 'FN'), '(ay):{s}ute:');
 		});
 
 		test('behaves correctly with a plural prefix and a case ending', (t) => {
-			assert.strictEqual(conjugateSimple('tute', 'ay', 'l', 'FN'), '(ay)-{s}ute-l');
+			assert.strictEqual(conjugateSimple('tute', 'ay', 'l', 'FN'), '(ay):{s}ute:l');
 		});
 
 		test('behaves correctly for nouns starting with an uppercase letter', (t) => {
-			assert.strictEqual(conjugateSimple('Iknimaya', 'ay', 'l', 'FN'), 'ay-Iknimaya-l');
-			assert.strictEqual(conjugateSimple('Kelutral', 'ay', 'l', 'FN'), '(ay)-{H}elutral-ìl');
+			assert.strictEqual(conjugateSimple('Iknimaya', 'ay', 'l', 'FN'), 'ay:Iknimaya:l');
+			assert.strictEqual(conjugateSimple('Kelutral', 'ay', 'l', 'FN'), '(ay):{H}elutral:ìl');
 		});
 	});
 

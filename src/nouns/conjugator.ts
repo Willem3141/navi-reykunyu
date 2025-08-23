@@ -88,18 +88,18 @@ export function conjugate(noun: string, affixes: string[], dialect: Dialect, isL
 export function conjugateSimple(noun: string, pluralPrefix: string, caseSuffix: string, dialect: Dialect, isLoanword?: boolean) {
 	let conjugation = conjugate(noun, ['', pluralPrefix, '', '','', caseSuffix, ''], dialect, isLoanword);
 	if (pluralPrefix === '') {
-		conjugation = '-' + conjugation;
+		conjugation = ':' + conjugation;
 	} else {
-		let conjugationPieces = conjugation.split('-');
+		let conjugationPieces = conjugation.split(':');
 		const [lenitedConsonant, _] = lenite(noun);
 		if (lenitedConsonant) {
 			conjugationPieces[1] = '{' + conjugationPieces[1].substring(0, lenitedConsonant.length) + '}' +
 				conjugationPieces[1].substring(lenitedConsonant.length);
 		}
-		conjugation = conjugationPieces.join('-');
+		conjugation = conjugationPieces.join(':');
 	}
 	if (caseSuffix === '') {
-		conjugation = conjugation + '-';
+		conjugation = conjugation + ':';
 	}
 	return conjugation;
 }
@@ -250,7 +250,7 @@ function applyPrefix(noun: string, prefix: Prefix): string {
 	if (optional) {
 		prefix.text = '(' + prefix.text + ')';
 	}
-	return prefix.text + '-' + noun;
+	return prefix.text + ':' + noun;
 }
 
 function applySuffix(noun: string, suffix: Suffix): string {
@@ -260,7 +260,7 @@ function applySuffix(noun: string, suffix: Suffix): string {
 	if (suffix.text === '') {
 		return noun;
 	}
-	return noun + '-' + suffix.text;
+	return noun + ':' + suffix.text;
 }
 
 let voicings: Record<string, string> = {

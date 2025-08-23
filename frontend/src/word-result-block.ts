@@ -804,15 +804,15 @@ export default class WordResultBlock {
 				formatted += " <span class='muted'>" + _('or') + "</span> ";
 			}
 
-			let m = c[k].replaceAll(',', '/').match(/(.*-\)?)(.*)(-.*)/);
+			let m = c[k].replaceAll(',', '/').match(/(.*:\)?)(.*)(:.*)/);
 
 			if (m) {
-				if (m[1] !== "-") {
-					formatted += "<span class='prefix'>" + m[1] + "</span>";
+				if (m[1] !== ":") {
+					formatted += "<span class='prefix'>" + m[1].replace(':', '-') + "</span>";
 				}
 				formatted += m[2].replace(/\{([^}]*)\}/g, "<span class='lenition'>$1</span>");
-				if (m[3] !== "-") {
-					formatted += "<span class='suffix'>" + m[3] + "</span>";
+				if (m[3] !== ":") {
+					formatted += "<span class='suffix'>" + m[3].replace(':', '-') + "</span>";
 				}
 			} else {
 				formatted += c[k];

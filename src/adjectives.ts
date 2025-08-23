@@ -23,23 +23,23 @@ export function conjugate(adjective: string, form: 'predicative' | 'prenoun' | '
 			// Special case: kea doesn't have any postnoun form. It can only be used before the noun.
 			return null;
 		} else if (adjective.charAt(0) === "a" && dialect !== 'RN') {
-			return "a-" + adjective.substring(1) + "-";
+			return "a:" + adjective.substring(1) + ":";
 		} else if (etymology && isLeAdjective(etymology)) {
-			return "(a)-" + adjective + "-";
+			return "(a):" + adjective + ":";
 		} else {
-			return "a-" + adjective + "-";
+			return "a:" + adjective + ":";
 		}
 	} else if (form === "prenoun") {
 		if (adjective === 'kea') {
 			// Special case: kea already has the -a "baked in".
-			return '-ke-a';
+			return ':ke:a';
 		}  else if (adjective.charAt(adjective.length - 1) === "a" && dialect !== 'RN') {
-			return "-" + adjective.slice(0, -1) + "-a";
+			return ":" + adjective.slice(0, -1) + ":a";
 		} else {
-			return "-" + adjective + "-a";
+			return ":" + adjective + ":a";
 		}
 	} else {  // predicative
-		return "-" + adjective + "-";
+		return ":" + adjective + ":";
 	}
 }
 
