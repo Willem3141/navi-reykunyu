@@ -322,6 +322,14 @@ describe('noun conjugations', () => {
 			testConjugation('fwampop', ['', '', '', '', 'o', '', ''], ['fwampopo']);
 		});
 
+		test('in the case of -o, is hyphenated if the noun already ends with -o', (t) => {
+			testConjugation('fya\'o', ['', '', '', '', 'o', '', ''], ['fya\'o-o']);
+		});
+
+		test('in the case of -pe, is not hyphenated even if the noun already ends with -p', (t) => {
+			testConjugation('tìsop', ['', '', '', '', 'pe', '', ''], ['tìsoppe']);
+		});
+
 		test('are placed before a case suffix', (t) => {
 			testConjugation('ya', ['', '', '', '', 'pe', 'l', ''], ['yapel']);
 		});
@@ -517,6 +525,16 @@ describe('noun conjugations', () => {
 			test('is appended to the noun', (t) => {
 				testConjugation('fwampop', ['', '', '', '', '', 'talun', ''], ['fwampoptalun']);
 				testConjugation('fwampop', ['', '', '', '', '', 'mì', ''], ['fwampopmì']);
+			});
+
+			test('if it starts with a vowel, is hyphenated if the noun already ends with the same vowel', (t) => {
+				testConjugation('zekwä', ['', '', '', '', '', 'äo', ''], ['zekwä-äo']);
+				testConjugation('mokri', ['', '', '', '', '', 'io', ''], ['mokri-io']);
+			});
+
+			test('if it starts with a consonant, is not hyphenated even if the noun already ends with the same consonant', (t) => {
+				testConjugation('tìsom', ['', '', '', '', '', 'mungwrr', ''], ['tìsommungwrr']);
+				testConjugation('pxen', ['', '', '', '', '', 'ne', ''], ['pxenne']);
 			});
 		});
 	});

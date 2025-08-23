@@ -5,6 +5,7 @@
  */
 
 import * as conjugationString from "../conjugationString";
+import { startsWithVowel } from "../phonology";
 import { conjugate } from "./conjugator";
 
 /**
@@ -212,6 +213,7 @@ function tryDeterminerSuffixes(candidate: Omit<NounConjugationStep, 'result'>): 
 	};
 	tryEnding("pe", "pe");
 	tryEnding("o", "o");
+	tryEnding("-o", "o");
 
 	return candidates;
 }
@@ -277,6 +279,9 @@ function tryCaseSuffixes(candidate: Omit<NounConjugationStep, 'result'>, dialect
 	}
 	for (let i = 0; i < adpositions[dialect].length; i++) {
 		tryEnding(adpositions[dialect][i], adpositions[dialect][i]);
+		if (startsWithVowel(adpositions[dialect][i])) {
+			tryEnding('-' + adpositions[dialect][i], adpositions[dialect][i]);
+		}
 	}
 
 	return candidates;

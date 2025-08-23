@@ -260,6 +260,9 @@ function applySuffix(noun: string, suffix: Suffix): string {
 	if (suffix.text === '') {
 		return noun;
 	}
+	if (startsWithVowel(suffix.text) && suffix.text[0] === noun[noun.length - 1]) {
+		return noun + ':-' + suffix.text;
+	}
 	return noun + ':' + suffix.text;
 }
 
