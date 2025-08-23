@@ -107,6 +107,9 @@ class TranslationsEditorPage {
 		for (let i = 0; i < word['translations'].length; i++) {
 			$rows = $rows.add(this.createWordTranslationRow(word, i));
 		}
+		if (word['short_translation']) {
+			$rows = $rows.add(this.createWordFieldRow(word, 'short_translation'));
+		}
 		if (word['meaning_note']) {
 			$rows = $rows.add(this.createWordFieldRow(word, 'meaning_note'));
 		}

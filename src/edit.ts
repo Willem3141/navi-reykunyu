@@ -82,7 +82,7 @@ export function updateTranslation(id: number, field: string, index: number, lang
 			throw new Error('Definition index to edit translation for is out of bounds');
 		}
 		t = newData['translations'][index];
-	} else if (field == 'meaning_note' || field == 'conjugation_note') {
+	} else if (field == 'short_translation' || field == 'meaning_note' || field == 'conjugation_note') {
 		if (typeof newData[field] === 'string') {
 			newData[field] = { 'en': newData[field] };
 		}

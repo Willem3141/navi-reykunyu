@@ -398,7 +398,7 @@ app.post('/translate',
 			return;
 		}
 		let field = req.body['field']
-		if (field !== 'translations' && field !== 'meaning_note' && field !== 'conjugation_note') {
+		if (field !== 'translations' && field !== 'short_translation' && field !== 'meaning_note' && field !== 'conjugation_note') {
 			res.status(400);
 			res.send('400 Bad Request');
 			return;
