@@ -233,7 +233,7 @@ export function addTranslations(word: WordData): void {
 						};
 						translation = translators[conjugation['type']][a](translation, data);
 					} else if (conjugation['type'] === 'n') {
-						translation = (affix['affix'] as WordData)['short_translation']
+						translation = (affix['affix'] as WordData)['short_translation']!['en']
 							+ ' ' + toAccusative(translation);
 					}
 				}
