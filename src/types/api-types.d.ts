@@ -70,7 +70,7 @@ declare type Translated<T> = {
 	[language: string]: T
 };
 
-declare type NounConjugation = string[][];
+declare type NounConjugation = (string | null)[][];
 
 declare type AdjectiveConjugation = {
 	prefixed?: string,

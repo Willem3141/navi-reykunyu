@@ -45,3 +45,26 @@ export function combinedToRN(combined: string): string {
 
 	return rn;
 }
+
+function applyToNounConjugation(conjugation: NounConjugation, transform: (s: string) => string): NounConjugation {
+	let result: NounConjugation = [[]];
+	for (let i in conjugation) {
+		result[i] = [];
+		for (let j in conjugation[i]) {
+			if (conjugation[i][j] === null) {
+				result[i][j] = null;
+			} else {
+				result[i][j] = transform(conjugation[i][j]!);
+			}
+		}
+	}
+	return result;
+}
+
+export function combinedNounConjugationToFN(combined: NounConjugation): NounConjugation {
+	return applyToNounConjugation(combined, combinedToFN);
+}
+
+export function combinedNounConjugationToRN(combined: NounConjugation): NounConjugation {
+	return applyToNounConjugation(combined, combinedToRN);
+}

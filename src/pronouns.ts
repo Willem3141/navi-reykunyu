@@ -18,14 +18,16 @@ export function getConjugatedForms(dictionary: Dictionary): {[form: string]: Con
 			for (let i = 0; i < 4; i++) {
 				for (let j = 0; j < 6; j++) {
 					let form = (word['conjugation']['FN'] as NounConjugation)[i][j];
-					let allForms = conjugationString.formsFromString(form);
-					for (let f in allForms) {
-						if (allForms.hasOwnProperty(f)) {
-							forms[allForms[f]] = {
-								'word': word,
-								'plural': plurals[i],
-								'case': cases[j]
-							};
+					if (form !== null) {
+						let allForms = conjugationString.formsFromString(form);
+						for (let f in allForms) {
+							if (allForms.hasOwnProperty(f)) {
+								forms[allForms[f]] = {
+									'word': word,
+									'plural': plurals[i],
+									'case': cases[j]
+								};
+							}
 						}
 					}
 				}
@@ -35,4 +37,3 @@ export function getConjugatedForms(dictionary: Dictionary): {[form: string]: Con
 
 	return forms;
 }
-

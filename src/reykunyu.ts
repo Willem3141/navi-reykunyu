@@ -5,6 +5,7 @@ import * as affixList from './affixList';
 import * as conjugatedTranslation from './conjugatedTranslation';
 import * as conjugationString from './conjugationString';
 import * as convert from './convert';
+import { combinedNounConjugationToFN, combinedNounConjugationToRN } from './dialect';
 import Dictionary from './dictionary';
 import * as ipa from './ipa';
 import * as nounConjugator from './nouns/conjugator';
@@ -169,9 +170,9 @@ export default class Reykunyu {
 		if (word['conjugation']) {
 			let conjugation = (word['conjugation'] as any)['forms'];
 			word['conjugation'] = {
-				'FN': conjugation,
+				'FN': combinedNounConjugationToFN(conjugation),
 				'combined': conjugation,
-				'RN': conjugation
+				'RN': combinedNounConjugationToRN(conjugation)
 			};
 		} else if (word['type'] === 'n' || word['type'] === 'n:pr') {
 			word['conjugation'] = {
