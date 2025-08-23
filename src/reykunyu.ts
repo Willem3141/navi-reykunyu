@@ -158,6 +158,8 @@ export default class Reykunyu {
 			if (typeof word['short_translation'] === 'string') {
 				word['short_translation'] = { 'en': word['short_translation'] };
 			}
+		} else {
+			word['short_translation'] = this.shortenTranslation(word['translations']);
 		}
 
 		// see also
@@ -192,6 +194,19 @@ export default class Reykunyu {
 				'RN': this.createAdjectiveConjugation(word, 'RN')
 			};
 		}
+	}
+
+	private shortenTranslation(translations: Translated<string>[]): Translated<string> {
+		let short_translations: Translated<string> = {};
+		for (let language in translations[0]) {
+			let translation = translations[0][language];
+			translation = translation.split(',')[0];
+			translation = translation.split(';')[0];
+			translation = translation.split(' | ')[0];
+			translation = translation.split(' (')[0];
+			short_translations[language] = translation;
+		}
+		return short_translations;
 	}
 
 	getAllWordsOfType(type: string, allowSubtype: boolean): WordData[] {

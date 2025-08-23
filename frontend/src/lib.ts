@@ -29,7 +29,6 @@ export function addLemmaClass($element: JQuery, type: string) {
 	}
 }
 
-// TODO remove as soon as the server sends this
 export function getShortTranslation(result: WordData, language: string): string {
 	if (language == "en" && result["short_translation_conjugated"]) {
 		return result["short_translation_conjugated"];
@@ -37,19 +36,7 @@ export function getShortTranslation(result: WordData, language: string): string 
 	if (result["short_translation"]) {
 		return getTranslation(result["short_translation"], language);
 	}
-
-	let translation = getTranslation(result["translations"][0], language);
-	translation = translation.split(',')[0];
-	translation = translation.split(';')[0];
-	translation = translation.split(' | ')[0];
-	translation = translation.split(' (')[0];
-
-	if (language == "en" && result["type"][0] === "v"
-		&& translation.indexOf("to ") === 0) {
-		translation = translation.substring(3);
-	}
-
-	return translation;
+	return getTranslation(result['translations'][0], language);
 }
 
 export function getTranslation<T>(tìralpeng: Translated<T>, language: string): T {

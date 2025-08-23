@@ -154,7 +154,7 @@
 
 				<h2>Audio</h2>
 				<p>The voice clips were provided by Plumps (who recorded them for <a href="https://dict-navi.com/">dict-na'vi</a>) and tsyili (who recorded them for <a href="https://learnnavi.org/navi-vocabulary/">Learn Na'vi</a>).</p>
-				
+
 				<h2>Artwork</h2>
 				<p>The drawings of Pandoran animals were made by Eana Unil. (Haven’t encountered one yet? Try searching for ‘toruk’!) The cute Na'vi faces used by the study tool were made by Spero (lexbeee on Discord). Reykunyu’s logo was drawn by Eana Unil, and the calligraphy in the header was made by Nahura.</p>
 
@@ -325,7 +325,7 @@
 					</tr>
 					<tr>
 						<td><b>short_translation</b></td>
-						<td>By default Reykunyu takes the part of the translation in <b>translations</b> until the first comma as a &ldquo;short translation&rdquo;. For the few words for which this isn't desirable, <b>short_translation</b> is used to override this (for the English translation only).</td>
+						<td>A shortened version of <b>translations</b>. In most cases, this is the part of the translation until the first comma, with anything in parenthesis removed, but some words have a custom short translation.</td>
 					</tr>
 					<tr>
 						<td><b>meaning_note</b></td>
@@ -494,7 +494,7 @@
 				<h3>LinkString</h3>
 				<p>A <b>LinkString</b> is used to allow writing free-form notes that contain links to other words. A <b>LinkString</b> is a string with references of the form <code>[word:type]</code>. For example, the etymology of <b>kxì</b> could be <code>"Shortened form of [kaltxì:intj]."</code>.</p>
 				<p><b>WordData</b> has a field <b>references</b> that contains <b>TruncatedWordData</b> for all references in all <b>LinkString</b>s of that <b>WordData</b>. For example, the <b>WordData</b> for <b>kxì</b> has the <b>TruncatedWordData</b> for <b>kaltxì</b> in its references.</p>
-				
+
 				<h3>TruncatedWordData</h3>
 				<p>Words that refer to other words, use <b>TruncatedWordData</b> to do so. This is simply <b>WordData</b> where all fields except <b>word</b>, <b>word_raw</b>, <b>na'vi</b>, <b>type</b>, <b>translations</b>, and <b>short_translation</b> have been removed. (This is done to limit the size of API responses, and to avoid infinite loops if two words refer to each other.)</p>
 
@@ -636,4 +636,3 @@
 		<script src="/js/help.js"></script>
 	</body>
 </html>
-

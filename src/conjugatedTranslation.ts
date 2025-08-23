@@ -197,10 +197,16 @@ function toPossessive(noun: string): string {
 let dictionary;
 
 export function addTranslations(word: WordData): void {
-	let translation = getShortTranslation(word);
+	if (!word['short_translation']) {
+		return;
+	}
+	let translation = word['short_translation']['en'];
 	let conjugated = word['conjugated'];
 	if (!conjugated) {
 		return;
+	}
+	if (word["type"][0] === "v" && translation.indexOf("to ") === 0) {
+		translation = translation.substring(3);
 	}
 
 	for (let conjugation of conjugated) {
@@ -227,7 +233,7 @@ export function addTranslations(word: WordData): void {
 						};
 						translation = translators[conjugation['type']][a](translation, data);
 					} else if (conjugation['type'] === 'n') {
-						translation = getShortTranslation(affix['affix'] as WordData)
+						translation = (affix['affix'] as WordData)['short_translation']
 							+ ' ' + toAccusative(translation);
 					}
 				}
@@ -235,23 +241,4 @@ export function addTranslations(word: WordData): void {
 			conjugation['translation'] = translation;
 		}
 	}
-}
-
-function getShortTranslation(word: WordData): string {
-	if (word["short_translation"]) {
-		return word["short_translation"]['en'];
-	}
-
-	let translation = word["translations"][0]['en'];
-	translation = translation.split(',')[0];
-	translation = translation.split(';')[0];
-	translation = translation.split(' | ')[0];
-	translation = translation.split(' (')[0];
-
-	if (word["type"][0] === "v"
-		&& translation.indexOf("to ") === 0) {
-		translation = translation.substr(3);
-	}
-
-	return translation;
 }
