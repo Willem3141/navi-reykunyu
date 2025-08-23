@@ -24,7 +24,7 @@ declare type WordData = {
 	type: string,
 	pronunciation?: Pronunciation[],
 	translations: Translated<string>[],
-	short_translation?: string,
+	short_translation?: Translated<string>,  // may be string in the database
 	short_translation_conjugated?: string,
 	meaning_note?: Translated<LinkString>,  // may be LinkString in the database
 	infixes?: string,

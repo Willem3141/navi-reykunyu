@@ -237,9 +237,9 @@ export function addTranslations(word: WordData): void {
 	}
 }
 
-function getShortTranslation(word: WordData) {
+function getShortTranslation(word: WordData): string {
 	if (word["short_translation"]) {
-		return word["short_translation"];
+		return word["short_translation"]['en'];
 	}
 
 	let translation = word["translations"][0]['en'];

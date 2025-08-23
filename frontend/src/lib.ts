@@ -34,8 +34,8 @@ export function getShortTranslation(result: WordData, language: string): string 
 	if (language == "en" && result["short_translation_conjugated"]) {
 		return result["short_translation_conjugated"];
 	}
-	if (language == "en" && result["short_translation"]) {
-		return result["short_translation"];
+	if (result["short_translation"]) {
+		return getTranslation(result["short_translation"], language);
 	}
 
 	let translation = getTranslation(result["translations"][0], language);

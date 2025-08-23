@@ -431,12 +431,13 @@ class EditPage {
 			'other languages using the globe icon button on the right.');
 		definitionField.setMaxCount(Infinity);
 
-		let shortTranslationField = new StringEditField('short_translation', 'Short translation');
+		let shortTranslationField = new TranslatedStringEditField('short_translation', 'Short translation');
 		shortTranslationField.setInfoText('By default Reykunyu takes the part of the first definition ' +
 			'until the first comma, minus any parenthesized parts, as a “short translation”. ' +
 			'For the few words for which this isn\'t desirable, ' +
-			'you can manually enter a short translation to override this (for the English translation only).');
+			'you can manually enter a short translation to override this.');
 		shortTranslationField.setMinCount(0);
+		shortTranslationField.setStoreOnlyEnglishAsString(true);
 
 		let meaningNoteField = new TranslatedStringEditField('meaning_note', 'Meaning note');
 		meaningNoteField.setInfoText('Free-form additional information on the meaning of the word, ' +

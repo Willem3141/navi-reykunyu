@@ -154,6 +154,11 @@ export default class Reykunyu {
 				wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'][language], dataErrorList);
 			}
 		}
+		if (word['short_translation']) {
+			if (typeof word['short_translation'] === 'string') {
+				word['short_translation'] = { 'en': word['short_translation'] };
+			}
+		}
 
 		// see also
 		if (word['seeAlso']) {
