@@ -65,7 +65,7 @@
 history = {}
 words = {}
 target = None
-#target = 'hrh:intj'
+#target = 'le\'ìnglìsì:adj'
 
 def get_key(data):
 	key = data['na\'vi'] + ':' + (data['type'] if 'type' in data else '?')
@@ -94,7 +94,20 @@ def json_equals(first, second):
 
 	return False
 
-def add_migrations(words, history, old_words_file, new_words_file, user, date, comment):
+def add_one_off(key, words, history, user, date, comment, data):
+	words[key] = data
+	history[key].append(
+		{
+			'user': user,
+			'date': date,
+			'type': 'edited',
+			'comment': comment,
+			'data': data
+		}
+	)
+
+
+def do_xnavi_migration(words, history, old_words_file, new_words_file, user, date, comment):
 	with open(old_words_file) as old_words:
 		old_words = json.load(old_words)
 	with open(new_words_file) as new_words:
@@ -108,10 +121,6 @@ def add_migrations(words, history, old_words_file, new_words_file, user, date, c
 		if target != None and key != target: continue
 
 		if 'x-navi' not in old_words[key]['translations'][0] and 'x-navi' in new_words[key]['translations'][0]:
-			#print('!! from ')
-			#print(json.dumps(old_words[key], indent=4))
-			#print('!! to ')
-			#print(json.dumps(new_words[key], indent=4))
 			# An edit was made.
 			old_word_with_xnavi = json.loads(json.dumps(old_words[key]))
 			for i, translation in enumerate(old_word_with_xnavi['translations']):
@@ -119,6 +128,10 @@ def add_migrations(words, history, old_words_file, new_words_file, user, date, c
 			if json_equals(old_words[key], old_word_with_xnavi):
 				continue
 			print('!! edited ' + key)
+			print('!! from ')
+			print(json.dumps(old_words[key], indent=4))
+			print('!! to ')
+			print(json.dumps(new_words[key], indent=4))
 			words[key] = old_word_with_xnavi
 			history[key].append(
 				{
@@ -129,6 +142,28 @@ def add_migrations(words, history, old_words_file, new_words_file, user, date, c
 					'data': old_word_with_xnavi
 				}
 			)
+
+	add_one_off('hrh:intj', words, history, 'Wllìm', '2021-10-28T11:00:00.000Z', 'Imported some Na\'vi definitions',
+		{
+			"na'vi": "HRH",
+			"type": "intj",
+			"meaning_note": "Acronym frequently used by the fan community in written messages, to express laughter.",
+			"translations": [
+				{
+					"en": "LOL (\"laughing out loud\")",
+					"nl": "LOL (uiting van gelach)",
+					"fr": "LOL ou MDR",
+					"x-navi": "\u201cherangham\u201d, <i>yewn futa pamrelsiyu hangham tsa\u2019upxareteri</i>"
+				}
+			],
+			"etymology": "From \"herangham\" ([hangham:v:in] + [er:aff:in]): \"laughing\".",
+			"source": [
+				"Interview with Paul Frommer",
+				"https://www.youtube.com/watch?v=-AgnLH7Dw3w",
+				""
+			]
+		}
+	)
 
 
 # Phase 1: the navi-tsim git history
@@ -238,22 +273,22 @@ for i, entry in enumerate(old_history):
 	if date > '2021-10-28T11:00:00.000Z' and not handledXNaviMigration:
 		print('\033[95mMigration: \033[1mx-navi import\033[0m')
 		handledXNaviMigration = True
-		add_migrations(words, history, 'data-20230930/words-20211027.json', 'data-20230930/words-20211028.json', 'Wllìm', '2021-10-28T11:00:00.000Z', 'Imported some Na\'vi definitions')
+		do_xnavi_migration(words, history, 'data-20230930/words-20211027.json', 'data-20230930/words-20211028.json', 'Wllìm', '2021-10-28T11:00:00.000Z', 'Imported some Na\'vi definitions')
 
-	if date > '2022-02':
+	if date > '2022-08':
 		break
 
 	data = entry['data']
-
+	key = get_key(data)
 	user = entry['user']
-	print('\033[95mEdit ' + str(i) + ': \033[1m' + date + ' by ' + user + '\033[0m')
+	if target == None or target == key:
+		print('\033[95mEdit ' + str(i) + ': \033[1m' + date + ' by ' + user + '\033[0m')
 
 	if date == '2021-11-18T23:21:04.553Z':
 		print('    apparently didn\'t go through; ignored')
 		continue
 
 	if 'old' not in entry:
-		key = get_key(data)
 		if target != None and key != target: continue
 
 		print('    added ' + key)
@@ -275,16 +310,17 @@ for i, entry in enumerate(old_history):
 	else:
 		old = entry['old']
 		key_old = get_key(old)
-		key = get_key(data)
 		if target != None and key != target: continue
 
 		print('    edited ' + (key_old + ' -> ' + key if key_old != key else key))
 
-		if date < '2021-11-18T23:32:00.000Z' and date != '2021-11-15T23:25:28.513Z' and data['na\'vi'] != data['na\'vi'].lower():
+		if date < '2021-11-18T23:48:01.000Z' and date != '2021-11-15T23:25:28.513Z' and data['na\'vi'] != data['na\'vi'].lower():
 		#if date < '2021-11-18T23:25:30.000Z' and date != '2021-11-15T23:25:28.513Z' and data['na\'vi'] != data['na\'vi'].lower():
 			# There used to be a bug in Reykunyu that caused edits not to go through if the lemma had uppercase.
 			# However, the edit would still be stored in history.json. Solved in commit eaee18a.
 			print('    edit didn\'t go through because of capitalization bug; ignored')
+			print('    * rejected edit:')
+			print(json.dumps(data, indent=4))
 			continue
 
 		if key not in history:
@@ -315,9 +351,9 @@ for i, entry in enumerate(old_history):
 				'data': data
 			}
 		)
+		print('    * to:')
+		print(json.dumps(data, indent=4))
 		words[key] = data
-
-	# TODO continue here! :D
 
 
 # Output the results
