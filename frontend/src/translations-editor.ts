@@ -1,5 +1,7 @@
 import { lemmaForm, addLemmaClass } from './lib';
 
+import * as dialect from 'reykunyu/dialect';
+
 class TranslationsEditorPage {
 	constructor() {
 		$('#type-filter-dropdown').dropdown('set selected', '.*');
@@ -146,7 +148,7 @@ class TranslationsEditorPage {
 		$results.empty();
 		$('#spinner').show();
 
-		$.getJSON('/api/list/all')
+		$.getJSON('/words.json')
 			.done((dictionary) => {
 				$('#spinner').hide();
 				const $tocBar = $('#toc-bar');
@@ -158,6 +160,11 @@ class TranslationsEditorPage {
 						.attr('href', '#' + section)
 						.attr('id', 'button-' + section)
 						.appendTo($tocBar);
+				}
+
+				for (let word of dictionary) {
+					word['word'] = { 'FN': dialect.combinedToFN(word['na\'vi']) };
+					word['word_raw'] = { 'FN': dialect.makeRaw(word['word']['FN']) };
 				}
 
 				dictionary.sort((a: WordData, b: WordData) => {
