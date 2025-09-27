@@ -50,7 +50,17 @@ export default class Reykunyu {
 		this.dictionary = new Dictionary(dictionaryJSON, this.dataErrorList);
 		this.reverseDictionary = new ReverseDictionary(this.dictionary);
 
-		// preprocess all words
+		// preprocess short_translations for all words
+		for (let word of this.dictionary.getAll()) {
+			if (word['short_translation']) {
+				if (typeof word['short_translation'] === 'string') {
+					word['short_translation'] = { 'en': word['short_translation'] };
+				}
+			} else {
+				word['short_translation'] = this.shortenTranslation(word['translations']);
+			}
+		}
+		// preprocess the other fields for all words
 		for (let word of this.dictionary.getAll()) {
 			this.preprocessWord(word, this.dataErrorList);
 		}
@@ -153,13 +163,6 @@ export default class Reykunyu {
 			for (let language in word['conjugation_note']) {
 				wordLinks.addReferencesForLinkString(this.dictionary, word, word['conjugation_note'][language], dataErrorList);
 			}
-		}
-		if (word['short_translation']) {
-			if (typeof word['short_translation'] === 'string') {
-				word['short_translation'] = { 'en': word['short_translation'] };
-			}
-		} else {
-			word['short_translation'] = this.shortenTranslation(word['translations']);
 		}
 
 		// see also
