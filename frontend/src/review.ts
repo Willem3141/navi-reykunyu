@@ -117,8 +117,63 @@ const alternatives: Record<string, Alternative[]> = {
 	'nunyolpe:inter': ['penunyol'],
 	'pefyinep\'ang:inter': ['fyinep\'angpe'],
 	'fyinep\'angpe:inter': ['pefyinep\'ang'],
-	'pehrrlik:inter': ['krrlikpe'],
-	'krrlikpe:inter': ['pehrrlik'],
+	'pehem:inter': ['kempe'],
+	'kempe:inter': ['pehem'],
+	'\'ekxinumpe:inter': ['pekxinum'],
+	'pekxinum:inter': ['\'ekxinumpe'],
+	'la\'ape:inter': ['pela\'a'],
+	'pela\'a:inter': ['la\'ape'],
+	'somwewpe:inter': ['pesomwew'],
+	'pesomwew:inter': ['somwewpe'],
+	'lì\'upe:inter': ['pelì\'u'],
+	'pelì\'u:inter': ['lì\'upe'],
+	'lìmsimpe:inter': ['pelìmsim'],
+	'pelìmsim:inter': ['lìmsimpe'],
+	'pemstan:inter': ['mestampe'],
+	'mestampe:inter': ['pemstan'],
+	'pemste:inter': ['mestepe'],
+	'mestepe:inter': ['pemste'],
+	'pemsu:inter': ['mesupe'],
+	'mesupe:inter': ['pemsu'],
+	'pepstan:inter': ['pxestampe'],
+	'pxestampe:inter': ['pepstan'],
+	'pepste:inter': ['pxestepe'],
+	'pxestepe:inter': ['pepste'],
+	'pepsu:inter': ['pxesupe'],
+	'pxesupe:inter': ['pepsu'],
+	'paystan:inter': ['aystampe'],
+	'aystampe:inter': ['paystan'],
+	'payste:inter': ['aystepe'],
+	'aystepe:inter': ['payste'],
+	'paysu:inter': ['aysupe'],
+	'aysupe:inter': ['paysu'],
+	'komum:intj': ['kemum'],
+	'kemum:intj': ['komum'],
+	'letut:adj': ['lukftang'],
+	'lukftang:adj': ['letut'],
+	'penghrr:vin': ['pllhrr'],
+	'pllhrr:vin': ['penghrr'],
+	'säpenghrr:n': ['säpllhrr'],
+	'säpllhrr:n': ['säpenghrr'],
+	'palulukantsyìp:n': ['palukantsyìp'],
+	'palukantsyìp:n': ['palulukantsyìp'],
+	'tìkangkem:n': ['kangkem'],
+	'kangkem:n': ['tìkangkem'],
+	'\'opinvultsyìp:n': ['pinvul'],
+	'pinvul:n': ['\'opinvultsyìp'],
+	'tsmuk:n': ['tsmuktu'],
+	'tsmuktu:n': ['tsmuk'],
+	'pamrelvul:n': ['relvul'],
+	'relvul:n': ['pamrelvul'],
+	'säkeynven:n': ['skeynven'],
+	'skeynven:n': ['säkeynven'],
+	'pesrrpxì:inter': ['trrpxìpe', 'pehrrlik', 'krrlikpe'],
+	'trrpxìpe:inter': ['pesrrpxì', 'pehrrlik', 'krrlikpe'],
+	'pehrrlik:inter': ['pesrrpxì', 'trrpxìpe', 'krrlikpe'],
+	'krrlikpe:inter': ['pesrrpxì', 'trrpxìpe', 'pehrrlik'],
+	'lafyon:adj': ['hafyonga\'', 'txantslusam'],
+	'hafyonga\':adj': ['lafyon', 'txantslusam'],
+	'txantslusam:adj': ['lafyon', 'hafyonga\''],
 };
 
 class ReviewPage {
@@ -127,7 +182,7 @@ class ReviewPage {
 
 	/// All items we're supposed to show to the user.
 	items: WordData[];
-	
+
 	/// The index of the item we're currently showing.
 	currentItemIndex = 0;
 	correctCount = 0;
@@ -278,7 +333,7 @@ class QuestionSlide extends Slide {
 					this.checkAnswer();
 				}
 			});
-		
+
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('buttons under-card')
 			.appendTo($container);
@@ -319,7 +374,7 @@ class QuestionSlide extends Slide {
 		}
 		return null;
 	}
-	
+
 	checkAnswer(): void {
 		let givenAnswer = ('' + this.$meaningInput.val()!).trim();
 		const lastCharacter = parseInt(givenAnswer.charAt(givenAnswer.length - 1), 10);
