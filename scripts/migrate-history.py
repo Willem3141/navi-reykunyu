@@ -54,7 +54,7 @@
 # Over time, also several migrations were run on the word database. These are not stored in the history file as they
 # were run locally.
 #
-# * 2022-07-10: all source values were updated to arrays so that more than one source could be stored (commit 4bc8f83).
+# * 2022-07-07: all source values were updated to arrays so that more than one source could be stored (commit 4bc8f83).
 # * 2022-07-10: all pronunciation values were updated from a plain array to an object (commit 793b2fb).
 # * 2024-07-18: the migration that added IDs to the words, but it also added stress and syllable marks to the na'vi
 #   field (PR #133).
@@ -137,7 +137,7 @@ def do_xnavi_migration(words, history, old_words_file, new_words_file, user, dat
 				{
 					'user': user,
 					'date': date,
-					'type': 'edited',
+					'type': 'migration',
 					'comment': comment,
 					'data': old_word_with_xnavi
 				}
@@ -260,8 +260,8 @@ for commit in commits:
 
 # Phase 2: the old history file
 
-words = {}
 handledXNaviMigration = False
+unexplained_count = 0
 
 with open('data/history-before-id-migration.json') as history_file:
 	old_history = json.load(history_file)
@@ -275,13 +275,10 @@ for i, entry in enumerate(old_history):
 		handledXNaviMigration = True
 		do_xnavi_migration(words, history, 'data-20230930/words-20211027.json', 'data-20230930/words-20211028.json', 'Wllìm', '2021-10-28T11:00:00.000Z', 'Imported some Na\'vi definitions')
 
-	if date > '2022-08':
-		break
-
 	data = entry['data']
 	key = get_key(data)
 	user = entry['user']
-	if target == None or target == key:
+	if target is None or target == key:
 		print('\033[95mEdit ' + str(i) + ': \033[1m' + date + ' by ' + user + '\033[0m')
 
 	if date == '2021-11-18T23:21:04.553Z':
@@ -289,14 +286,15 @@ for i, entry in enumerate(old_history):
 		continue
 
 	if 'old' not in entry:
-		if target != None and key != target: continue
+		if target is not None and key != target: continue
 
 		print('    added ' + key)
 		if key not in history:
 			history[key] = []
 		if key in words:
 			print('Adding already existing word ' + key)
-			sys.exit(1)
+			unexplained_count += 1
+			#sys.exit(1)
 		history[key].append(
 			{
 				'user': user,
@@ -310,18 +308,25 @@ for i, entry in enumerate(old_history):
 	else:
 		old = entry['old']
 		key_old = get_key(old)
-		if target != None and key != target: continue
+		if target is not None and key != target: continue
 
 		print('    edited ' + (key_old + ' -> ' + key if key_old != key else key))
 
 		if date < '2021-11-18T23:48:01.000Z' and date != '2021-11-15T23:25:28.513Z' and data['na\'vi'] != data['na\'vi'].lower():
-		#if date < '2021-11-18T23:25:30.000Z' and date != '2021-11-15T23:25:28.513Z' and data['na\'vi'] != data['na\'vi'].lower():
 			# There used to be a bug in Reykunyu that caused edits not to go through if the lemma had uppercase.
 			# However, the edit would still be stored in history.json. Solved in commit eaee18a.
 			print('    edit didn\'t go through because of capitalization bug; ignored')
-			print('    * rejected edit:')
-			print(json.dumps(data, indent=4))
+			#print('    * rejected edit:')
+			#print(json.dumps(data, indent=4))
 			continue
+
+		if key_old != key:
+			if key_old in words:
+				words[key] = words[key_old]
+				del words[key_old]
+			if key_old in history:
+				history[key] = history[key_old]
+				del history[key_old]
 
 		if key not in history:
 			history[key] = []
@@ -334,15 +339,16 @@ for i, entry in enumerate(old_history):
 		#	print('Editing non-existing word ' + key_old)
 		#	sys.exit(1)
 		if key_old in words and not json_equals(words[key_old], old):
-			print('Editing word, but the “old” value doesn\'t correspond to what we had before')
-			print('    * existing value:')
-			print(json.dumps(words[key_old], indent=4))
-			print('    * “old” value:')
-			print(json.dumps(old, indent=4))
-			print('    * new value:')
-			print(json.dumps(data, indent=4))
-			#break
-			sys.exit(1)
+			print('     * editing word, but the “old” value doesn\'t correspond to what we had before -> inserting unexplained change')
+			history[key].append(
+				{
+					'date': date,
+					'type': 'unexplained',
+					'data': old
+				}
+			)
+			unexplained_count += 1
+
 		history[key].append(
 			{
 				'user': user,
@@ -351,12 +357,94 @@ for i, entry in enumerate(old_history):
 				'data': data
 			}
 		)
-		print('    * to:')
-		print(json.dumps(data, indent=4))
+		#print('    * to:')
+		#print(json.dumps(data, indent=4))
 		words[key] = data
 
+# Phase 3: the new history file
+# First need to handle the ID remapping. Luckily we have that stored...
+with open('data/id-to-key-map.json') as map_file:
+	id_to_key_map = json.load(map_file)
+
+# double-check: are all mapped keys actually present in the history made so far?
+for key in id_to_key_map:
+	if id_to_key_map[key] not in history:
+		print('missing history entry for map entry ' + id_to_key_map[key])
+		sys.exit(1)
+	if id_to_key_map[key] not in words:
+		print('missing words entry for map entry ' + id_to_key_map[key])
+		sys.exit(1)
+## double-check: are all keys in the history also mapped to something?
+for key in history:
+	if key not in id_to_key_map.values():
+		print('missing map entry for history entry ' + key)
+		# TODO these have been deleted at some point, so they don't have an ID.
+		# Should assign them an ID now. But Reykunyu doesn't support deleted words yet. Hmm.
+
+history = [history[id_to_key_map[i]] for i in id_to_key_map]
+words = [words[id_to_key_map[i]] for i in id_to_key_map]
+
+# Okay, now we're almost there! Just need to merge in the existing history file
+with open('data/history-after-id-migration.json') as history_file:
+	new_history = json.load(history_file)
+
+for i, entry in enumerate(new_history):
+	date = entry['date']
+	data = entry['data']
+	id = entry['id']
+	user = entry['user']
+	print('\033[95mEdit ' + str(i) + ': \033[1m' + date + ' by ' + user + '\033[0m')
+
+	if 'old' not in entry:
+		print('    added ' + str(id))
+		if id != len(history):
+			print('oops, too large ID ' + str(id))
+			sys.exit(1)
+		history.append([])
+		history[id].append(
+			{
+				'user': user,
+				'date': date,
+				'type': 'added',
+				'data': data
+			}
+		)
+		words.append(data)
+
+	else:
+		print('    edited ' + str(id))
+
+		if id >= len(history):
+			print('oops, too large ID ' + str(id))
+			sys.exit(1)
+
+		old = entry['old']
+
+		if not json_equals(words[id], old):
+			print('     * editing word, but the “old” value doesn\'t correspond to what we had before -> inserting unexplained change')
+			history[id].append(
+				{
+					'date': date,
+					'type': 'unexplained',
+					'data': old
+				}
+			)
+			unexplained_count += 1
+
+		history[id].append(
+			{
+				'user': user,
+				'date': date,
+				'type': 'edited',
+				'data': data
+			}
+		)
+		words[id] = data
+
+
+# Some statistics
+print('Unexplained edits: ' + str(unexplained_count))
 
 # Output the results
-
-with open('history-new.json', 'w') as history_file:
-	json.dump(history, history_file, indent=4)
+with open('data/history.json', 'w') as history_file:
+	json.dump(history, history_file, indent='\t')
