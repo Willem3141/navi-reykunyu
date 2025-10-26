@@ -660,7 +660,7 @@ export default class WordResultBlock {
 		for (let source of sources) {
 			let $source = $('<div/>').addClass('body');
 			if (source.length < 2 || !source[1] || source[1].length === 0) {
-				let $sourceText = $('<div/>');
+				let $sourceText = $('<span/>');
 				$sourceText.text(source[0]);
 				$source.append($sourceText);
 			} else {
