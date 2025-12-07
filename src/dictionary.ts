@@ -23,7 +23,7 @@ export default class Dictionary {
 	// used for resolving word links
 	wordTypeKeys: { [key: string]: number };
 
-	constructor(dictionaryJSON: any, dataErrors: string[]) {
+	constructor(dictionaryJSON: any, dataErrors: DataIssue[]) {
 		this.words = dictionaryJSON;
 
 		this.searchables = {
@@ -69,7 +69,7 @@ export default class Dictionary {
 			// put the word in the wordTypeKeys dictionary
 			let wordTypeKey = word['word_raw']['FN'] + ':' + word['type'];
 			if (this.wordTypeKeys.hasOwnProperty(wordTypeKey)) {
-				dataErrors.push('Duplicate word/type [' + wordTypeKey + '] in words.json');
+				dataErrors.push({word:word["na'vi"], type:'error', message:'Duplicate word/type [' + wordTypeKey + '] in words.json'});
 			}
 			this.wordTypeKeys[wordTypeKey] = i;
 		}

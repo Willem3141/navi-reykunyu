@@ -312,7 +312,7 @@ app.post('/edit/preview',
 		};
 		word["na'vi"] = word['word_raw']['FN'];
 
-		let dataErrorList: string[] = [];
+		let dataErrorList: DataIssue[] = [];
 		reykunyu.preprocessWord(word, dataErrorList);
 		if (dataErrorList.length > 0) {
 			res.status(400);

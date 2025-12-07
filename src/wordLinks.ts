@@ -63,7 +63,7 @@ export function visitLinkString(linkString: LinkString,
  * @param dataErrors A list of errors that (potential) errors will be appended
  * to.
  */
-export function addReferencesForLinkString(d: Dictionary, word: WordData, linkString: LinkString, dataErrors: string[]): void {
+export function addReferencesForLinkString(d: Dictionary, word: WordData, linkString: LinkString, dataErrors: DataIssue[]): void {
 	visitLinkString(linkString,
 		(text: string) => {},
 		(referencedWord: string, type: string) => {
@@ -74,7 +74,7 @@ export function addReferencesForLinkString(d: Dictionary, word: WordData, linkSt
 				}
 				word['references'][referencedWord + ':' + type] = stripToLinkData(data);
 			} else {
-				dataErrors.push(word['na\'vi'] + ': invalid reference [' + referencedWord + ':' + type + ']');
+				dataErrors.push({word:word['na\'vi'],type:'error', message: 'invalid reference [' + referencedWord + ':' + type + ']'});
 			}
 		}
 	);

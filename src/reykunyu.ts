@@ -39,7 +39,7 @@ export default class Reykunyu {
 	allWords!: WordData[];
 	allWordsOfType!: { [type: string]: WordData[] };
 
-	dataErrorList!: string[];
+	dataErrorList!: DataIssue[];
 
 	constructor(dictionaryJSON: any) {
 		this.loadData(dictionaryJSON);
@@ -131,7 +131,7 @@ export default class Reykunyu {
 		}
 	}
 
-	preprocessWord(word: WordData, dataErrorList: string[]) {
+	preprocessWord(word: WordData, dataErrorList: DataIssue[]) {
 		// pronunciation
 		if (word['pronunciation']) {
 			for (let pronunciation of word['pronunciation']) {
@@ -1181,7 +1181,7 @@ export default class Reykunyu {
 		fs.writeFileSync('./data/corpus.json', JSON.stringify(sentences));
 	}*/
 
-	getDataErrors(): string[] {
+	getDataErrors(): DataIssue[] {
 		return this.dataErrorList;
 	}
 

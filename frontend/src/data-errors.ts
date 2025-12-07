@@ -25,7 +25,7 @@ class DataErrorsPage {
 					$('#no-errors').show();
 				} else {
 					for (let error of errors) {
-						let $item = $('<li/>').text(error);
+						let $item = $('<li/>').text(error.type.toUpperCase() + ' - ' + error.word + ': ' + error.message);
 						$results.append($item);
 					}
 				}
