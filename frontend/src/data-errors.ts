@@ -14,26 +14,66 @@ class DataErrorsPage {
 	}
 
 	loadErrorList() {
-		let $results = $('#error-list-result');
-		$results.empty();
+		let errorCount = 0;
+		let warningCount = 0;
+		let todoCount = 0;
+		let $errorTableBody = $('#error-table tbody');
+		let $warningTableBody = $('#warning-table tbody');
+		let $todoTableBody = $('#todo-table tbody');
+		$errorTableBody.empty();
+		$warningTableBody.empty();
+		$todoTableBody.empty();
 		$('#spinner').show();
 
 		$.getJSON('/api/data-errors')
 			.done((errors) => {
 				$('#spinner').hide();
-				if (errors.length === 0) {
-					$('#no-errors').show();
-				} else {
-					for (let error of errors) {
-						let $item = $('<li/>').text(error.type.toUpperCase() + ' - ' + error.word + ': ' + error.message);
-						$results.append($item);
+				$('#fail').hide();
+				$('#issue-results').show();
+				for (let error of errors) {
+					let $editButton = $("<td><a class=\"ui icon basic button edit-button\" href=\"/edit?word=" + error.word_id + "\"><i class=\"pencil icon\"></i></a></td>");
+					let $word = $("<td/>").html("<b>" + error.word + "<b/>");
+					let $message = $("<td/>").text(error.message);
+					let $row = $("<tr/>");
+					$row.append($editButton);
+					$row.append($word);
+					$row.append($message);
+					switch (error.type) {
+						case 'error':
+							errorCount++;
+							$errorTableBody.append($row);
+							break;
+						case 'warning':
+							warningCount++;
+							$warningTableBody.append($row);
+							break;
+						case 'todo':
+							todoCount++;
+							$todoTableBody.append($row);
+							break;
 					}
 				}
+
+				if (errorCount === 0)
+					$('#no-errors').show();
+				else
+					$('#error-table').show();
+
+				if (warningCount === 0)
+					$('#no-warnings').show();
+				else
+					$('#warning-table').show();
+
+				if (todoCount === 0)
+					$('#no-todos').show();
+				else
+					$('#todo-table').show();
 			})
 			.fail(() => {
-				$results.empty();
-				$('#no-errors').hide();
-				$results.append(this.createErrorBlock(_('word-list-error'), _('searching-error-description')));
+				$('#spinner').hide();
+				$('#issue-results').hide();
+				$('#fail').show();
+				$('#fail').append(this.createErrorBlock(_('word-list-error'), _('searching-error-description')));
 			});
 		return false;
 	}

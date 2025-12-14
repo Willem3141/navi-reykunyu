@@ -69,7 +69,7 @@ export default class Dictionary {
 			// put the word in the wordTypeKeys dictionary
 			let wordTypeKey = word['word_raw']['FN'] + ':' + word['type'];
 			if (this.wordTypeKeys.hasOwnProperty(wordTypeKey)) {
-				dataErrors.push({word:word["na'vi"], type:'error', message:'Duplicate word/type [' + wordTypeKey + '] in words.json'});
+				dataErrors.push({word_id:word["id"], word:word["na'vi"], type:'error', message:'Duplicate word/type [' + wordTypeKey + '] in words.json'});
 			}
 			this.wordTypeKeys[wordTypeKey] = i;
 		}

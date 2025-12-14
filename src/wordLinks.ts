@@ -74,7 +74,7 @@ export function addReferencesForLinkString(d: Dictionary, word: WordData, linkSt
 				}
 				word['references'][referencedWord + ':' + type] = stripToLinkData(data);
 			} else {
-				dataErrors.push({word:word['na\'vi'],type:'error', message: 'invalid reference [' + referencedWord + ':' + type + ']'});
+				dataErrors.push({word_id:word["id"], word:word['na\'vi'],type:'error', message: 'Invalid reference [' + referencedWord + ':' + type + ']'});
 			}
 		}
 	);

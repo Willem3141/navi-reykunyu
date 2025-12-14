@@ -141,6 +141,9 @@ export default class Reykunyu {
 				};
 			}
 		}
+		else {
+			dataErrorList.push({word_id:word["id"], word:word['na\'vi'],type:'warning', message: "Missing pronunciation data"});
+		}
 
 		// etymology and derived words
 		if (word['etymology']) {
@@ -174,6 +177,11 @@ export default class Reykunyu {
 					word['seeAlso'][i] = wordLinks.stripToLinkData(result);
 				}
 			}
+		}
+
+		// to do notes
+		if (word['todo']) {
+			dataErrorList.push({word_id:word["id"], word:word['na\'vi'],type:'todo', message: word['todo']});
 		}
 
 		// conjugation tables
@@ -1186,6 +1194,11 @@ export default class Reykunyu {
 	}
 
 	getDataErrorCount(): number {
-		return this.dataErrorList.length;
+		let errorCount = 0;
+		for (let error of this.dataErrorList) {
+			if (error.type === 'error')
+				errorCount++;
+		}
+		return errorCount;
 	}
 }

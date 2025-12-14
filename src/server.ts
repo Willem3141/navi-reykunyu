@@ -314,7 +314,12 @@ app.post('/edit/preview',
 
 		let dataErrorList: DataIssue[] = [];
 		reykunyu.preprocessWord(word, dataErrorList);
-		if (dataErrorList.length > 0) {
+		let errorCount = 0;
+		for (let error of dataErrorList) {
+			if (error.type === 'error')
+				errorCount++;
+		}
+		if (errorCount > 0) {
 			res.status(400);
 			res.send(dataErrorList);
 			return;
