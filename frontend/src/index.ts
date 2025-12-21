@@ -186,10 +186,6 @@ class Reykunyu {
 		return $('#mode-direction').dropdown('get value');
 	}
 
-	getLanguage(): string {
-		return $('#language-dropdown').dropdown('get value');
-	}
-
 	getDialect(): Dialect {
 		if ($('#dialect-fn-radiobutton').is(':checked')) {
 			return 'FN';
@@ -208,13 +204,13 @@ class Reykunyu {
 		let url: string | null = null;
 		$('.ui.search').search('clear cache');
 		if (this.getMode() === 'reykunyu') {
-			url = 'api/mok?language=' + this.getLanguage() + '&tìpawm={query}&dialect=' + this.getDialect();
+			url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}&dialect=' + this.getDialect();
 		} else if (this.getMode() === 'rhymes') {
-			url = 'api/mok?language=' + this.getLanguage() + '&tìpawm={query}&dialect=' + this.getDialect();
+			url = 'api/mok?language=' + getLanguage() + '&tìpawm={query}&dialect=' + this.getDialect();
 		} else if (this.getMode() === 'annotated') {
 			url = 'api/annotated/suggest?' + '&query={query}';
 		} else {
-			url = 'api/suggest?language=' + this.getLanguage() + '&query={query}';
+			url = 'api/suggest?language=' + getLanguage() + '&query={query}';
 		}
 		// casting to <any> because for some reason the TS typings don't define
 		// searchOnFocus
@@ -295,7 +291,7 @@ class Reykunyu {
 		if (results["sì'eyng"].length) {
 			for (let i = 0; i < results["sì'eyng"].length; i++) {
 				let resultBlock = new WordResultBlock(
-					results["sì'eyng"][i], (i + 1) + '.', this.getDialect(), this.getLanguage(), this.getIPASetting());
+					results["sì'eyng"][i], (i + 1) + '.', this.getDialect(), getLanguage(), this.getIPASetting());
 				$block.append(resultBlock.$element);
 			}
 		} else if (results["aysämok"].length) {
@@ -328,7 +324,7 @@ class Reykunyu {
 			let $definitionLabel = $('<div/>').addClass('definition')
 				.appendTo($itemContainer);
 			this.typeBadge((<WordData> result["sì'eyng"][i])["type"], true).appendTo($definitionLabel);
-			$definitionLabel.append(getShortTranslation(result["sì'eyng"][i], this.getLanguage()));
+			$definitionLabel.append(getShortTranslation(result["sì'eyng"][i], getLanguage()));
 		}
 
 		if (definitionCount > 2) {
@@ -388,7 +384,7 @@ class Reykunyu {
 		const tìpawm = <string>$('#search-box').val();
 		const $results = $('#results');
 		const $modeTabs = $('#tab-mode-bar');
-		$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': this.getLanguage(), 'dialect': this.getDialect() })
+		$.getJSON('/api/fwew-search', { 'query': tìpawm, 'language': getLanguage(), 'dialect': this.getDialect() })
 			.done((tìeyng) => {
 				this.reloadIfOfflineStatusChanged(tìeyng);
 				const fromNaviResult: FromNaviResult = tìeyng['fromNa\'vi'];
@@ -431,7 +427,7 @@ class Reykunyu {
 					for (let i = 0; i < toNaviResult.length; i++) {
 						const result = toNaviResult[i];
 						let resultBlock = new WordResultBlock(
-							result, (i + 1) + '.', this.getDialect(), this.getLanguage(), this.getIPASetting());
+							result, (i + 1) + '.', this.getDialect(), getLanguage(), this.getIPASetting());
 						$toNaviResult.append(resultBlock.$element);
 					}
 				} else {
@@ -445,7 +441,7 @@ class Reykunyu {
 				$results.append($fromNaviResult);
 
 				// set up tabs
-				if (this.getLanguage() !== "x-navi") {
+				if (getLanguage() !== "x-navi") {
 					$results.append($toNaviResult);
 					$modeTabs.empty();
 					$modeTabs.show();
@@ -565,7 +561,7 @@ class Reykunyu {
 				if (parseInt(stress, 10) > 0) {
 					$row.append($('<td/>').addClass('stressed-cell').html(_('stressed-on') + ' <b>' + stress + '</b>: '));
 				}
-				let $cell = $('<td/>').append(createWordLinkList(rhymes[stress], this.getDialect(), this.getLanguage()));
+				let $cell = $('<td/>').append(createWordLinkList(rhymes[stress], this.getDialect(), getLanguage()));
 				$row.append($cell);
 				$table.append($row);
 			}

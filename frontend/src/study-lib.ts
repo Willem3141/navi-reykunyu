@@ -1,4 +1,4 @@
-import { addLemmaClass, appendLinkString, lemmaForm, toReadableType } from "./lib";
+import { addLemmaClass, appendLinkString, lemmaForm, toReadableType, getTranslation } from "./lib";
 
 function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
 	let result = '';
@@ -35,19 +35,19 @@ export function getDisplayedNavi(word: WordData) {
 	return navi;
 }
 
-function getDisplayedEnglish(word: WordData) {
-	let english = '';
+function getDisplayedTranslation(word: WordData) {
+	let translation = '';
 	if (word['translations'].length > 1) {
 		for (let i = 0; i < word['translations'].length; i++) {
 			if (i > 0) {
-				english += '<br>';
+				translation += '<br>';
 			}
-			english += '<b>' + (i + 1) + '.</b> ' + word['translations'][i]['en'];
+			translation += '<b>' + (i + 1) + '.</b> ' + getTranslation(word['translations'][i], getLanguage());
 		}
 	} else {
-		english = word['translations'][0]['en'];
+		translation = getTranslation(word['translations'][0], getLanguage());
 	}
-	return english;
+	return translation;
 }
 
 export function buildWordCard(word: WordData, onFlip?: () => void): JQuery {
@@ -76,7 +76,7 @@ export function buildWordCard(word: WordData, onFlip?: () => void): JQuery {
 	});
 
 	let navi = getDisplayedNavi(word);
-	let english = getDisplayedEnglish(word);
+	let translation = getDisplayedTranslation(word);
 
 	const $navi = $('<div/>')
 		.attr('id', 'navi')
@@ -87,19 +87,19 @@ export function buildWordCard(word: WordData, onFlip?: () => void): JQuery {
 	$navi.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
 	$navi.clone().appendTo($back);
 
-	const $english = $('<div/>')
-		.attr('id', 'english')
+	const $translation = $('<div/>')
+		.attr('id', 'translation')
 		.appendTo($back);
-	$english.append($('<span/>').addClass('meaning').html(english));
+	$translation.append($('<span/>').addClass('meaning').html(translation));
 
 	if (word['meaning_note']) {
 		const $meaningNote = $('<div/>').attr('id', 'meaning-note').appendTo($back);
-		appendLinkString(word['meaning_note']['en'], word, $meaningNote, 'FN', 'en');
+		appendLinkString(getTranslation(word['meaning_note'], getLanguage()), word, $meaningNote, 'FN', getLanguage());
 	}
 
 	if (word['etymology']) {
 		const $etymology = $('<div/>').attr('id', 'etymology').html('<b>Etymology:</b> ').appendTo($back);
-		appendLinkString(word['etymology'], word, $etymology, 'FN', 'en');
+		appendLinkString(word['etymology'], word, $etymology, 'FN', getLanguage());
 	}
 
 	if (word['image']) {
@@ -113,14 +113,14 @@ export function buildQuestionCard(word: WordData, onFlip?: () => void): JQuery {
 	let $card = $('<div/>').addClass('ui segment review-card');
 
 	let navi = getDisplayedNavi(word);
-	let english = getDisplayedEnglish(word);
+	let translation = getDisplayedTranslation(word);
 
 	const $question = $('<div/>')
 		.attr('id', 'question')
 		.appendTo($card);
 	$question.append($('<span/>').addClass('type').text('(' + toReadableType(word['type']) + ')'));
 	$question.append(' ');
-	$question.append($('<span/>').addClass('meaning').html(english));
+	$question.append($('<span/>').addClass('meaning').html(translation));
 
 	return $card;
 }
@@ -146,7 +146,7 @@ export function buildWordPill(word: WordData): JQuery {
 	addLemmaClass($navi, word['type']);
 	$pill.append(' ');
 	$('<span/>').addClass('translation')
-		.html(getDisplayedEnglish(word))
+		.html(getDisplayedTranslation(word))
 		.appendTo($pill);
 	return $pill;
 }

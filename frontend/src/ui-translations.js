@@ -35,8 +35,17 @@ function setNewLanguage(value) {
 	});
 }
 
+function getLanguage() {
+	const languageFromLocalStorage = localStorage.getItem('reykunyu-language');
+	if (languageFromLocalStorage) {
+		return languageFromLocalStorage;
+	} else {
+		return 'en';
+	}
+}
+
 function _(key) {
-	const lang = localStorage.getItem('reykunyu-language');
+	const lang = getLanguage();
 	if (strings.hasOwnProperty(lang) && strings[lang].hasOwnProperty(key)) {
 		return strings[lang][key];
 	} else if (strings['en'].hasOwnProperty(key)) {
