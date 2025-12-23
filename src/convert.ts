@@ -22,9 +22,7 @@
  * conserve capitalization).
  */
 
-export { compress, decompress };
-
-function compress(word: string): string {
+export function compress(word: string): string {
 	let result = word.replace(/ts/g, 'c')
 	                 .replace(/ng/g, 'G')
 	                 .replace(/tx/g, 'T')
@@ -40,7 +38,7 @@ function compress(word: string): string {
 	return result;
 }
 
-function decompress(word: string): string {
+export function decompress(word: string): string {
 	let result = word.replace(/1/g, 'aw')
 	                 .replace(/2/g, 'ay')
 	                 .replace(/3/g, 'ew')

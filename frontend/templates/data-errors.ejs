@@ -1,0 +1,27 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Data errors' }) %>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+
+			<p>This is a list of data consistency errors Reykunyu detected. For example words that refer to non-existing other words in their etymology explanation.</p>
+			<div class="ui section divider"></div>
+			<ul id="error-list-result"></ul>
+			<div id="spinner" class="ui active centered inline text loader">
+				<%- _('loading-error-list') %>
+			</div>
+			<div id="no-errors" class="error" style="display: none;">
+				<p class="error-text"><%- _('no-errors') %></p>
+				<img class="error-icon" src="/images/ke'u-happy.svg">
+			</div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/data-errors.js"></script>
+	</body>
+</html>
+

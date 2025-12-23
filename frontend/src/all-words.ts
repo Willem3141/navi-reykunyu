@@ -4,9 +4,9 @@ class AllWordsPage {
 	constructor() {
 		$('#type-filter-dropdown').dropdown('set selected', '.*');
 		$('#type-filter-dropdown').dropdown({
-			onChange: this.runFilter
+			onChange: this.runFilter.bind(this)
 		});
-		$('#filter-box').on('input', this.runFilter);
+		$('#filter-box').on('input', this.runFilter.bind(this));
 
 		$('#language-dropdown').dropdown({
 			onChange: (value) => {
@@ -18,7 +18,7 @@ class AllWordsPage {
 
 		this.loadWordList();
 
-		$(window).on('resize scroll', this.updateToC);
+		$(window).on('resize scroll', this.updateToC.bind(this));
 	}
 
 	createErrorBlock(text: string, subText: string): JQuery {
@@ -72,7 +72,10 @@ class AllWordsPage {
 		return $pätsì;
 	}
 
-	sourceAbbreviation(source: string): string {
+	sourceAbbreviation(source: Source): string {
+		if (!source[1]) {
+			return '';
+		}
 		if (source[1].includes('naviteri.org')) {
 			return 'nt';
 		} else if (source[1].includes('forum.learnnavi.org')) {
@@ -119,33 +122,33 @@ class AllWordsPage {
 			}
 			$block.append($('<span/>').addClass('definition').html(getTranslation(word["translations"][i], this.getLanguage())));
 		}
-		if (word['meaning_note'] && word['meaning_note'].length > 0) {
+		if (word['meaning_note']) {
 			$block.append('. ');
 			const $meaningNote = $('<span/>').addClass('meaning-note');
-			appendLinkString(word['meaning_note'], $meaningNote, this.getDialect(), this.getLanguage(), true);
+			appendLinkString(getTranslation(word['meaning_note'], this.getLanguage()), word, $meaningNote, this.getDialect(), this.getLanguage(), true);
 			$block.append($meaningNote);
 		}
 		if (word['etymology'] && word['etymology'].length > 0) {
-			if (word['meaning_note'] && word['meaning_note'].length > 0) {
+			if (word['meaning_note']) {
 				// assume the meaning note already ends in '.'
 				$block.append(' ');
 			} else {
 				$block.append('. ');
 			}
 			const $etymology = $('<span/>').addClass('etymology');
-			appendLinkString(word['etymology'], $etymology, this.getDialect(), this.getLanguage(), true);
+			appendLinkString(word['etymology'], word, $etymology, this.getDialect(), this.getLanguage(), true);
 			$block.append($etymology);
 		}
 		if (word['source']) {
 			for (const s of word['source']) {
-				if (s.length < 3 || s[1].length == 0) {
+				if (s.length < 3 || !s[1] || s[1].length == 0) {
 					continue;
 				}
 				$block.append(' ');
 				$block.append($('<a/>')
 					.addClass('source-link')
 					.html(this.sourceAbbreviation(s))
-					.attr('title', s[0] + (s[2].length > 0 ? ' (' + s[2] + ')' : ''))
+					.attr('title', s[0] + (s[2] && s[2].length > 0 ? ' (' + s[2] + ')' : ''))
 					.attr('href', s[1]));
 			}
 		}
@@ -156,7 +159,7 @@ class AllWordsPage {
 				if (i > 0) {
 					$seeAlso.append(', ');
 				}
-				appendLinkString([word['seeAlso'][i]], $seeAlso, this.getDialect(), this.getLanguage(), true);
+				$seeAlso.append(createWordLink(word['seeAlso'][i], this.getDialect(), this.getLanguage(), true));
 			}
 			$seeAlso.append(')');
 			$block.append($seeAlso);

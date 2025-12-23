@@ -5,7 +5,7 @@ const esbuild = require('esbuild');
 const path = require('path');
 
 function buildLess(cb) {
-	return src(['./frontend/less/index.less', './frontend/less/study.less'])
+	return src(['./frontend/less/index.less', './frontend/less/study.less', './frontend/less/editor.less'])
 		.pipe(less({
 			paths: [path.join(__dirname, 'less')]
 		}))
@@ -24,8 +24,31 @@ function buildTypeScriptClient(cb) {
 		entryPoints: [
 			'./frontend/src/index.ts',
 			'./frontend/src/all-words.ts',
+			'./frontend/src/edit.ts',
 			'./frontend/src/study.ts',
-			'./frontend/src/review.ts'
+			'./frontend/src/review.ts',
+			'./frontend/src/data-errors.ts',
+			'./frontend/src/translations-editor.ts'
+		],
+		bundle: true,
+		minify: true,
+		sourcemap: true,
+		outdir: './frontend/dist/js/',
+		target: 'es2016'
+	}).catch(() => { process.exit(1); });
+};
+
+function doTypecheckServiceWorker(cb) {
+	const tsProject = ts.createProject("./frontend/sw/tsconfig.json");
+	return tsProject.src()
+		.pipe(tsProject())
+		.on('error', () => { process.exit(1); });
+};
+
+function buildTypeScriptServiceWorker(cb) {
+	return esbuild.build({
+		entryPoints: [
+			'./frontend/sw/sw.ts'
 		],
 		bundle: true,
 		minify: true,
@@ -61,6 +84,7 @@ function buildTypeScriptServer(cb) {
 
 exports.buildLess = buildLess;
 exports.buildClient = series(doTypecheckClient, buildTypeScriptClient);
+exports.buildServiceWorker = series(doTypecheckServiceWorker, buildTypeScriptServiceWorker);
 exports.buildServer = series(doTypecheckServer, buildTypeScriptServer);
-exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptServer);
-exports.default = parallel(buildLess, exports.buildClient, exports.buildServer);
+exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptServiceWorker, buildTypeScriptServer);
+exports.default = parallel(buildLess, exports.buildClient, exports.buildServiceWorker, exports.buildServer);

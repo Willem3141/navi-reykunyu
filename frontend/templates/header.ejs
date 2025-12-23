@@ -3,34 +3,21 @@
 <% } %>
 <h1>
 	<a class="logo" href="/"></a>
-	<% if (user) { %>
+	<% if (locals['offline']) { %>
+	<div id="user-label" class="ui left pointing basic label">
+		<%- _('offline') %>
+	</div>
+	<% } else if (user) { %>
 	<div id="user-label" class="ui left pointing basic label">
 		Kxì ma <%= user.username %>!
 	</div>
 	<% } %>
-	<div id="language-dropdown" class="ui icon right floated top right pointing dropdown basic button">
-		<i class="globe icon"></i>
-		<span class="text">English</span>
-		&nbsp;<i class="dropdown icon"></i>
-		<div class="menu">
-			<div class="item" data-value="de">Deutsch</div>
-			<div class="item" data-value="et">Eesti</div>
-			<div class="item" data-value="en">English</div>
-			<div class="item" data-value="fr">Français</div>
-			<div class="item" data-value="hu">Magyar</div>
-			<div class="item" data-value="nl">Nederlands</div>
-			<div class="item" data-value="pl">Polski</div>
-			<div class="item" data-value="ru">Русский</div>
-			<div class="item" data-value="sv">Svenska</div>
-			<div class="divider"></div>
-			<div class="item" data-value="x-navi">Na’vi</div>
-		</div>
-	</div>
+	<%- include('language-menu.ejs') %>
 	<% if (locals['isMainPage']) { %>
 	<a class="ui icon basic button right floated" id="snow-button"><i class="snowflake icon"></i></a>
 	<div class="ui buttons main-menu">
 		<a class="ui icon basic button" href="/all"><i class="book icon"></i><span class="button-label"><%- _("menu-all-words") %></span></a>
-		<a id="study-button" class="ui icon basic button" href="/study"><i class="calendar check outline icon"></i><span class="button-label"><%- _("menu-study") %><% if (locals['reviewableCount'] && reviewableCount > 0) { %><span class="reviewable-count-label"><%= reviewableCount %></span><% } %></span></a>
+		<a id="study-button" class="ui icon basic button<% if (locals['offline']) { %> disabled<% } %>" href="/study"><i class="calendar check outline icon"></i><span class="button-label"><%- _("menu-study") %><% if (locals['reviewableCount'] && reviewableCount > 0) { %><span class="reviewable-count-label"><%= reviewableCount %></span><% } %></span></a>
 		<%- include('user-menu.ejs') %>
 		<div id="settings-button" class="ui icon basic button"><i class="cogs icon"></i><span class="button-label"><%- _("menu-settings") %></span></div>
 		<a id="help-button" class="ui icon basic button" href="/help"><i class="question icon"></i><span class="button-label"><%- _("menu-help") %></span></a>

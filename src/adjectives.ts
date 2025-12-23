@@ -17,37 +17,34 @@ import * as conjugationString from "./conjugationString";
  * adjective starts with the le- prefix
  */
 export function conjugate(adjective: string, form: 'predicative' | 'prenoun' | 'postnoun',
-		etymology?: LinkString | undefined, dialect?: Dialect): string {
+		etymology?: LinkString | undefined, dialect?: Dialect): string | null {
 	if (form === "postnoun") {
-		if (adjective.charAt(0) === "a" && dialect !== 'RN') {
-			return "a-" + adjective.substring(1) + "-";
+		if (adjective === 'kea') {
+			// Special case: kea doesn't have any postnoun form. It can only be used before the noun.
+			return null;
+		} else if (adjective.charAt(0) === "a" && dialect !== 'RN') {
+			return "a:" + adjective.substring(1) + ":";
 		} else if (etymology && isLeAdjective(etymology)) {
-			return "(a)-" + adjective + "-";
+			return "(a):" + adjective + ":";
 		} else {
-			return "a-" + adjective + "-";
+			return "a:" + adjective + ":";
 		}
 	} else if (form === "prenoun") {
-		if (adjective.charAt(adjective.length - 1) === "a" && dialect !== 'RN') {
-			return "-" + adjective.slice(0, -1) + "-a";
+		if (adjective === 'kea') {
+			// Special case: kea already has the -a "baked in".
+			return ':ke:a';
+		}  else if (adjective.charAt(adjective.length - 1) === "a" && dialect !== 'RN') {
+			return ":" + adjective.slice(0, -1) + ":a";
 		} else {
-			return "-" + adjective + "-a";
+			return ":" + adjective + ":a";
 		}
 	} else {  // predicative
-		return "-" + adjective + "-";
+		return ":" + adjective + ":";
 	}
 }
 
 function isLeAdjective(etymology: LinkString): boolean {
-	for (let piece of etymology) {
-		if (typeof piece === 'string') {
-			continue;
-		}
-		if (piece.word.FN === 'le') {
-			return true;
-		}
-	}
-
-	return false;
+	return etymology.includes('[le:aff:pre]');
 }
 
 /**
@@ -92,6 +89,9 @@ export function parse(word: string): AdjectiveConjugationStep[] {
 	for (let i = 0; i < candidates.length; i++) {
 		const candidate = candidates[i];
 		let conjugation = conjugate(candidate["root"], candidate["form"]);
+		if (conjugation === null) {
+			continue;
+		}
 		if (!conjugationString.stringAdmits(conjugation, word)) {
 			candidate["correction"] = word;
 		}
@@ -104,4 +104,3 @@ export function parse(word: string): AdjectiveConjugationStep[] {
 
 	return result;
 }
-

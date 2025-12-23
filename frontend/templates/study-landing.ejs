@@ -14,7 +14,7 @@
 					<div class="card disabled">
 						<div class="content">
 							<div class="header"><%= course['name'] %></div>
-							<div class="description"><%= course['description'] %></div>
+							<div class="description"><%- course['description'] %></div>
 						</div>
 						<div class="extra content">
 							<i class="sitemap icon"></i>
@@ -28,7 +28,7 @@
 		<%- include('login-modal.ejs') %>
 
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
-		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
 		<script src="/js/ui-translations.js"></script>
 		<script>
 			$(() => {

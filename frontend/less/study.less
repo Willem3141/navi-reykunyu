@@ -13,6 +13,13 @@
 	}
 }
 
+.mark-stress-thin() {
+	.mark-stress();
+	.stressed {
+		text-decoration-thickness: 1px;
+	}
+}
+
 .ui.cards {
 	a.card:hover {
 		text-decoration: none;
@@ -183,4 +190,8 @@ ul#reviewed-words {
 			}
 		}
 	}
+}
+
+.word-link {
+	.mark-stress-thin();
 }

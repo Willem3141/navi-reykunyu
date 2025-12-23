@@ -1,0 +1,98 @@
+@import 'fonts.less';
+@import 'colors.less';
+@import 'development-banner.less';
+@import 'global.less';
+@import 'header.less';
+@import 'help.less';
+@import 'mass-editors.less';
+@import 'search-ui.less';
+@import 'semantic-overrides.less';
+@import 'word-list.less';
+
+#visual-page {
+	display: flex;
+	flex-direction: column;
+	padding: 5px 0px;
+
+	.field {
+		display: flex;
+		align-items: start;
+		margin: 5px 10px;
+
+		label {
+			text-align: right;
+			margin: 0;
+			margin-right: 7px;
+			flex: 155px 0 0;
+			padding-top: 9px;
+
+			.info-spawner {
+				display: inline-block;
+				color: var(--muted-color);
+				margin-left: 8px;
+
+				&:after {
+					white-space: unset;
+					width: 400px;
+				}
+
+				&:hover {
+					color: var(--primary-color);
+				}
+			}
+		}
+
+		input,
+		.ui.selection.dropdown {
+			flex: 1;
+		}
+
+		.row-buttons {
+			flex: 33px 0 0;
+
+			.delete-button {
+				display: inline-block;
+				color: var(--muted-color);
+				margin-left: 12px;
+				margin-top: 8px;
+				cursor: pointer;
+
+				&:hover {
+					color: var(--primary-color);
+				}
+			}
+		}
+	}
+
+	.add-button-container {
+		margin-left: 172px;
+
+		.button {
+			margin: 5px 0;
+			margin-right: 8px;
+		}
+	}
+}
+
+.ui.button.template-button {
+	margin-top: 5px;
+}
+
+#preview-container {
+	padding-top: 6px;
+}
+
+.ui.form textarea {
+	min-height: 38px;
+	padding: .67857143em 1em;
+}
+
+.ui.action.input:not([class*="left action"]) > textarea {
+	border-top-right-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
+	border-right-color: transparent !important;
+}
+
+.monospaced {
+	font-variation-settings: "MONO" 1;
+}

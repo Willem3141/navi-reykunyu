@@ -1,0 +1,163 @@
+<!doctype html>
+
+<% const languages = [
+	['Danish', 'da'],
+	['Dutch', 'nl'],
+	['Estonian', 'et'],
+	['French', 'fr'],
+	['German', 'de'],
+	['Hungarian', 'hu'],
+	['Italian', 'it'],
+	['Polish', 'pl'],
+	['Russian', 'ru'],
+	['Swedish', 'sv'],
+]; %>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Word editor', 'css': 'editor.css' }) %>
+	<body data-url="<%= post_url %>">
+		<div class="container">
+			<%- include('header.ejs') %>
+		</div>
+
+		<div class="container wide">
+			<div class="ui grid">
+				<div class="doubling two column row">
+					<div class="column">
+						<div id="visual-or-json-tabs" class="ui top attached tabular menu">
+							<div class="item active" id="visual-tab">Visual editor</div>
+							<div class="item" id="json-tab">JSON</div>
+						</div>
+						<div class="page ui form" id="visual-page">
+							<!--<div class="buttons">
+								<div class="ui basic compact button" data-tooltip="Only necessary if the pronunciation differs from the spelling."><i class="ui plus icon"></i> Pronunciation</div>
+							</div>
+							<div class="buttons">
+								<div class="ui basic compact button" id="add-definition-button"><i class="ui plus icon"></i> Definition</div>
+								<div class="ui basic compact button" id="add-meaning-note-button"><i class="ui plus icon"></i> Meaning note</div>
+								<div class="ui basic compact button" id="add-etymology-button"><i class="ui plus icon"></i> Etymology</div>
+								<div class="ui basic compact button" id="add-source-button"><i class="ui plus icon"></i> Source</div>
+								<div class="ui basic compact button" id="add-status-button"><i class="ui plus icon"></i> Status</div>
+								<div class="ui basic compact button" id="add-image-button"><i class="ui plus icon"></i> Image</div>
+							</div>-->
+						</div>
+						<div class="page" id="json-page" style="display: none;">
+							<div class="ui form" style="margin-top: 10px;">
+								<textarea id="json-field" class="monospaced" rows="25"><%= JSON.stringify(word, null, 4); %></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="column">
+						<div class="ui top attached tabular menu">
+							<div class="item active">Preview</div>
+						</div>
+						<div id="preview-container"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="ui section divider"></div>
+			<div class="button-row"></div>
+				<a href="/" class="ui basic submit button">
+					Cancel
+				</a>
+				<div id="save-button" class="ui primary submit icon labeled button">
+					<i class="check icon"></i>
+					Save
+				</div>
+			</div>
+		</div>
+
+		<div id="translations-modal" class="ui modal">
+			<div class="header">Edit translations</div>
+			<div class="scrolling content">
+				<div class="ui form">
+					<table class="ui compact celled definition table">
+						<tbody>
+							<tr>
+								<td class="three wide">English</td>
+								<td>
+									<div class="field">
+										<input id="translation-en-field" type="text"></input>
+									</div>
+								</td>
+							</tr>
+							<% for (let lang of languages) { %>
+							<tr>
+								<td><%= lang[0] %></td>
+								<td>
+									<div class="field">
+										<input id="translation-<%= lang[1] %>-field" type="text"></input>
+									</div>
+								</td>
+							</tr>
+							<% } %>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="actions">
+				<div id="translations-modal-cancel-button" class="ui basic button">
+					<i class="close icon"></i> Cancel
+				</div>
+				<div id="translations-modal-ok-button" class="ui primary approve button">
+					<i class="checkmark icon"></i> OK
+				</div>
+			</div>
+		</div>
+
+		<div id="source-modal" class="ui modal">
+			<div class="header">Edit source</div>
+			<div class="scrolling content">
+				<div class="ui form">
+					<table class="ui compact celled definition table">
+						<tbody>
+							<tr>
+								<td class="three wide">Title</td>
+								<td class="eleven wide">
+									<input id="source-title-field" type="text"></input>
+									<div class="muted">Templates: <div class="ui basic compact button template-button" data-template="Na'viteri: “&lt;title&gt;”">Na'viteri</div> <div class="ui basic compact button template-button" data-template="Na'viteri comment: “&lt;title&gt;”">Na'viteri comment</div> <div class="ui basic compact button template-button" data-template="&lt;user&gt; on the LN Forum: “&lt;title&gt;”">LN Forum</div></div>
+								</td>
+							</tr>
+							<tr>
+								<td>URL</td>
+								<td>
+									<input id="source-url-field" type="url"></input>
+								</td>
+							</tr>
+							<tr>
+								<td>Date</td>
+								<td>
+									<input id="source-date-field" type="date"></input>
+								</td>
+							</tr>
+							<tr>
+								<td>Note <span class="muted">(optional)</span></td>
+								<td>
+									<input id="source-note-field" type="text"></input>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="actions">
+				<div id="source-modal-cancel-button" class="ui basic button">
+					<i class="close icon"></i> Cancel
+				</div>
+				<div id="source-modal-ok-button" class="ui primary approve button">
+					<i class="checkmark icon"></i> OK
+				</div>
+			</div>
+		</div>
+
+		<%- include('infix-details-modal.ejs') %>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/edit.js"></script>
+	</body>
+</html>

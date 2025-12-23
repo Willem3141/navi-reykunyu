@@ -1,20 +1,20 @@
-<% if (user && user['is_admin']) { %>
+<% if (locals['user'] && locals['user']['is_admin']) { %>
 <div class="ui icon top right pointing dropdown basic button">
 	<i class="wrench icon"></i><span class="button-label"><%- _("menu-administration") %></span><i class="dropdown icon"></i>
 	<div class="menu">
 		<a href="/add" class="item"><%- _("menu-add-new-word") %></a>
 		<a href="/history" class="item"><%- _("menu-recent-edits") %></a>
 		<a href="/untranslated" class="item"><%- _("menu-untranslated-words") %></a>
-		<a href="/etymology-editor" class="item"><%- _("menu-etymology-editor") %></a>
 		<a href="/sources-editor" class="item"><%- _("menu-sources-editor") %></a>
-		<a href="/corpus-editor" class="item"><%- _("menu-corpus-editor") %></a>
+		<a href="/translations-editor" class="item"><%- _("menu-translations-editor") %></a>
+		<a href="/data-errors" class="item"><%- _("menu-data-errors") %></a>
 		<a onclick="document.getElementById('logout-form').submit();" class="item"><%- _("menu-logout") %></a>
 		<form id="logout-form" action="/auth/logout" method="post"></form>
 	</div>
 </div>
-<% } else if (user) { %>
+<% } else if (locals['user']) { %>
 <a onclick="document.getElementById('logout-form').submit();" class="ui icon basic button"><i class="user icon"></i><span class="button-label"><%- _("menu-logout") %></span></a>
 <form id="logout-form" action="/auth/logout" method="post"></form>
 <% } else { %>
-<div id="login-button" class="ui icon basic button"><i class="user icon"></i><span class="button-label"><%- _("menu-login") %></span></div>
+<div id="login-button" class="ui icon basic button<% if (locals['offline']) { %> disabled<% } %>"><i class="user icon"></i><span class="button-label"><%- _("menu-login") %></span></div>
 <% } %>
