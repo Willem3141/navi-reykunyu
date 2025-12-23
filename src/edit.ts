@@ -115,22 +115,3 @@ export function updateTranslation(id: number, field: string, index: number, lang
 export function getAll(): WordData[] {
 	return readJson();
 }
-
-export function getUntranslated(language: string): WordData[] {
-	const json = readJson();
-	let results: WordData[] = [];
-
-	wordLoop:
-	for (let w in json) {
-		let word = json[w];
-		for (let translation of word['translations']) {
-			if (!translation.hasOwnProperty(language) ||
-				translation[language].length === 0) {
-				results.push(word);
-				continue wordLoop;
-			}
-		}
-	}
-
-	return results;
-}
