@@ -271,7 +271,7 @@ class ReviewPage {
 		}
 		$modal.find('.navi-face').attr('src', '/images/study/' + emotion + '.png');
 		$modal.find('.navi-face-description').text(this.correctCount + '/' + this.currentItemIndex +
-			' correct (' + Math.round(fraction * 100) + '%)');
+			' ' + _('correct-count') + ' (' + Math.round(fraction * 100) + '%)');
 		$modal.modal({
 			'allowMultiple': true,
 			'closable': false
