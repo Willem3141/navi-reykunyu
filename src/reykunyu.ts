@@ -39,7 +39,7 @@ export default class Reykunyu {
 	allWords!: WordData[];
 	allWordsOfType!: { [type: string]: WordData[] };
 
-	dataErrorList!: string[];
+	dataErrorList!: DataIssue[];
 
 	constructor(dictionaryJSON: any) {
 		this.loadData(dictionaryJSON);
@@ -131,7 +131,7 @@ export default class Reykunyu {
 		}
 	}
 
-	preprocessWord(word: WordData, dataErrorList: string[]) {
+	preprocessWord(word: WordData, dataErrorList: DataIssue[]) {
 		// pronunciation
 		if (word['pronunciation']) {
 			for (let pronunciation of word['pronunciation']) {
@@ -140,6 +140,9 @@ export default class Reykunyu {
 					'RN': ipa.generateIpa(pronunciation, word['type'], 'RN')
 				};
 			}
+		}
+		else {
+			dataErrorList.push({word_id:word["id"], word:word['na\'vi'],type:'warning', message: "Missing pronunciation data"});
 		}
 
 		// etymology and derived words
@@ -174,6 +177,11 @@ export default class Reykunyu {
 					word['seeAlso'][i] = wordLinks.stripToLinkData(result);
 				}
 			}
+		}
+
+		// to do notes
+		if (word['todo']) {
+			dataErrorList.push({word_id:word["id"], word:word['na\'vi'],type:'todo', message: word['todo']});
 		}
 
 		// conjugation tables
@@ -1181,11 +1189,16 @@ export default class Reykunyu {
 		fs.writeFileSync('./data/corpus.json', JSON.stringify(sentences));
 	}*/
 
-	getDataErrors(): string[] {
+	getDataErrors(): DataIssue[] {
 		return this.dataErrorList;
 	}
 
 	getDataErrorCount(): number {
-		return this.dataErrorList.length;
+		let errorCount = 0;
+		for (let error of this.dataErrorList) {
+			if (error.type === 'error')
+				errorCount++;
+		}
+		return errorCount;
 	}
 }
