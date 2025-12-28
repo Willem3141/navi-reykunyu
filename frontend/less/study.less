@@ -123,6 +123,7 @@
 
 	.additional-question-label {
 		font-size: 1rem;
+		padding-bottom: 6px;
 	}
 
 	.stress-buttons-container {
@@ -130,7 +131,27 @@
 			color: var(--primary-color) !important;
 			font-size: 1.5rem;
 			flex-grow: 0;
+
+			&.incorrect {
+				padding-left: 40px;
+				display: relative;
+
+				&:before {
+					content: 'x';
+					color: #d6443f;
+					font-size: 150%;
+					position: absolute;
+					top: 10px;
+					left: 14px;
+					font-weight: 550;
+				}
+			}
 		}
+	}
+
+	.stress-text {
+		padding-left: 15px;
+		font-size: 1.5rem;
 	}
 }
 

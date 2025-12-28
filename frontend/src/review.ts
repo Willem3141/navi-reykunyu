@@ -308,6 +308,7 @@ class QuestionSlide extends Slide {
 	$card?: JQuery;
 	$meaningInput!: JQuery;
 	$stressInput: JQuery | null = null;
+	$correction!: JQuery;
 	$checkButton!: JQuery;
 	$exitButton!: JQuery;
 
@@ -341,11 +342,11 @@ class QuestionSlide extends Slide {
 				.addClass('additional-question')
 				.hide()
 				.appendTo($container);
-			$('<div/>')
+			const $stressButtonsContainer = $('<div/>')
 				.addClass('additional-question-label')
 				.html(_('syllables-input-question'))
 				.appendTo(this.$stressInput);
-			const $stressButtonsContainer = $('<div/>')
+			const $stressButtonsBar = $('<div/>')
 				.addClass('ui icon compact basic buttons stress-buttons-container')
 				.appendTo(this.$stressInput);
 			for (let syllable = 0; syllable < syllables.length; syllable++) {
@@ -353,16 +354,36 @@ class QuestionSlide extends Slide {
 					.addClass('ui button stress-button')
 					.text(syllables[syllable])
 					.attr('data-index', syllable + 1)
-					.on('click', () => {
+					.on('click', (e) => {
+						this.$stressInput!.addClass('disabled');
 						if (syllable + 1 === this.getCorrectStress()) {
 							this.markCorrect();
 						} else {
+							$(e.target).addClass('incorrect');
+
+							// Ensure that the stress buttons are visible, even
+							// if the “click” happened automatically.
+							this.$stressInput!.show();
+
 							this.markIncorrect();
 						}
 					})
-					.appendTo($stressButtonsContainer);
+					.appendTo($stressButtonsBar);
+			}
+
+			if (this.word['type'] === 'n:si') {
+				$('<div/>')
+					.addClass('stress-text')
+					.text('si')
+					.appendTo(this.$stressInput);
 			}
 		}
+
+		this.$correction = $('<div/>')
+			.addClass('correction')
+			.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
+			.hide()
+			.appendTo($container);
 
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('buttons under-card')
@@ -472,10 +493,6 @@ class QuestionSlide extends Slide {
 			} else {
 				this.$meaningInput.prop('disabled', true);
 				this.$meaningInput.parent().addClass('error');
-				this.$checkButton.prop('disabled', true);
-				$('<div/>').addClass('correction')
-					.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
-					.insertAfter(this.$meaningInput.parent());
 				this.markIncorrect();
 			}
 			return;
@@ -487,9 +504,13 @@ class QuestionSlide extends Slide {
 		this.$checkButton.prop('disabled', true);
 
 		// Do we need to ask for stress?
-		if (this.$stressInput !== null && givenStress === null) {
-			this.$stressInput.show();
-			// TODO
+		if (this.$stressInput !== null) {
+			if (givenStress !== null) {
+				let $button = $(this.$stressInput.find('.stress-button')[givenStress - 1]);
+				$button.trigger('click');
+			} else {
+				this.$stressInput.show();
+			}
 			return;
 		}
 
@@ -505,6 +526,9 @@ class QuestionSlide extends Slide {
 	}
 
 	markIncorrect(): void {
+		this.$checkButton.prop('disabled', true);
+		this.$correction.show();
+
 		$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
 			setTimeout(() => {
 				this.toNextItem(false);
