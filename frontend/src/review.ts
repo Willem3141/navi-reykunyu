@@ -307,6 +307,7 @@ class QuestionSlide extends Slide {
 
 	$card?: JQuery;
 	$meaningInput!: JQuery;
+	$stressInput: JQuery | null = null;
 	$checkButton!: JQuery;
 	$exitButton!: JQuery;
 
@@ -334,6 +335,35 @@ class QuestionSlide extends Slide {
 				}
 			});
 
+		let syllables = this.getSyllables();
+		if (syllables !== null) {
+			this.$stressInput = $('<div/>')
+				.addClass('additional-question')
+				.hide()
+				.appendTo($container);
+			$('<div/>')
+				.addClass('additional-question-label')
+				.html(_('syllables-input-question'))
+				.appendTo(this.$stressInput);
+			const $stressButtonsContainer = $('<div/>')
+				.addClass('ui icon compact basic buttons stress-buttons-container')
+				.appendTo(this.$stressInput);
+			for (let syllable = 0; syllable < syllables.length; syllable++) {
+				$('<div/>')
+					.addClass('ui button stress-button')
+					.text(syllables[syllable])
+					.attr('data-index', syllable + 1)
+					.on('click', () => {
+						if (syllable + 1 === this.getCorrectStress()) {
+							this.markCorrect();
+						} else {
+							this.markIncorrect();
+						}
+					})
+					.appendTo($stressButtonsContainer);
+			}
+		}
+
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('buttons under-card')
 			.appendTo($container);
@@ -354,6 +384,36 @@ class QuestionSlide extends Slide {
 
 	getCorrectAnswer(): string {
 		return this.word['word_raw']['FN'].toLowerCase() + (this.word['type'] === 'n:si' ? ' si' : '');
+	}
+
+	/// Returns an array of the current word's pronunciation's syllables, or
+	/// `null` if the stress shouldn't be asked (i.e., if the word has only one
+	/// single syllable, or it has either none or multiple pronunciations
+	/// defined).
+	getSyllables(): string[] | null {
+		if (!this.word['pronunciation'] || this.word['pronunciation'].length !== 1) {
+			return null;
+		}
+
+		let pronunciation = this.word['pronunciation'][0];
+		let syllables = pronunciation.syllables.split('-');
+		if (syllables.length === 1) {
+			return null;
+		}
+
+		return syllables;
+	}
+
+	/// Returns the (1-based) index of the stressed syllable, or `null` if the
+	/// stress shouldn't be asked (i.e., if the word has only one single syllable,
+	/// or it has either none or multiple pronunciations defined).
+	getCorrectStress(): number | null {
+		if (this.getSyllables() === null) {
+			return null;
+		}
+
+		let pronunciation = this.word['pronunciation']![0];
+		return pronunciation.stressed;
 	}
 
 	isConfusable(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form' | null {
@@ -416,24 +476,40 @@ class QuestionSlide extends Slide {
 				$('<div/>').addClass('correction')
 					.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
 					.insertAfter(this.$meaningInput.parent());
-				$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
-					setTimeout(() => {
-						this.toNextItem(false);
-					}, QuestionSlide.INCORRECT_WAITING_TIME);
-				});
+				this.markIncorrect();
 			}
-		} else {
-			this.$meaningInput.addClass('correct')
-				.prop('disabled', true);
-			this.$checkButton.prop('disabled', true);
-
-			// don't need to ask for stress
-			$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
-				setTimeout(() => {
-					this.toNextItem(true);
-				}, QuestionSlide.CORRECT_WAITING_TIME);
-			});
+			return;
 		}
+
+		// Answer was correct.
+		this.$meaningInput.addClass('correct')
+			.prop('disabled', true);
+		this.$checkButton.prop('disabled', true);
+
+		// Do we need to ask for stress?
+		if (this.$stressInput !== null && givenStress === null) {
+			this.$stressInput.show();
+			// TODO
+			return;
+		}
+
+		this.markCorrect();
+	}
+
+	markCorrect(): void {
+		$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
+			setTimeout(() => {
+				this.toNextItem(true);
+			}, QuestionSlide.CORRECT_WAITING_TIME);
+		});
+	}
+
+	markIncorrect(): void {
+		$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
+			setTimeout(() => {
+				this.toNextItem(false);
+			}, QuestionSlide.INCORRECT_WAITING_TIME);
+		});
 	}
 }
 
