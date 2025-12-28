@@ -1,10 +1,10 @@
 import { buildQuestionCard, buildWordPill, getDisplayedNavi } from "./study-lib";
 
-/// List of alternatives for each word. If the user answers with an alternative
+/// List of confusables for each word. If the user answers with an alternative
 /// in this list, the answer isn't marked incorrect, but instead they get the
 /// chance to try again.
-type Alternative = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form'];
-const alternatives: Record<string, Alternative[]> = {
+type Confusable = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form'];
+const confusables: Record<string, Confusable[]> = {
 	'nìlam:adv': ['tatlam'],
 	'tatlam:adv': ['nìlam'],
 	'za\'ärìp:v:tr': ['zärìp'],
@@ -356,23 +356,31 @@ class QuestionSlide extends Slide {
 		return this.word['word_raw']['FN'].toLowerCase() + (this.word['type'] === 'n:si' ? ' si' : '');
 	}
 
-	isAlternative(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form' | null {
+	isConfusable(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form' | null {
 		let key = this.word['word_raw']['FN'] + ':' + this.word['type'];
 		key = key.toLowerCase();
-		if (alternatives[key]) {
-			for (let alternative of alternatives[key]) {
-				if (typeof alternative === 'string') {
-					if (alternative === answer) {
+		if (confusables[key]) {
+			for (let confusable of confusables[key]) {
+				if (typeof confusable === 'string') {
+					if (confusable === answer) {
 						return 'synonym';
 					}
 				} else {
-					if (alternative[0] === answer) {
-						return alternative[1];
+					if (confusable[0] === answer) {
+						return confusable[1];
 					}
 				}
 			}
 		}
 		return null;
+	}
+
+	preprocessAnswer(answer: string): string {
+		answer = answer.replace(/’/g, "'");
+		answer = answer.replace(/‘/g, "'");
+		answer = answer.toLowerCase();
+		answer = answer.replace(/[\[\]<>+\-]/g, '');
+		return answer;
 	}
 
 	checkAnswer(): void {
@@ -383,17 +391,16 @@ class QuestionSlide extends Slide {
 			givenAnswer = givenAnswer.substring(0, givenAnswer.length - 1).trim();
 			givenStress = lastCharacter;
 		}
-		givenAnswer = givenAnswer.replace(/’/g, "'");
-		givenAnswer = givenAnswer.replace(/‘/g, "'");
+		givenAnswer = this.preprocessAnswer(givenAnswer);
 		this.$meaningInput.val(givenAnswer);
-		givenAnswer = givenAnswer.toLowerCase();
-		givenAnswer = givenAnswer.replace(/[\[\]<>+\-]/g, '');
 
+		// If the answer is incorrect, check if the answer is confusable. If so,
+		// give another chance.
 		if (givenAnswer !== this.getCorrectAnswer()) {
-			let alternativeType = this.isAlternative(givenAnswer);
-			if (alternativeType) {
+			let confusableType = this.isConfusable(givenAnswer);
+			if (confusableType) {
 				this.$meaningInput.popup({
-					'content': _(alternativeType + '-note'),
+					'content': _(confusableType + '-note'),
 					'position': 'bottom center',
 					'on': 'manual'
 				});
