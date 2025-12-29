@@ -14,28 +14,48 @@ class DataErrorsPage {
 	}
 
 	loadErrorList() {
-		let $results = $('#error-list-result');
-		$results.empty();
 		$('#spinner').show();
 
 		$.getJSON('/api/data-errors')
 			.done((errors) => {
 				$('#spinner').hide();
-				if (errors.length === 0) {
-					$('#no-errors').show();
-				} else {
-					for (let error of errors) {
-						let $item = $('<li/>').text(error);
-						$results.append($item);
-					}
-				}
+				$('#fail').hide();
+				$('#issue-results').show();
+				this.buildIssueTable("error", $('#error-table tbody'), $('#no-errors'), errors);
+				this.buildIssueTable("warning", $('#warning-table tbody'), $('#no-warnings'), errors);
+				this.buildIssueTable("todo", $('#todo-table tbody'), $('#no-todos'), errors);
 			})
 			.fail(() => {
-				$results.empty();
-				$('#no-errors').hide();
-				$results.append(this.createErrorBlock(_('word-list-error'), _('searching-error-description')));
+				$('#spinner').hide();
+				$('#issue-results').hide();
+				$('#fail').show();
+				$('#fail').append(this.createErrorBlock(_('word-list-error'), _('searching-error-description')));
 			});
 		return false;
+	}
+
+	buildIssueTable(issueType: string, $tableBody: JQuery, $placeholder: JQuery, issues: Array<DataIssue>) {
+		$tableBody.empty();
+		let issueCount = 0;
+		for (let issue of issues) {
+			let $editButton = $("<td><a class=\"ui icon basic button edit-button\" href=\"/edit?word=" + issue.word_id + "\"><i class=\"pencil icon\"></i></a></td>");
+			let $word = $("<td/>").html("<b>" + issue.word + "<b/>");
+			let $message = $("<td/>").text(issue.message);
+			let $row = $("<tr/>");
+			$row.append($editButton);
+			$row.append($word);
+			$row.append($message);
+			if (issue.type === issueType) {
+				issueCount++;
+				$tableBody.append($row);
+			}
+		}
+		if (issueCount > 0) {
+			$tableBody.show();
+		}
+		else {
+			$placeholder.show();
+		}
 	}
 
 	createErrorBlock(text: string, subText: string): JQuery {
