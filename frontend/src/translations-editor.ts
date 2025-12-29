@@ -165,6 +165,11 @@ class TranslationsEditorPage {
 				for (let word of dictionary) {
 					word['word'] = { 'FN': dialect.combinedToFN(word['na\'vi']) };
 					word['word_raw'] = { 'FN': dialect.makeRaw(word['word']['FN']) };
+					for (let key of ['short_translation', 'meaning_note', 'conjugation_note']) {
+						if (word[key] && typeof word[key] === 'string') {
+							word[key] = { 'en': word[key] };
+						}
+					}
 				}
 
 				dictionary.sort((a: WordData, b: WordData) => {

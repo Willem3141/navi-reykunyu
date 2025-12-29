@@ -584,22 +584,6 @@ app.post('/corpus-editor/edit',
 	}
 );*/
 
-app.get('/untranslated',
-	(req, res) => {
-		if (!req.user || !req.user['is_admin']) {
-			res.status(403);
-			res.render('403', pageVariables(req));
-			return;
-		}
-		let untranslated = edit.getUntranslated(translations.getLanguage());
-
-		res.render('untranslated', pageVariables(req, {
-			untranslated: untranslated,
-			language: translations.getLanguage()
-		}));
-	}
-);
-
 app.get('/data-errors',
 	(req, res) => {
 		if (!req.user || !req.user['is_admin']) {

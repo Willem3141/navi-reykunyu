@@ -88,7 +88,7 @@
 		color: var(--muted-color);
 		font-size: 1.5rem;
 	}
-	
+
 	#english {
 		margin-bottom: 15px;
 	}
@@ -114,6 +114,75 @@
 		padding: 18px;
 		font-size: 1.5rem;
 		text-align: center;
+	}
+}
+
+.additional-question {
+	padding: 20px 0;
+	text-align: center;
+
+	.additional-question-label {
+		font-size: 1rem;
+		padding-bottom: 6px;
+	}
+
+	.stress-buttons-container {
+		.ui.button.stress-button {
+			color: var(--primary-color) !important;
+			font-size: 1.5rem;
+			flex-grow: 0;
+			position: relative;
+
+			&::after {
+				content: attr(data-index);
+				color: var(--muted-color);
+				position: absolute;
+				top: 100%;
+				left: 0;
+				right: 0;
+				padding-top: 2px;
+				height: 15px;
+				font-weight: 500;
+				font-size: 60%;
+				text-align: center;
+			}
+
+			&.incorrect::after {
+				content: 'x';
+				font-weight: 700;
+				color: #9f3a38 !important;
+			}
+		}
+
+		&.disabled {
+			opacity: 0.45;
+			.ui.button.stress-button {
+				opacity: 1 !important;
+			}
+		}
+
+		&.incorrect {
+			/* mirror the look of an .error input field */
+			border-color: #e0b4b4;
+
+			.ui.button.stress-button {
+				color: #9f3a38 !important;
+				border-color: #e0b4b4;
+				background-color: #fff6f6 !important;
+			}
+
+			.ui.button.stress-button {
+				&::after {
+					color: var(--background-color);
+				}
+			}
+		}
+	}
+
+	.stress-text {
+		display: inline-block;
+		padding-left: 15px;
+		font-size: 1.5rem;
 	}
 }
 

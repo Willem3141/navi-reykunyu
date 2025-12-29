@@ -1,10 +1,10 @@
 import { buildQuestionCard, buildWordPill, getDisplayedNavi } from "./study-lib";
 
-/// List of alternatives for each word. If the user answers with an alternative
+/// List of confusables for each word. If the user answers with an alternative
 /// in this list, the answer isn't marked incorrect, but instead they get the
 /// chance to try again.
-type Alternative = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form'];
-const alternatives: Record<string, Alternative[]> = {
+type Confusable = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form'];
+const confusables: Record<string, Confusable[]> = {
 	'nìlam:adv': ['tatlam'],
 	'tatlam:adv': ['nìlam'],
 	'za\'ärìp:v:tr': ['zärìp'],
@@ -271,7 +271,7 @@ class ReviewPage {
 		}
 		$modal.find('.navi-face').attr('src', '/images/study/' + emotion + '.png');
 		$modal.find('.navi-face-description').text(this.correctCount + '/' + this.currentItemIndex +
-			' correct (' + Math.round(fraction * 100) + '%)');
+			' ' + _('correct-count') + ' (' + Math.round(fraction * 100) + '%)');
 		$modal.modal({
 			'allowMultiple': true,
 			'closable': false
@@ -307,6 +307,8 @@ class QuestionSlide extends Slide {
 
 	$card?: JQuery;
 	$meaningInput!: JQuery;
+	$stressInput: JQuery | null = null;
+	$correction!: JQuery;
 	$checkButton!: JQuery;
 	$exitButton!: JQuery;
 
@@ -334,6 +336,57 @@ class QuestionSlide extends Slide {
 				}
 			});
 
+		let syllables = this.getSyllables();
+		if (syllables !== null) {
+			this.$stressInput = $('<div/>')
+				.addClass('additional-question')
+				.hide()
+				.appendTo($container);
+			$('<div/>')
+				.addClass('additional-question-label')
+				.html(_('syllables-input-question'))
+				.appendTo(this.$stressInput);
+			const $stressButtonsContainer = $('<div/>')
+				.addClass('ui icon compact basic buttons stress-buttons-container')
+				.appendTo(this.$stressInput);
+			for (let syllable = 0; syllable < syllables.length; syllable++) {
+				$('<div/>')
+					.addClass('ui button stress-button')
+					.text(syllables[syllable])
+					.attr('data-index', syllable + 1)
+					.on('click', (e) => {
+						$stressButtonsContainer.addClass('disabled');
+						$stressButtonsContainer.find('.stress-button').addClass('disabled');
+						if (syllable + 1 === this.getCorrectStress()) {
+							this.markCorrect();
+						} else {
+							$stressButtonsContainer.addClass('incorrect');
+							$(e.target).addClass('incorrect');
+
+							// Ensure that the stress buttons are visible, even
+							// if the “click” happened automatically.
+							this.$stressInput!.show();
+
+							this.markIncorrect();
+						}
+					})
+					.appendTo($stressButtonsContainer);
+			}
+
+			if (this.word['type'] === 'n:si') {
+				$('<div/>')
+					.addClass('stress-text')
+					.text('si')
+					.appendTo(this.$stressInput);
+			}
+		}
+
+		this.$correction = $('<div/>')
+			.addClass('correction')
+			.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
+			.hide()
+			.appendTo($container);
+
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('buttons under-card')
 			.appendTo($container);
@@ -356,23 +409,61 @@ class QuestionSlide extends Slide {
 		return this.word['word_raw']['FN'].toLowerCase() + (this.word['type'] === 'n:si' ? ' si' : '');
 	}
 
-	isAlternative(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form' | null {
+	/// Returns an array of the current word's pronunciation's syllables, or
+	/// `null` if the stress shouldn't be asked (i.e., if the word has only one
+	/// single syllable, or it has either none or multiple pronunciations
+	/// defined).
+	getSyllables(): string[] | null {
+		if (!this.word['pronunciation'] || this.word['pronunciation'].length !== 1) {
+			return null;
+		}
+
+		let pronunciation = this.word['pronunciation'][0];
+		let syllables = pronunciation.syllables.split('-');
+		if (syllables.length === 1) {
+			return null;
+		}
+
+		return syllables;
+	}
+
+	/// Returns the (1-based) index of the stressed syllable, or `null` if the
+	/// stress shouldn't be asked (i.e., if the word has only one single syllable,
+	/// or it has either none or multiple pronunciations defined).
+	getCorrectStress(): number | null {
+		if (this.getSyllables() === null) {
+			return null;
+		}
+
+		let pronunciation = this.word['pronunciation']![0];
+		return pronunciation.stressed;
+	}
+
+	isConfusable(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form' | null {
 		let key = this.word['word_raw']['FN'] + ':' + this.word['type'];
 		key = key.toLowerCase();
-		if (alternatives[key]) {
-			for (let alternative of alternatives[key]) {
-				if (typeof alternative === 'string') {
-					if (alternative === answer) {
+		if (confusables[key]) {
+			for (let confusable of confusables[key]) {
+				if (typeof confusable === 'string') {
+					if (confusable === answer) {
 						return 'synonym';
 					}
 				} else {
-					if (alternative[0] === answer) {
-						return alternative[1];
+					if (confusable[0] === answer) {
+						return confusable[1];
 					}
 				}
 			}
 		}
 		return null;
+	}
+
+	preprocessAnswer(answer: string): string {
+		answer = answer.replace(/’/g, "'");
+		answer = answer.replace(/‘/g, "'");
+		answer = answer.toLowerCase();
+		answer = answer.replace(/[\[\]<>+\-]/g, '');
+		return answer;
 	}
 
 	checkAnswer(): void {
@@ -383,17 +474,16 @@ class QuestionSlide extends Slide {
 			givenAnswer = givenAnswer.substring(0, givenAnswer.length - 1).trim();
 			givenStress = lastCharacter;
 		}
-		givenAnswer = givenAnswer.replace(/’/g, "'");
-		givenAnswer = givenAnswer.replace(/‘/g, "'");
+		givenAnswer = this.preprocessAnswer(givenAnswer);
 		this.$meaningInput.val(givenAnswer);
-		givenAnswer = givenAnswer.toLowerCase();
-		givenAnswer = givenAnswer.replace(/[\[\]<>+\-]/g, '');
 
+		// If the answer is incorrect, check if the answer is confusable. If so,
+		// give another chance.
 		if (givenAnswer !== this.getCorrectAnswer()) {
-			let alternativeType = this.isAlternative(givenAnswer);
-			if (alternativeType) {
+			let confusableType = this.isConfusable(givenAnswer);
+			if (confusableType) {
 				this.$meaningInput.popup({
-					'content': _(alternativeType + '-note'),
+					'content': _(confusableType + '-note'),
 					'position': 'bottom center',
 					'on': 'manual'
 				});
@@ -405,28 +495,47 @@ class QuestionSlide extends Slide {
 			} else {
 				this.$meaningInput.prop('disabled', true);
 				this.$meaningInput.parent().addClass('error');
-				this.$checkButton.prop('disabled', true);
-				$('<div/>').addClass('correction')
-					.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
-					.insertAfter(this.$meaningInput.parent());
-				$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
-					setTimeout(() => {
-						this.toNextItem(false);
-					}, QuestionSlide.INCORRECT_WAITING_TIME);
-				});
+				this.markIncorrect();
 			}
-		} else {
-			this.$meaningInput.addClass('correct')
-				.prop('disabled', true);
-			this.$checkButton.prop('disabled', true);
-
-			// don't need to ask for stress
-			$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
-				setTimeout(() => {
-					this.toNextItem(true);
-				}, QuestionSlide.CORRECT_WAITING_TIME);
-			});
+			return;
 		}
+
+		// Answer was correct.
+		this.$meaningInput.addClass('correct')
+			.prop('disabled', true);
+		this.$checkButton.prop('disabled', true);
+
+		// Do we need to ask for stress?
+		if (this.$stressInput !== null) {
+			if (givenStress !== null) {
+				let $button = $(this.$stressInput.find('.stress-button')[givenStress - 1]);
+				$button.trigger('click');
+			} else {
+				this.$stressInput.show();
+			}
+			return;
+		}
+
+		this.markCorrect();
+	}
+
+	markCorrect(): void {
+		$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
+			setTimeout(() => {
+				this.toNextItem(true);
+			}, QuestionSlide.CORRECT_WAITING_TIME);
+		});
+	}
+
+	markIncorrect(): void {
+		this.$checkButton.prop('disabled', true);
+		this.$correction.show();
+
+		$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
+			setTimeout(() => {
+				this.toNextItem(false);
+			}, QuestionSlide.INCORRECT_WAITING_TIME);
+		});
 	}
 }
 
