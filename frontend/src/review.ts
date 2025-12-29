@@ -354,13 +354,14 @@ class QuestionSlide extends Slide {
 					.addClass('ui button stress-button')
 					.text(syllables[syllable])
 					.attr('data-index', syllable + 1)
-					.on('click', () => {
+					.on('click', (e) => {
 						$stressButtonsContainer.addClass('disabled');
 						$stressButtonsContainer.find('.stress-button').addClass('disabled');
 						if (syllable + 1 === this.getCorrectStress()) {
 							this.markCorrect();
 						} else {
 							$stressButtonsContainer.addClass('incorrect');
+							$(e.target).addClass('incorrect');
 
 							// Ensure that the stress buttons are visible, even
 							// if the “click” happened automatically.

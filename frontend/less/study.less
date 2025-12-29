@@ -146,6 +146,12 @@
 				font-size: 60%;
 				text-align: center;
 			}
+
+			&.incorrect::after {
+				content: 'x';
+				font-weight: 700;
+				color: #9f3a38 !important;
+			}
 		}
 
 		&.disabled {
@@ -163,6 +169,12 @@
 				color: #9f3a38 !important;
 				border-color: #e0b4b4;
 				background-color: #fff6f6 !important;
+			}
+
+			.ui.button.stress-button {
+				&::after {
+					color: var(--background-color);
+				}
 			}
 		}
 	}
