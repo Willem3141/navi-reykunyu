@@ -132,19 +132,26 @@
 			font-size: 1.5rem;
 			flex-grow: 0;
 
-			&.incorrect {
-				padding-left: 40px;
-				display: relative;
+			&::after {
+				content: '';
+			}
+		}
 
-				&:before {
-					content: 'x';
-					color: #d6443f;
-					font-size: 150%;
-					position: absolute;
-					top: 10px;
-					left: 14px;
-					font-weight: 550;
-				}
+		&.disabled {
+			opacity: 0.45;
+			.ui.button.stress-button {
+				opacity: 1 !important;
+			}
+		}
+
+		&.incorrect {
+			/* mirror the look of an .error input field */
+			border-color: #e0b4b4;
+
+			.ui.button.stress-button {
+				color: #9f3a38 !important;
+				border-color: #e0b4b4;
+				background-color: #fff6f6 !important;
 			}
 		}
 	}

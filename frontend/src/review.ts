@@ -342,11 +342,11 @@ class QuestionSlide extends Slide {
 				.addClass('additional-question')
 				.hide()
 				.appendTo($container);
-			const $stressButtonsContainer = $('<div/>')
+			$('<div/>')
 				.addClass('additional-question-label')
 				.html(_('syllables-input-question'))
 				.appendTo(this.$stressInput);
-			const $stressButtonsBar = $('<div/>')
+			const $stressButtonsContainer = $('<div/>')
 				.addClass('ui icon compact basic buttons stress-buttons-container')
 				.appendTo(this.$stressInput);
 			for (let syllable = 0; syllable < syllables.length; syllable++) {
@@ -354,12 +354,13 @@ class QuestionSlide extends Slide {
 					.addClass('ui button stress-button')
 					.text(syllables[syllable])
 					.attr('data-index', syllable + 1)
-					.on('click', (e) => {
-						this.$stressInput!.addClass('disabled');
+					.on('click', () => {
+						$stressButtonsContainer.addClass('disabled');
+						$stressButtonsContainer.find('.stress-button').addClass('disabled');
 						if (syllable + 1 === this.getCorrectStress()) {
 							this.markCorrect();
 						} else {
-							$(e.target).addClass('incorrect');
+							$stressButtonsContainer.addClass('incorrect');
 
 							// Ensure that the stress buttons are visible, even
 							// if the “click” happened automatically.
@@ -368,7 +369,7 @@ class QuestionSlide extends Slide {
 							this.markIncorrect();
 						}
 					})
-					.appendTo($stressButtonsBar);
+					.appendTo($stressButtonsContainer);
 			}
 
 			if (this.word['type'] === 'n:si') {
