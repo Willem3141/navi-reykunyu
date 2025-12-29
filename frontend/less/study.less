@@ -131,9 +131,20 @@
 			color: var(--primary-color) !important;
 			font-size: 1.5rem;
 			flex-grow: 0;
+			position: relative;
 
 			&::after {
-				content: '';
+				content: attr(data-index);
+				color: var(--muted-color);
+				position: absolute;
+				top: 100%;
+				left: 0;
+				right: 0;
+				padding-top: 2px;
+				height: 15px;
+				font-weight: 500;
+				font-size: 60%;
+				text-align: center;
 			}
 		}
 
