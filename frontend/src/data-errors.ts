@@ -41,7 +41,7 @@ class DataErrorsPage {
 			let $editButton = $("<td><a class=\"ui icon basic button edit-button\" href=\"/edit?word=" +
 				issue.word_id + "\"><i class=\"pencil icon\"></i></a></td>")
 				.css('width', '10%');
-			let $word = $("<td/>").html("<b>" + issue.word + "</b>").css('width', '20%');
+			let $word = $("<td/>").append($('<b/>').text(issue.word)).css('width', '20%');
 			let $message = $("<td/>").text(issue.message).css('width', '70%');
 			let $row = $("<tr/>");
 			$row.append($editButton);
@@ -58,9 +58,9 @@ class DataErrorsPage {
 
 	createErrorBlock(text: string, subText: string): JQuery {
 		let $error = $('<div/>').addClass('error');
-		$('<p/>').addClass('error-text').html(text).appendTo($error);
+		$('<p/>').addClass('error-text').text(text).appendTo($error);
 		$('<img/>').addClass('error-icon').attr("src", "/images/ke'u.svg").appendTo($error);
-		$('<p/>').addClass('error-subText').html(subText).appendTo($error);
+		$('<p/>').addClass('error-subText').text(subText).appendTo($error);
 		return $error;
 	}
 
