@@ -30,6 +30,7 @@ body.theme-fang {
 	--shaded-background-color: #f4c199;
 	--hovered-background-color: #f6ccaa;
 	--muted-color: #b45c14;
+	--disabled-color: #b45c14;
 	--border-color: #f0ac75;
 
 	@media (prefers-color-scheme: dark) {
@@ -37,6 +38,7 @@ body.theme-fang {
 		--shaded-background-color: #2a1504;
 		--hovered-background-color: #231103;
 		--muted-color: #b85c10;
+		--disabled-color: #b85c10;
 		--border-color: #773b0a;
 	}
 }
@@ -46,6 +48,7 @@ body.theme-pulse {
 	--shaded-background-color: #98c3e9;
 	--hovered-background-color: #a8ccec;
 	--muted-color: #1e588a;
+	--disabled-color: #1e588a;
 	--border-color: #87b9e5;
 
 	@media (prefers-color-scheme: dark) {
@@ -53,6 +56,7 @@ body.theme-pulse {
 		--shaded-background-color: #0e2b46;
 		--hovered-background-color: #0b243c;
 		--muted-color: #3878b5;
+		--disabled-color: #3878b5;
 		--border-color: #235889;
 	}
 }
@@ -61,7 +65,7 @@ body.theme-spirit {
 	--background-color: #ebcddd;
 	--shaded-background-color: #e0b1ca;
 	--hovered-background-color: #e6bfd4;
-	--muted-color: #ad2f72;
+	--disabled-color: #ad2f72;
 	--border-color: #d66ea5;
 
 	@media (prefers-color-scheme: dark) {
@@ -69,6 +73,7 @@ body.theme-spirit {
 		--shaded-background-color: #3c0823;
 		--hovered-background-color: #220414;
 		--muted-color: #c94f90;
+		--disabled-color: #c94f90;
 		--border-color: #6f244c;
 	}
 }
@@ -78,6 +83,7 @@ body.theme-thorn {
 	--shaded-background-color: #a8d8c1;
 	--hovered-background-color: #b6decb;
 	--muted-color: #357556;
+	--disabled-color: #357556;
 	--border-color: #8dccae;
 
 	@media (prefers-color-scheme: dark) {
@@ -85,6 +91,7 @@ body.theme-thorn {
 		--shaded-background-color: #202e27;
 		--hovered-background-color: #19241e;
 		--muted-color: #497560;
+		--disabled-color: #497560;
 		--border-color: #3e5e4f;
 	}
 }
@@ -96,4 +103,8 @@ body.theme-thorn {
 	background: linear-gradient(var(--shaded-background-color), var(--background-color)), var(--background-color);
 	background-size: 100% 200px;
 	background-repeat: no-repeat, repeat;
+
+	.ui.modal {
+		--muted-color: #888;
+	}
 }
