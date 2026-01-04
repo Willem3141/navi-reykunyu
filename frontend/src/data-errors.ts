@@ -20,10 +20,10 @@ class DataErrorsPage {
 			.done((errors) => {
 				$('#spinner').hide();
 				$('#fail').hide();
+				this.buildIssueTable("error", $('#error-table'), $('#no-errors'), errors);
+				this.buildIssueTable("warning", $('#warning-table'), $('#no-warnings'), errors);
+				this.buildIssueTable("todo", $('#todo-table'), $('#no-todos'), errors);
 				$('#issue-results').show();
-				this.buildIssueTable("error", $('#error-table tbody'), $('#no-errors'), errors);
-				this.buildIssueTable("warning", $('#warning-table tbody'), $('#no-warnings'), errors);
-				this.buildIssueTable("todo", $('#todo-table tbody'), $('#no-todos'), errors);
 			})
 			.fail(() => {
 				$('#spinner').hide();
@@ -38,9 +38,11 @@ class DataErrorsPage {
 		$tableBody.empty();
 		let issueCount = 0;
 		for (let issue of issues) {
-			let $editButton = $("<td><a class=\"ui icon basic button edit-button\" href=\"/edit?word=" + issue.word_id + "\"><i class=\"pencil icon\"></i></a></td>");
-			let $word = $("<td/>").html("<b>" + issue.word + "<b/>");
-			let $message = $("<td/>").text(issue.message);
+			let $editButton = $("<td><a class=\"ui icon basic button edit-button\" href=\"/edit?word=" +
+				issue.word_id + "\"><i class=\"pencil icon\"></i></a></td>")
+				.css('width', '10%');
+			let $word = $("<td/>").html("<b>" + issue.word + "</b>").css('width', '20%');
+			let $message = $("<td/>").text(issue.message).css('width', '70%');
 			let $row = $("<tr/>");
 			$row.append($editButton);
 			$row.append($word);
@@ -50,12 +52,8 @@ class DataErrorsPage {
 				$tableBody.append($row);
 			}
 		}
-		if (issueCount > 0) {
-			$tableBody.show();
-		}
-		else {
-			$placeholder.show();
-		}
+		$tableBody.toggle(issueCount > 0);
+		$placeholder.toggle(issueCount === 0);
 	}
 
 	createErrorBlock(text: string, subText: string): JQuery {
