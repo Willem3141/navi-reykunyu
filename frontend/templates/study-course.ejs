@@ -11,7 +11,7 @@
 			</div>
 			<div class="buttons">
 				<a class="ui <%= reviewableCount === 0 ? 'disabled ' : '' %>labeled button" href="/study/review?c=<%= course['id'] + 1 %>">
-					<div class="ui primary button">Review</div>
+					<div class="ui primary button"><%- _('review-button') %></div>
 					<div class="ui basic blue left pointing label"><%= reviewableCount %></div>
 				</a>
 			</div>
@@ -29,8 +29,8 @@
 							<b><%= lesson['total_count'] %></b> words
 							<br>
 							<i class="user icon"></i>
-							<b><%= lesson['known_count'] - lesson['reviewable_count'] %></b> known,
-							<b><%= lesson['reviewable_count'] %></b> up for review
+							<b><%= lesson['known_count'] - lesson['reviewable_count'] %></b> <%- _('known-word-count') %>,
+							<b><%= lesson['reviewable_count'] %></b> <%- _('up-for-review-count') %>
 						</div>
 						<div class="ui bottom blue attached progress">
 							<div class="bar" style="min-width: 0; width: <%= 100 * (lesson['known_count'] - lesson['reviewable_count']) / lesson['total_count'] %>%;"></div>
@@ -40,8 +40,7 @@
 			</ul>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
-		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
 		<script src="/js/ui-translations.js"></script>
 	</body>
 </html>
-

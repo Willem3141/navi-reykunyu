@@ -1,5 +1,3 @@
-export { getResponsesFor, getSuggestionsFor };
-
 import fs from 'fs';
 
 import * as output from './output';
@@ -18,7 +16,7 @@ Dictionary will not work.`);
 	annotated = {};
 }
 
-function getResponsesFor(query: string): string[] {
+export function getResponsesFor(query: string): {'results': string[]} {
 	// always pass combined here, as the Annotated Dictionary data is in FN;
 	// this way if someone inputs d, b, g they get preprocessed into tx, px, kx
 	query = preprocess.preprocessQuery(query, 'combined');
@@ -28,17 +26,11 @@ function getResponsesFor(query: string): string[] {
 	if (annotated.hasOwnProperty(query)) {
 		results = results.concat(annotated[query]);
 	}
-	let upperCasedQuery = query[0].toUpperCase() + query.substring(1);
-	if (upperCasedQuery !== query) {
-		if (annotated.hasOwnProperty(upperCasedQuery)) {
-			results = results.concat(annotated[upperCasedQuery]);
-		}
-	}
 
-	return results;
+	return {'results': results};
 }
 
-function getSuggestionsFor(query: string): Suggestions {
+export function getSuggestionsFor(query: string): Suggestions {
 	query = preprocess.preprocessQuery(query, 'combined');
 	query = query.toLowerCase();
 	let resultsArray: Suggestion[] = [];

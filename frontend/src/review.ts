@@ -1,20 +1,20 @@
 import { buildQuestionCard, buildWordPill, getDisplayedNavi } from "./study-lib";
 
-/// List of alternatives for each word. If the user answers with an alternative
+/// List of confusables for each word. If the user answers with an alternative
 /// in this list, the answer isn't marked incorrect, but instead they get the
 /// chance to try again.
-type Alternative = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction'];
-const alternatives: Record<string, Alternative[]> = {
+type Confusable = string | [string, 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form'];
+const confusables: Record<string, Confusable[]> = {
 	'nìlam:adv': ['tatlam'],
 	'tatlam:adv': ['nìlam'],
-	'za\'ärìp:vtr': ['zärìp'],
-	'zärìp:vtr': ['za\'ärìp'],
-	'kä\'ärìp:vtr': ['kärìp'],
-	'kärìp:vtr': ['kä\'ärìp'],
+	'za\'ärìp:v:tr': ['zärìp'],
+	'zärìp:v:tr': ['za\'ärìp'],
+	'kä\'ärìp:v:tr': ['kärìp'],
+	'kärìp:v:tr': ['kä\'ärìp'],
 	'zìsìtsaltrr:n': ['zìtsaltrr'],
 	'zìtsaltrr:n': ['zìsìtsaltrr'],
-	'eywa\'eveng:n': ['eyweveng'],
-	'eyweveng:n': ['eywa\'eveng'],
+	'eywa\'eveng:n:pr': ['eyweveng'],
+	'eyweveng:n:pr': ['eywa\'eveng'],
 	'fìtxan:adv': ['nìftxan'],
 	'nìftxan:adv': ['fìtxan'],
 	'pesu:inter': ['tupe'],
@@ -52,6 +52,8 @@ const alternatives: Record<string, Alternative[]> = {
 	'teyr:adj': [['teyrpin', 'wrong-type']],
 	'layompin:n': [['layon', 'wrong-type']],
 	'layon:adj': [['layompin', 'wrong-type']],
+	'neympin:n': [['neyn', 'wrong-type']],
+	'neyn:adj': [['neympin', 'wrong-type']],
 	'\'aw:num': [['fko', 'wrong-type'], ['pum', 'wrong-type']],
 	'yawntu:n': ['yawnetu'],
 	'yawnetu:n': ['yawntu'],
@@ -59,11 +61,119 @@ const alternatives: Record<string, Alternative[]> = {
 	'tsenge:n': ['tseng'],
 	'fìtseng:adv': ['fìtsenge'],
 	'fìtsenge:adv': ['fìtseng'],
+	'fìtseng:n': ['fìtsenge'],
+	'fìtsenge:n': ['fìtseng'],
 	'tsatseng:adv': ['tsatsenge'],
 	'tsatsenge:adv': ['tsatseng'],
+	'tsatseng:n': ['tsatsenge'],
+	'tsatsenge:n': ['tsatseng'],
 	'tem:v:in': [['toltem', 'wrong-type']],
 	'toltem:v:tr': [['tem', 'wrong-type']],
-	'\'em:v:tr': [['\'emyu', 'wrong-type']]
+	'\'em:v:tr': [['\'emyu', 'wrong-type']],
+	'fwa:ctr': ['a', ['fula', 'wrong-form'], ['futa', 'wrong-form'], ['fura', 'wrong-form'], ['furia', 'wrong-form']],
+	'a:part': ['fwa', 'fula', 'futa', 'fura', 'furia'],
+	'tsa\'u:pn': ['tsaw'],
+	'tìng nari:phr': ['nìn'],
+	'nìn:v:tr': ['tìng nari'],
+	'apxa:adj': ['tsawl'],
+	'ngampam:n': [['ngampam si', 'wrong-type']],
+	'ngampam:n:si': [['ngampam', 'wrong-type']],
+	'fnelan:n': [['lefnelan', 'wrong-type']],
+	'lefnelan:adj': [['fnelan', 'wrong-type']],
+	'fnele:n': [['lefnele', 'wrong-type']],
+	'lefnele:adj': [['fnele', 'wrong-type']],
+	'kuma:conj': ['akum'],
+	'akum:conj': ['kuma'],
+	'mawkrra:conj': ['akrrmaw'],
+	'akrrmaw:conj': ['mawkrra'],
+	'takrra:conj': ['akrrta'],
+	'akrrta:conj': ['takrra'],
+	'taluna:conj': ['alunta', 'talun'],
+	'alunta:conj': ['taluna', 'talun'],
+	'talun:conj': ['alunta', 'taluna'],
+	'ftxey:conj': ['fu'],
+	'fu:conj': ['ftxey'],
+	'srefwa:conj': [['srekrr', 'wrong-type']],
+	'srekrr:adv': [['srefwa', 'wrong-type']],
+	'mawfwa:conj': [['mawkrr', 'wrong-type']],
+	'mawkrr:adv': [['mawfwa', 'wrong-type']],
+	'taweyk:conj': ['taweyka'],
+	'taweyka:conj': ['taweyk'],
+	'vaykrr:conj': [['vay', 'wrong-type']],
+	'kehe:part': ['kea'],
+	'palulukan:n': ['palukan'],
+	'palukan:n': ['palulukan'],
+	'tìfkeytok:n': [['fkeyk', 'wrong-type']],
+	'fkeyk:aff:suf': [['tìfkeytok', 'wrong-type']],
+	'ye\'krr:adv': [['leye\'krr', 'wrong-type']],
+	'leye\'krr:adj': [['ye\'krr', 'wrong-type']],
+	'spe\'e:v:tr': [['tìspe\'e', 'wrong-type']],
+	'tìspe\'e:n': [['spe\'e', 'wrong-type']],
+	'hay:adj': [['nìhay', 'wrong-type']],
+	'nìhay:adv': [['hay', 'wrong-type']],
+	'fra\'u:pn': ['fraw'],
+	'fraw:pn': ['fra\'u'],
+	'penunyol:inter': ['nunyolpe'],
+	'nunyolpe:inter': ['penunyol'],
+	'pefyinep\'ang:inter': ['fyinep\'angpe'],
+	'fyinep\'angpe:inter': ['pefyinep\'ang'],
+	'pehem:inter': ['kempe'],
+	'kempe:inter': ['pehem'],
+	'\'ekxinumpe:inter': ['pekxinum'],
+	'pekxinum:inter': ['\'ekxinumpe'],
+	'la\'ape:inter': ['pela\'a'],
+	'pela\'a:inter': ['la\'ape'],
+	'somwewpe:inter': ['pesomwew'],
+	'pesomwew:inter': ['somwewpe'],
+	'lì\'upe:inter': ['pelì\'u'],
+	'pelì\'u:inter': ['lì\'upe'],
+	'lìmsimpe:inter': ['pelìmsim'],
+	'pelìmsim:inter': ['lìmsimpe'],
+	'pemstan:inter': ['mestampe'],
+	'mestampe:inter': ['pemstan'],
+	'pemste:inter': ['mestepe'],
+	'mestepe:inter': ['pemste'],
+	'pemsu:inter': ['mesupe'],
+	'mesupe:inter': ['pemsu'],
+	'pepstan:inter': ['pxestampe'],
+	'pxestampe:inter': ['pepstan'],
+	'pepste:inter': ['pxestepe'],
+	'pxestepe:inter': ['pepste'],
+	'pepsu:inter': ['pxesupe'],
+	'pxesupe:inter': ['pepsu'],
+	'paystan:inter': ['aystampe'],
+	'aystampe:inter': ['paystan'],
+	'payste:inter': ['aystepe'],
+	'aystepe:inter': ['payste'],
+	'paysu:inter': ['aysupe'],
+	'aysupe:inter': ['paysu'],
+	'komum:intj': ['kemum'],
+	'kemum:intj': ['komum'],
+	'letut:adj': ['lukftang'],
+	'lukftang:adj': ['letut'],
+	'penghrr:vin': ['pllhrr'],
+	'pllhrr:vin': ['penghrr'],
+	'säpenghrr:n': ['säpllhrr'],
+	'säpllhrr:n': ['säpenghrr'],
+	'palulukantsyìp:n': ['palukantsyìp'],
+	'palukantsyìp:n': ['palulukantsyìp'],
+	'tìkangkem:n': ['kangkem'],
+	'kangkem:n': ['tìkangkem'],
+	'\'opinvultsyìp:n': ['pinvul'],
+	'pinvul:n': ['\'opinvultsyìp'],
+	'tsmuk:n': ['tsmuktu'],
+	'tsmuktu:n': ['tsmuk'],
+	'pamrelvul:n': ['relvul'],
+	'relvul:n': ['pamrelvul'],
+	'säkeynven:n': ['skeynven'],
+	'skeynven:n': ['säkeynven'],
+	'pesrrpxì:inter': ['trrpxìpe', 'pehrrlik', 'krrlikpe'],
+	'trrpxìpe:inter': ['pesrrpxì', 'pehrrlik', 'krrlikpe'],
+	'pehrrlik:inter': ['pesrrpxì', 'trrpxìpe', 'krrlikpe'],
+	'krrlikpe:inter': ['pesrrpxì', 'trrpxìpe', 'pehrrlik'],
+	'lafyon:adj': ['hafyonga\'', 'txantslusam'],
+	'hafyonga\':adj': ['lafyon', 'txantslusam'],
+	'txantslusam:adj': ['lafyon', 'hafyonga\''],
 };
 
 class ReviewPage {
@@ -72,7 +182,7 @@ class ReviewPage {
 
 	/// All items we're supposed to show to the user.
 	items: WordData[];
-	
+
 	/// The index of the item we're currently showing.
 	currentItemIndex = 0;
 	correctCount = 0;
@@ -88,6 +198,8 @@ class ReviewPage {
 				'value': 0,
 				'total': this.items.length,
 				'label': 'ratio',
+				'precision': 3,
+				'autoSuccess': false,
 				'text': {
 					'ratio': '{value}/{total}'
 				},
@@ -97,7 +209,7 @@ class ReviewPage {
 
 	fetchAndSetUp(): void {
 		const item = this.items[this.currentItemIndex];
-		this.currentSlide = new QuestionSlide(item, this.doneRedirectUrl, this.toNextItem.bind(this));
+		this.currentSlide = new QuestionSlide(item, this.toNextItem.bind(this), this.showDoneModal.bind(this));
 		const $container = $('#main-container');
 		$container.empty();
 		this.currentSlide.renderIn($container);
@@ -116,10 +228,19 @@ class ReviewPage {
 		this.addToLearnedList(correct);
 		if (correct) {
 			this.correctCount++;
+		} else {
+			// reinsert into queue
+			function randomBetween(min: number, max: number): number {
+				return Math.floor(min + Math.random() * (max - min));
+			}
+			const index = randomBetween(this.currentItemIndex + 1, this.items.length + 1);
+			this.items.splice(index, 0, this.items[this.currentItemIndex]);
 		}
+
 		this.currentItemIndex++;
 		this.updateProgress();
 		if (this.currentItemIndex >= this.items.length) {
+			$('#progress-bar').progress('set success');
 			this.showDoneModal();
 		} else {
 			this.fetchAndSetUp();
@@ -127,6 +248,13 @@ class ReviewPage {
 	}
 
 	showDoneModal(): void {
+		// if the user reviewed no words at all, don't show the modal and
+		// instead just redirect immediately
+		if (this.currentItemIndex === 0) {
+			window.location.href = this.doneRedirectUrl;
+			return;
+		}
+
 		const $modal = $('#lesson-done-modal');
 		$modal.find('#review-count').text(this.currentItemIndex);
 		let fraction = this.correctCount / this.currentItemIndex;
@@ -143,7 +271,7 @@ class ReviewPage {
 		}
 		$modal.find('.navi-face').attr('src', '/images/study/' + emotion + '.png');
 		$modal.find('.navi-face-description').text(this.correctCount + '/' + this.currentItemIndex +
-			' correct (' + Math.round(fraction * 100) + '%)');
+			' ' + _('correct-count') + ' (' + Math.round(fraction * 100) + '%)');
 		$modal.modal({
 			'allowMultiple': true,
 			'closable': false
@@ -156,14 +284,19 @@ class ReviewPage {
 		$('#progress-bar').progress(
 			'set progress', this.currentItemIndex
 		);
+		$('#progress-bar').progress(
+			'set total', this.items.length
+		);
 	}
 }
 
 abstract class Slide {
 	toNextItem: (correct: boolean) => void;
+	exit: () => void;
 
-	constructor(toNextItem: (correct: boolean) => void) {
+	constructor(toNextItem: (correct: boolean) => void, exit: () => void) {
 		this.toNextItem = toNextItem;
+		this.exit = exit;
 	}
 
 	abstract renderIn($container: JQuery): void;
@@ -171,20 +304,20 @@ abstract class Slide {
 
 class QuestionSlide extends Slide {
 	word: WordData;
-	doneRedirectUrl: string;
 
 	$card?: JQuery;
 	$meaningInput!: JQuery;
+	$stressInput: JQuery | null = null;
+	$correction!: JQuery;
 	$checkButton!: JQuery;
 	$exitButton!: JQuery;
 
 	static readonly CORRECT_WAITING_TIME = 0;
 	static readonly INCORRECT_WAITING_TIME = 4000;
 
-	constructor(word: WordData, doneRedirectUrl: string, toNextItem: (correct: boolean) => void) {
-		super(toNextItem);
+	constructor(word: WordData, toNextItem: (correct: boolean) => void, exit: () => void) {
+		super(toNextItem, exit);
 		this.word = word;
-		this.doneRedirectUrl = doneRedirectUrl;
 	}
 
 	renderIn($container: JQuery): void {
@@ -202,7 +335,58 @@ class QuestionSlide extends Slide {
 					this.checkAnswer();
 				}
 			});
-		
+
+		let syllables = this.getSyllables();
+		if (syllables !== null) {
+			this.$stressInput = $('<div/>')
+				.addClass('additional-question')
+				.hide()
+				.appendTo($container);
+			$('<div/>')
+				.addClass('additional-question-label')
+				.html(_('syllables-input-question'))
+				.appendTo(this.$stressInput);
+			const $stressButtonsContainer = $('<div/>')
+				.addClass('ui icon compact basic buttons stress-buttons-container')
+				.appendTo(this.$stressInput);
+			for (let syllable = 0; syllable < syllables.length; syllable++) {
+				$('<div/>')
+					.addClass('ui button stress-button')
+					.text(syllables[syllable])
+					.attr('data-index', syllable + 1)
+					.on('click', (e) => {
+						$stressButtonsContainer.addClass('disabled');
+						$stressButtonsContainer.find('.stress-button').addClass('disabled');
+						if (syllable + 1 === this.getCorrectStress()) {
+							this.markCorrect();
+						} else {
+							$stressButtonsContainer.addClass('incorrect');
+							$(e.target).addClass('incorrect');
+
+							// Ensure that the stress buttons are visible, even
+							// if the “click” happened automatically.
+							this.$stressInput!.show();
+
+							this.markIncorrect();
+						}
+					})
+					.appendTo($stressButtonsContainer);
+			}
+
+			if (this.word['type'] === 'n:si') {
+				$('<div/>')
+					.addClass('stress-text')
+					.text('si')
+					.appendTo(this.$stressInput);
+			}
+		}
+
+		this.$correction = $('<div/>')
+			.addClass('correction')
+			.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
+			.hide()
+			.appendTo($container);
+
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('buttons under-card')
 			.appendTo($container);
@@ -217,9 +401,7 @@ class QuestionSlide extends Slide {
 			.popup({
 				position: 'top center'
 			})
-			.on('click', () => {
-				window.location.href = this.doneRedirectUrl;
-			})
+			.on('click', this.exit)
 			.appendTo($buttonsCard);
 	}
 
@@ -227,24 +409,63 @@ class QuestionSlide extends Slide {
 		return this.word['word_raw']['FN'].toLowerCase() + (this.word['type'] === 'n:si' ? ' si' : '');
 	}
 
-	isAlternative(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | null {
-		const key = this.word['word_raw']['FN'] + ':' + this.word['type'];
-		if (alternatives[key]) {
-			for (let alternative of alternatives[key]) {
-				if (typeof alternative === 'string') {
-					if (alternative === answer) {
+	/// Returns an array of the current word's pronunciation's syllables, or
+	/// `null` if the stress shouldn't be asked (i.e., if the word has only one
+	/// single syllable, or it has either none or multiple pronunciations
+	/// defined).
+	getSyllables(): string[] | null {
+		if (!this.word['pronunciation'] || this.word['pronunciation'].length !== 1) {
+			return null;
+		}
+
+		let pronunciation = this.word['pronunciation'][0];
+		let syllables = pronunciation.syllables.split('-');
+		if (syllables.length === 1) {
+			return null;
+		}
+
+		return syllables;
+	}
+
+	/// Returns the (1-based) index of the stressed syllable, or `null` if the
+	/// stress shouldn't be asked (i.e., if the word has only one single syllable,
+	/// or it has either none or multiple pronunciations defined).
+	getCorrectStress(): number | null {
+		if (this.getSyllables() === null) {
+			return null;
+		}
+
+		let pronunciation = this.word['pronunciation']![0];
+		return pronunciation.stressed;
+	}
+
+	isConfusable(answer: string): 'synonym' | 'wrong-type' | 'wrong-direction' | 'wrong-form' | null {
+		let key = this.word['word_raw']['FN'] + ':' + this.word['type'];
+		key = key.toLowerCase();
+		if (confusables[key]) {
+			for (let confusable of confusables[key]) {
+				if (typeof confusable === 'string') {
+					if (confusable === answer) {
 						return 'synonym';
 					}
 				} else {
-					if (alternative[0] === answer) {
-						return alternative[1];
+					if (confusable[0] === answer) {
+						return confusable[1];
 					}
 				}
 			}
 		}
 		return null;
 	}
-	
+
+	preprocessAnswer(answer: string): string {
+		answer = answer.replace(/’/g, "'");
+		answer = answer.replace(/‘/g, "'");
+		answer = answer.toLowerCase();
+		answer = answer.replace(/[\[\]<>+\-]/g, '');
+		return answer;
+	}
+
 	checkAnswer(): void {
 		let givenAnswer = ('' + this.$meaningInput.val()!).trim();
 		const lastCharacter = parseInt(givenAnswer.charAt(givenAnswer.length - 1), 10);
@@ -253,17 +474,16 @@ class QuestionSlide extends Slide {
 			givenAnswer = givenAnswer.substring(0, givenAnswer.length - 1).trim();
 			givenStress = lastCharacter;
 		}
-		givenAnswer = givenAnswer.replace(/’/g, "'");
-		givenAnswer = givenAnswer.replace(/‘/g, "'");
+		givenAnswer = this.preprocessAnswer(givenAnswer);
 		this.$meaningInput.val(givenAnswer);
-		givenAnswer = givenAnswer.toLowerCase();
-		givenAnswer = givenAnswer.replace(/[\[\]<>+\-]/g, '');
 
+		// If the answer is incorrect, check if the answer is confusable. If so,
+		// give another chance.
 		if (givenAnswer !== this.getCorrectAnswer()) {
-			let alternativeType = this.isAlternative(givenAnswer);
-			if (alternativeType) {
+			let confusableType = this.isConfusable(givenAnswer);
+			if (confusableType) {
 				this.$meaningInput.popup({
-					'content': _(alternativeType + '-note'),
+					'content': _(confusableType + '-note'),
 					'position': 'bottom center',
 					'on': 'manual'
 				});
@@ -275,28 +495,47 @@ class QuestionSlide extends Slide {
 			} else {
 				this.$meaningInput.prop('disabled', true);
 				this.$meaningInput.parent().addClass('error');
-				this.$checkButton.prop('disabled', true);
-				$('<div/>').addClass('correction')
-					.append($('<div/>').addClass('word').html('→ ' + getDisplayedNavi(this.word)))
-					.insertAfter(this.$meaningInput.parent());
-				$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
-					setTimeout(() => {
-						this.toNextItem(false);
-					}, QuestionSlide.INCORRECT_WAITING_TIME);
-				});
+				this.markIncorrect();
 			}
-		} else {
-			this.$meaningInput.addClass('correct')
-				.prop('disabled', true);
-			this.$checkButton.prop('disabled', true);
-
-			// don't need to ask for stress
-			$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
-				setTimeout(() => {
-					this.toNextItem(true);
-				}, QuestionSlide.CORRECT_WAITING_TIME);
-			});
+			return;
 		}
+
+		// Answer was correct.
+		this.$meaningInput.addClass('correct')
+			.prop('disabled', true);
+		this.$checkButton.prop('disabled', true);
+
+		// Do we need to ask for stress?
+		if (this.$stressInput !== null) {
+			if (givenStress !== null) {
+				let $button = $(this.$stressInput.find('.stress-button')[givenStress - 1]);
+				$button.trigger('click');
+			} else {
+				this.$stressInput.show();
+			}
+			return;
+		}
+
+		this.markCorrect();
+	}
+
+	markCorrect(): void {
+		$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
+			setTimeout(() => {
+				this.toNextItem(true);
+			}, QuestionSlide.CORRECT_WAITING_TIME);
+		});
+	}
+
+	markIncorrect(): void {
+		this.$checkButton.prop('disabled', true);
+		this.$correction.show();
+
+		$.post('/api/srs/mark-incorrect', { 'vocab': this.word['id'] }, () => {
+			setTimeout(() => {
+				this.toNextItem(false);
+			}, QuestionSlide.INCORRECT_WAITING_TIME);
+		});
 	}
 }
 

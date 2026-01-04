@@ -1,0 +1,46 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Data errors' }) %>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+
+			<p>This is a list of issues in the dictionary data. Errors and warnings are automatically detected, while the rest were manually noted by administrators.</p>
+			<p>A type of detected issue could for example be words that refer to non-existing other words in their etymology explanation.</p>
+			<div class="ui section divider"></div>
+			<div id="issue-results" style="display: none;">
+				<div class="error-block">
+					<p><b>Errors:</b></p>
+					<div id="no-errors" class="error">
+						<p class="error-text"><%- _('no-errors') %></p>
+					</div>
+					<table class="ui table" id="error-table"></table>
+				</div>
+				<div class="warning-block">
+					<p><b>Administrator notes:</b></p>
+					<div id="no-todos" class="error">
+						<p class="error-text">No "to do" notes found.</p>
+					</div>
+					<table class="ui table" id="todo-table"></table>
+				</div>
+				<div class="warning-block">
+					<p><b>Warnings:</b></p>
+					<div id="no-warnings" class="error">
+						<p class="error-text">No warnings found.</p>
+					</div>
+					<table class="ui table" id="warning-table"></table>
+				</div>
+				<div id="spinner" class="ui active centered inline text loader">
+					<%- _('loading-error-list') %>
+				</div>
+			</div>
+			<div id="fail" style="display: none;"></div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/data-errors.js"></script>
+	</body>
+</html>

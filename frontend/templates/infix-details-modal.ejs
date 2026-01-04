@@ -1,0 +1,91 @@
+<div id="infix-details-modal" class="ui modal">
+	<div class="header"><%- _('infix-editor-title') %> <span id="infix-details-word"></span><span id="infix-details-infixes" style="display: none;"></span></div>
+	<div class="content">
+		<p><%- _('infix-editor-description') %></p>
+		<div class="ui form">
+			<div class="ui small header"><%- _('infix-editor-prefirst') %></div>
+			<div class="field">
+				<label><%- _('infix-editor-transitivity') %></label>
+				<div class="ui basic buttons">
+					<button id="no-transitivity-button" class="ui compact button infix-button active"><%- _('infix-editor-none') %></button>
+					<button data-title='‹äp›' id="äp-button" <%- data_('infix-editor-transitivity-reflexive') %> class="ui compact button infix-button">‹äp›</button>
+					<button data-title='‹eyk›' id="eyk-button" <%- data_('infix-editor-transitivity-causative') %> class="ui compact button infix-button">‹eyk›</button>
+					<button data-title='‹äp› + ‹eyk›' id="äpeyk-button" <%- data_('infix-editor-transitivity-both') %> class="ui compact button infix-button">‹äp› + ‹eyk›</button>
+				</div>
+			</div>
+			<div class="ui small header"><%- _('infix-editor-first') %></div>
+			<div class="two fields">
+				<div class="field">
+					<label><%- _('infix-editor-mode') %></label>
+					<div class="ui basic buttons">
+						<button id="no-mode-button" class="ui compact button infix-button active"><%- _('infix-editor-none') %></button>
+						<button data-title='‹iv›' id="iv-button" <%- data_('infix-editor-mode-subjunctive') %> class="ui compact button infix-button">‹iv›</button>
+						<button data-title='‹us›' id="us-button" <%- data_('infix-editor-mode-active-participle') %> class="ui compact button infix-button">‹us›</button>
+						<button data-title='‹awn›' id="awn-button" <%- data_('infix-editor-mode-passive-participle') %> class="ui compact button infix-button">‹awn›</button>
+					</div>
+				</div>
+				<div class="field">
+					<label><%- _('infix-editor-aspect') %></label>
+					<div class="ui basic buttons">
+						<button id="no-aspect-button" class="ui compact button infix-button active"><%- _('infix-editor-none') %></button>
+						<button data-title='‹ol›' id="ol-button" <%- data_('infix-editor-aspect-perfective') %> class="ui compact button infix-button">‹ol›</button>
+						<button data-title='‹er›' id="er-button" <%- data_('infix-editor-aspect-imperfective') %> class="ui compact button infix-button">‹er›</button>
+					</div>
+				</div>
+			</div>
+			<div class="two fields">
+				<div class="field">
+					<label><%- _('infix-editor-tense') %></label>
+					<div class="ui basic buttons">
+						<button id="no-tense-button" class="ui compact button infix-button active"><%- _('infix-editor-none') %></button>
+						<button data-title='‹am›' id="am-button" <%- data_('infix-editor-tense-past') %> class="ui compact button infix-button">‹am›</button>
+						<button data-title='‹ìm›' id="ìm-button" <%- data_('infix-editor-tense-near-past') %> class="ui compact button infix-button">‹ìm›</button>
+						<button data-title='‹ìy›' id="ìy-button" <%- data_('infix-editor-tense-near-future') %> class="ui compact button infix-button">‹ìy›</button>
+						<button data-title='‹ay›' id="ay-button" <%- data_('infix-editor-tense-future') %> class="ui compact button infix-button">‹ay›</button>
+					</div>
+				</div>
+				<div class="field">
+					<label><%- _('infix-editor-intent') %></label>
+					<div class="ui basic buttons">
+						<button id="no-intent-button" class="ui compact button infix-button active"><%- _('infix-editor-none') %></button>
+						<button data-title='-s-' id="s-button" <%- data_('infix-editor-intent-intent') %> class="ui compact button infix-button">-s-</button>
+					</div>
+				</div>
+			</div>
+			<div class="ui small header"><%- _('infix-editor-second') %></div>
+			<div class="field">
+				<label><%- _('infix-editor-mood') %></label>
+				<div class="ui basic buttons">
+					<button id="no-mood-button" class="ui compact button infix-button active"><%- _('infix-editor-none') %></button>
+					<button data-title='‹ei›' id="ei-button" <%- data_('infix-editor-mood-positive') %> class="ui compact button infix-button">‹ei›</button>
+					<button data-title='‹äng›' id="äng-button" <%- data_('infix-editor-mood-negative') %> class="ui compact button infix-button">‹äng›</button>
+					<button data-title='‹uy›' id="uy-button" <%- data_('infix-editor-mood-formal') %> class="ui compact button infix-button">‹uy›</button>
+					<button data-title='‹ats›' id="ats-button" <%- data_('infix-editor-mood-inferential') %> class="ui compact button infix-button">‹ats›</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="content">
+		<div class="ui header"><%- _('infix-editor-result') %></div>
+		<div class="ui segment">
+			<div class="ui stackable two column grid">
+				<div class="column">
+					<div id="infix-details-input"></div>
+					<div id="infix-details-input-translation"></div>
+				</div>
+				<div class="column">
+					<div id="infix-details-result"></div>
+					<div id="infix-details-result-translation"></div>
+				</div>
+			</div>
+			<div class="ui vertical divider">
+				&rarr;
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<div class="ui basic deny button">
+			<i class="close icon"></i> <%- _("dialog-close") %>
+		</div>
+	</div>
+</div>

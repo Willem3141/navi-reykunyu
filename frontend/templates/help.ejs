@@ -29,7 +29,7 @@
 					<div class="ui search fluid focus">
 						<div class="ui right action left icon input fluid">
 							<i class="search icon"></i>
-							<input id="search-box" type="search" autofocus="" value="" autocomplete="off">
+							<input id="search-box" type="search" value="" autocomplete="off">
 							<div id="mode-direction" class="ui compact selection dropdown" tabindex="0">
 								<span class="text">Na'vi ↔ <%- _('language') %></span>
 								<i class="dropdown icon"></i>
@@ -154,7 +154,7 @@
 
 				<h2>Audio</h2>
 				<p>The voice clips were provided by Plumps (who recorded them for <a href="https://dict-navi.com/">dict-na'vi</a>) and tsyili (who recorded them for <a href="https://learnnavi.org/navi-vocabulary/">Learn Na'vi</a>).</p>
-				
+
 				<h2>Artwork</h2>
 				<p>The drawings of Pandoran animals were made by Eana Unil. (Haven’t encountered one yet? Try searching for ‘toruk’!) The cute Na'vi faces used by the study tool were made by Spero (lexbeee on Discord). Reykunyu’s logo was drawn by Eana Unil, and the calligraphy in the header was made by Nahura.</p>
 
@@ -170,6 +170,16 @@
 				<p>The API is free to use: there are no API keys and no (formal) usage limitations. Please don't abuse the server though; I reserve the right to cut users off the API if their usage disproportionately impacts server resources. (This has never happened before and I don't expect it to happen anytime soon: it's not like the Na’vi language is a super popular target for app developers …) On the other hand, Reykunyu doesn't make guarantees regarding uptime and compatibility: the API may sometimes change.</p>
 				<div class="note-box">
 					<p>Fun fact: Reykunyu's website itself uses the same API for its searches, so any data you can see on the website can be retrieved using the API too.</p>
+				</div>
+
+				<div class="note-box">
+					<h2>Recent API changes</h2>
+					<p><b>July 3, 2025:</b> A <b>LinkString</b> used to be implemented as an array whose elements can be two types of objects:</p>
+					<ul>
+						<li>a string, this represents plain text which is part of the note;</li>
+						<li>a <b>TruncatedWordData</b>, which represents a link to another word.</li>
+					</ul>
+					<p>To support translated <b>LinkString</b>s in the future, this has now changed. A <b>LinkString</b> is now simply a string with references of the form <code>[word:type]</code>; the <b>TruncatedWordData</b>s are not provided anymore in the <b>LinkString</b> itself but rather in the <b>references</b> field. See the section <b>LinkString</b> below for details.</p>
 				</div>
 
 				<h2>/api/fwew-search <span class="type ui label horizontal">GET</span></h2>
@@ -315,7 +325,7 @@
 					</tr>
 					<tr>
 						<td><b>short_translation</b></td>
-						<td>By default Reykunyu takes the part of the translation in <b>translations</b> until the first comma as a &ldquo;short translation&rdquo;. For the few words for which this isn't desirable, <b>short_translation</b> is used to override this (for the English translation only).</td>
+						<td>A shortened version of <b>translations</b>. In most cases, this is the part of the translation until the first comma, with anything in parenthesis removed, but some words have a custom short translation.</td>
 					</tr>
 					<tr>
 						<td><b>meaning_note</b></td>
@@ -475,14 +485,15 @@
 						<td><b>seeAlso</b></td>
 						<td>An array of other words (as <b>TruncatedWordData</b>) that have something to do with this word (shown under "See also" in Reykunyu).</td>
 					</tr>
+					<tr>
+						<td><b>references</b></td>
+						<td>A dictionary of other words (as <b>TruncatedWordData</b>) that appear in <b>LinkString</b>s of this word. See the section <b>LinkString</b> below.</td>
+					</tr>
 				</table>
 
 				<h3>LinkString</h3>
-				<p>A <b>LinkString</b> is used to allow writing free-form notes that contain links to other words. A <b>LinkString</b> is implemented as an array whose elements can be two types of objects:</p>
-				<ul>
-					<li>a string, this represents plain text which is part of the note;</li>
-					<li>a <b>TruncatedWordData</b>, which represents a link to another word.</li>
-				</ul>
+				<p>A <b>LinkString</b> is used to allow writing free-form notes that contain links to other words. A <b>LinkString</b> is a string with references of the form <code>[word:type]</code>. For example, the etymology of <b>kxì</b> could be <code>"Shortened form of [kaltxì:intj]."</code>.</p>
+				<p><b>WordData</b> has a field <b>references</b> that contains <b>TruncatedWordData</b> for all references in all <b>LinkString</b>s of that <b>WordData</b>. For example, the <b>WordData</b> for <b>kxì</b> has the <b>TruncatedWordData</b> for <b>kaltxì</b> in its references.</p>
 
 				<h3>TruncatedWordData</h3>
 				<p>Words that refer to other words, use <b>TruncatedWordData</b> to do so. This is simply <b>WordData</b> where all fields except <b>word</b>, <b>word_raw</b>, <b>na'vi</b>, <b>type</b>, <b>translations</b>, and <b>short_translation</b> have been removed. (This is done to limit the size of API responses, and to avoid infinite loops if two words refer to each other.)</p>
@@ -617,13 +628,11 @@
 				<h3>Response</h3>
 				<p>An array <b>result</b> of arrays of arrays of <b>WordData</b>, such that <b>result[i][j]</b> is an array of <b>WordData</b> containing the words with <b>i</b> syllables, stressed on the <b>j</b>-th syllable.</p>
 			</div>
-			</div>
 		</div>
 
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
-		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
 		<script src="/js/ui-translations.js"></script>
 		<script src="/js/help.js"></script>
 	</body>
 </html>
-

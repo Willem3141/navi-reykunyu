@@ -19,14 +19,14 @@
 		<!-- modals -->
 		<div id="lesson-done-modal" class="ui modal">
 			<div class="header">
-				Congratulations, you finished Lesson <%= lesson['id'] + 1 %>!
+				<%- _('congratulations-after-lesson-1') %><%= lesson['id'] + 1 %><%- _('congratulations-after-lesson-2') %>
 			</div>
 			<div class="content">
-				The words have been added to your review queue. You can start your reviews right away, or you can first view an overview of the words you learned.
+				<%- _('after-lesson-explanation') %>
 			</div>
 			<div class="actions">
-				<a class="ui primary button" id="to-review-button" href="/study/review?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Review</a>
-				<a class="ui button" id="to-overview-button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>">Overview</a>
+				<a class="ui primary button" id="to-review-button" href="/study/review?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>"><%- _('review-button') %></a>
+				<a class="ui button" id="to-overview-button" href="/study/lesson?c=<%= course['id'] + 1%>&l=<%= lesson['id'] + 1 %>"><%- _('overview-button') %></a>
 			</div>
 		</div>
 		<div id="word-info-modal" class="ui modal">
@@ -36,9 +36,8 @@
 			</div>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
-		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
 		<script src="/js/ui-translations.js"></script>
 		<script src="/js/study.js"></script>
 	</body>
 </html>
-

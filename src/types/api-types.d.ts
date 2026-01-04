@@ -24,30 +24,29 @@ declare type WordData = {
 	type: string,
 	pronunciation?: Pronunciation[],
 	translations: Translated<string>[],
-	short_translation?: string,
+	short_translation?: Translated<string>,  // may be string in the database
 	short_translation_conjugated?: string,
-	meaning_note?: LinkString,
+	meaning_note?: Translated<LinkString>,  // may be LinkString in the database
 	infixes?: string,
 	conjugation?: {
 		FN: NounConjugation | AdjectiveConjugation,
 		combined: NounConjugation | AdjectiveConjugation,
 		RN: NounConjugation | AdjectiveConjugation
 	},
-	conjugation_note?: LinkString,
+	conjugation_note?: Translated<LinkString>,  // may be LinkString in the database
 	conjugated?: ConjugationStep[],
-	externalLenition?: {
-		from: string,
-		to: string,
-		by: string
-	},
+	externalLenition?: ExternalLenition,
 	image?: string,
-	source?: Source,
-	status?: 'loan' | 'unconfirmed' | 'unofficial',
+	source?: Source[],
+	status?: Status,
 	status_note?: string,
 	etymology?: LinkString,
 	derived?: WordData[],
 	seeAlso?: WordData[],
-	sentences?: Sentence[]
+	todo?: string,
+	favorite?: boolean,
+	sentences?: Sentence[],
+	references?: Record<string, WordData>
 };
 
 declare type Dialect = 'FN' | 'combined' | 'RN';
@@ -55,14 +54,14 @@ declare type Dialect = 'FN' | 'combined' | 'RN';
 declare type Pronunciation = {
 	syllables: string,
 	stressed: number,
-	audio: AudioData[],
+	audio: PronunciationAudio[],
 	ipa: {
 		FN: string,
 		RN: string
 	}
 };
 
-declare type AudioData = {
+declare type PronunciationAudio = {
 	file: string,
 	speaker: string
 }
@@ -71,11 +70,11 @@ declare type Translated<T> = {
 	[language: string]: T
 };
 
-declare type NounConjugation = string[][];
+declare type NounConjugation = (string | null)[][];
 
 declare type AdjectiveConjugation = {
-	prefixed: string,
-	suffixed: string
+	prefixed?: string,
+	suffixed?: string
 };
 
 declare type ConjugationStep = ({
@@ -122,6 +121,12 @@ declare type OtherConjugationStep = {
 	correction?: string
 };
 
+declare type ExternalLenition = {
+	from: string,
+	to: string,
+	by: string
+};
+
 declare type AffixData = SimpleAffixData | CombinedAffixData;
 
 declare type SimpleAffixData = {
@@ -135,11 +140,18 @@ declare type CombinedAffixData = {
 	combinedFrom: SimpleAffixData[]
 }
 
-declare type Source = [string, string, string, string];
+declare type Source = [string, string?, string?, string?];
 
-declare type LinkString = LinkStringPiece[];
+declare type Status = 'loan' | 'unconfirmed' | 'unofficial'
 
-declare type LinkStringPiece = string | WordData;
+declare type DataIssue = {
+	word_id: number,
+	word: string,
+	type: 'error' | 'warning' | 'todo'
+	message: string
+}
+
+declare type LinkString = string;
 
 declare type Sentence = {
 	'na\'vi': [string, string[]][],
@@ -150,7 +162,7 @@ declare type Sentence = {
 	source: string[]
 };
 
-declare type RhymesResult = WordData[][][];
+declare type RhymesResult = {'results': WordData[][][]};
 
 // SRS types
 declare type Course = {

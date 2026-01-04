@@ -7,20 +7,27 @@
 			<%- include('header.ejs') %>
 		</div>
 		<div id="main-container" class="container">
-			<div class="buttons">
-				<a class="ui <%= reviewableCount === 0 ? 'disabled ' : '' %>labeled button" href="/study/review">
-					<div class="ui primary button">Review</div>
-					<div class="ui basic blue left pointing label"><%= reviewableCount %></div>
-				</a>
-			</div>
-			<h3><%- _('pick-a-course') %></h3>
-			<p><%- _('pick-a-course-note') %></p>
+			<% if (learnedCount > 0) { %>
+				<div>
+					<p><%- _('learned-count-1') %> <%= learnedCount %> <%- _('learned-count-2') %></p>
+					<div class="buttons">
+						<a class="ui <%= reviewableCount === 0 ? 'disabled ' : '' %>labeled button" href="/study/review">
+							<div class="ui primary button"><%- _('review-button') %></div>
+							<div class="ui basic blue left pointing label"><%= reviewableCount %></div>
+						</a>
+					</div>
+				</div>
+			<% } else { %>
+				<h3><%- _('pick-a-course') %></h3>
+				<p><%- _('pick-a-course-note') %></p>
+			<% } %>
+			<div class="ui section divider"></div>
 			<div class="ui two stackable cards">
 				<% for (let course of courses) { %>
 					<a class="card" href="/study/course?c=<%= course['id'] + 1 %>">
 						<div class="content">
 							<div class="header"><%= course['name'] %></div>
-							<div class="description"><%= course['description'] %></div>
+							<div class="description"><%- course['description'] %></div>
 						</div>
 						<div class="extra content">
 							<i class="sitemap icon"></i>
@@ -31,7 +38,7 @@
 			</div>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
-		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
 		<script src="/js/ui-translations.js"></script>
 	</body>
 </html>

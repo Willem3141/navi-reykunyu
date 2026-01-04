@@ -1,6 +1,11 @@
 // Simple script to profile Reykunyu's search
 
-import * as reykunyu from './reykunyu';
+import * as fs from 'fs';
+
+import Reykunyu from './reykunyu';
+
+let dictionaryJSON = JSON.parse(fs.readFileSync('./data/words.json', 'utf8'));
+let reykunyu = new Reykunyu(dictionaryJSON);
 
 const queries = [
 	'kxì',

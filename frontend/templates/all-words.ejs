@@ -1,0 +1,53 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Complete word list' }) %>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+		</div>
+
+		<div class="container two-columns">
+			<div class="column">
+				<h2><%- _('explanation') %></h2>
+				<div class="word-list explanation">
+					<div class="entry">
+						<span class="word">salew</span>
+						(<span class="word-type">v<img src="/images/type-arrow.svg" class="arrow">in.</span>, <span class="stress"><span class="unstressed">sa-<img src="/images/pronunciation-arrow.svg" class="arrow"></span><span class="stressed">lew</span></span>, s<span class="root-infix">·</span>a<img src="/images/infixes-arrow.svg" class="arrow">l<span class="root-infix">·</span>ew)
+						<span class="definition">proce<img src="/images/translation-arrow.svg" class="arrow">ed, go</span>
+						<a class="source-link" title="Na'viteri: “’A’awa tìpängkxotsyìp a teri horen lì’fyayä – A few little discussions about grammar” (2022-01-08)" href="https://naviteri.org/2022/01/aawa-tipangkxotsyip-a-teri-horen-lifyaya-a-few-little-discussions-about-grammar/">nt</a>
+					</div>
+				</div>
+			</div>
+			<div class="column">
+				<h2><%- _('source-abbreviations') %></h2>
+				<ul class="word-list">
+					<li><a class="source-link">nt</a>: Na'viteri blog post</li>
+					<li><a class="source-link">ln</a>: Learn Na'vi forum post</li>
+					<li><a class="source-link">wiki</a>: Learn Na'vi wiki</li>
+					<li><a class="source-link">asg</a>: Activist Survival Guide</li>
+					<li><a class="source-link">o</a>: other</li>
+				</ul>
+			</div>
+		</div>
+
+		<%- include('all-words-toc.ejs') %>
+
+		<div class="container">
+			<div class="word-list" id="word-list-result">
+			</div>
+			<div id="spinner" class="ui active centered inline text loader">
+				<%- _('loading-word-list') %>
+			</div>
+			<div id="no-results" class="error" style="display: none;">
+				<p class="error-text"><%- _('no-results') %></p>
+				<img class="error-icon" src="/images/ke'u.svg">
+			</div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/all-words.js"></script>
+	</body>
+</html>

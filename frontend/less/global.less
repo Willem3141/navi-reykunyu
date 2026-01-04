@@ -1,20 +1,13 @@
-@font-face {
-	font-family: 'Recursive';
-	font-weight: 300 1000;
-	font-style: oblique 0deg 14deg;
-	src: url('/fonts/Recursive_VF_1.078.woff2');
-}
-@font-face {
-	font-family: 'Gentium Plus';
-	src: url('/fonts/GentiumPlus-Regular.woff2');
-}
-
 a:hover {
 	text-decoration: underline;
 }
 
 i, em {
 	font-variation-settings: "slnt" -15;
+}
+
+html {
+	height: auto;
 }
 
 body {
@@ -82,10 +75,20 @@ body.wide .container,
 table {
 	margin-top: 8px;
 	width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
+
+	&.top-aligned tr td {
+		vertical-align: top;
+	}
 }
 
 table tr {
 	border-top: 1px solid var(--border-color);
+
+	&.dashed-top-line {
+		border-top: 1px dashed var(--border-color);
+	}
 }
 
 table tr td,
@@ -199,11 +202,17 @@ table.conjugation-table {
 }
 
 /* settings modal */
-#settings-modal .explanation {
-	line-height: 1.4285em;
-	padding-top: 2px;
-	padding-bottom: 5px;
-	color: var(--muted-color);
+#settings-modal {
+	.explanation {
+		line-height: 1.4285em;
+		padding-top: 2px;
+		padding-bottom: 5px;
+		color: var(--muted-color);
+	}
+
+	#offline-mode-progress {
+		padding-left: 20px;
+	}
 }
 
 /* sentence analysis */
@@ -237,4 +246,13 @@ table.conjugation-table {
 .error-block .body,
 .warning-block .body {
 	margin-left: 20px;
+}
+.block-postscript {
+	font-size: 80%;
+	opacity: 0.5;
+}
+
+/* icons inline in text */
+i.icon.inline {
+	margin-right: 0;
 }

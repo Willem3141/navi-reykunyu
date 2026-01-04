@@ -29,27 +29,35 @@
 #tab-mode-bar {
 	margin-bottom: 40px;
 	justify-content: center;
-}
-#tab-mode-bar .item {
-	cursor: pointer;
-	flex-grow: 0.05;
-	justify-content: center;
-}
-#tab-mode-bar .gray {
-	color: var(--disabled-color);
-}
-#tab-mode-bar .item .result-count-tag {
-	display: inline-block;
-	padding: 3px 6px;
-	margin-left: 15px;
-	background-color: var(--primary-color);
-	color: var(--background-color);
-	font-size: 12px;
-	font-weight: 700;
-	border-radius: 20px;
-}
-#tab-mode-bar .item.gray .result-count-tag {
-	background-color: var(--disabled-color);
+
+	.item {
+		cursor: pointer;
+		flex-grow: 0.05;
+		justify-content: center;
+
+		&.active {
+			cursor: default;
+		}
+
+		.result-count-tag {
+			display: inline-block;
+			padding: 3px 6px;
+			margin-left: 15px;
+			background-color: var(--primary-color);
+			color: var(--background-color);
+			font-size: 12px;
+			font-weight: 700;
+			border-radius: 20px;
+		}
+
+		&.gray {
+			color: var(--disabled-color);
+
+			.result-count-tag {
+				background-color: var(--disabled-color);
+			}
+		}
+	}
 }
 
 @media (max-width: 460px) {
@@ -164,12 +172,8 @@
 	font-size: 110%;
 }
 
-.pronunciation-audio-buttons {
-	display: inline-block;
+.ui.buttons.pronunciation-audio-buttons {
 	margin-left: 10px;
-}
-
-.pronunciation-audio-button {
 	position: relative;
 	top: -1px;
 }
@@ -195,10 +199,14 @@
 	opacity: 0.6;
 }
 
-.result .result-word .edit-button {
+.result .result-word .word-toolbar {
 	margin-left: 26px;
 	position: relative;
-	top: -5px;
+	top: -6px;
+
+	.ui.button.favorite-button.active {
+		color: var(--warning-color) !important;
+	}
 }
 
 .result .result-item.conjugated-box {
@@ -232,6 +240,9 @@
 .conjugation-explanation,
 .lenition-explanation {
 	font-size: 18px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
 }
 
 .conjugation-explanation .operator,

@@ -24,12 +24,18 @@
 	padding-right: 0;
 }
 
-h2[id]::before {
-	content: '';
-	display: block;
-	height: 75px;
-	margin-top: -75px;
-	visibility: hidden;
+h2[id] {
+	pointer-events: none;  /* avoid the overlapping part blocking mouse events (e.g., selecting items behind it) */
+
+	/* invisible part above the h2 to ensure that going to the h2's anchor doesn't end up with the h2 being hidden under
+	   the sticky header */
+	&::before {
+		content: '';
+		display: block;
+		height: 116px;
+		margin-top: -116px;
+		visibility: hidden;
+	}
 }
 
 @media (max-width: 768px) {
@@ -44,11 +50,8 @@ h2[id]::before {
 	}
 
 	h2[id]::before {
-		content: '';
-		display: block;
-		height: 105px;
-		margin-top: -105px;
-		visibility: hidden;
+		height: 150px;
+		margin-top: -150px;
 	}
 }
 

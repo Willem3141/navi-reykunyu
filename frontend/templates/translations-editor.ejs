@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Translations editor' }) %>
+	<body data-url="<%= post_url %>">
+		<div class="container">
+			<%- include('header.ejs') %>
+			<p>Welcome to Reykunyu's translation editor! Use the language selector in the top-right to set the language to translate into.</p>
+		</div>
+
+		<%- include('all-words-toc.ejs') %>
+
+		<div class="container">
+			<div class="word-list" id="word-list-result">
+			</div>
+			<div id="spinner" class="ui active centered inline text loader">
+				<%- _('loading-word-list') %>
+			</div>
+			<div id="no-results" class="error" style="display: none;">
+				<p class="error-text"><%- _('no-results') %></p>
+				<img class="error-icon" src="/images/ke'u.svg">
+			</div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/translations-editor.js"></script>
+	</body>
+</html>

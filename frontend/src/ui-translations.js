@@ -1,7 +1,7 @@
 let strings = {};
 
-// initialize the language dropdown
 $(function () {
+	// initialize the language dropdown
 	const $dropdown = $('#language-dropdown');
 	if ($dropdown.length) {
 		$dropdown.dropdown();
@@ -12,11 +12,16 @@ $(function () {
 			localStorage.setItem('reykunyu-language', 'en');
 			$dropdown.dropdown('set selected', 'en');
 		}
-		$('.current-lang').text(_('language'));
 		$dropdown.dropdown({
 			onChange: setNewLanguage
 		});
 	}
+
+	// If the page was loaded offline from the service worker, or it was loaded
+	// from the browser cache after a tab unload, it may not have the correct
+	// language. So we immediately trigger a language update, just in case. If
+	// the language was already correct, this won't do anything.
+	setNewLanguage(localStorage.getItem('reykunyu-language'));
 });
 
 function setNewLanguage(value) {
@@ -25,11 +30,22 @@ function setNewLanguage(value) {
 	$('.translation').each(function() {
 		$(this).html(_($(this).attr('data-key')));
 	});
-	$('.current-lang').text(_('language'));
+	$('[data-content-key]').each(function() {
+		$(this).attr('data-content', _($(this).attr('data-content-key')));
+	});
+}
+
+function getLanguage() {
+	const languageFromLocalStorage = localStorage.getItem('reykunyu-language');
+	if (languageFromLocalStorage) {
+		return languageFromLocalStorage;
+	} else {
+		return 'en';
+	}
 }
 
 function _(key) {
-	const lang = localStorage.getItem('reykunyu-language');
+	const lang = getLanguage();
 	if (strings.hasOwnProperty(lang) && strings[lang].hasOwnProperty(key)) {
 		return strings[lang][key];
 	} else if (strings['en'].hasOwnProperty(key)) {

@@ -16,11 +16,11 @@
 		<!-- modals -->
 		<div id="lesson-done-modal" class="ui modal">
 			<div class="header">
-				Congratulations, you reviewed <span id="review-count">...</span> words!
+				<%- _('congratulations-after-review-1') %><span id="review-count">...</span><%- _('congratulations-after-review-2') %>
 			</div>
 			<div class="image content">
 				<div class="image">
-					<img class="navi-face" src="/images/study/nitram.png" alt="A happy-looking Na'vi face">
+					<img class="navi-face" src="/images/study/nitram.png">
 					<div class="navi-face-description ui top pointing basic label"></div>
 				</div>
 				<div>
@@ -28,7 +28,7 @@
 				</div>
 			</div>
 			<div class="actions">
-				<a class="ui primary button">Exit</a>
+				<a class="ui primary button"><%- _('dialog-close') %></a>
 			</div>
 		</div>
 		<div id="word-info-modal" class="ui modal">
@@ -38,9 +38,8 @@
 			</div>
 		</div>
 		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
-		<script src="/vendor/semantic/dist/semantic.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
 		<script src="/js/ui-translations.js"></script>
 		<script src="/js/review.js"></script>
 	</body>
 </html>
-

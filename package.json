@@ -5,8 +5,8 @@
   "scripts": {
     "build": "npx gulp",
     "build-no-typecheck": "npx gulp buildWithoutTypecheck",
-    "start": "node dist/server.js",
-    "test": "node --test"
+    "start": "node --enable-source-maps dist/server.js",
+    "test": "npx tsx --enable-source-maps --test test/**.ts"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -36,12 +36,11 @@
     "@types/passport-local": "^1.0.38",
     "@types/semantic-ui": "^2.2.9",
     "@types/sqlite3": "^3.1.11",
-    "chai": "^4.2.0",
     "esbuild": "^0.24.0",
     "gulp": "^5.0.0",
     "gulp-less": "^5.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "mocha": "^6.0.2",
+    "tsx": "^4.19.2",
     "typescript": "^4.6.4"
   }
 }

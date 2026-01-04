@@ -8,7 +8,7 @@
 		"esModuleInterop": true
 	},
 	"include": [
-		"*.ts",
+		"**/*.ts",
 		"types/*.d.ts"
 	]
 }
