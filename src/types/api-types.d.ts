@@ -144,6 +144,13 @@ declare type Source = [string, string?, string?, string?];
 
 declare type Status = 'loan' | 'unconfirmed' | 'unofficial'
 
+declare type DataIssue = {
+	word_id: number,
+	word: string,
+	type: 'error' | 'warning' | 'todo'
+	message: string
+}
+
 declare type LinkString = string;
 
 declare type Sentence = {
