@@ -10,14 +10,14 @@ export function initializeOmaticonButton(): void {
 		$('#' + team + '-button').on('click', () => {
 			$omaticonModal.modal('hide');
 			setTheme(team);
-			/*if (team === 'thorn') {
+			if (team === 'thorn') {
 				$omaticonButton.popup({
 					content: _('best-team'),
 					position: 'bottom center'
 				});
-			} else {*/
+			} else {
 				$omaticonButton.popup('destroy');
-			/* } */
+			}
 		});
 	}
 }
