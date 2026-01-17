@@ -19,6 +19,25 @@ export function lemmaForm(word: WordData, dialect: 'FN' | 'combined' | 'RN'): st
 	return lemma;
 }
 
+export function lemmaFormLaTeX(word: WordData, dialect: 'FN' | 'combined' | 'RN'): string {
+	let type = word['type'];
+	let lemma = word['word'][dialect];
+	lemma = lemma.replace(/\//g, '');
+	lemma = lemma.replace(/\[([^\]]*)\]/g, '\\uline{$1}');
+	if (type === "n:si" || type === "nv:si") {
+		return lemma + ' si';
+	} else if (type === 'aff:pre') {
+		return lemma + "-";
+	} else if (type === 'aff:pre:len') {
+		return lemma + "+";
+	} else if (type === 'aff:in') {
+		return '‹' + lemma + '›';
+	} else if (type === 'aff:suf') {
+		return '-' + lemma;
+	}
+	return lemma;
+}
+
 export function addLemmaClass($element: JQuery, type: string) {
 	if (type === 'aff:pre' || type === 'aff:pre:len') {
 		$element.addClass('prefix');
@@ -118,6 +137,34 @@ export function appendLinkString(linkString: LinkString, word: WordData, $div: J
 			$div.append(createWordLink(target, dialect, language, referenceRatherThanLink));
 		}
 	);
+}
+
+export function makeLinkStringLaTeX(linkString: LinkString, word: WordData, dialect: Dialect, language: string, referenceRatherThanLink?: boolean): string {
+	let latex = '';
+	wordLinks.visitLinkString(linkString,
+		(text: string) => {
+			// UGLY HACK to remove links. Not useful in a printed book...
+			let sentences = text.split('. ');
+			let fineSentences: string[] = []
+			for (let sentence of sentences) {
+				if (!sentence.includes('](')) {
+					fineSentences.push(sentence);
+				}
+			}
+			latex += fineSentences.join('. ');
+		},
+		(referencedWord: string, type: string) => {
+			let key = referencedWord + ':' + type;
+			let target: WordData | null = null;
+			if (word['references'] !== undefined && word['references'][key] !== undefined) {
+				target = word['references'][key];
+			}
+			if (target != null) {
+				latex += '\\textbf{' + lemmaFormLaTeX(target, dialect) + '}';
+			}
+		}
+	);
+	return latex;
 }
 
 export function toReadableType(type: string): string {

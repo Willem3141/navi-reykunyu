@@ -24,6 +24,7 @@ function buildTypeScriptClient(cb) {
 		entryPoints: [
 			'./frontend/src/index.ts',
 			'./frontend/src/all-words.ts',
+			'./frontend/src/latex.ts',
 			'./frontend/src/edit.ts',
 			'./frontend/src/study.ts',
 			'./frontend/src/review.ts',

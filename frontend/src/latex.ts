@@ -1,0 +1,352 @@
+import { lemmaFormLaTeX, getTranslation, getShortTranslation, createWordLink, makeLinkStringLaTeX } from './lib';
+
+class AllWordsPage {
+	constructor() {
+		$('#type-filter-dropdown').dropdown('set selected', '.*');
+		$('#type-filter-dropdown').dropdown({
+			onChange: this.runFilter.bind(this)
+		});
+		$('#filter-box').on('input', this.runFilter.bind(this));
+
+		$('#language-dropdown').dropdown({
+			onChange: (value) => {
+				setNewLanguage(value);
+				this.loadWordList();
+				return false;
+			}
+		});
+
+		this.loadWordList();
+
+		$(window).on('resize scroll', this.updateToC.bind(this));
+	}
+
+	createErrorBlock(text: string, subText: string): JQuery {
+		let $error = $('<div/>').addClass('error');
+		$('<p/>').addClass('error-text').html(text).appendTo($error);
+		$('<img/>').addClass('error-icon').attr("src", "/images/ke'u.svg").appendTo($error);
+		$('<p/>').addClass('error-subText').html(subText).appendTo($error);
+		return $error;
+	}
+
+	pronunciationSection(lìupam: Pronunciation[], fnel: string): JQuery {
+		let $tìlam = $('<span/>').addClass('stress');
+
+		for (let i = 0; i < lìupam.length; i++) {
+			if (i > 0) {
+				$tìlam.append(' ' + _('or') + ' ');
+			}
+			const aylìkong = lìupam[i]['syllables'].split("-");
+			for (let j = 0; j < aylìkong.length; j++) {
+				if (j > 0) {
+					$tìlam.append("-");
+				}
+				let $lìkong = $('<span/>').text(aylìkong[j]);
+				if (aylìkong.length > 1 && j + 1 === lìupam[i]['stressed']) {
+					$lìkong.addClass("stressed");
+				} else {
+					$lìkong.addClass("unstressed");
+				}
+				$tìlam.append($lìkong);
+			}
+			if (fnel === "n:si" || fnel === "nv:si") {
+				$tìlam.append(" si");
+			}
+		}
+
+		return $tìlam;
+	}
+
+	statusBadge(wordStatus: string): JQuery {
+		let $pätsì = $('<span/>').addClass('status-badge');
+		if (wordStatus === "unconfirmed") {
+			$pätsì.text(_("status-unconfirmed"));
+			$pätsì.addClass("unconfirmed");
+		} else if (wordStatus === "unofficial") {
+			$pätsì.text(_("status-unofficial"));
+			$pätsì.addClass("unofficial");
+		} else if (wordStatus === "loan") {
+			$pätsì.text(_("status-loan"));
+			$pätsì.addClass("loan");
+		}
+		return $pätsì;
+	}
+
+	sourceAbbreviation(source: Source): string | null {
+		if (!source[1]) {
+			return null;
+		}
+		let date = '~';
+		if (source[2]) {
+			let dateElements = source[2].split('-');
+			date += dateElements[0] + '-' + dateElements[1];
+		}
+		if (source[1].includes('naviteri.org')) {
+			return 'NT' + date;
+		} else if (source[1].includes('forum.learnnavi.org')) {
+			return 'LN' + date;
+		} else if (source[1].includes('wiki.learnnavi.org')) {
+			return 'Wiki' + date;
+		} else if (source[0].includes('Activist Survival Guide')) {
+			return 'ASG';
+		}
+		return null;
+	}
+
+	addDot(latex: string): string {
+		if (!'.?!'.includes(latex[latex.length - 1])) {
+			latex += '.';
+		}
+		return latex;
+	}
+
+	makeLaTeXFor(word: WordData): string {
+		let latex = '';
+
+		latex += '\\textbf{' + lemmaFormLaTeX(word, 'combined') + '}\n';
+		//addLemmaClass($word, word["type"]);
+		latex += '(';
+		latex += '\\textit{' + this.tstxoFnelä(word['type'], true) + '}';
+		/*if (word['pronunciation'] && word['pronunciation'].length > 0) {
+			latex += ', ';
+			//latex += this.makePronunciation(word['pronunciation'], word['type']));
+		}*/
+		if (word['infixes']) {
+			const infixes = word['infixes'];
+			let infixesHtml = infixes.replace(".", "<span class='root-infix'>·</span>");
+			infixesHtml = infixesHtml.replace(".", "<span class='root-infix'>·</span>");
+			latex += ', inf. ';
+			latex += infixes.replaceAll('.', '·');
+		}
+		latex += ') ';
+		/*if (word['status']) {
+			$block.append(this.statusBadge(word['status']));
+			$block.append(' ');
+		}*/
+		for (const i in word["translations"]) {
+			latex += '\n';
+			if (word["translations"].length > 1) {
+				latex += '\\textbf{' + (parseInt(i, 10) + 1) + '.}~';
+			}
+			latex += getTranslation(word["translations"][i], this.getLanguage());
+		}
+		latex = this.addDot(latex);
+		if (word['meaning_note']) {
+			latex += '\n';
+			latex += makeLinkStringLaTeX(getTranslation(word['meaning_note'], this.getLanguage()), word, this.getDialect(), this.getLanguage(), true);
+			latex = this.addDot(latex);
+		}
+		if (word['etymology'] && word['etymology'].length > 0) {
+			latex += '\n';
+			latex += makeLinkStringLaTeX(word['etymology'], word, this.getDialect(), this.getLanguage(), true);
+			latex = this.addDot(latex);
+		}
+		if (word['seeAlso'] && word['seeAlso'].length > 0) {
+			latex += '\n';
+			latex += ' (→ ';
+			for (let i = 0; i < word['seeAlso'].length; i++) {
+				if (i > 0) {
+					latex += ', ';
+				}
+				latex += '\\textbf{' + lemmaFormLaTeX(word['seeAlso'][i], this.getDialect()) + '}';
+			}
+			latex += ')';
+		}
+		if (word['source']) {
+			let source = '';
+			let firstSource = true;
+			for (const s of word['source']) {
+				let abbreviation = this.sourceAbbreviation(s);
+				if (abbreviation != null) {
+					if (!firstSource) {
+						source += '\\,/\\,';
+					} else {
+						firstSource = false;
+					}
+					source += abbreviation;
+				}
+			}
+			if (source !== '') {
+				latex += '\n';
+				latex += '{\\scriptsize ' + source + '}';
+			}
+		}
+		if (word['image']) {
+			latex += '\n\n';
+			latex += '\\begin{figure*}\\centering\\includegraphics[width=.3\\textwidth]{ayrel/' + word['image'] + '}\\\\\\textbf{' + lemmaFormLaTeX(word, 'combined') + '}\\end{figure*}';
+		}
+
+		return latex;
+	}
+
+	// tìng fnelä tstxoti angim
+	// fnel - fnelä tstxo apup (natkenong "n", "vtr")
+	// traditional - if true, use traditional type abbreviations
+	tstxoFnelä(fnel: string, traditional: boolean): string {
+		const translation = _((traditional ? 'type-traditional-' : 'type-') + fnel);
+		if (translation) {
+			return translation;
+		}
+		return "no idea.../ngaytxoa";
+	}
+
+	// Compares Na'vi words a and b according to Na'vi ‘sorting rules’ (ä after a, ì
+	// after i, digraphs sorted as if they were two letters using English spelling,
+	// tìftang is sorted before everything else). A non-zero i specifies that the
+	// first i characters of both strings are to be ignored. Returns a negative
+	// value if a < b, a positive value if a > b, or 0 if a == b.
+	compareNaviWords(a: string, b: string, i: number): number {
+		const naviSortAlphabet = " 'aäbdeéfghiìklmnoprstuùvwxyz";
+
+		if (a.length <= i || b.length <= i) {
+			return a.length - b.length;
+		}
+		const first = a[i].toLowerCase();
+		const second = b[i].toLowerCase();
+		if (first == second) {
+			return this.compareNaviWords(a, b, i + 1);
+		}
+		return naviSortAlphabet.indexOf(first) - naviSortAlphabet.indexOf(second);
+	}
+
+	sections = {
+		'FN': "'aäefhiìklmnoprstuvwyz".split(''),
+		'combined': "'aäefhiìklmnoprstuvwyz".split(''),
+		'RN': "'aäbdefghiìklmnoprstuùvwyz".split('')
+	};
+
+	loadWordList() {
+		let $results = $('#word-list-result');
+		$results.empty();
+		$('#spinner').show();
+
+		$.getJSON('/api/list/all')
+			.done((dictionary) => {
+				$('#spinner').hide();
+				const $tocBar = $('#toc-bar');
+				$tocBar.empty();
+				for (const section of this.sections[this.getDialect()]) {
+					$('<a/>')
+						.addClass('ui compact button')
+						.text(section)
+						.attr('href', '#' + section)
+						.attr('id', 'button-' + section)
+						.appendTo($tocBar);
+				}
+
+				dictionary.sort((a: WordData, b: WordData) => {
+					return this.compareNaviWords(a['word_raw']['FN'], b['word_raw']['FN'], 0);
+				});
+				let section = '';
+				let $block: JQuery | null = null;
+
+				let latex = '';
+				for (let word of dictionary) {
+					const initial = word['word_raw']['FN'][0].toLowerCase();
+					if (initial !== section) {
+						if (initial === "'") {
+							latex += '\\subsection*{\\centering ' + initial + ' \\textcolor{gray}{(tìftang)}}\n\n';
+						} else {
+							latex += '\\end{multicols}\n';
+							latex += '\\chapter*{' + initial + '}\n\n';
+						}
+						latex += '\\begin{multicols}{2}\n';
+						section = initial;
+					}
+
+					latex += '\\hangindent=1.4em\n\\hangafter=1\n';
+					latex += this.makeLaTeXFor(word) + '\n\n';
+				}
+				latex += '\\end{multicols}\n';
+				$('#latex-box').text(latex);
+
+				this.runFilter();
+			})
+			.fail(() => {
+				$results.empty();
+				$('#spinner').hide();
+				$('#toc-bar').hide();
+				$('#no-results').hide();
+				$results.append(this.createErrorBlock(_('word-list-error'), _('searching-error-description')));
+			});
+		return false;
+	}
+
+	getDialect(): Dialect {
+		let dialect = localStorage.getItem('reykunyu-dialect');
+		if (dialect !== 'combined' && dialect !== 'RN') {
+			dialect = 'FN';
+		}
+		return <Dialect>dialect;
+	}
+
+	getLanguage(): string {
+		let lang = localStorage.getItem('reykunyu-language');
+		if (!lang) {
+			lang = 'en';
+		}
+		return lang;
+	}
+
+
+	// filtering
+
+	runFilter() {
+		let filter: RegExp;
+		try {
+			filter = new RegExp(<string>$('#filter-box').val());
+		} catch (e) {
+			// TODO provide proper error
+			filter = /.*/;
+		}
+		const typeFilter = new RegExp('^' + $('#type-filter-dropdown').dropdown('get value') + '$');
+		let anyMatches = false;
+
+		$('.letter-block').each((i, block) => {
+			const $block = $(block);
+			let anyMatchesInBlock = false;
+			$block.find('.entry').each((i, e) => {
+				const $e = $(e);
+				const type = <string>$e.attr('data-type');
+				if (typeFilter.test(type)) {
+					const lemma = <string>$e.attr('data-lemma');
+					const matches = filter.test(lemma);
+					$e.toggle(matches);
+					anyMatchesInBlock = anyMatchesInBlock || matches;
+				} else {
+					$e.toggle(false);
+				}
+			});
+			const $header = $block.prev();
+			$header.toggle(anyMatchesInBlock);
+			$('#button-' + $.escapeSelector(<string>$header.attr('id'))).toggle(anyMatchesInBlock);
+			anyMatches = anyMatches || anyMatchesInBlock;
+		});
+
+		this.updateToC();
+
+		$('#toc-bar').toggle(anyMatches);
+		$('#no-results').toggle(!anyMatches);
+	}
+
+
+	// table of contents handling
+
+	updateToC() {
+		for (const section of this.sections[this.getDialect()]) {
+			let $block = $('#block-' + $.escapeSelector(section));
+			let $button = $('#button-' + $.escapeSelector(section));
+
+			if ($(window).scrollTop()! + $('.word-list-toc').outerHeight()! < $block.offset()!.top + $block.outerHeight()!
+					&& $(window).scrollTop()! + $(window).height()! > $block.offset()!.top) {
+				$button.addClass('active')
+			} else {
+				$button.removeClass('active')
+			}
+		}
+	}
+}
+
+$(() => {
+	new AllWordsPage();
+});

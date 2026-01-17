@@ -208,6 +208,12 @@ app.get('/all',
 	}
 );
 
+app.get('/latex',
+	(req, res) => {
+		res.render('latex', pageVariables(req));
+	}
+);
+
 app.get('/add',
 	(req, res) => {
 		if (!req.user || !req.user['is_admin']) {

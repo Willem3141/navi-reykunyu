@@ -1,0 +1,24 @@
+<!doctype html>
+
+<html>
+	<%- include('head.ejs', { 'title': 'Complete word list' }) %>
+	<body>
+		<div class="container">
+			<%- include('header.ejs') %>
+		</div>
+
+		<div class="container">
+			<form class="ui form">
+				<textarea class="ui field" id="latex-box" rows="30"></textarea>
+			</form>
+			<div id="spinner" class="ui active centered inline text loader">
+				<%- _('loading-word-list') %>
+			</div>
+		</div>
+
+		<script src="/vendor/jquery/jquery-3.3.1.js"></script>
+		<script src="/vendor/semantic/dist/semantic.min.js"></script>
+		<script src="/js/ui-translations.js"></script>
+		<script src="/js/latex.js"></script>
+	</body>
+</html>

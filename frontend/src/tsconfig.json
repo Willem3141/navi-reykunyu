@@ -12,6 +12,7 @@
 	"files": [
 		"index.ts",
 		"all-words.ts",
+		"latex.ts",
 		"study.ts",
 		"study-lib.ts",
 		"review.ts",
