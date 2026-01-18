@@ -94,35 +94,58 @@ class AllWordsPage {
 	}
 
 	addDot(latex: string): string {
+		latex = latex.trimEnd(); // remove trailing newlines or whatever other garbage may be there
 		if (!'.?!'.includes(latex[latex.length - 1])) {
 			latex += '.';
 		}
 		return latex;
 	}
 
+	makePronunciation(pronunciation: Pronunciation[], type: string): string {
+		let result = '';
+		for (let i = 0; i < pronunciation.length; i++) {
+			if (i > 0) {
+				result += ' ' + _('or') + ' ';
+			}
+			const ipa = pronunciation[i]['ipa'];
+			if (ipa['FN'] !== ipa['RN']) {
+				result += 'FN ';
+				result += '{\\gentium ' + ipa['FN'] + '}';
+				result += ' / ';
+				result += 'RN ';
+				result += '{\\gentium ' + ipa['RN'] + '}';
+
+			} else {
+				result += '{\\gentium ' + ipa['FN'] + '}';
+			}
+		}
+		return result.replaceAll('~', '\\textasciitilde{}');
+	}
+
 	makeLaTeXFor(word: WordData): string {
 		let latex = '';
 
 		latex += '\\textbf{' + lemmaFormLaTeX(word, 'combined') + '}\n';
+
+		//if (word['pronunciation'] && word['pronunciation'].length > 0) {
+			//latex += ' ' + this.makePronunciation(word['pronunciation'], word['type']) + '\n';
+			//}
 		//addLemmaClass($word, word["type"]);
-		latex += '(';
-		latex += '\\textit{' + this.tstxoFnelä(word['type'], true) + '}';
-		/*if (word['pronunciation'] && word['pronunciation'].length > 0) {
-			latex += ', ';
-			//latex += this.makePronunciation(word['pronunciation'], word['type']));
-		}*/
-		if (word['infixes']) {
-			const infixes = word['infixes'];
-			let infixesHtml = infixes.replace(".", "<span class='root-infix'>·</span>");
-			infixesHtml = infixesHtml.replace(".", "<span class='root-infix'>·</span>");
-			latex += ', inf. ';
-			latex += infixes.replaceAll('.', '·');
+
+		if (word['status']) {
+			latex += '\\statusbox{' + word['status'] + '} ';
 		}
-		latex += ') ';
-		/*if (word['status']) {
-			$block.append(this.statusBadge(word['status']));
-			$block.append(' ');
-		}*/
+
+		latex += '(\\textit{' + this.tstxoFnelä(word['type'], true) + '}';
+		if (word['infixes']) {
+			latex += ',\\ ';
+			const infixes = word['infixes'];
+			latex += 'inf.\\ ';
+			latex += infixes.replaceAll('..', '\\kern40000sp\\textbf{·}\\kern40000sp\\textbf{·}\\kern40000sp ')
+				.replaceAll('.', '\\kern40000sp\\textbf{·}\\kern40000sp ');
+		}
+		latex += ')\\ %';
+
 		for (const i in word["translations"]) {
 			latex += '\n';
 			if (word["translations"].length > 1) {
@@ -136,9 +159,13 @@ class AllWordsPage {
 			latex += makeLinkStringLaTeX(getTranslation(word['meaning_note'], this.getLanguage()), word, this.getDialect(), this.getLanguage(), true);
 			latex = this.addDot(latex);
 		}
-		if (word['etymology'] && word['etymology'].length > 0) {
+		if (word['etymology'] && word['etymology'].length > 0 && word['type'] !== 'phr') {
 			latex += '\n';
-			latex += makeLinkStringLaTeX(word['etymology'], word, this.getDialect(), this.getLanguage(), true);
+			let etymology = makeLinkStringLaTeX(word['etymology'], word, this.getDialect(), this.getLanguage(), true);
+			etymology = etymology.replace(/(מַצָּה)/, '{\\hebrew $1}');
+			etymology = etymology.replace(/(חָמֵץ)/, '{\\hebrew $1}');
+			etymology = etymology.replace(/(中文)/, '{\\cjk $1}');
+			latex += etymology;
 			latex = this.addDot(latex);
 		}
 		if (word['seeAlso'] && word['seeAlso'].length > 0) {
@@ -171,9 +198,9 @@ class AllWordsPage {
 				latex += '{\\scriptsize ' + source + '}';
 			}
 		}
-		if (word['image']) {
+		if (word['image'] && word['word_raw']['FN'] !== 'syaksyuk' && word['word_raw']['FN'] !== 'palukan') {
 			latex += '\n\n';
-			latex += '\\begin{figure*}\\centering\\includegraphics[width=.3\\textwidth]{ayrel/' + word['image'] + '}\\\\\\textbf{' + lemmaFormLaTeX(word, 'combined') + '}\\end{figure*}';
+			latex += '\\begin{figure}[h]\\centering\\includegraphics[width=.3\\textwidth]{ayrel/' + word['image'] + '}\\\\\\textbf{' + lemmaFormLaTeX(word, 'combined') + '}\\end{figure}';
 		}
 
 		return latex;
@@ -195,14 +222,21 @@ class AllWordsPage {
 	// tìftang is sorted before everything else). A non-zero i specifies that the
 	// first i characters of both strings are to be ignored. Returns a negative
 	// value if a < b, a positive value if a > b, or 0 if a == b.
-	compareNaviWords(a: string, b: string, i: number): number {
+	compareNaviWords(a: WordData, b: WordData, i: number): number {
+		let aWord = a['word_raw']['FN'];
+		let bWord = b['word_raw']['FN'];
+
+		if (aWord === bWord) {
+			return a['type'].localeCompare(b['type']);
+		}
+
 		const naviSortAlphabet = " 'aäbdeéfghiìklmnoprstuùvwxyz";
 
-		if (a.length <= i || b.length <= i) {
-			return a.length - b.length;
+		if (aWord.length <= i || bWord.length <= i) {
+			return aWord.length - bWord.length;
 		}
-		const first = a[i].toLowerCase();
-		const second = b[i].toLowerCase();
+		const first = aWord[i].toLowerCase();
+		const second = bWord[i].toLowerCase();
 		if (first == second) {
 			return this.compareNaviWords(a, b, i + 1);
 		}
@@ -235,29 +269,27 @@ class AllWordsPage {
 				}
 
 				dictionary.sort((a: WordData, b: WordData) => {
-					return this.compareNaviWords(a['word_raw']['FN'], b['word_raw']['FN'], 0);
+					return this.compareNaviWords(a, b, 0);
 				});
 				let section = '';
-				let $block: JQuery | null = null;
 
 				let latex = '';
 				for (let word of dictionary) {
 					const initial = word['word_raw']['FN'][0].toLowerCase();
 					if (initial !== section) {
 						if (initial === "'") {
-							latex += '\\subsection*{\\centering ' + initial + ' \\textcolor{gray}{(tìftang)}}\n\n';
+							latex += '\\twocolumn[\\section*{\\centering\\LARGE ' + initial + '\\\\\\large\\textcolor{gray}{(tì\\uline{ftang})}}]';
 						} else {
-							latex += '\\end{multicols}\n';
-							latex += '\\chapter*{' + initial + '}\n\n';
+							latex += '\\twocolumn[\\section*{\\centering\\LARGE ' + initial + '}]';
 						}
-						latex += '\\begin{multicols}{2}\n';
+						latex += '\\chapterstart{' + initial + '}';
+						latex += '\n\n';
 						section = initial;
 					}
 
 					latex += '\\hangindent=1.4em\n\\hangafter=1\n';
 					latex += this.makeLaTeXFor(word) + '\n\n';
 				}
-				latex += '\\end{multicols}\n';
 				$('#latex-box').text(latex);
 
 				this.runFilter();
