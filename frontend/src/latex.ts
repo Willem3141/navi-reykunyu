@@ -122,14 +122,58 @@ class AllWordsPage {
 		return result.replaceAll('~', '\\textasciitilde{}');
 	}
 
+	convertToHeadwordForm(pronunciation: Pronunciation): string {
+		let result = '';
+		let syllables = pronunciation['syllables'].split('-');
+		for (let i = 0; i < syllables.length; i++) {
+			if (syllables.length > 1 && i + 1 === pronunciation['stressed']) {
+				result += '[' + syllables[i] + ']';
+			} else {
+				result += syllables[i];
+			}
+		}
+		return result;
+	}
+
 	makeLaTeXFor(word: WordData): string {
 		let latex = '';
 
-		latex += '\\textbf{' + lemmaFormLaTeX(word, 'combined') + '}\n';
+		let headword = lemmaFormLaTeX(word, 'combined');
+		latex += '\\textbf{' + headword + '}\n';
 
-		//if (word['pronunciation'] && word['pronunciation'].length > 0) {
+		if (word['pronunciation'] && word['pronunciation'].length > 0) {
+			// Do we even need to show the pronunciation? If it's equal to what's already in the headword, it's useless.
+			let headwordPronunciation = word['word']['combined'].toLowerCase().replaceAll('/', '').replaceAll('é', 'e');
+			let pronunciations = [];
+			for (let pronunciation of word['pronunciation']) {
+				pronunciations.push(this.convertToHeadwordForm(pronunciation));
+			}
+			if (pronunciations.length > 1 && pronunciations[0].toLowerCase() === headwordPronunciation) {
+				//console.log(headwordPronunciation, pronunciations[0]);
+				latex += '(also pron. ';
+				for (let i = 1; i < pronunciations.length; i++) {
+					if (i > 1) {
+						latex += ' or ';
+					}
+					let p = pronunciations[i].replace(/\[([^\]]*)\]/g, '\\uline{$1}');
+					latex += '\\textbf{' + p + '}';
+				}
+				latex += ')\n';
+			} else if (pronunciations[0].toLowerCase() !== headwordPronunciation) {
+				latex += '(pron. ';
+				for (let i = 0; i < pronunciations.length; i++) {
+					if (i > 0) {
+						latex += ' or ';
+					}
+					let p = pronunciations[i].replace(/\[([^\]]*)\]/g, '\\uline{$1}');
+					latex += '\\textbf{' + p + '}';
+				}
+				latex += ')\n';
+			}
 			//latex += ' ' + this.makePronunciation(word['pronunciation'], word['type']) + '\n';
 			//}
+		}
+
 		//addLemmaClass($word, word["type"]);
 
 		if (word['status']) {
@@ -159,7 +203,7 @@ class AllWordsPage {
 			latex += makeLinkStringLaTeX(getTranslation(word['meaning_note'], this.getLanguage()), word, this.getDialect(), this.getLanguage(), true);
 			latex = this.addDot(latex);
 		}
-		if (word['etymology'] && word['etymology'].length > 0 && word['type'] !== 'phr') {
+		if (word['etymology'] && word['etymology'].length > 0 && word['type'] !== 'phr' && (word['type'] !== 'n:si' || !word['etymology'].startsWith('From '))) {
 			latex += '\n';
 			let etymology = makeLinkStringLaTeX(word['etymology'], word, this.getDialect(), this.getLanguage(), true);
 			etymology = etymology.replace(/(מַצָּה)/, '{\\hebrew $1}');
@@ -275,12 +319,15 @@ class AllWordsPage {
 
 				let latex = '';
 				for (let word of dictionary) {
+					if (word['type'] === 'n' && word['word_raw']['FN'] === 'moe') {
+						continue; // oopsie
+					}
 					const initial = word['word_raw']['FN'][0].toLowerCase();
 					if (initial !== section) {
 						if (initial === "'") {
-							latex += '\\twocolumn[\\section*{\\centering\\LARGE ' + initial + '\\\\\\large\\textcolor{gray}{(tì\\uline{ftang})}}]';
+							latex += '\\twocolumn[\\section*{\\centering\\LARGE ' + initial + '\\\\\\large\\textcolor{gray}{(tì\\uline{ftang})}}\\vspace{5mm}]';
 						} else {
-							latex += '\\twocolumn[\\section*{\\centering\\LARGE ' + initial + '}]';
+							latex += '\\twocolumn[\\section*{\\centering\\LARGE ' + initial + '}\\vspace{5mm}]';
 						}
 						latex += '\\chapterstart{' + initial + '}';
 						latex += '\n\n';
