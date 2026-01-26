@@ -1114,8 +1114,8 @@
 		"offline-unavailable-annotated": "offline-tilstanden understøtter ikke at søge i den Annoterede Ordbog.",
 		"pick-a-course": "Hvilket kursus kunne du tænke dig at lære?",
 		"pick-a-course-note": "Hvis du kun lige er begyndt, anbefaler vi stærkt at begynde med Beginner Vocabulary kurset. Du kan altid skifte til et andet kursus senere. Reykunyu husker hvilke ord du allerede har lært, så i det tilfælde, vil det ikke få dig til at gentage ord du allerede kender fra Beginner Vocabulary kurset.",
-		"learned-count-1": "Du har lært",
-		"learned-count-2": "ord i alt, indtil videre. Seysonìltsan!",
+		"learned-count-1": "Indtil videre, har du lært",
+		"learned-count-2": "ord i alt. Seysonìltsan!",
 		"lessons": "Lektioner",
 		"lesson": "Lektion",
 		"lesson-overview": "Lektionsoverblik",
@@ -1506,5 +1506,11 @@
 	},
 	"it": {
 		"language": "Italiano"
+	},
+	"cz": {
+		"language": "Čeština"
+	},
+	"sk": {
+		"language": "Slovenčina"
 	}
 }

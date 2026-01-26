@@ -424,7 +424,7 @@ app.post('/translate',
 		}
 
 		const language = req.body['language'];
-		if (!['da', 'nl', 'et', 'fr', 'de', 'hu', 'pl', 'ru', 'sv'].includes(language)) {
+		if (!['da', 'nl', 'et', 'fr', 'de', 'hu', 'pl', 'ru', 'sv', 'cz', 'sk'].includes(language)) {
 			res.status(400);
 			res.send('400 Bad Request');
 			return;
