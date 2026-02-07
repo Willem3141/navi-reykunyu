@@ -804,7 +804,7 @@ export default class Reykunyu {
 			let row = [];
 			if (word['type'] !== 'n:pr' || j === 0) {
 				for (let i = 0; i < 6; i++) {
-					let conjugated = nounConjugator.conjugateSimple(word['word_raw'][dialect],
+					let conjugated = nounConjugator.conjugateSimple(word['word'][dialect],
 						plurals[j], cases[i], dialect,
 						word['status'] === 'loan');
 					row.push(conjugated);

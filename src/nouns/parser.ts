@@ -23,11 +23,17 @@ export function parse(word: string, dialect: Dialect, assumeLoanword?: boolean):
 		if (!candidatePossible(candidate)) {
 			continue;
 		}
-		let conjugation = conjugate(candidate["root"], candidate["affixes"], dialect, assumeLoanword);
-		if (!conjugationString.stringAdmits(conjugation, word)) {
+		let possibilities = conjugate(candidate["root"], candidate["affixes"], dialect, assumeLoanword);
+		let found = false;
+		for (let possibility of possibilities) {
+			if (possibility.toRawString() === word) {
+				found = true;
+			}
+		}
+		if (!found) {
 			candidate["correction"] = word;
 		}
-		candidate["result"] = conjugationString.formsFromString(conjugation);
+		candidate["result"] = possibilities.map((w) => w.toString());
 		result.push(candidate);
 	}
 

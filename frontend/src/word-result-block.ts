@@ -804,7 +804,9 @@ export default class WordResultBlock {
 				formatted += " <span class='muted'>" + _('or') + "</span> ";
 			}
 
-			let m = c[k].replaceAll(',', '/').match(/(.*-\)?)(.*)(-.*)/);
+			let m = c[k].replaceAll('/', '·')
+				.replaceAll(',', '/')
+				.match(/(.*-\)?)(.*)(-.*)/);
 
 			if (m) {
 				if (m[1] !== "-") {

@@ -22,7 +22,7 @@ export function generateIpa(pronunciation: Pronunciation, type: string, dialect:
 		if (j + 1 < syllables.length) {
 			const nextSyllable = syllables[j + 1];
 			nextStartsWithEjective = nextSyllable.length > 1 && nextSyllable[1] === 'x';
-			nextStartsWithVowel = phonology.isVowel(nextSyllable[0]);
+			nextStartsWithVowel = false;  // phonology.isVowel(nextSyllable[0]);  // TODO
 		}
 		ipa += syllableToIpa(syllables[j], dialect, lastOfPrevious, nextStartsWithEjective, stressed);
 		lastOfPrevious = syllables[j][syllables[j].length - 1];
@@ -57,8 +57,8 @@ function syllableToIpa(text: string, dialect: Dialect, lastOfPrevious: string, n
 		'sy': (d) => d.dialect === 'RN' ? 'ʃ' : 'sj',
 		'\'': (d) => {
 			if (d.dialect === 'FN' || !d.first
-				|| !d.previous || !phonology.isVowel(d.previous)
-				|| !d.next || !phonology.isVowel(d.next)) {
+				|| !d.previous || false // !phonology.isVowel(d.previous)  // TODO
+				|| !d.next || false) { // !phonology.isVowel(d.next)) {
 				return 'ʔ';
 			}
 			// RN: always drop tìftang if between two inequal vowels

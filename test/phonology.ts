@@ -1,89 +1,93 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert';
 
-import * as phonology from '../src/phonology';
+import { Word, lower } from '../src/phonology';
 
-function testLenition(input: string, expectedLenitedConsonant: string, expectedRest: string): void {
-	const [lenitedConsonant, rest] = phonology.lenite(input);
-	assert.strictEqual(lenitedConsonant, expectedLenitedConsonant);
-	assert.strictEqual(rest, expectedRest);
+function testLenition(input: string, expectedResult: string): void {
+	const word = new Word(input);
+	const lenited = word.lenite();
+	assert.strictEqual(lenited.toString(), expectedResult);
 }
 
 describe('phonology functions', () => {
 
 	describe('lower()', () => {
 		test('returns the lowercase version of the input', (t) => {
-			assert.strictEqual(phonology.lower('HI!'), 'hi!');
+			assert.strictEqual(lower('HI!'), 'hi!');
 		});
 
 		test('returns an empty string if the input is an empty string', (t) => {
-			assert.strictEqual(phonology.lower(''), '');
+			assert.strictEqual(lower(''), '');
 		});
 
 		test('returns undefined if the input is undefined', (t) => {
-			assert.strictEqual(phonology.lower(undefined), undefined);
+			assert.strictEqual(lower(undefined), undefined);
 		});
 	});
 
-	describe('lenite()', () => {
+	describe('lenition', () => {
 		test('is applied to words starting with an ejective (px/tx/kx)', (t) => {
-			testLenition('pxir', 'p', 'ir');
-			testLenition('txele', 't', 'ele');
-			testLenition('kxumpay', 'k', 'umpay');
+			testLenition('pxir', 'pir');
+			testLenition('txa', 'ta');
+			testLenition('kxum', 'kum');
 		});
 
 		test('is applied to words starting with a stop (p/t/k/\')', (t) => {
-			testLenition('pizayu', 'f', 'izayu');
-			testLenition('tute', 's', 'ute');
-			testLenition('kelku', 'h', 'elku');
-			testLenition('\'awkx', '', 'awkx');
+			testLenition('pup', 'fup');
+			testLenition('ta', 'sa');
+			testLenition('kawng', 'hawng');
+			testLenition('\'awkx', 'awkx');
 		});
 
 		test('is applied to words starting with an affricate (ts)', (t) => {
-			testLenition('tseng', 's', 'eng');
+			testLenition('tseng', 'seng');
 		});
 
 		test('is not applied to words starting with a fricative (f/s/h)', (t) => {
-			testLenition('fahew', '', 'fahew');
-			testLenition('swirä', '', 'swirä');
-			testLenition('haway', '', 'haway');
+			testLenition('few', 'few');
+			testLenition('swok', 'swok');
+			testLenition('hay', 'hay');
 		});
 
 		test('is not applied to words starting with another consonant', (t) => {
-			testLenition('loreyu', '', 'loreyu');
-			testLenition('mo', '', 'mo');
-			testLenition('ngoa', '', 'ngoa');
-			testLenition('numtseng', '', 'numtseng');
-			testLenition('rel', '', 'rel');
-			testLenition('vitra', '', 'vitra');
-			testLenition('wion', '', 'wion');
-			testLenition('zoplo', '', 'zoplo');
+			testLenition('lor', 'lor');
+			testLenition('mo', 'mo');
+			testLenition('nga', 'nga');
+			testLenition('nun', 'nun');
+			testLenition('rel', 'rel');
+			testLenition('vol', 'vol');
+			testLenition('win', 'win');
+			testLenition('zun', 'zun');
 		});
 
 		test('is not applied to words starting with a vowel', (t) => {
-			testLenition('aungia', '', 'aungia');
-			testLenition('ätxäle', '', 'ätxäle');
-			testLenition('eltu', '', 'eltu');
-			testLenition('ioang', '', 'ioang');
-			testLenition('ìheyu', '', 'ìheyu');
-			testLenition('oare', '', 'oare');
-			testLenition('uran', '', 'uran');
+			testLenition('a/[u]/ngi/a', 'a/[u]/ngi/a');
+			testLenition('ä/[txä]/le', 'ä/[txä]/le');
+			testLenition('[el]/tu', '[el]/tu');
+			testLenition('i/[o]/ang', 'i/[o]/ang');
+			testLenition('ì/[he]/yu', 'ì/[he]/yu');
+			testLenition('o/[a]/re', 'o/[a]/re');
+			testLenition('[u]/ran', '[u]/ran');
 		});
 
 		test('is not applied to words starting with \'ll and \'rr', (t) => {
-			testLenition('\'llngo', '', '\'llngo');
-			testLenition('\'rrta', '', '\'rrta');
+			testLenition('[\'ll]/ngo', '[\'ll]/ngo');
+			testLenition('[\'rr]/ta', '[\'rr]/ta');
+		});
+
+		test('still works if the word starts with a stressed syllable', (t) => {
+			testLenition('[pxun]/til', '[pun]/til');
+			testLenition('[txo]/lar', '[to]/lar');
+			testLenition('[kxe]/yey', '[ke]/yey');
 		});
 
 		test('still works if the word starts with an uppercase letter, and preserves the uppercase', (t) => {
-			testLenition('Pxir', 'P', 'ir');
-			testLenition('Tute', 'S', 'ute');
-			testLenition('Kelku', 'H', 'elku');
-			testLenition('Pizayu', 'F', 'izayu');
-			testLenition('Tute', 'S', 'ute');
-			testLenition('Kelku', 'H', 'elku');
-			testLenition('\'Awkx', '', 'Awkx');
-			testLenition('Tseng', 'S', 'eng');
+			testLenition('Pxir', 'Pir');
+			testLenition('[Tu]/te', '[Su]/te');
+			testLenition('[Kel]/ku', '[Hel]/ku');
+			testLenition('[Pi]/za/yu', '[Fi]/za/yu');
+			testLenition('\'Awkx', 'Awkx');
+			testLenition('Tseng', 'Seng');
 		});
 	});
 });

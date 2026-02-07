@@ -12,16 +12,16 @@ export function rhymeEnding(word: string): string {
 	// ignore é and ù
 	word = word.replace('é', 'e');
 	word = word.replace('ù', 'u');
-	
+
 	if (word.endsWith('rr') || word.endsWith('ll')) {
 		return word.substring(word.length - 2);
 	}
 
 	let ending = '';
-	while (word.length > 0 && !phonology.endsInVowel(word)) {
+	/*while (word.length > 0 && !phonology.endsInVowel(word)) {
 		ending = word[word.length - 1] + ending;
 		word = word.substring(0, word.length - 1);
-	}
+	}*/ // TODO
 	ending = word[word.length - 1] + ending;
 	return ending;
 }
@@ -29,4 +29,3 @@ export function rhymeEnding(word: string): string {
 export function rhymes(first: string, second: string): boolean {
 	return rhymeEnding(first) === rhymeEnding(second);
 }
-

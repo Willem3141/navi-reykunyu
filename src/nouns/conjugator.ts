@@ -23,35 +23,143 @@
  *
  * Some combinations may not make sense in practice, and in fact, the rules
  * about which combinations are allowed or not are not completely clear.
- *
- * The conjugate function takes a stem and an array with 7 elements, like the
- * one above, and returns the conjugated form. The conjugated form is not just
- * a single string, because there may be several possibilities for 2 and 6.
- * Therefore in fact we return an array with 9 arrays which represent the
- * possibilities for each part:
- *
- *  0. determiner prefix
- *  1. plural prefix
- *  2. stem prefix
- *  3. lenited consonant of the stem
- *  4. rest of the stem
- *  5. stem suffix
- *  6. determiner suffix
- *  7. case suffix
- *  8. final suffix
- *
- * (We separate the lenited consonant of the stem so that we can nicely
- * highlight it in the interface.)
  */
 
-import { lenite, lower, startsWithVowel, endsInVowel, endsInConsonant } from "../phonology";
+import { Word } from "../phonology";
 
-type Prefix = { text: string, lenites: boolean, optionalIfLenitable?: boolean };
-type Suffix = { text: string, dropCount?: number };
+/**
+ * An Affix is a function that takes a word as input and produces a set of
+ * result possibilities.
+ */
+type Affix = (w: Word, dialect?: Dialect, isLoanword?: boolean) => Word[];
 
-type CaseFunction = (stem: string, dialect: Dialect, isLoanword?: boolean) => Suffix;
+function createPrefix(prefix: string) {
+	let lenites = false;
+	if (prefix.endsWith('+')) {
+		prefix = prefix.substring(0, prefix.length - 1);
+		lenites = true;
+	}
 
-const caseFunctions: { [suffix: string]: CaseFunction } = {
+	return (w: Word) => {
+		if (lenites) {
+			if (prefix.toString() === 'ay' && w.isLenitable()) {
+				w = w.lenite();
+				return [w.addPrefix(prefix), w];
+			} else {
+				w = w.lenite();
+			}
+		}
+		// TODO don't merge vowels for RN
+		return [w.addPrefix(prefix, true)];
+	};
+}
+
+function createSuffix(suffix: string) {
+	return (w: Word) => {
+		return [w.addSuffix(suffix)];
+	};
+}
+
+const subjectiveSuffix: Affix = (w: Word, dialect?: Dialect, isLoanword?: boolean) => {
+	return [w];
+}
+
+const agentiveSuffix: Affix = (w: Word, dialect?: Dialect, isLoanword?: boolean) => {
+	if (isLoanword && w.endsWith('ì')) {
+		return [w.removeLastLetter().addSuffix('ìl')];
+	}
+	if (w.endsWithVowel()) {
+		return [w.addSuffix('l')];
+	} else {
+		return [w.addSuffix('ìl')];
+	}
+};
+
+const patientiveSuffix: Affix = (w: Word, dialect?: Dialect, isLoanword?: boolean) => {
+	if (isLoanword && w.endsWith('ì')) {
+		// If the loanword ends in -fì, -sì, or -tsì, then phonologically we can
+		// replace the -ì by -ti.
+		if (w.endsWith('fì') || w.endsWith('sì')) {
+			return [w.removeLastLetter().addSuffix('it'), w.removeLastLetter().addSuffix('ti')];
+		} else {
+			return [w.removeLastLetter().addSuffix('it')];
+		}
+
+	} else if (w.endsWithVowel()) {
+		return [w.addSuffix('t'), w.addSuffix('ti')];
+
+	} else if (w.endsWithConsonant()) {
+		return [w.addSuffix('it'), w.addSuffix('ti')];
+
+	} else if (w.endsWith('ay')) {
+		return [w.addSuffix('it'), w.addSuffix('t'), w.addSuffix('ti')];
+
+	} else if (w.endsWith('ey')) {
+		return [w.addSuffix('t'), w.addSuffix('ti')];
+
+	} else {
+		return [w.addSuffix('it'), w.addSuffix('ti')];
+	}
+}
+
+const dativeSuffix: Affix = (w: Word, dialect?: Dialect, isLoanword?: boolean) => {
+	if (isLoanword && w.endsWith('ì')) {
+		return [w.removeLastLetter().addSuffix('ur')];
+
+	} else if (w.endsWithVowel()) {
+		return [w.addSuffix('r'), w.addSuffix('ru')];
+
+	} else if (w.endsWith('\'')) {
+		return [w.addSuffix('ur'), w.addSuffix('ru')];
+
+	} else if (w.endsWithConsonant()) {
+		return [w.addSuffix('ur')];
+
+	} else if (w.endsWith('aw')) {
+		return [w.addSuffix('ur'), w.addSuffix('r'), w.addSuffix('ru')];
+
+	} else if (w.endsWith('ew')) {
+		return [w.addSuffix('r'), w.addSuffix('ru')];
+
+	} else {
+		return [w.addSuffix('ur'), w.addSuffix('ru')];
+	}
+}
+
+const genitiveSuffix: Affix = (w: Word, dialect?: Dialect, isLoanword?: boolean) => {
+	if (isLoanword && w.endsWith('ì')) {
+		return [w.removeLastLetter().addSuffix('ä')];
+
+	} else if (w.endsWith('o') || w.endsWith('u')) {
+		return [w.addSuffix('ä')];
+
+	} else if (w.endsWith('ia')) {
+		return [w.removeLastLetter().addSuffix('ä')];
+
+	} else if (w.toRawString() === "omatikaya") {
+		return [w.addSuffix('ä')];
+
+	} else if (w.endsWithVowel()) {
+		return [w.addSuffix('yä')];
+
+	} else {
+		return [w.addSuffix('ä')];
+	}
+}
+
+const topicalSuffix: Affix = (w: Word, dialect?: Dialect, isLoanword?: boolean) => {
+	if (isLoanword && w.endsWith('ì')) {
+		return [w.removeLastLetter().addSuffix('ì/ri')];
+
+	} else if (w.endsWithConsonant()) {
+		return [w.addSuffix('ì/ri')];
+
+	} else {
+		return [w.addSuffix('ri')];
+	}
+}
+
+const caseFunctions: { [suffix: string]: Affix } = {
 	"": subjectiveSuffix,
 	"l": agentiveSuffix,
 	"t": patientiveSuffix,
@@ -61,35 +169,46 @@ const caseFunctions: { [suffix: string]: CaseFunction } = {
 };
 
 /**
- * Conjugates a noun. Returns a conjugation string with nine parts.
+ * Conjugates a noun.
  *
  * noun - the noun stem
  * affixes - an array with seven affixes to be applied to the stem, as detailed
  *           above
  */
-export function conjugate(noun: string, affixes: string[], dialect: Dialect, isLoanword?: boolean): string {
+export function conjugate(noun: string, affixes: string[], dialect: Dialect, isLoanword?: boolean): Word[] {
+	let possibilities = [new Word(noun)];
+
+	let applyAffix = (affix: Affix) => {
+		let newPossibilities: Word[] = [];
+		for (let possibility of possibilities) {
+			newPossibilities = newPossibilities.concat(affix(possibility, dialect, isLoanword));
+		}
+		possibilities = newPossibilities;
+	}
+
 	// Apply the prefixes from inside out.
-	noun = applyPrefix(noun, { text: affixes[2], lenites: false });
-	noun = applyPrefix(noun, findDeterminerAndPluralPrefix(affixes[0], affixes[1]));
+	applyAffix(createPrefix(affixes[2]));
+	applyAffix(findDeterminerAndPluralPrefix(affixes[0], affixes[1]));
 
 	// Apply the suffixes from inside out.
-	noun = applySuffix(noun, { text: affixes[3] });
-	noun = applySuffix(noun, { text: affixes[4] });
+	applyAffix(createSuffix(affixes[3]));
+	applyAffix(createSuffix(affixes[4]));
 	if (caseFunctions.hasOwnProperty(affixes[5])) {
-		noun = applySuffix(noun, caseFunctions[affixes[5]](noun, dialect, isLoanword));
+		applyAffix(caseFunctions[affixes[5]]);
 	} else {
-		noun = applySuffix(noun, { text: affixes[5] });
+		applyAffix(createSuffix(affixes[5]));
 	}
-	noun = applySuffix(noun, { text: affixes[6] });
+	applyAffix(createSuffix(affixes[6]));
 
-	return noun;
+	return possibilities;
 }
 
 export function conjugateSimple(noun: string, pluralPrefix: string, caseSuffix: string, dialect: Dialect, isLoanword?: boolean) {
 	let conjugation = conjugate(noun, ['', pluralPrefix, '', '','', caseSuffix, ''], dialect, isLoanword);
-	if (pluralPrefix === '') {
+	/*if (pluralPrefix === '') {
 		conjugation = '-' + conjugation;
 	} else {
+		// TODO
 		let conjugationPieces = conjugation.split('-');
 		const [lenitedConsonant, _] = lenite(noun);
 		if (lenitedConsonant) {
@@ -101,117 +220,17 @@ export function conjugateSimple(noun: string, pluralPrefix: string, caseSuffix: 
 	if (caseSuffix === '') {
 		conjugation = conjugation + '-';
 	}
-	return conjugation;
+	return conjugation;*/
+	return conjugation.join(';');  // TODO
 }
 
-function subjectiveSuffix(noun: string): Suffix {
-	return { text: '' };
-}
-
-function agentiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
-	if (isLoanword && noun.endsWith('ì')) {
-		return { text: 'ìl', dropCount: 1 };
-	}
-	if (endsInVowel(noun)) {
-		return { text: 'l' };
-	} else {
-		return { text: 'ìl' };
-	}
-}
-
-function patientiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
-	if (isLoanword && noun.endsWith('ì')) {
-		// If the loanword ends in -fì, -sì, or -tsì, then phonologically we can
-		// replace the -ì by -ti.
-		if (['f', 's'].includes(noun[noun.length - 2])) {
-			return { text: 'it,ti', dropCount: 1 };
-		} else {
-			return { text: 'it', dropCount: 1 };
-		}
-	}
-	if (endsInVowel(noun)) {
-		return { text: 't(i)' };
-	} else {
-		if (endsInConsonant(noun)) {
-			return { text: 'it,ti' };
-		} else {
-			if (noun.endsWith('ay')) {
-				return { text: 'it,t(i)' };
-			} else if (noun.endsWith('ey')) {
-				return { text: 't(i)' };
-			} else {
-				return { text: 'it,ti' };
-			}
-		}
-	}
-}
-
-function dativeSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
-	if (isLoanword && noun.endsWith('ì')) {
-		return { text: 'ur', dropCount: 1 };
-	}
-	if (endsInVowel(noun)) {
-		return { text: 'r(u)' };
-	} else {
-		if (endsInConsonant(noun)) {
-			if (noun.endsWith('\'')) {
-				return { text: 'ur,ru' };
-			} else {
-				return { text: 'ur' };
-			}
-		} else {
-			if (noun.endsWith('aw')) {
-				return { text: 'ur,r(u)' };
-			} else if (noun.endsWith('ew')) {
-				return { text: 'r(u)' };
-			} else {
-				return { text: 'ur,ru' };
-			}
-		}
-	}
-}
-
-function genitiveSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
-	if (isLoanword && noun.endsWith('ì')) {
-		return { text: 'ä', dropCount: 1 };
-	}
-	if (endsInVowel(noun)) {
-		if (noun.slice(-1) === "o" || noun.slice(-1) === "u") {
-			return { text: 'ä' };
-		} else {
-			if (noun.slice(-2) === "ia") {
-				return { text: 'ä', dropCount: 1 };
-			} else {
-				if (noun.toLowerCase() === "omatikaya") {
-					return { text: 'ä' };
-				} else {
-					return { text: 'yä' };
-				}
-			}
-		}
-	} else {
-		return { text: 'ä' };
-	}
-}
-
-function topicalSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Suffix {
-	if (isLoanword && noun.endsWith('ì')) {
-		return { text: 'ìri', dropCount: 1 };
-	}
-	if (endsInConsonant(noun)) {
-		return { text: 'ìri' };
-	} else {
-		return { text: 'ri' };
-	}
-}
-
-function findDeterminerAndPluralPrefix(determinerPrefix: string, pluralPrefix: string): Prefix {
+function findDeterminerAndPluralPrefix(determinerPrefix: string, pluralPrefix: string): Affix {
 	let prefixes = [
 		['', 'me+', 'pxe+', 'ay+'],
-		['fì', 'fìme+', 'fìpxe+', 'f(ì)ay+'],
-		['tsa', 'tsame+', 'tsapxe+', 'tsay+'],
-		['pe+', 'peme+', 'pepe+', 'pay+'],
-		['fra', 'frame+', 'frapxe+', 'fray+'],
+		['fì', 'fì/me+', 'fì/pxe+', 'f(ì/)ay+'],
+		['tsa', 'tsa/me+', 'tsa/pxe+', 'tsay+'],
+		['pe+', 'pe/me+', 'pe/pe+', 'pay+'],
+		['fra', 'fra/me+', 'fra/pxe+', 'fray+'],
 	];
 	let determinerIndex = ['', 'fì', 'tsa', 'pe', 'fra'].indexOf(determinerPrefix);
 	let pluralIndex = ['', 'me', 'pxe', 'ay'].indexOf(pluralPrefix);
@@ -221,58 +240,5 @@ function findDeterminerAndPluralPrefix(determinerPrefix: string, pluralPrefix: s
 	if (pluralIndex === -1) {
 		throw new Error('Trying to conjugate a noun with invalid plural prefix ' + pluralPrefix);
 	}
-	let prefix = prefixes[determinerIndex][pluralIndex];
-	if (prefix === 'ay+') {
-		return { text: 'ay', lenites: true, optionalIfLenitable: true };
-	} else if (prefix.endsWith('+')) {
-		return { text: prefix.substring(0, prefix.length - 1), lenites: true };
-	} else {
-		return { text: prefix, lenites: false };
-	}
-}
-
-function applyPrefix(noun: string, prefix: Prefix): string {
-	let optional = false;
-	if (prefix.lenites) {
-		let lenited = lenite(noun).join('');
-		if (prefix.optionalIfLenitable && noun !== lenited && noun !== '\'u') {
-			optional = true;
-		}
-		noun = lenited;
-	}
-	if (endsInVowel(prefix.text) && noun.length > 0 && prefix.text[prefix.text.length - 1] === noun[0].toLowerCase()) {
-		// TODO don't do this for RN
-		prefix.text = prefix.text.substring(0, prefix.text.length - 1);
-	}
-	if (prefix.text === '') {
-		return noun;
-	}
-	if (optional) {
-		prefix.text = '(' + prefix.text + ')';
-	}
-	return prefix.text + '-' + noun;
-}
-
-function applySuffix(noun: string, suffix: Suffix): string {
-	if (suffix.dropCount) {
-		noun = noun.substring(0, noun.length - suffix.dropCount);
-	}
-	if (suffix.text === '') {
-		return noun;
-	}
-	return noun + '-' + suffix.text;
-}
-
-let voicings: Record<string, string> = {
-	"t": "d",
-	"p": "b",
-	"k": "g",
-};
-
-function voice(word: string): [string, string] {
-	if (word[word.length - 1] !== 'x' || !(word[word.length - 2] in voicings)) {
-		return [word, ''];
-	}
-
-	return [word.substring(0, word.length - 2), voicings[word[word.length - 2]]];
+	return createPrefix(prefixes[determinerIndex][pluralIndex]);
 }
