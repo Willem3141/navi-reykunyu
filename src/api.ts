@@ -109,7 +109,7 @@ router.get('/suggest',
 	}
 );
 
-router.get('/annotated/search', 
+router.get('/annotated/search',
 	parseStringParameter('query', 'get'),
 	(req, res) => {
 		res.json(annotatedDictionary.getResponsesFor(req.args!['query']));
@@ -172,7 +172,7 @@ router.get('/list/all',
 	}
 );
 
-router.get('/sound', 
+router.get('/sound',
 	parseStringParameter('word', 'get'),
 	parseStringParameter('type', 'get'),
 	(req, res) => {
@@ -215,6 +215,11 @@ router.post('/user/mark-favorite',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
 	async (req, res, next) => {
+		// Reject the request if this word doesn't exist.
+		if (!server.reykunyu.dictionary.getById(req.args!['vocab'])) {
+			res.status(400).send('400 Bad Request');
+			return;
+		}
 		try {
 			await userdata.markFavorite(req.user!, req.args!['vocab']);
 			res.status(204).send();
@@ -228,6 +233,11 @@ router.post('/user/unmark-favorite',
 	checkLoggedIn(),
 	parseIntegerParameter('vocab', 'post'),
 	async (req, res, next) => {
+		// Reject the request if this word doesn't exist.
+		if (!server.reykunyu.dictionary.getById(req.args!['vocab'])) {
+			res.status(400).send('400 Bad Request');
+			return;
+		}
 		try {
 			await userdata.unmarkFavorite(req.user!, req.args!['vocab']);
 			res.status(204).send();
@@ -435,7 +445,7 @@ function parseDialectParameter(name: string, type: 'get' | 'post') {
 			req.args = {};
 		}
 		const args = type === 'get' ? req.query : req.body;
-		if (!args.hasOwnProperty(name)) { 
+		if (!args.hasOwnProperty(name)) {
 			req.args[name] = 'combined';
 			next();
 			return;
