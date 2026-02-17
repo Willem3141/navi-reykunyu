@@ -40,7 +40,7 @@ export default class WordResultBlock {
 		}
 
 		const loggedIn = $('body').hasClass('logged-in');
-		if (loggedIn) {
+		if (loggedIn && r['id'] !== -1) {
 			$resultWord.append(this.wordToolbar(r));
 		}
 
