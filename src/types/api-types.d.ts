@@ -42,6 +42,7 @@ declare type WordData = {
 	status_note?: string,
 	etymology?: LinkString,
 	derived?: WordData[],
+	disambiguation_hint?: Translated<string>,
 	seeAlso?: WordData[],
 	todo?: string,
 	favorite?: boolean,

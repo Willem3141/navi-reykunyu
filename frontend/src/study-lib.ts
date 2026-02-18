@@ -1,4 +1,4 @@
-import { addLemmaClass, appendLinkString, lemmaForm, toReadableType, getTranslation } from "./lib";
+import { addLemmaClass, appendLinkString, lemmaForm, toReadableType, getTranslation, getDisambiguationHint } from "./lib";
 
 function htmlFromPronunciation(pronunciation: Pronunciation[]): string {
 	let result = '';
@@ -47,6 +47,14 @@ function getDisplayedTranslation(word: WordData) {
 	} else {
 		translation = getTranslation(word['translations'][0], getLanguage());
 	}
+
+	if (word['disambiguation_hint']) {
+		let hint = getDisambiguationHint(word['translations'][0], word['disambiguation_hint'], getLanguage());
+		if (hint !== null) {
+			translation += ' (' + hint + ')';
+		}
+	}
+
 	return translation;
 }
 

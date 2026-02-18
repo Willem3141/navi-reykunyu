@@ -39,11 +39,34 @@ export function getShortTranslation(result: WordData, language: string): string 
 	return getTranslation(result['translations'][0], language);
 }
 
+/**
+ * From the given translated object, returns the value in the given language, or
+ * if that doesn't exist, the English value.
+ */
 export function getTranslation<T>(tìralpeng: Translated<T>, language: string): T {
 	if (tìralpeng.hasOwnProperty(language)) {
 		return tìralpeng[language];
 	} else {
 		return tìralpeng['en'];
+	}
+}
+
+/**
+ * Returns the disambiguation hint in the given language, or if the word is not
+ * translated into that language, the English disambiguation hint.
+ */
+export function getDisambiguationHint<T>(tìralpeng: Translated<T>,
+		disambiguation_hint: Translated<string>, language: string): string | null {
+	let resultLanguage: string;
+	if (tìralpeng.hasOwnProperty(language)) {
+		resultLanguage = language;
+	} else {
+		resultLanguage = 'en';
+	}
+	if (disambiguation_hint && disambiguation_hint[resultLanguage]) {
+		return disambiguation_hint[resultLanguage];
+	} else {
+		return null;
 	}
 }
 

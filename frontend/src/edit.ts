@@ -491,6 +491,14 @@ class EditPage {
 		statusNoteField.setInfoText('Optional note about the status of this word.');
 		statusNoteField.setMinCount(0);
 
+		let disambiguationHintField = new TranslatedStringEditField('disambiguation_hint', 'Disambiguation');
+		disambiguationHintField.setInfoText('In the study tool, words for which the English translation has multiple ' +
+			'meanings are problematic, as the study tool doesn\'t show meaning notes (as they may give away the answer). ' +
+			'For this use case, a disambiguation hint can be added. ' +
+			'Usually the disambiguation hint should be a short section of the meaning note, and it should ' +
+			'never include the Na\'vi word itself.');
+		disambiguationHintField.setMinCount(0);
+
 		let todoField = new StringEditField('todo', 'To do');
 		todoField.setInfoText('Comments about how this word definition should be improved. ' +
 			'These aren\'t shown to “normal” users (only to administrators).');
@@ -498,7 +506,8 @@ class EditPage {
 
 		this.fields = [rootField, typeField, infixField, definitionField,
 			shortTranslationField, meaningNoteField, conjugationNoteField, etymologyField,
-			imageField, sourceField, seeAlsoField, statusField, statusNoteField, todoField];
+			imageField, sourceField, seeAlsoField, statusField, statusNoteField,
+			disambiguationHintField, todoField];
 		this.jsonToFields();
 		this.updateFieldLimits(infixField, statusNoteField);
 		for (let field of this.fields) {
