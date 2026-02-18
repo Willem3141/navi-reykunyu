@@ -5,24 +5,28 @@
 	background-color: var(--background-color);
 	box-shadow: 0 0 4px 4px var(--background-color);
 	text-align: center;
-}
 
-.word-list-toc #type-filter-dropdown {
-	width: 220px;
-}
+	.ui.search {
+		.ifNarrowMoveDropdownBelow();
+	}
 
-.word-list-toc #type-filter-dropdown > .menu > .subitem {
-	margin-left: 25px;
-}
+	.ui.dropdown {
+		width: 220px;
 
-.word-list-toc #toc-bar {
-	margin-top: 8px;
-}
+		& > .menu > .subitem {
+			margin-left: 25px;
+		}
+	}
 
-.word-list-toc #toc-bar > a.ui.button {
-	width: 2em;
-	padding-left: 0;
-	padding-right: 0;
+	#toc-bar {
+		margin-top: 8px;
+
+		& > a.ui.button {
+			width: 2em;
+			padding-left: 0;
+			padding-right: 0;
+		}
+	}
 }
 
 h2[id] {

@@ -2,6 +2,40 @@
 	width: 200px;
 }
 
+#search-form .ui.search {
+	.ifNarrowMoveDropdownBelow();
+}
+
+/* put the dropdown below the search field */
+.ifNarrowMoveDropdownBelow() {
+	@media (max-width: 600px) {
+		.ui.input {
+			flex-wrap: wrap;
+		i.icon {
+			height: 38px;
+		}
+		input {
+			border-top-right-radius: 0.28571429rem !important;
+			border-right-color: rgba(34, 36, 38, 0.15) !important;
+			border-bottom-left-radius: 0px !important;
+			border-bottom-color: transparent !important;
+			&:focus {
+				border-right-color: var(--focus-color) !important;
+				border-bottom-color: var(--focus-color) !important;
+			}
+			@media (prefers-color-scheme: dark) {
+				border-right-color: #555 !important;
+			}
+		}
+		.ui.dropdown {
+			width: 100%;
+			border-top-right-radius: 0px !important;
+			border-bottom-left-radius: 0.28571429rem !important;
+		}
+		}
+	}
+}
+
 .ui.search > .results {
 	max-height: 500px;
 	overflow-y: auto;
