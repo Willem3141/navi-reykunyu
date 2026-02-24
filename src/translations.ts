@@ -195,9 +195,28 @@ export function _(key: string, ...parameters: number[]): string {
 	}
 }
 
+let substitutionRegex = /\[\[((?:(?!\]\]).)*)\]\]/g;
+
 function fillInParameters(text: string, language: string, parameters: number[]): string {
 	let result = text;
-	// [ws] TODO handle [[...|...|...]] syntax
+	result = result.replace(substitutionRegex, (match: string, inside: string) => {
+		let percentIndex = inside.indexOf('%');
+		if (percentIndex === -1 || percentIndex === inside.length - 1) {
+			return match;
+		}
+		let digit = parseInt(inside[percentIndex + 1], 10) - 1;
+		if (isNaN(digit) || digit < 0 || digit >= parameters.length) {
+			return match;
+		}
+		let parameter = parameters[digit];
+		let pluralPattern = pluralPatterns[language];
+		if (!pluralPattern) {
+			return match;
+		}
+		let pluralIndex = pluralPattern.evaluate(parameter);
+		let result = inside.split('|')[pluralIndex];
+		return result ?? match;
+	});
 	for (let i = 0; i < parameters.length; i++) {
 		result = result.replaceAll('%' + (i + 1), '' + parameters[i]);
 	}
