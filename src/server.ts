@@ -43,7 +43,8 @@ app.set('view engine', 'ejs');
 
 import * as translations from './translations';
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json', 'utf8'));
-const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
+const uiTranslationsJs = fs.readFileSync('./frontend/dist/js/ui-translations.js').toString()
+	.replace('{/* filled out by the server */}', JSON.stringify(translationsJson));
 
 export let reykunyu: Reykunyu;
 export let zeykerokyu: Zeykerokyu;

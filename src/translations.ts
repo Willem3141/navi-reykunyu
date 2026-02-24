@@ -226,7 +226,7 @@ function fillInParameters(text: string, language: string, parameters: number[]):
 /** Returns a translation with a translation <span> around it. */
 export function span_(key: string, ...parameters: number[]): string {
 	return '<span class="translation" data-key="' + key + '"' +
-		parameters.map((n: number, i: number) => ' data-parameter-' + i + '="' + n + '"').join()
+		parameters.map((n: number, i: number) => ' data-arg-' + (i + 1) + '="' + n + '"').join()
 		+ '>' + _(key, ...parameters) + '</span>';
 }
 

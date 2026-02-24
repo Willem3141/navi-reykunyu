@@ -19,9 +19,9 @@
 		"edit.ts",
 		"word-result-block.ts",
 		"translations-editor.ts",
+		"ui-translations.ts"
 	],
 	"include": [
-		"ui-translations.d.ts",
 		"../../src/types/api-types.d.ts"
 	]
 }

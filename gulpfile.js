@@ -28,7 +28,8 @@ function buildTypeScriptClient(cb) {
 			'./frontend/src/study.ts',
 			'./frontend/src/review.ts',
 			'./frontend/src/data-errors.ts',
-			'./frontend/src/translations-editor.ts'
+			'./frontend/src/translations-editor.ts',
+			'./frontend/src/ui-translations.ts'
 		],
 		bundle: true,
 		minify: true,
