@@ -15,6 +15,7 @@ import * as preprocess from './preprocess';
 import * as pronouns from './pronouns';
 import ReverseDictionary from './reverseDictionary';
 import * as rhymes from './rhymes';
+import snailify from './snailify';
 import * as verbConjugator from './verbs/conjugator';
 import * as verbParser from './verbs/parser';
 import * as wordLinks from './wordLinks';
@@ -204,6 +205,14 @@ export default class Reykunyu {
 				'combined': this.createAdjectiveConjugation(word, 'combined'),
 				'RN': this.createAdjectiveConjugation(word, 'RN')
 			};
+		}
+
+		// Snailification nonsense.
+		for (let translation of word['translations']) {
+			translation['snen'] = snailify(translation['en']);
+		}
+		if (word['short_translation']) {
+			word['short_translation']['snen'] = snailify(word['short_translation']['en']);
 		}
 	}
 
