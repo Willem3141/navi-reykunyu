@@ -447,7 +447,7 @@ class Reykunyu {
 					$modeTabs.show();
 					let $fromNaviTab = $('<div/>')
 						.addClass('item')
-						.html("Na'vi&nbsp;&rarr;&nbsp;" + _('language'))
+						.html(_('navi') + "&nbsp;&rarr;&nbsp;" + _('language'))
 						.appendTo($modeTabs);
 					$fromNaviTab.append($('<div/>')
 						.text(fromNaviResultCount)
@@ -464,7 +464,7 @@ class Reykunyu {
 					});
 					let $toNaviTab = $('<div/>')
 						.addClass('item')
-						.html(_('language') + "&nbsp;&rarr;&nbsp;Na'vi")
+						.html(_('language') + "&nbsp;&rarr;&nbsp;" + _('navi'))
 						.appendTo($modeTabs);
 					$toNaviTab.append($('<div/>')
 						.text(toNaviResult.length)
