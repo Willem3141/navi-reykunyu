@@ -49,6 +49,16 @@ export default class Reykunyu {
 	loadData(dictionaryJSON: any) {
 		this.dataErrorList = [];
 		this.dictionary = new Dictionary(dictionaryJSON, this.dataErrorList);
+
+		for (let word of this.dictionary.getAll()) {
+			// Snailification nonsense.
+			for (let translation of word['translations']) {
+				translation['snen'] = snailify(translation['en']);
+			}
+			if (word['short_translation']) {
+				word['short_translation']['snen'] = snailify(word['short_translation']['en']);
+			}
+		}
 		this.reverseDictionary = new ReverseDictionary(this.dictionary);
 
 		// preprocess short_translations for all words
@@ -205,14 +215,6 @@ export default class Reykunyu {
 				'combined': this.createAdjectiveConjugation(word, 'combined'),
 				'RN': this.createAdjectiveConjugation(word, 'RN')
 			};
-		}
-
-		// Snailification nonsense.
-		for (let translation of word['translations']) {
-			translation['snen'] = snailify(translation['en']);
-		}
-		if (word['short_translation']) {
-			word['short_translation']['snen'] = snailify(word['short_translation']['en']);
 		}
 	}
 
