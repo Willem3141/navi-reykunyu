@@ -61,14 +61,16 @@ h1::after {
 }
 
 .main-menu .reviewable-count-label {
-	background-color: var(--warning-color);
+	background-color: var(--muted-color);
 	color: var(--background-color);
 	border-radius: 15px;
-	padding: 2px 4px;
+	padding: 7px 3px;
+	height: 5px;
 	margin-left: 8px;
+	margin-right: -1px;
+	line-height: 0;
 	font-size: 85%;
 	font-weight: 500;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 	min-width: 20px;
 	display: inline-block;
 }
@@ -88,34 +90,6 @@ h1::after {
 	.main-menu > .button > .icon.dropdown {
 		padding-left: 0;
 		padding-top: 3px;
-	}
-
-	/* put the mode dropdown below the search field */
-	#search-form .ui.input {
-		flex-wrap: wrap;
-	}
-	#search-form .search.icon {
-		height: 38px;
-	}
-	#search-form #search-box {
-		border-top-right-radius: 0.28571429rem !important;
-		border-right-color: rgba(34, 36, 38, 0.15) !important;
-		border-bottom-left-radius: 0px !important;
-		border-bottom-color: transparent !important;
-	}
-	@media (prefers-color-scheme: dark) {
-		#search-form #search-box {
-			border-right-color: #555 !important;
-		}
-	}
-	#search-form #search-box:focus {
-		border-right-color: var(--focus-color) !important;
-		border-bottom-color: var(--focus-color) !important;
-	}
-	#search-form #mode-direction {
-		width: 100%;
-		border-top-right-radius: 0px !important;
-		border-bottom-left-radius: 0.28571429rem !important;
 	}
 }
 

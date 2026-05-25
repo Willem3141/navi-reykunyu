@@ -19,7 +19,8 @@
 		"edit.ts",
 		"word-result-block.ts",
 		"translations-editor.ts",
-		"ui-translations.ts"
+		"ui-translations.ts",
+		"stress-game.ts"
 	],
 	"include": [
 		"../../src/types/api-types.d.ts"
