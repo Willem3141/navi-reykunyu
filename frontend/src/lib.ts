@@ -33,10 +33,14 @@ export function getShortTranslation(result: WordData, language: string): string 
 	if (language == "en" && result["short_translation_conjugated"]) {
 		return result["short_translation_conjugated"];
 	}
-	if (result["short_translation"]) {
-		return getTranslation(result["short_translation"], language);
+	if (!result["short_translation"]) {
+		return getTranslation(result['translations'][0], language);
 	}
-	return getTranslation(result['translations'][0], language);
+	let shortTranslation = getTranslation(result["short_translation"], language);
+	if (!shortTranslation) {
+		return getTranslation(result['translations'][0], language);
+	}
+	return shortTranslation;
 }
 
 /**
