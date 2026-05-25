@@ -94,6 +94,10 @@ export function updateTranslation(id: number, field: string, index: number, lang
 	if (t[language] && translation === '') {
 		delete t[language];
 	} else if (translation !== '') {
+		if (t[language] === translation) {
+			// Translation didn't change, so don't need to do anything.
+			return;
+		}
 		t[language] = translation;
 	}
 
