@@ -256,7 +256,7 @@ class ReviewPage {
 		}
 
 		const $modal = $('#lesson-done-modal');
-		$modal.find('#review-count').text(this.currentItemIndex);
+		$modal.find('.header').text(_('congratulations-after-review', this.currentItemIndex));
 		let fraction = this.correctCount / this.currentItemIndex;
 		let emotion = 'nitram';
 		if (fraction < 0.55) {
@@ -270,8 +270,7 @@ class ReviewPage {
 			}
 		}
 		$modal.find('.navi-face').attr('src', '/images/study/' + emotion + '.png');
-		$modal.find('.navi-face-description').text(this.correctCount + '/' + this.currentItemIndex +
-			' ' + _('correct-count') + ' (' + Math.round(fraction * 100) + '%)');
+		$modal.find('.navi-face-description').text(_('correct-count', this.correctCount, this.currentItemIndex) + ' (' + Math.round(fraction * 100) + '%)');
 		$modal.modal({
 			'allowMultiple': true,
 			'closable': false
