@@ -19,6 +19,7 @@
 		"edit.ts",
 		"word-result-block.ts",
 		"translations-editor.ts",
+		"stress-game.ts"
 	],
 	"include": [
 		"ui-translations.d.ts",
