@@ -36,7 +36,7 @@ export function getShortTranslation(result: WordData, language: string): string 
 	if (!result["short_translation"]) {
 		return getTranslation(result['translations'][0], language);
 	}
-	let shortTranslation = getTranslation(result["short_translation"], language);
+	let shortTranslation = result["short_translation"][language];
 	if (!shortTranslation) {
 		return getTranslation(result['translations'][0], language);
 	}
