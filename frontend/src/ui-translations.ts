@@ -1,44 +1,60 @@
-/**
- * Reykunyu's UI translation system. Reykunyu renders its templates server-side
- * but it also needs to have access to translations in the client-side JS,
- * because parts of the UI are rendered client-side. This also allows language
- * changes to be handled without a page reload.
- *
- * The translations are loaded from a simple JSON file, `src/translations.json`,
- * which for each language contains a set of keys and strings.
- *
- * On the server-side, use the function `_` to get a translation, or `span_`
- * when inserting something in HTML that needs to be re-rendered on the
- * client-side when the user changes the language.
- *
- * On the client-side, there also is a function `_` available, which is used the
- * same way. This function is provided by `ui-translations.js`. The server
- * pastes the translation JSON into this JS file, so that the exact same
- * translations are available, no matter if things are rendered server- or
- * client-side.
- */
-
-import fs from 'fs';
-
-import * as output from './output';
-
-let stringsJSON: string;
-try {
-	stringsJSON = fs.readFileSync('./src/translations.json', 'utf8');
-} catch (e) {
-	output.error('translations.json not found, exiting');
-	process.exit(1);
-}
 type Strings = { [language: string]: { [key: string]: string } };
-const strings: Strings = JSON.parse(stringsJSON);
+const strings: Strings = {/* filled out by the server */};
 
-/**
- * A plural pattern is a function that maps an input number (which is to be
- * inserted into a translated string) to the index of its plurality form. For
- * example, for English `n == 1` results in 0 (= singular), while any other `n`
- * results in 1 (= plural). Other languages may have different behavior.
- */
-export class PluralPattern {
+$(function () {
+	// initialize the language dropdown
+	const $dropdown = $('#language-dropdown');
+	if ($dropdown.length) {
+		$dropdown.dropdown();
+		if (localStorage.getItem('reykunyu-language')) {
+			$dropdown.dropdown('set selected',
+				localStorage.getItem('reykunyu-language'));
+		} else {
+			localStorage.setItem('reykunyu-language', 'en');
+			$dropdown.dropdown('set selected', 'en');
+		}
+		$dropdown.dropdown({
+			onChange: setNewLanguage
+		});
+	}
+
+	// If the page was loaded offline from the service worker, or it was loaded
+	// from the browser cache after a tab unload, it may not have the correct
+	// language. So we immediately trigger a language update, just in case. If
+	// the language was already correct, this won't do anything.
+	setNewLanguage(localStorage.getItem('reykunyu-language')!);
+});
+
+function setNewLanguage(value: string): void {
+	localStorage.setItem('reykunyu-language', value);
+	document.cookie = 'lang=' + value;  // note that this removes all other cookies (but we don't set any)
+	$('.translation').each(function() {
+		let $element = $(this);
+		let args: number[] = [];
+		for (let i = 1; $element.attr('data-arg-' + i); i++) {
+			args.push(parseInt($element.attr('data-arg-' + i)!, 10));
+		}
+		$element.html(_($element.attr('data-key')!, ...args));
+	});
+	$('[data-content-key]').each(function() {
+		let $element = $(this);
+		$element.attr('data-content', _($element.attr('data-content-key')!));
+	});
+}
+
+function getLanguage(): string {
+	const languageFromLocalStorage = localStorage.getItem('reykunyu-language');
+	if (languageFromLocalStorage) {
+		return languageFromLocalStorage;
+	} else {
+		return 'en';
+	}
+}
+
+// TODO This class is copied from src/translations.ts (the server-side
+// translations code). This is clearly not ideal, but it turns out to be hard to
+// make one TS file that works for both server- and client-side.
+class PluralPattern {
 
 	private checkers: (string|number)[][] = [];
 
@@ -158,40 +174,23 @@ export class PluralPattern {
 	}
 }
 
-let pluralPatterns: { [language: string]: PluralPattern } = {};
-for (let language in strings) {
-	try {
-		pluralPatterns[language] = new PluralPattern(strings[language]['plurality-pattern']);
-	} catch (e) {
-		output.warning('Invalid plurality pattern \'' + strings[language]['plurality-pattern'] + '\' for language ' + language);
-		output.hint('Reykunyu expects, for each UI language, a value \'plurality-pattern\'\n' +
-			'that specifies the plural forms the language has. This value is either\n' +
-			'not present or syntactically invalid.',
-			'invalid-plurality-pattern');
-	}
-}
-
-/** The active language. */
-let lang = 'en';
-
-/** Sets the active language to the given ISO code. */
-export function setLanguage(l: string): void {
-	lang = l;
-}
-
-/** Returns the ISO code of the active language. */
-export function getLanguage(): string {
-	return lang;
-}
-
-/** Returns the translation for the active language for the given key. */
-export function _(key: string, ...parameters: number[]): string {
+function _(key: string, ...parameters: number[]): string {
+	const lang = getLanguage();
 	if (strings.hasOwnProperty(lang) && strings[lang].hasOwnProperty(key)) {
 		return fillInParameters(strings[lang][key], lang, parameters);
 	} else if (strings['en'].hasOwnProperty(key)) {
 		return fillInParameters(strings['en'][key], 'en', parameters);
 	} else {
 		return '[' + key + ']';
+	}
+}
+
+let pluralPatterns: { [language: string]: PluralPattern } = {};
+for (let language in strings) {
+	try {
+		pluralPatterns[language] = new PluralPattern(strings[language]['plurality-pattern']);
+	} catch (e) {
+		console.log('Invalid plurality pattern \'' + strings[language]['plurality-pattern'] + '\' for language ' + language);
 	}
 }
 
@@ -221,30 +220,4 @@ function fillInParameters(text: string, language: string, parameters: number[]):
 		result = result.replaceAll('%' + (i + 1), '' + parameters[i]);
 	}
 	return result;
-}
-
-/** Returns a translation with a translation <span> around it. */
-export function span_(key: string, ...parameters: number[]): string {
-	return '<span class="translation" data-key="' + key + '"' +
-		parameters.map((n: number, i: number) => ' data-arg-' + (i + 1) + '="' + n + '"').join()
-		+ '>' + _(key, ...parameters) + '</span>';
-}
-
-function escapeHTMLAttribute(attribute: string) {
-	return attribute.replaceAll('"', '&quot;')
-		.replaceAll('<', '&lt;')
-		.replaceAll('&', '&amp;');
-}
-
-/**
- * Returns an HTML snippet with two attributes: data-content containing the
- * translation, and data-content-key with the key. This is meant for tooltips.
- */
-export function data_(key: string): string {
-	return 'data-content-key="' + key + '" data-content="' + escapeHTMLAttribute(_(key)) + '"';
-}
-
-/** Returns the JSON with the translations. */
-export function getStringsJSON(): string {
-	return stringsJSON;
 }

@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"module": "none",
+		"target": "es2021",
+		"noEmit": true
+	},
+	"files": [
+		"ui-translations.ts"
+	]
+}

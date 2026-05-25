@@ -43,7 +43,8 @@ app.set('view engine', 'ejs');
 
 import * as translations from './translations';
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json', 'utf8'));
-const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
+const uiTranslationsJs = fs.readFileSync('./frontend/dist/js/ui-translations.js').toString()
+	.replace('{}', JSON.stringify(translationsJson));
 
 export let reykunyu: Reykunyu;
 export let zeykerokyu: Zeykerokyu;
@@ -424,7 +425,7 @@ app.post('/translate',
 		}
 
 		const language = req.body['language'];
-		if (!['da', 'nl', 'et', 'fr', 'de', 'hu', 'pl', 'ru', 'sv'].includes(language)) {
+		if (!['da', 'nl', 'et', 'fr', 'de', 'hu', 'pl', 'ru', 'sv', 'cz', 'sk'].includes(language)) {
 			res.status(400);
 			res.send('400 Bad Request');
 			return;

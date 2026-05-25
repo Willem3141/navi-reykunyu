@@ -40,7 +40,7 @@ export default class WordResultBlock {
 		}
 
 		const loggedIn = $('body').hasClass('logged-in');
-		if (loggedIn) {
+		if (loggedIn && r['id'] !== -1) {
 			$resultWord.append(this.wordToolbar(r));
 		}
 
@@ -1149,9 +1149,7 @@ export default class WordResultBlock {
 	sentencesSection(sentences: Sentence[], lemma: string): JQuery {
 		let $section = $('<details/>').addClass('result-item examples');
 		let $header = $('<summary/>').addClass('header')
-			.text(_('sentence-search') + ' (' + sentences.length + ' '
-				+ (sentences.length > 1 ? _('usages-found-plural') : _('usages-found-singular'))
-				+ ')')
+			.text(_('sentence-search') + ' ' + _('usages-found', sentences.length))
 			.appendTo($section);
 		let $body = $('<div/>').addClass('body').appendTo($section);
 

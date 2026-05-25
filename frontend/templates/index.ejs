@@ -8,7 +8,7 @@
 
 			<% if (locals['dataErrorCount'] && dataErrorCount > 0) { %>
 				<div class="error-block">
-					<p><%- _('data-errors-detected-1') %> <%= dataErrorCount %> <%- _('data-errors-detected-2') %></p>
+					<p><%- _('data-errors-detected', dataErrorCount) %></p>
 					<p class="block-postscript"><%- _('only-for-admins') %></p>
 				</div>
 			<% } %>
@@ -49,4 +49,3 @@
 		<script src="/js/index.js"></script>
 	</body>
 </html>
-

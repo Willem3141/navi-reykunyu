@@ -19,6 +19,13 @@ function doTypecheckClient(cb) {
 		.on('error', () => { process.exit(1); });
 };
 
+function doTypecheckClientTranslations(cb) {
+	const tsProject = ts.createProject("./frontend/src/tsconfig.translations.json");
+	return tsProject.src()
+		.pipe(tsProject())
+		.on('error', () => { process.exit(1); });
+};
+
 function buildTypeScriptClient(cb) {
 	return esbuild.build({
 		entryPoints: [
@@ -28,13 +35,27 @@ function buildTypeScriptClient(cb) {
 			'./frontend/src/study.ts',
 			'./frontend/src/review.ts',
 			'./frontend/src/data-errors.ts',
-			'./frontend/src/translations-editor.ts'
+			'./frontend/src/translations-editor.ts',
+			'./frontend/src/ui-translations.ts',
+			'./frontend/src/stress-game.ts'
 		],
 		bundle: true,
 		minify: true,
 		sourcemap: true,
 		outdir: './frontend/dist/js/',
-		target: 'es2016'
+		target: 'es2021'
+	}).catch(() => { process.exit(1); });
+};
+
+function buildTypeScriptClientTranslations(cb) {
+	return esbuild.build({
+		entryPoints: [
+			'./frontend/src/ui-translations.ts'
+		],
+		minify: true,
+		sourcemap: true,
+		outdir: './frontend/dist/js/',
+		target: 'es2021'
 	}).catch(() => { process.exit(1); });
 };
 
@@ -83,8 +104,8 @@ function buildTypeScriptServer(cb) {
 
 
 exports.buildLess = buildLess;
-exports.buildClient = series(doTypecheckClient, buildTypeScriptClient);
+exports.buildClient = series(doTypecheckClient, doTypecheckClientTranslations, buildTypeScriptClient, buildTypeScriptClientTranslations);
 exports.buildServiceWorker = series(doTypecheckServiceWorker, buildTypeScriptServiceWorker);
 exports.buildServer = series(doTypecheckServer, buildTypeScriptServer);
-exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptServiceWorker, buildTypeScriptServer);
+exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptClientTranslations, buildTypeScriptServiceWorker, buildTypeScriptServer);
 exports.default = parallel(buildLess, exports.buildClient, exports.buildServiceWorker, exports.buildServer);

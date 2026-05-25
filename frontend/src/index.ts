@@ -514,7 +514,7 @@ class Reykunyu {
 	createAnnotatedFooter(): JQuery {
 		let block = $('<div/>')
 			.addClass('credits-footer')
-			.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2025-08-05');
+			.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2026-02-02');
 		return block;
 	}
 
@@ -548,10 +548,8 @@ class Reykunyu {
 		let $syllableSection = $('<div/>').addClass('result-item etymology');
 		if (syllableCount == 0) {
 			$syllableSection.append($('<div/>').addClass('header').text(_('stress-unknown')));
-		} else if (syllableCount == 1) {
-			$syllableSection.append($('<div/>').addClass('header').text(syllableCount + ' ' + _('syllable')));
 		} else {
-			$syllableSection.append($('<div/>').addClass('header').text(syllableCount + ' ' + _('syllables')));
+			$syllableSection.append($('<div/>').addClass('header').text(_('syllables', syllableCount)));
 		}
 		let $body = $('<div/>').addClass('body');
 		let $table = $('<table/>');
