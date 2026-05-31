@@ -11,6 +11,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
+    "compromise": "^14.15.1",
     "connect-sqlite3": "^0.9.11",
     "cors": "^2.8.5",
     "ejs": "^3.1.5",
@@ -29,7 +30,7 @@
     "@types/ejs": "^3.1.5",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.1",
-    "@types/jquery": "^3.5.14",
+    "@types/jquery": "^3.5.34",
     "@types/js-levenshtein": "^1.1.3",
     "@types/node": "^16.18.122",
     "@types/passport": "^1.0.17",
@@ -41,6 +42,6 @@
     "gulp-less": "^5.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "tsx": "^4.19.2",
-    "typescript": "^4.6.4"
+    "typescript": "^6.0.3"
   }
 }

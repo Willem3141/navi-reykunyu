@@ -1,3 +1,5 @@
+import nlp from 'compromise';
+
 /**
  * Generates translations for affixed forms. For example, when searching for
  * fìtute, the code in this file is responsible for constructing the
@@ -15,11 +17,11 @@ let translators: Record<string, Record<string, (translation: string, data: any) 
 		'am': (t) => toPast(t),
 		'ìm': (t) => 'just ' + toPast(t),
 		'ìy': (t) => 'will soon ' + t,
-		'ìsy': (t) => 'be determined to soon ' + t,
+		'ìsy': (t) => 'is determined to soon ' + t,
 		'ay': (t) => 'will ' + t,
-		'asy': (t) => 'be determined to ' + t,
+		'asy': (t) => 'is determined to ' + t,
 		'ol': (t) => 'have ' + toPastParticiple(t),
-		'er': (t) => 'be ' + toPresentParticiple(t),
+		'er': (t) => 'is ' + toPresentParticiple(t),
 		'alm': (t) => 'have ' + toPastParticiple(t),
 		'ìlm': (t) => 'have just ' + toPastParticiple(t),
 		'ìly': (t) => 'will soon have ' + toPastParticiple(t),
@@ -32,7 +34,7 @@ let translators: Record<string, Record<string, (translation: string, data: any) 
 		'imv': (t) => toPast(t),
 		'ìyev': (t) => 'will ' + t,
 		'ilv': (t) => 'have ' + toPastParticiple(t),
-		'irv': (t) => 'be ' + toPresentParticiple(t),
+		'irv': (t) => 'is ' + toPresentParticiple(t),
 
 		'ei': (t) => t + ' :)',
 		'äng': (t) => t + ' :(',
@@ -82,85 +84,66 @@ let translators: Record<string, Record<string, (translation: string, data: any) 
 	}
 };
 
-let pasts: {[verb: string]: string} = {
-	'be': 'was',
-	'have': 'had',
-	'go': 'went',
-	'make': 'made',
-	'do': 'did',
-};
+// Verb conjugation
+
+// For all of the verb forms, we let compromise do the (surprisingly) complex
+// work of doing the conjugations. However, the library sort of expects a full
+// sentence to work with. Therefore we create a simple sentence of the form "I
+// <verb>" and hand that to compromise. This coerces nlp-compromise to see our
+// input as a verb. Then afterwards we simply remove the "I ". (An alternative
+// would have been to use .tag('Verb'), but that doesn't work for multi-word
+// definitions.)
+
+function createVerbSentence(verb: string): string {
+	if (verb === 'be' || verb.startsWith('be ')) {
+		verb = 'am' + verb.substring(2);
+	}
+	return 'I ' + verb;
+}
+
 function toPast(verb: string): string {
-	if (pasts.hasOwnProperty(verb)) {
-		return pasts[verb];
+	let sentence = createVerbSentence(verb);
+	let pastSentence = nlp(sentence).verbs().toPastTense().all().text();
+	if (!pastSentence.startsWith('I ')) {
+		// Huh? Something weird seems to have happened. Fallback to a simple
+		// solution.
+		return verb + 'ed';
 	}
-	if (verb.endsWith('e')) {
-		return verb + 'd';
-	}
-	return duplicateFinalConsonant(verb) + 'ed';
+	return pastSentence.substring(2);
 }
 
-let presentParticiples: {[verb: string]: string} = {
-	'be': 'being',
-};
 function toPresentParticiple(verb: string): string {
-	if (presentParticiples.hasOwnProperty(verb)) {
-		return presentParticiples[verb];
+	let sentence = createVerbSentence(verb);
+	let pastSentence = nlp(sentence).verbs().toGerund().all().text();
+	if (!pastSentence.startsWith('I am ')) {
+		return verb + 'ing';
 	}
-	if (verb.endsWith('e')) {
-		return verb.substring(0, verb.length - 1) + 'ing';
-	}
-	return duplicateFinalConsonant(verb) + 'ing';
+	return pastSentence.substring(5);
 }
 
-let pastParticiples: {[verb: string]: string} = {
-	'be': 'been',
-	'have': 'had',
-	'go': 'gone',
-	'make': 'made',
-	'do': 'done',
-};
 function toPastParticiple(verb: string): string {
-	if (pastParticiples.hasOwnProperty(verb)) {
-		return pastParticiples[verb];
+	let sentence = createVerbSentence(verb);
+	let pastSentence = nlp(sentence).verbs().toPastParticiple().all().text();
+	if (!pastSentence.startsWith('I have ')) {
+		return toPast(verb);
 	}
-	if (verb.endsWith('e')) {
-		return verb + 'd';
-	}
-	return verb + 'ed';
+	return pastSentence.substring(7);
 }
 
-function duplicateFinalConsonant(word: string): string {
-	if (word.length < 2) {
-		return word;
-	}
-	let secondLast = word[word.length - 2];
-	let last = word[word.length - 1];
-	if ('aeiou'.includes(secondLast) && !('aeiou'.includes(last))) {
-		return word + last;
-	}
-	return word;
-}
+// Noun declension
 
 let plurals: {[verb: string]: string} = {
 	'I': 'we',
 	'you': 'you',
 	'he/she': 'they',
 	'he': 'they',
-	'she': 'they',
-	'child': 'children',
-	'fish': 'fish',
-	'this': 'these things',
-	'that': 'those things',
+	'she': 'they'
 };
 function pluralize(noun: string): string {
 	if (plurals.hasOwnProperty(noun)) {
 		return plurals[noun];
 	}
-	let secondLast = noun[noun.length - 2];
-	if (noun.endsWith('y') && !'aeiou'.includes(secondLast)) {
-		return noun.substring(0, noun.length - 1) + 'ies';
-	}
-	return noun + 's';
+	return nlp(noun).nouns().toPlural().all().text();
 }
 
 let accusatives: {[verb: string]: string} = {
@@ -193,8 +176,6 @@ function toPossessive(noun: string): string {
 	}
 	return 'of ' + noun;
 }
-
-let dictionary;
 
 export function addTranslations(word: WordData): void {
 	if (!word['short_translation']) {

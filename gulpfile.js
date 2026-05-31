@@ -103,8 +103,9 @@ function buildTypeScriptServer(cb) {
 
 
 exports.buildLess = buildLess;
-exports.buildClient = series(doTypecheckClient, doTypecheckClientTranslations, buildTypeScriptClient, buildTypeScriptClientTranslations);
+exports.buildClient = series(doTypecheckClient, buildTypeScriptClient);
+exports.buildClientTranslations = series(doTypecheckClientTranslations, buildTypeScriptClientTranslations);
 exports.buildServiceWorker = series(doTypecheckServiceWorker, buildTypeScriptServiceWorker);
 exports.buildServer = series(doTypecheckServer, buildTypeScriptServer);
 exports.buildWithoutTypecheck = parallel(buildLess, buildTypeScriptClient, buildTypeScriptClientTranslations, buildTypeScriptServiceWorker, buildTypeScriptServer);
-exports.default = parallel(buildLess, exports.buildClient, exports.buildServiceWorker, exports.buildServer);
+exports.default = parallel(buildLess, exports.buildClient, exports.buildClientTranslations, exports.buildServiceWorker, exports.buildServer);

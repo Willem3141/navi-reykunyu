@@ -1,13 +1,14 @@
 {
 	"compilerOptions": {
 		"strict": true,
-		"module": "amd",
-		"target": "es2021",
+		"module": "es2022",
+		"target": "es2022",
 		"noEmit": true,
 		"paths": {
 			"reykunyu/*": ["../../src/*"]
 		},
-		"rootDir": "../.."
+		"rootDir": "../..",
+		"types": ["jquery", "semantic-ui"]
 	},
 	"files": [
 		"index.ts",

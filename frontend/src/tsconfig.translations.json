@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
 		"strict": true,
-		"module": "none",
-		"target": "es2021",
-		"noEmit": true
+		"module": "preserve",
+		"target": "es2022",
+		"noEmit": true,
+		"types": ["jquery", "semantic-ui"]
 	},
 	"files": [
 		"ui-translations.ts"
