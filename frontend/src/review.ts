@@ -418,6 +418,10 @@ class QuestionSlide extends Slide {
 		}
 
 		let pronunciation = this.word['pronunciation'][0];
+		if (!pronunciation.stressed) {
+			return null;
+		}
+
 		let syllables = pronunciation.syllables.split('-');
 		if (syllables.length === 1) {
 			return null;
