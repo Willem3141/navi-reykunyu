@@ -140,9 +140,13 @@ export default class Reykunyu {
 					'RN': ipa.generateIpa(pronunciation, word['type'], 'RN')
 				};
 			}
-		}
-		else {
-			dataErrorList.push({word_id:word["id"], word:word['na\'vi'],type:'warning', message: "Missing pronunciation data"});
+		} else {
+			dataErrorList.push({
+				'word_id': word["id"],
+				'word': word['na\'vi'],
+				'type': 'warning',
+				'message': "Missing pronunciation data"
+			});
 		}
 
 		// etymology and derived words
@@ -827,12 +831,15 @@ export default class Reykunyu {
 	}
 
 	private createNounConjugation(word: WordData, dialect: Dialect): NounConjugation {
-
 		let conjugation = [];
 		let cases = ['', 'l', 't', 'r', 'ä', 'ri'];
 		let plurals = ['', 'me', 'pxe', 'ay'];
 
 		for (let j = 0; j < 4; j++) {
+			if (word['uncountable'] && j > 0) {
+				conjugation.push([]);
+				continue;
+			}
 			let row = [];
 			if (word['type'] !== 'n:pr' || j === 0) {
 				for (let i = 0; i < 6; i++) {

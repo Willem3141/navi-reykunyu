@@ -33,6 +33,7 @@ declare type WordData = {
 		combined: NounConjugation | AdjectiveConjugation,
 		RN: NounConjugation | AdjectiveConjugation
 	},
+	uncountable?: boolean,
 	conjugation_note?: Translated<LinkString>,  // may be LinkString in the database
 	conjugated?: ConjugationStep[],
 	externalLenition?: ExternalLenition,
