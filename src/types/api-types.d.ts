@@ -56,7 +56,7 @@ declare type Dialect = 'FN' | 'combined' | 'RN';
 declare type Pronunciation = {
 	syllables: string,
 	stressed: number,
-	audio: PronunciationAudio[],
+	audio?: PronunciationAudio[],
 	ipa: {
 		FN: string,
 		RN: string

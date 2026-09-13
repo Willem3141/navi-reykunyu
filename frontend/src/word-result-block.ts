@@ -448,8 +448,8 @@ export default class WordResultBlock {
 			if (fnel === "n:si" || fnel === "nv:si") {
 				$tìlam.append(" si");
 			}
-			if (lìupam[i].hasOwnProperty('audio') && includeAudio) {
-				$tìlam.append(this.pronunciationAudioButtons(lìupam[i]['audio']));
+			if (includeAudio && lìupam[i]['audio']) {
+				$tìlam.append(this.pronunciationAudioButtons(lìupam[i]['audio']!));
 			}
 		}
 
@@ -474,8 +474,8 @@ export default class WordResultBlock {
 				$result.append($('<span/>').text('FN').attr('data-tooltip', 'Forest Na’vi'));
 				$result.append(' ');
 				$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
-				if (pronunciation[i].hasOwnProperty('audio') && includeAudio) {
-					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
+				if (includeAudio && pronunciation[i]['audio']) {
+					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']!));
 				}
 				$result.append(' / ');
 				$result.append($('<span/>').text('RN').attr('data-tooltip', 'Reef Na’vi'));
@@ -484,14 +484,14 @@ export default class WordResultBlock {
 
 			} else if (dialect === 'combined') {
 				$result.append($('<span/>').text(ipa['FN']).addClass('ipa'));
-				if (pronunciation[i].hasOwnProperty('audio') && includeAudio) {
-					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
+				if (includeAudio && pronunciation[i]['audio']) {
+					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']!));
 				}
 
 			} else {
 				$result.append($('<span/>').text(ipa[dialect]).addClass('ipa'));
-				if (ipa[dialect] === ipa['FN'] && pronunciation[i].hasOwnProperty('audio') && includeAudio) {
-					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']));
+				if (includeAudio && ipa[dialect] === ipa['FN'] && pronunciation[i]['audio']) {
+					$result.append(this.pronunciationAudioButtons(pronunciation[i]['audio']!));
 				}
 			}
 		}

@@ -16,6 +16,7 @@ app.use(compression());
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
+import AudioLibrary from './audioLibrary';
 import * as dialect from './dialect';
 import * as edit from './edit';
 import * as output from './output';
@@ -67,7 +68,8 @@ Alternatively, you can start with an empty database:
 $ echo "{}" > data/words.json`);
 		process.exit(1);
 	}
-	reykunyu = new Reykunyu(dictionaryJSON);
+	let audioLibrary = createAudioLibrary();
+	reykunyu = new Reykunyu(dictionaryJSON, audioLibrary);
 
 	let coursesJSON: any = [];
 	try {
@@ -82,6 +84,21 @@ warning is harmless, but the vocab study tool won't work.`);
 }
 
 initializeReykunyu();
+
+function createAudioLibrary(): AudioLibrary {
+	let library = new AudioLibrary();
+	let speakers = fs.readdirSync('./data/fam/');
+	for (let speaker of speakers) {
+		let files = fs.readdirSync('./data/fam/' + speaker + '/');
+		for (let file of files) {
+			if (file.endsWith('.mp3')) {
+				let pronunciation = file.substring(0, file.length - 4);
+				library.addAudio(speaker, pronunciation, speaker + '/' + file);
+			}
+		}
+	}
+	return library;
+}
 
 /**
  * Returns the standard template variables for the given request, which should
@@ -314,7 +331,7 @@ app.post('/edit/preview',
 		word["na'vi"] = word['word_raw']['FN'];
 
 		let dataErrorList: DataIssue[] = [];
-		reykunyu.preprocessWord(word, dataErrorList);
+		reykunyu.preprocessWord(word, undefined, dataErrorList);  // TODO provide AudioLibrary?
 		let errorCount = 0;
 		for (let error of dataErrorList) {
 			if (error.type === 'error')

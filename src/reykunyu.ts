@@ -2,6 +2,7 @@ import levenshtein from 'js-levenshtein';
 
 import * as adjectives from './adjectives';
 import * as affixList from './affixList';
+import AudioLibrary from './audioLibrary';
 import * as conjugatedTranslation from './conjugatedTranslation';
 import * as conjugationString from './conjugationString';
 import * as convert from './convert';
@@ -41,11 +42,11 @@ export default class Reykunyu {
 
 	dataErrorList!: DataIssue[];
 
-	constructor(dictionaryJSON: any) {
-		this.loadData(dictionaryJSON);
+	constructor(dictionaryJSON: any, audioLibrary?: AudioLibrary) {
+		this.loadData(dictionaryJSON, audioLibrary);
 	}
 
-	loadData(dictionaryJSON: any) {
+	loadData(dictionaryJSON: any, audioLibrary?: AudioLibrary) {
 		this.dataErrorList = [];
 		this.dictionary = new Dictionary(dictionaryJSON, this.dataErrorList);
 		this.reverseDictionary = new ReverseDictionary(this.dictionary);
@@ -62,7 +63,7 @@ export default class Reykunyu {
 		}
 		// preprocess the other fields for all words
 		for (let word of this.dictionary.getAll()) {
-			this.preprocessWord(word, this.dataErrorList);
+			this.preprocessWord(word, audioLibrary, this.dataErrorList);
 		}
 
 		// find derived words
@@ -131,7 +132,7 @@ export default class Reykunyu {
 		}
 	}
 
-	preprocessWord(word: WordData, dataErrorList: DataIssue[]) {
+	preprocessWord(word: WordData, audioLibrary: AudioLibrary | undefined, dataErrorList: DataIssue[]) {
 		// pronunciation
 		if (word['pronunciation']) {
 			for (let pronunciation of word['pronunciation']) {
@@ -139,13 +140,21 @@ export default class Reykunyu {
 					'FN': ipa.generateIpa(pronunciation, word['type'], 'FN'),
 					'RN': ipa.generateIpa(pronunciation, word['type'], 'RN')
 				};
+				// Add pronunciation audio. We ignore and overwrite the (legacy)
+				// audio file references in the word data, as nowadays we
+				// instead find audio files by name (see AudioLibrary).
+				let audio: PronunciationAudio[] = [];
+				if (audioLibrary) {
+					audio = audioLibrary.getAudio(pronunciation['syllables'], pronunciation['stressed'], word['type']);
+				}
+				pronunciation['audio'] = audio;
 			}
 		} else {
 			dataErrorList.push({
 				'word_id': word["id"],
 				'word': word['na\'vi'],
 				'type': 'warning',
-				'message': "Missing pronunciation data"
+				'message': 'Missing pronunciation data'
 			});
 		}
 
