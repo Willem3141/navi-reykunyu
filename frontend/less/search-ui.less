@@ -159,12 +159,15 @@
 		z-index: 1;
 
 		.id {
-			width: 58px;
 			display: inline-block;
-			text-align: right;
-			margin-left: -30px;
 			padding-right: 10px;
 			font-size: 30px;
+			color: var(--muted-color);
+			@media (width > 1150px) {
+				width: 150px;
+				text-align: right;
+				margin-left: -150px;
+			}
 		}
 
 		.lemma {
@@ -241,12 +244,8 @@
 	}
 
 	.result-item {
-		margin-left: 28px;
+		margin-left: 0;
 		margin-top: 20px;
-
-		@media (max-width: 600px) {
-			margin-left: 0;
-		}
 
 		&.conjugated-box {
 			margin-top: 5px;
