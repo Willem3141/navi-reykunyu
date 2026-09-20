@@ -223,8 +223,13 @@
 	}
 
 	.definition-image {
-		float: right;
-		margin-left: 40px;
+		@media (width > 600px) {
+			float: right;
+			margin-left: 40px;
+		}
+		@media (max-width: 600px) {
+			text-align: center;
+		}
 
 		img {
 			width: 250px;
@@ -238,6 +243,10 @@
 	.result-item {
 		margin-left: 28px;
 		margin-top: 20px;
+
+		@media (max-width: 600px) {
+			margin-left: 0;
+		}
 
 		&.conjugated-box {
 			margin-top: 5px;
