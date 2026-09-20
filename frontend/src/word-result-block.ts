@@ -426,7 +426,7 @@ export default class WordResultBlock {
 			return null;
 		}
 
-		let $tìlam = $('<span/>').addClass('stress');
+		let $tìlam = $('<span/>').addClass('pronunciation');
 		$tìlam.append("(");
 		for (let i = 0; i < lìupam.length; i++) {
 			if (i > 0) {
@@ -463,7 +463,7 @@ export default class WordResultBlock {
 			return null;
 		}
 
-		let $result = $('<span/>').addClass('stress');
+		let $result = $('<span/>').addClass('pronunciation');
 		for (let i = 0; i < pronunciation.length; i++) {
 			if (i > 0) {
 				$result.append(' ' + _('or') + ' ');
