@@ -124,6 +124,7 @@ function toPresentParticiple(verb: string): string {
 function toPastParticiple(verb: string): string {
 	let sentence = createVerbSentence(verb);
 	let pastSentence = nlp(sentence).verbs().toPastParticiple().all().text();
+	console.log(sentence + ' -> ' + pastSentence);
 	if (!pastSentence.startsWith('I have ')) {
 		return toPast(verb);
 	}

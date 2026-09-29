@@ -9,7 +9,7 @@ export default class WordResultBlock {
 	language: string;
 
 	constructor(r: WordData, index: string, dialect: Dialect, language: string, useIPA: boolean) {
-		this.$element = $('<div/>').addClass('result');
+		this.$element = $('<div/>').addClass('search-result');
 		this.dialect = dialect;
 		this.language = language;
 
