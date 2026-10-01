@@ -147,7 +147,9 @@ export default class Reykunyu {
 				if (audioLibrary) {
 					audio = audioLibrary.getAudio(pronunciation['syllables'], pronunciation['stressed'], word['type']);
 				}
-				pronunciation['audio'] = audio;
+				if (audio.length > 0) {
+					pronunciation['audio'] = audio;
+				}
 			}
 		} else {
 			dataErrorList.push({
