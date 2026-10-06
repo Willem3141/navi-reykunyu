@@ -413,7 +413,7 @@ class Reykunyu {
 						$item.on("click", () => {
 							$("#sentence-bar .item").removeClass("active");
 							$item.addClass("active");
-							$fromNaviResult.find('.result').remove();
+							$fromNaviResult.find('.search-result').remove();
 							$fromNaviResult.find('.error').remove();
 							this.createResults(result, $fromNaviResult);
 						});
