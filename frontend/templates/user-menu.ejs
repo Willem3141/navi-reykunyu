@@ -3,13 +3,15 @@
 		<div class="ui icon top right pointing dropdown basic button">
 			<i class="wrench icon"></i><span class="button-label"><%- _("menu-administration") %></span><i class="dropdown icon"></i>
 			<div class="menu">
-				<% if (locals['user']['is_translator']) { %>
-					<a href="/translations-editor" class="item"><%- _("menu-translations-editor") %></a>
-				<% } %>
 				<% if (locals['user']['is_admin']) { %>
 					<a href="/add" class="item"><%- _("menu-add-new-word") %></a>
 					<a href="/history" class="item"><%- _("menu-recent-edits") %></a>
 					<a href="/sources-editor" class="item"><%- _("menu-sources-editor") %></a>
+				<% } %>
+				<% if (locals['user']['is_translator']) { %>
+					<a href="/translations-editor" class="item"><%- _("menu-translations-editor") %></a>
+				<% } %>
+				<% if (locals['user']['is_admin']) { %>
 					<a href="/data-errors" class="item"><%- _("menu-data-errors") %></a>
 				<% } %>
 				<a onclick="document.getElementById('logout-form').submit();" class="item"><%- _("menu-logout") %></a>
