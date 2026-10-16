@@ -403,7 +403,7 @@ app.post('/edit',
 
 app.post('/translate',
 	(req, res) => {
-		if (!req.user || !req.user['is_admin']) {
+		if (!req.user || !req.user['is_translator']) {
 			res.status(403);
 			res.render('403', pageVariables(req));
 			return;
@@ -479,7 +479,7 @@ app.get('/sources-editor',
 
 app.get('/translations-editor',
 	(req, res) => {
-		if (!req.user || !req.user['is_admin']) {
+		if (!req.user || !req.user['is_translator']) {
 			res.status(403);
 			res.render('403', pageVariables(req));
 			return;

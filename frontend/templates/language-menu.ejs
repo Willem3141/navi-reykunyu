@@ -11,7 +11,7 @@
 		<div class="item" data-value="pl">Polski</div>
 		<div class="item" data-value="ru">Русский</div>
 		<div class="item" data-value="sk">Slovenčina</div>
-		<% if (locals['user'] && locals['user']['is_admin']) { %>
+		<% if (locals['user'] && (locals['user']['is_admin'] || locals['user']['is_translator'])) { %>
 			<div class="divider"></div>
 			<div class="header">Hidden</div>
 			<div class="item" data-value="cz">Čeština</div>
