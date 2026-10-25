@@ -1261,6 +1261,7 @@
 	},
 	"hu": {
 		"language": "Magyar",
+		"plurality-pattern": "n == 1",
 		"type-n": "főnév",
 		"type-n:unc": "főnév",
 		"type-n:si": "tárgytalan ige",
@@ -1494,7 +1495,8 @@
 		"infix-editor-result": "Kum"
 	},
 	"et": {
-		"language": "Eesti"
+		"language": "Eesti",
+		"plurality-pattern": "n == 1"
 	},
 	"pl": {
 		"language": "Polski",
@@ -1839,10 +1841,12 @@
 		"infix-editor-result": "Результат"
 	},
 	"sv": {
-		"language": "Svenska"
+		"language": "Svenska",
+		"plurality-pattern": "n == 1"
 	},
 	"it": {
-		"language": "Italiano"
+		"language": "Italiano",
+		"plurality-pattern": "n == 1"
 	},
 	"cz": {
 		"language": "Čeština",
@@ -2111,5 +2115,9 @@
 		"infix-editor-mood-formal": "Formálny: používa sa vo formálnom a obradnom prostredí",
 		"infix-editor-mood-inferential": "Inferenciálny: označuje predpokladané tvrdenie na základe dôkazov",
 		"infix-editor-result": "Výsledok"
+	},
+	"es": {
+		"language": "Español",
+		"plurality-pattern": "n == 1"
 	}
 }

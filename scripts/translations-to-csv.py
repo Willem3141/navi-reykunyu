@@ -1,7 +1,7 @@
 import csv
 import json
 
-languages = ['en', 'de', 'nl', 'fr', 'da', 'hu', 'x-navi', 'et', 'pl', 'ru', 'sv', 'cz', 'sk']
+languages = ['en', 'de', 'nl', 'fr', 'da', 'hu', 'x-navi', 'et', 'pl', 'ru', 'sv', 'it', 'cz', 'sk', 'es']
 
 with open('src/translations.json') as translationsFile:
 	translations = json.load(translationsFile)
