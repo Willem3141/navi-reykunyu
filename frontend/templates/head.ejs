@@ -1,5 +1,14 @@
 <head>
 	<meta charset="utf-8">
+	<script>
+		// applyes the theme chosen in the settings before rendering, it aviods flashing of the page
+		{
+			const theme = localStorage.getItem('reykunyu-theme');
+			if (theme === 'light' || theme === 'dark') {
+				document.documentElement.setAttribute('data-theme', theme);
+			}
+		}
+	</script>
 	<% if (locals['title']) { %>
 		<title><%= locals['title'] %> &bull; Reykunyu</title>
 	<% } else { %>

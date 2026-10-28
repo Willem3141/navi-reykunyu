@@ -72,6 +72,8 @@ class Reykunyu {
 				localStorage.setItem('reykunyu-ipa',
 					$('#ipa-checkbox').prop('checked') ? '1' : '0');
 				localStorage.setItem('reykunyu-dialect', this.getDialect());
+				localStorage.setItem('reykunyu-theme', this.getTheme());
+				this.applyTheme();
 			},
 		});
 		$('#settings-modal button').popup();
@@ -83,6 +85,10 @@ class Reykunyu {
 		$('#dialect-both-radiobutton').prop('checked', dialect === 'combined');
 		$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
 		$('#dialect-rn-warning').toggle(dialect === 'RN');
+		const theme = localStorage.getItem('reykunyu-theme');
+		$('#theme-system-radiobutton').prop('checked', theme !== 'light' && theme !== 'dark');
+		$('#theme-light-radiobutton').prop('checked', theme === 'light');
+		$('#theme-dark-radiobutton').prop('checked', theme === 'dark');
 		$('#settings-button').on("click", () => {
 			$('#settings-modal').modal("show");
 		});
@@ -198,6 +204,25 @@ class Reykunyu {
 
 	getIPASetting() {
 		return $('#ipa-checkbox').is(':checked');
+	}
+
+	getTheme(): 'system' | 'light' | 'dark' {
+		if ($('#theme-light-radiobutton').is(':checked')) {
+			return 'light';
+		} else if ($('#theme-dark-radiobutton').is(':checked')) {
+			return 'dark';
+		} else {
+			return 'system';
+		}
+	}
+
+	applyTheme() {
+		const theme = localStorage.getItem('reykunyu-theme');
+		if (theme === 'light' || theme === 'dark') {
+			document.documentElement.setAttribute('data-theme', theme);
+		} else {
+			document.documentElement.removeAttribute('data-theme');
+		}
 	}
 
 	setUpAutocomplete() {

@@ -125,10 +125,10 @@ h2[id] {
 	top: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-	.word-list.explanation .arrow {
+.word-list.explanation .arrow {
+	.dark-theme({
 		filter: invert();
-	}
+	});
 }
 
 .two-columns {

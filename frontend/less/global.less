@@ -54,10 +54,10 @@ body.wide .container,
 	margin: 20px auto;
 }
 
-@media (prefers-color-scheme: dark) {
-	.error .error-icon {
+.error .error-icon {
+	.dark-theme({
 		opacity: 0.15;
-	}
+	});
 }
 
 .error pre {
@@ -219,6 +219,11 @@ table.conjugation-table {
 
 	#offline-mode-progress {
 		padding-left: 20px;
+	}
+
+	#theme-radiobuttons .ui.radio.checkbox {
+		display: block;
+		margin-bottom: 5px;
 	}
 }
 
