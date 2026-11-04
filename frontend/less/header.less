@@ -17,10 +17,10 @@ h1 .logo {
 	display: inline-block;
 	vertical-align: middle;
 }
-@media (prefers-color-scheme: dark) {
-	h1 .logo {
+h1 .logo {
+	.dark-theme({
 		background-image: url('/images/reykunyu-dark.svg');
-	}
+	});
 }
 
 #language-dropdown {
