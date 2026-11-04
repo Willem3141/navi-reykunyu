@@ -221,9 +221,47 @@ table.conjugation-table {
 		padding-left: 20px;
 	}
 
-	#theme-radiobuttons .ui.radio.checkbox {
-		display: block;
-		margin-bottom: 5px;
+	#theme-buttons .ui.button {
+		text-align: center;
+
+		&:focus {
+			background-color: unset !important;
+			color: var(--muted-color) !important;
+		}
+
+		&.active {
+			background-color: var(--lightly-shaded-background-color) !important;
+		}
+
+		svg {
+			background-color: var(--background-color);
+			display: block;
+			margin: auto;
+			margin-bottom: 10px;
+			path:nth-child(1) {
+				fill: var(--border-color);
+			}
+			path:nth-child(2) {
+				fill: var(--primary-color);
+			}
+			path:nth-child(3) {
+				fill: #4183C4;
+			}
+		}
+		&#theme-light-button svg {
+			.light-colors();
+		}
+		&#theme-system-button svg {
+			@media (prefers-color-scheme: light) {
+				.light-colors();
+			}
+			@media (prefers-color-scheme: dark) {
+				.dark-colors();
+			}
+		}
+		&#theme-dark-button svg {
+			.dark-colors();
+		}
 	}
 }
 

@@ -80,15 +80,26 @@ class Reykunyu {
 
 		$('#ipa-checkbox').prop('checked',
 			localStorage.getItem('reykunyu-ipa') === '1');
+
 		const dialect = localStorage.getItem('reykunyu-dialect');
 		$('#dialect-fn-radiobutton').prop('checked', dialect !== 'combined' && dialect !== 'RN');
 		$('#dialect-both-radiobutton').prop('checked', dialect === 'combined');
 		$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
 		$('#dialect-rn-warning').toggle(dialect === 'RN');
+
 		const theme = localStorage.getItem('reykunyu-theme');
-		$('#theme-system-radiobutton').prop('checked', theme !== 'light' && theme !== 'dark');
-		$('#theme-light-radiobutton').prop('checked', theme === 'light');
-		$('#theme-dark-radiobutton').prop('checked', theme === 'dark');
+		if (theme === 'light') {
+			$('#theme-light-button').addClass('active');
+		} else if (theme === 'dark') {
+			$('#theme-dark-button').addClass('active');
+		} else {
+			$('#theme-system-button').addClass('active');
+		}
+		$('#theme-buttons button').on('click', (e) => {
+			$('#theme-buttons button').removeClass('active');
+			$(e.currentTarget).addClass('active');
+		});
+
 		$('#settings-button').on("click", () => {
 			$('#settings-modal').modal("show");
 		});
@@ -207,9 +218,9 @@ class Reykunyu {
 	}
 
 	getTheme(): 'system' | 'light' | 'dark' {
-		if ($('#theme-light-radiobutton').is(':checked')) {
+		if ($('#theme-light-button').hasClass('active')) {
 			return 'light';
-		} else if ($('#theme-dark-radiobutton').is(':checked')) {
+		} else if ($('#theme-dark-button').hasClass('active')) {
 			return 'dark';
 		} else {
 			return 'system';
