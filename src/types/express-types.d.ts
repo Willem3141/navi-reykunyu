@@ -13,6 +13,7 @@ declare global {
 			id: number;
 			username: string;
 			is_admin: boolean;
+			is_translator: boolean;
 		}
 	}
 }

@@ -73,17 +73,34 @@ class Reykunyu {
 				localStorage.setItem('reykunyu-ipa',
 					$('#ipa-checkbox').prop('checked') ? '1' : '0');
 				localStorage.setItem('reykunyu-dialect', this.getDialect());
+				localStorage.setItem('reykunyu-theme', this.getTheme());
+				this.applyTheme();
 			},
 		});
 		$('#settings-modal button').popup();
 
 		$('#ipa-checkbox').prop('checked',
 			localStorage.getItem('reykunyu-ipa') === '1');
+
 		const dialect = localStorage.getItem('reykunyu-dialect');
 		$('#dialect-fn-radiobutton').prop('checked', dialect !== 'combined' && dialect !== 'RN');
 		$('#dialect-both-radiobutton').prop('checked', dialect === 'combined');
 		$('#dialect-rn-radiobutton').prop('checked', dialect === 'RN');
 		$('#dialect-rn-warning').toggle(dialect === 'RN');
+
+		const theme = localStorage.getItem('reykunyu-theme');
+		if (theme === 'light') {
+			$('#theme-light-button').addClass('active');
+		} else if (theme === 'dark') {
+			$('#theme-dark-button').addClass('active');
+		} else {
+			$('#theme-system-button').addClass('active');
+		}
+		$('#theme-buttons button').on('click', (e) => {
+			$('#theme-buttons button').removeClass('active');
+			$(e.currentTarget).addClass('active');
+		});
+
 		$('#settings-button').on("click", () => {
 			$('#settings-modal').modal("show");
 		});
@@ -201,6 +218,25 @@ class Reykunyu {
 
 	getIPASetting() {
 		return $('#ipa-checkbox').is(':checked');
+	}
+
+	getTheme(): 'system' | 'light' | 'dark' {
+		if ($('#theme-light-button').hasClass('active')) {
+			return 'light';
+		} else if ($('#theme-dark-button').hasClass('active')) {
+			return 'dark';
+		} else {
+			return 'system';
+		}
+	}
+
+	applyTheme() {
+		const theme = localStorage.getItem('reykunyu-theme');
+		if (theme === 'light' || theme === 'dark') {
+			document.documentElement.setAttribute('data-theme', theme);
+		} else {
+			document.documentElement.removeAttribute('data-theme');
+		}
 	}
 
 	setUpAutocomplete() {
@@ -416,7 +452,7 @@ class Reykunyu {
 						$item.on("click", () => {
 							$("#sentence-bar .item").removeClass("active");
 							$item.addClass("active");
-							$fromNaviResult.find('.result').remove();
+							$fromNaviResult.find('.search-result').remove();
 							$fromNaviResult.find('.error').remove();
 							this.createResults(result, $fromNaviResult);
 						});
@@ -517,7 +553,7 @@ class Reykunyu {
 	createAnnotatedFooter(): JQuery {
 		let block = $('<div/>')
 			.addClass('credits-footer')
-			.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2025-08-05');
+			.text('source: An Annotated Na\'vi Dictionary by Stefan G. Müller (Plumps), 2026-06-06');
 		return block;
 	}
 
@@ -551,10 +587,8 @@ class Reykunyu {
 		let $syllableSection = $('<div/>').addClass('result-item etymology');
 		if (syllableCount == 0) {
 			$syllableSection.append($('<div/>').addClass('header').text(_('stress-unknown')));
-		} else if (syllableCount == 1) {
-			$syllableSection.append($('<div/>').addClass('header').text(syllableCount + ' ' + _('syllable')));
 		} else {
-			$syllableSection.append($('<div/>').addClass('header').text(syllableCount + ' ' + _('syllables')));
+			$syllableSection.append($('<div/>').addClass('header').text(_('syllables', syllableCount)));
 		}
 		let $body = $('<div/>').addClass('body');
 		let $table = $('<table/>');

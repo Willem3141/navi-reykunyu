@@ -6,10 +6,6 @@ i, em {
 	font-variation-settings: "slnt" -15;
 }
 
-html {
-	height: auto;
-}
-
 body {
 	font-size: 14px;
 	background-color: var(--background-color);
@@ -58,10 +54,10 @@ body.wide .container,
 	margin: 20px auto;
 }
 
-@media (prefers-color-scheme: dark) {
-	.error .error-icon {
+.error .error-icon {
+	.dark-theme({
 		opacity: 0.15;
-	}
+	});
 }
 
 .error pre {
@@ -152,6 +148,17 @@ table.conjugation-table {
 	color: var(--translation-highlight-color);
 }
 
+.stressed {
+	text-decoration: underline;
+	text-decoration-skip-ink: none;
+	text-decoration-thickness: 1px;
+}
+
+.ipa {
+	font-family: "Gentium Plus";
+	font-size: 110%;
+}
+
 .result a {
 	cursor: pointer;
 }
@@ -212,6 +219,49 @@ table.conjugation-table {
 
 	#offline-mode-progress {
 		padding-left: 20px;
+	}
+
+	#theme-buttons .ui.button {
+		text-align: center;
+
+		&:focus {
+			background-color: unset !important;
+			color: var(--muted-color) !important;
+		}
+
+		&.active {
+			background-color: var(--lightly-shaded-background-color) !important;
+		}
+
+		svg {
+			background-color: var(--background-color);
+			display: block;
+			margin: auto;
+			margin-bottom: 10px;
+			path:nth-child(1) {
+				fill: var(--border-color);
+			}
+			path:nth-child(2) {
+				fill: var(--primary-color);
+			}
+			path:nth-child(3) {
+				fill: #4183C4;
+			}
+		}
+		&#theme-light-button svg {
+			.light-colors();
+		}
+		&#theme-system-button svg {
+			@media (prefers-color-scheme: light) {
+				.light-colors();
+			}
+			@media (prefers-color-scheme: dark) {
+				.dark-colors();
+			}
+		}
+		&#theme-dark-button svg {
+			.dark-colors();
+		}
 	}
 }
 

@@ -14,8 +14,11 @@ const digestMethod = 'sha256';
 import passport from 'passport';
 import passportLocal from 'passport-local';
 const LocalStrategy = passportLocal.Strategy;
+
+type UserRow = { 'id': number, 'username': string, 'password_hash': Buffer, 'salt': Buffer, 'is_admin': boolean, 'is_translator': boolean };
+
 passport.use(new LocalStrategy((username, password, done) => {
-	db.get(`select * from users where username = ?;`, username, (err, row: { 'id': number, 'username': string, 'password_hash': Buffer, 'salt': Buffer, 'is_admin': boolean }) => {
+	db.get(`select * from users where username = ?;`, username, (err, row: UserRow) => {
 		if (err) {
 			return done(err);
 		}
@@ -41,7 +44,7 @@ passport.serializeUser((user: Express.User, done) => {
 });
 
 passport.deserializeUser((user: Express.User, done) => {
-	db.get(`select * from users where id = ?;`, user['id'], (err, row: { 'id': number, 'username': string, 'password_hash': Buffer, 'salt': Buffer, 'is_admin': boolean }) => {
+	db.get(`select * from users where id = ?;`, user['id'], (err, row: UserRow) => {
 		if (err) {
 			done(err);
 		} else if (!row) {

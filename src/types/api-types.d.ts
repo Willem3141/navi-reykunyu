@@ -33,6 +33,7 @@ declare type WordData = {
 		combined: NounConjugation | AdjectiveConjugation,
 		RN: NounConjugation | AdjectiveConjugation
 	},
+	uncountable?: boolean,
 	conjugation_note?: Translated<LinkString>,  // may be LinkString in the database
 	conjugated?: ConjugationStep[],
 	externalLenition?: ExternalLenition,
@@ -42,6 +43,7 @@ declare type WordData = {
 	status_note?: string,
 	etymology?: LinkString,
 	derived?: WordData[],
+	disambiguation_hint?: Translated<string>,
 	seeAlso?: WordData[],
 	todo?: string,
 	favorite?: boolean,
@@ -54,7 +56,7 @@ declare type Dialect = 'FN' | 'combined' | 'RN';
 declare type Pronunciation = {
 	syllables: string,
 	stressed: number,
-	audio: PronunciationAudio[],
+	audio?: PronunciationAudio[],
 	ipa: {
 		FN: string,
 		RN: string

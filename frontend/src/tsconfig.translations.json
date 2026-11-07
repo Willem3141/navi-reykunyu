@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"module": "preserve",
+		"target": "es2022",
+		"noEmit": true,
+		"types": ["jquery", "semantic-ui"]
+	},
+	"files": [
+		"ui-translations.ts"
+	]
+}

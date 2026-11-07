@@ -25,7 +25,7 @@ class LearnPage {
 	/// is a word to learn; a string is a comment that we should show on a
 	/// separate slide.
 	items: (WordData | string)[];
-	
+
 	/// The index of the item we're currently showing.
 	currentItemIndex = 0;
 
@@ -127,7 +127,7 @@ class WordInfoSlide extends Slide {
 		};
 		this.$shape = buildWordCard(this.word, hideFlipButton.bind(this));
 		this.$shape.appendTo($container);
-		
+
 		// buttons
 		const $buttonsCard = $('<div/>').addClass('buttons under-card')
 			.appendTo($container);
@@ -150,9 +150,7 @@ class WordInfoSlide extends Slide {
 				.text(_('continue-button'))
 				.append($('<i/>').addClass('arrow right icon'))
 				.on('click', () => {
-					$.post('/api/srs/mark-correct', { 'vocab': this.word['id'] }, () => {
-						this.toNextItem();
-					});
+					this.toNextItem();
 				})
 				.appendTo($buttonsCard);
 		} else {
@@ -260,7 +258,7 @@ class OverviewPage {
 		$('<h2/>').html(_('lesson-overview')).appendTo($container);
 
 		let $list: JQuery | null = null;
-		
+
 		for (let item of this.items) {
 			if (typeof item === 'string') {
 				$list = null;

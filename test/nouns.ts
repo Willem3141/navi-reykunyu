@@ -502,6 +502,10 @@ describe('noun conjugations', () => {
 				testConjugation('trr', ['', '', '', '', '', 'ri', ''], ['trrìri']);
 			});
 
+			test('is -ìri/-ri for nouns ending in \'', (t) => {
+				testConjugation('olo\'', ['', '', '', '', '', 'ri', ''], ['olo\'ìri', 'olo\'ri']);
+			});
+
 			test('is -ri for nouns ending in a vowel', (t) => {
 				testConjugation('tute', ['', '', '', '', '', 'ri', ''], ['tuteri']);
 				testConjugation('tuté', ['', '', '', '', '', 'ri', ''], ['tutéri']);

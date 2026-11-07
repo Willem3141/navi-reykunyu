@@ -46,7 +46,8 @@ db.serialize(() => {
 		username text unique not null,
 		password_hash blob,
 		salt blob,
-		is_admin integer
+		is_admin integer,
+		is_translator integer
 	)`);
 
 	// table containing favorite words for each user

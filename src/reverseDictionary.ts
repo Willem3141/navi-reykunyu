@@ -3,9 +3,15 @@
 
 import Dictionary from './dictionary';
 
+const diacriticInsensitiveLanguages = ['sk'];
+
+function removeDiacritics(s: string): string {
+	return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 export default class ReverseDictionary {
 	dictionary: Dictionary;
-	
+
 	// dictionaries of all natural language words in the database, one per language
 	// each dictionary is a mapping from strings to (arrays of) IDs in the
 	// dictionary
@@ -24,9 +30,13 @@ export default class ReverseDictionary {
 					// split translation into words
 					let t = translation[language].replace(/[.,:;!?"\|\(\)\[\]\<\>/\\-]/g, ' ');
 					let words = t.split(' ').map((v) => v.toLowerCase());
+					const stripDiacritics = diacriticInsensitiveLanguages.includes(language);
 					for (let w of words) {
 						if (w.length === 0) {
 							continue;
+						}
+						if (stripDiacritics) {
+							w = removeDiacritics(w);
 						}
 						if (!this.searchables[language].hasOwnProperty(w)) {
 							this.searchables[language][w] = [];
@@ -41,6 +51,9 @@ export default class ReverseDictionary {
 	}
 
 	search(word: string, language: string): WordData[] {
+		if (diacriticInsensitiveLanguages.includes(language)) {
+			word = removeDiacritics(word);
+		}
 		if (!this.searchables.hasOwnProperty(language) || !this.searchables[language].hasOwnProperty(word)) {
 			return [];
 		}

@@ -16,6 +16,7 @@ app.use(compression());
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
+import AudioLibrary from './audioLibrary';
 import * as dialect from './dialect';
 import * as edit from './edit';
 import * as output from './output';
@@ -43,7 +44,8 @@ app.set('view engine', 'ejs');
 
 import * as translations from './translations';
 const translationsJson = JSON.parse(fs.readFileSync('./src/translations.json', 'utf8'));
-const uiTranslationsJs = fs.readFileSync('./frontend/src/ui-translations.js').toString().replace('{}', JSON.stringify(translationsJson));
+const uiTranslationsJs = fs.readFileSync('./frontend/dist/js/ui-translations.js').toString()
+	.replace('{}', JSON.stringify(translationsJson));
 
 export let reykunyu: Reykunyu;
 export let zeykerokyu: Zeykerokyu;
@@ -66,7 +68,8 @@ Alternatively, you can start with an empty database:
 $ echo "{}" > data/words.json`);
 		process.exit(1);
 	}
-	reykunyu = new Reykunyu(dictionaryJSON);
+	let audioLibrary = createAudioLibrary();
+	reykunyu = new Reykunyu(dictionaryJSON, audioLibrary);
 
 	let coursesJSON: any = [];
 	try {
@@ -81,6 +84,21 @@ warning is harmless, but the vocab study tool won't work.`);
 }
 
 initializeReykunyu();
+
+function createAudioLibrary(): AudioLibrary {
+	let library = new AudioLibrary();
+	let speakers = fs.readdirSync('./data/fam/');
+	for (let speaker of speakers) {
+		let files = fs.readdirSync('./data/fam/' + speaker + '/');
+		for (let file of files) {
+			if (file.endsWith('.mp3')) {
+				let pronunciation = file.substring(0, file.length - 4);
+				library.addAudio(speaker, pronunciation, speaker + '/' + file);
+			}
+		}
+	}
+	return library;
+}
 
 /**
  * Returns the standard template variables for the given request, which should
@@ -313,7 +331,7 @@ app.post('/edit/preview',
 		word["na'vi"] = word['word_raw']['FN'];
 
 		let dataErrorList: DataIssue[] = [];
-		reykunyu.preprocessWord(word, dataErrorList);
+		reykunyu.preprocessWord(word, undefined, dataErrorList);  // TODO provide AudioLibrary?
 		let errorCount = 0;
 		for (let error of dataErrorList) {
 			if (error.type === 'error')
@@ -385,7 +403,7 @@ app.post('/edit',
 
 app.post('/translate',
 	(req, res) => {
-		if (!req.user || !req.user['is_admin']) {
+		if (!req.user || !req.user['is_translator']) {
 			res.status(403);
 			res.render('403', pageVariables(req));
 			return;
@@ -424,7 +442,7 @@ app.post('/translate',
 		}
 
 		const language = req.body['language'];
-		if (!['da', 'nl', 'et', 'fr', 'de', 'hu', 'pl', 'ru', 'sv'].includes(language)) {
+		if (!['da', 'nl', 'et', 'fr', 'de', 'hu', 'pl', 'ru', 'sv', 'it', 'cz', 'sk', 'es'].includes(language)) {
 			res.status(400);
 			res.send('400 Bad Request');
 			return;
@@ -461,7 +479,7 @@ app.get('/sources-editor',
 
 app.get('/translations-editor',
 	(req, res) => {
-		if (!req.user || !req.user['is_admin']) {
+		if (!req.user || !req.user['is_translator']) {
 			res.status(403);
 			res.render('403', pageVariables(req));
 			return;

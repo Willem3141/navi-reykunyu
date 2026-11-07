@@ -29,8 +29,7 @@
 							<b><%= lesson['total_count'] %></b> words
 							<br>
 							<i class="user icon"></i>
-							<b><%= lesson['known_count'] - lesson['reviewable_count'] %></b> <%- _('known-word-count') %>,
-							<b><%= lesson['reviewable_count'] %></b> <%- _('up-for-review-count') %>
+							<b><%=  %></b> <%- _('known-and-up-for-review-count', lesson['known_count'] - lesson['reviewable_count'], lesson['reviewable_count']) %>
 						</div>
 						<div class="ui bottom blue attached progress">
 							<div class="bar" style="min-width: 0; width: <%= 100 * (lesson['known_count'] - lesson['reviewable_count']) / lesson['total_count'] %>%;"></div>

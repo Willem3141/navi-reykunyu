@@ -9,7 +9,7 @@
 		<div id="main-container" class="container">
 			<% if (learnedCount > 0) { %>
 				<div>
-					<p><%- _('learned-count-1') %> <%= learnedCount %> <%- _('learned-count-2') %></p>
+					<p><%- _('learned-count', learnedCount) %></p>
 					<div class="buttons">
 						<a class="ui <%= reviewableCount === 0 ? 'disabled ' : '' %>labeled button" href="/study/review">
 							<div class="ui primary button"><%- _('review-button') %></div>

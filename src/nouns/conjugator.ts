@@ -199,7 +199,11 @@ function topicalSuffix(noun: string, dialect: Dialect, isLoanword?: boolean): Su
 		return { text: 'ìri', dropCount: 1 };
 	}
 	if (endsInConsonant(noun)) {
-		return { text: 'ìri' };
+		if (noun.endsWith('\'')) {
+			return { text: 'ìri,ri' };
+		} else {
+			return { text: 'ìri' };
+		}
 	} else {
 		return { text: 'ri' };
 	}

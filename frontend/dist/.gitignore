@@ -13,10 +13,14 @@
 /js/index.js.map
 /js/review.js
 /js/review.js.map
+/js/stress-game.js
+/js/stress-game.js.map
 /js/study.js
 /js/study.js.map
 /js/translations-editor.js
 /js/translations-editor.js.map
+/js/ui-translations.js
+/js/ui-translations.js.map
 /js/sw.js
 /js/sw.js.map
 /uvan/stress/*.js
